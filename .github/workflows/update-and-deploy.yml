@@ -58,16 +58,23 @@ jobs:
         working-directory: web
         run: npm run build
 
-      - name: Deploy to seohost via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: h66.seohost.pl
-          protocol: ftp
-          port: 21
-          username: culoton@culoton.fun
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./web/dist/
-          server-dir: ./public_html/
-          dangerous-clean-slate: false
-          log-level: standard
-          timeout: 60000
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy via lftp (FTPS, mirror)
+        env:
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -e "
+          set ftp:ssl-allow yes;
+          set ftp:ssl-protect-data yes;
+          set ssl:verify-certificate no;
+          set net:max-retries 3;
+          set net:reconnect-interval-base 5;
+          set net:timeout 30;
+          set ftp:passive-mode yes;
+          set ftp:use-feat no;
+          open -u 'culoton@culoton.fun',\"\$FTP_PASSWORD\" ftp://h66.seohost.pl;
+          mirror -R --verbose --parallel=2 --exclude-glob .git --exclude-glob .DS_Store web/dist/ public_html/;
+          bye
+          "
