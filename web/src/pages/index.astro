@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import NewsCard from '../components/NewsCard.astro';
+import FeaturedToken from '../components/FeaturedToken.astro';
+
+const allNews = await getCollection('news');
+const sorted = allNews.sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const latest = sorted.slice(0, 24);
+---
+
+<Layout
+  title="CuloTon — TON Blockchain News"
+  description="Daily news, analysis and updates from the TON blockchain ecosystem. Powered by $CULO."
+>
+  <div class="container">
+    <section class="hero-banner">
+      <div>
+        <span class="badge">TON Ecosystem</span>
+        <h1>News from <span class="ticker">$TON</span> &mdash; powered by <span class="ticker">$CULO</span></h1>
+        <p>Independent coverage of the TON blockchain &mdash; protocol upgrades, DeFi, payments, Telegram integrations, mini-apps and the broader culture around the network.</p>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <h2>Latest News</h2>
+      <span class="meta">{latest.length} of {sorted.length} articles</span>
+    </div>
+
+    {latest.length === 0 ? (
+      <div class="empty">
+        <p>No news yet. Run <code>python scripts/fetch_news.py</code> to populate the feed.</p>
+      </div>
+    ) : (
+      <div class="news-grid">
+        {latest.map((entry) => (
+          <NewsCard
+            slug={entry.id.replace(/\.md$/, '')}
+            title={entry.data.title}
+            summary={entry.data.summary}
+            date={entry.data.date}
+            source_name={entry.data.source_name}
+            tags={entry.data.tags}
+          />
+        ))}
+      </div>
+    )}
+
+    <FeaturedToken />
+  </div>
+</Layout>

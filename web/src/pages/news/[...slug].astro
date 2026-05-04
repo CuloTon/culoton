@@ -1,0 +1,61 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const news = await getCollection('news');
+  return news.map((entry) => ({
+    params: { slug: entry.id.replace(/\.md$/, '') },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const formattedDate = entry.data.date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<Layout
+  title={`${entry.data.title} — CuloTon`}
+  description={entry.data.summary}
+>
+  <article class="news-article">
+    <div class="breadcrumb">
+      <a href="/">News</a> &nbsp;/&nbsp; <span>{entry.data.source_name}</span>
+    </div>
+
+    <h1>{entry.data.title}</h1>
+
+    <div class="article-meta">
+      <span>📅 {formattedDate}</span>
+      <span>🗞 {entry.data.source_name}</span>
+      {entry.data.tags.length > 0 && (
+        <span>
+          {entry.data.tags.map((t: string) => <span class="tag" style="margin-right: 4px;">{t}</span>)}
+        </span>
+      )}
+    </div>
+
+    <p class="article-summary">{entry.data.summary}</p>
+
+    <div class="body">
+      <Content />
+    </div>
+
+    <div class="source-attribution">
+      <strong>Source:</strong> This article is based on reporting by{' '}
+      <a href={entry.data.source_url} target="_blank" rel="noopener noreferrer">
+        {entry.data.source_name}
+      </a>
+      .{' '}
+      <a href={entry.data.original_url} target="_blank" rel="noopener noreferrer">
+        Read the original article →
+      </a>
+    </div>
+  </article>
+</Layout>

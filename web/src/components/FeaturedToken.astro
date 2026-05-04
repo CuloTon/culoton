@@ -1,0 +1,47 @@
+---
+const TELEGRAM = 'https://t.me/culoton';
+---
+
+<aside class="featured-token">
+  <img src="/culo.png" alt="$CULO token" />
+  <div class="ft-text">
+    <span class="pill">Featured Token</span>
+    <h3>The native token of CuloTon — <span class="ticker">$CULO</span></h3>
+    <p>A legacy meme token with a track record across Polygon (10,000X) and SUI — now on TON. Powering this publication and the broader culture around the network.</p>
+  </div>
+  <div class="ft-actions">
+    <a href="/culo" class="ft-btn-primary">Token info</a>
+    <a href={TELEGRAM} target="_blank" rel="noopener noreferrer" class="ft-btn-secondary">Telegram →</a>
+  </div>
+</aside>
+
+<style>
+  .ft-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ft-btn-primary {
+    background: var(--accent);
+    color: #1a1408 !important;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+  }
+  .ft-btn-secondary {
+    background: transparent;
+    border: 1px solid var(--text-dim);
+    color: var(--text-dim) !important;
+    padding: 9px 17px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: center;
+  }
+  .ft-btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent) !important;
+  }
+</style>

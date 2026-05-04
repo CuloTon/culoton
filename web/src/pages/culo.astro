@@ -1,0 +1,191 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const TELEGRAM = 'https://t.me/culoton';
+const CONTRACT = 'EQD5dCm196cT60OTcCz_MI_f_QtpZYGU5mazX-4rjAOHiKrJ';
+---
+
+<Layout
+  title="$CULO — The native token of CuloTon"
+  description="$CULO is a legacy meme token now live on TON. Multi-chain track record: 10,000X on Polygon, success on SUI, now bringing it home on TON."
+>
+  <article class="news-article">
+    <div style="text-align: center; margin-bottom: 28px;">
+      <img src="/culo.png" alt="$CULO token" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--accent); margin: 0 auto;" />
+    </div>
+
+    <h1 style="text-align: center;"><span style="color: var(--accent); font-family: var(--font-mono);">$CULO</span></h1>
+
+    <p class="article-summary" style="text-align: center; border-left: none; padding-left: 0;">
+      A legacy meme token — multi-chain veteran, now live on the TON blockchain.
+    </p>
+
+    <div class="ton-cta-row">
+      <a class="cta-btn cta-primary" href={TELEGRAM} target="_blank" rel="noopener noreferrer">
+        Join Telegram →
+      </a>
+      <a class="cta-btn cta-secondary" href={`https://tonviewer.com/${CONTRACT}`} target="_blank" rel="noopener noreferrer">
+        View on Tonviewer
+      </a>
+    </div>
+
+    <div class="contract-box">
+      <span class="contract-label">Contract Address (TON)</span>
+      <code class="contract-value" id="contract-value">{CONTRACT}</code>
+      <button class="copy-btn" type="button" id="copy-btn" data-value={CONTRACT}>Copy</button>
+    </div>
+
+    <div class="body">
+      <h2 style="font-size: 22px; margin-top: 36px; color: var(--accent);">Understanding $CULO on TON</h2>
+
+      <p>
+        Culo is a legacy meme spanning blockchains since early 2024. The team achieved a phenomenal
+        <strong>10,000X move in MCAP on Polygon</strong>, attracting names like <em>CryptosRUS, JAKE, RODNEY,
+        Crypto Crow, Wendy O</em> and <em>WARREN SAPP</em>, among many others.
+      </p>
+
+      <p>
+        The project also achieved significant success on the <strong>SUI</strong> network, proving its
+        resilience across different ecosystems. We are now committed to following that same path of massive
+        growth on <strong>TON</strong> — including the launch of this dedicated website and a comprehensive
+        development roadmap.
+      </p>
+
+      <h2 style="font-size: 22px; margin-top: 36px; color: var(--accent);">Track record</h2>
+      <ul class="track-record">
+        <li><strong>2024 — Polygon:</strong> 10,000X market-cap move; coverage and shoutouts from major crypto KOLs</li>
+        <li><strong>SUI:</strong> Strong follow-through on a second chain — proven cross-ecosystem traction</li>
+        <li><strong>2026 — TON:</strong> Launch on the network with native Telegram distribution and the CuloTon news platform</li>
+      </ul>
+
+      <h2 style="font-size: 22px; margin-top: 36px; color: var(--accent);">Why TON</h2>
+      <p>
+        TON — The Open Network, originally conceived by Telegram — is one of the fastest-growing blockchains of
+        2025-2026. With native Telegram integration, sub-second finality, and a rapidly expanding ecosystem of
+        mini-apps and DeFi protocols, TON is uniquely positioned to bring crypto to hundreds of millions of
+        Telegram users. $CULO arrives on TON with momentum from two prior chains and a community that already
+        knows how to ship.
+      </p>
+
+      <h2 style="font-size: 22px; margin-top: 36px; color: var(--accent);">Community</h2>
+      <p>
+        The fastest way to get involved is the official Telegram group:
+        <a href={TELEGRAM} target="_blank" rel="noopener noreferrer">{TELEGRAM}</a>.
+        News, announcements and trade chatter all happen there.
+      </p>
+
+      <h2 style="font-size: 22px; margin-top: 36px; color: var(--accent);">Disclaimer</h2>
+      <p style="font-size: 14px; color: var(--text-mute);">
+        Nothing on this page is financial advice. $CULO is a memecoin; cryptocurrencies are highly volatile
+        and you may lose your entire investment. Past performance on Polygon or SUI is no guarantee of future
+        results on TON or any other chain. Always do your own research and only buy what you can afford to
+        lose. CuloTon news coverage is editorially independent of token activity.
+      </p>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .ton-cta-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 24px 0 12px;
+  }
+  .cta-btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition: transform 0.12s, opacity 0.12s;
+  }
+  .cta-btn:hover { transform: translateY(-1px); opacity: 0.92; }
+  .cta-primary { background: var(--accent); color: #1a1408 !important; }
+  .cta-secondary {
+    background: transparent;
+    border: 1px solid var(--ton);
+    color: var(--ton) !important;
+  }
+
+  .contract-box {
+    margin: 18px auto 0;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    max-width: 760px;
+  }
+  .contract-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-mute);
+    flex-shrink: 0;
+  }
+  .contract-value {
+    flex: 1;
+    min-width: 200px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text);
+    word-break: break-all;
+    background: transparent;
+    padding: 0;
+  }
+  .copy-btn {
+    background: var(--accent);
+    color: #1a1408;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .copy-btn:hover { opacity: 0.9; }
+  .copy-btn.copied { background: #4ade80; }
+
+  .track-record {
+    padding-left: 20px;
+    margin: 16px 0;
+  }
+  .track-record li {
+    margin-bottom: 8px;
+    color: var(--text-dim);
+  }
+  .track-record strong {
+    color: var(--text);
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('copy-btn');
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      const value = btn.getAttribute('data-value') || '';
+      try {
+        await navigator.clipboard.writeText(value);
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      } catch (e) {
+        btn.textContent = 'Copy failed';
+      }
+    });
+  });
+</script>

@@ -1,0 +1,26 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# node / astro
+node_modules/
+dist/
+.astro/
+
+# data
+*.db-journal
+# Note: scripts/seen.db IS tracked — workflow needs persisted dedup state across runs.
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
