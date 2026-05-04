@@ -58,11 +58,11 @@ jobs:
         working-directory: web
         run: npm run build
 
-      - name: Deploy to seohost via FTPS
+      - name: Deploy to seohost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: h66.seohost.pl
-          protocol: ftps
+          protocol: ftp
           port: 21
           username: culoton@culoton.fun
           password: ${{ secrets.FTP_PASSWORD }}
@@ -70,3 +70,4 @@ jobs:
           server-dir: ./public_html/
           dangerous-clean-slate: false
           log-level: standard
+          timeout: 60000
