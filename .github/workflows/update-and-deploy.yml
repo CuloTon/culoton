@@ -58,21 +58,9 @@ jobs:
         working-directory: web
         run: npm run build
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
-      - name: Deploy via lftp (FTPS, mirror)
+      - name: Deploy via Python FTPS
         env:
+          FTP_HOST: h66.seohost.pl
+          FTP_USER: culoton@culoton.fun
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: |
-          lftp -u "culoton@culoton.fun,$FTP_PASSWORD" -e "
-          set ftp:ssl-allow yes;
-          set ftp:ssl-protect-data yes;
-          set ssl:verify-certificate no;
-          set net:max-retries 3;
-          set net:reconnect-interval-base 5;
-          set net:timeout 30;
-          set ftp:passive-mode yes;
-          mirror -R --verbose --parallel=2 --exclude-glob .git --exclude-glob .DS_Store web/dist/ public_html/;
-          bye
-          " ftp://h66.seohost.pl
+        run: python scripts/deploy_ftp.py web/dist public_html
