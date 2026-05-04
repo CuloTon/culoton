@@ -67,6 +67,6 @@ jobs:
           username: culoton@culoton.fun
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./web/dist/
-          server-dir: ./
+          server-dir: ./public_html/
           dangerous-clean-slate: false
           log-level: standard
