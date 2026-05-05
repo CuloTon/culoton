@@ -185,6 +185,11 @@ def write_markdown(*, published: datetime, source_name: str, source_url: str, or
 def main() -> int:
     load_dotenv(ROOT / ".env")
     api_key = os.getenv("ANTHROPIC_API_KEY")
+    if api_key:
+        # Strip BOM and whitespace — PowerShell pipe → `gh secret set` on Windows
+        # has been known to embed CRLF or UTF-8 BOM, which then crashes
+        # httpx header encoding with: 'ascii' codec can't encode character '﻿'.
+        api_key = api_key.lstrip("﻿").strip()
     if not api_key:
         print("ERROR: ANTHROPIC_API_KEY missing in .env", file=sys.stderr)
         return 1
