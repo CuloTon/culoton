@@ -61,7 +61,7 @@ const alternates = LOCALES.map((loc) => ({
     <meta name="twitter:image" content={new URL(ogImage, Astro.site).toString()} />
   </head>
   <body>
-    <header class="site-header">
+    <header class="site-header" id="site-header">
       <div class="inner">
         <a href={localizedPath(locale, '/')} class="logo">
           <img src="/culo.png" alt="CuloTon logo" />
@@ -69,23 +69,53 @@ const alternates = LOCALES.map((loc) => ({
             <span class="brand-culo">Culo</span><span class="brand-ton">Ton</span>
           </div>
         </a>
-        <nav class="main-nav">
-          <a href={localizedPath(locale, '/')}>{t.nav_news}</a>
-          <a href={localizedPath(locale, '/about')}>{t.nav_about}</a>
-          <a href="/culo">{t.nav_token}</a>
-        </nav>
-        <div class="lang-switcher" aria-label="Language">
-          {LOCALES.map((loc) => (
-            <a
-              href={localizedPath(loc, pathWithoutLocale)}
-              class:list={["lang-link", { active: loc === locale }]}
-              hreflang={loc}
-              title={LOCALE_FULL[loc]}
-            >{LOCALE_LABELS[loc]}</a>
-          ))}
+        <button
+          type="button"
+          class="hamburger"
+          aria-label="Toggle navigation"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          id="hamburger-btn"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <div class="header-menu" id="mobile-menu">
+          <nav class="main-nav">
+            <a href={localizedPath(locale, '/')}>{t.nav_news}</a>
+            <a href={localizedPath(locale, '/about')}>{t.nav_about}</a>
+            <a href="/culo">{t.nav_token}</a>
+          </nav>
+          <div class="lang-switcher" aria-label="Language">
+            {LOCALES.map((loc) => (
+              <a
+                href={localizedPath(loc, pathWithoutLocale)}
+                class:list={["lang-link", { active: loc === locale }]}
+                hreflang={loc}
+                title={LOCALE_FULL[loc]}
+              >{LOCALE_LABELS[loc]}</a>
+            ))}
+          </div>
         </div>
       </div>
     </header>
+    <script is:inline>
+      (function () {
+        var btn = document.getElementById('hamburger-btn');
+        var hdr = document.getElementById('site-header');
+        if (!btn || !hdr) return;
+        btn.addEventListener('click', function () {
+          var open = hdr.classList.toggle('menu-open');
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        // Close on any in-menu link click (mobile nav)
+        document.querySelectorAll('#mobile-menu a').forEach(function (a) {
+          a.addEventListener('click', function () {
+            hdr.classList.remove('menu-open');
+            btn.setAttribute('aria-expanded', 'false');
+          });
+        });
+      })();
+    </script>
 
     <main>
       <slot />
@@ -112,10 +142,45 @@ const alternates = LOCALES.map((loc) => ({
 </html>
 
 <style>
+  .header-menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hamburger {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+  }
+  .hamburger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 1px;
+    transition: transform 0.18s, opacity 0.18s;
+  }
+  .site-header.menu-open .hamburger span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .site-header.menu-open .hamburger span:nth-child(2) {
+    opacity: 0;
+  }
+  .site-header.menu-open .hamburger span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
   .lang-switcher {
     display: flex;
     gap: 4px;
-    margin-left: 12px;
     align-items: center;
   }
   .lang-link {
@@ -158,7 +223,56 @@ const alternates = LOCALES.map((loc) => ({
     color: var(--accent);
     font-family: var(--font-mono);
   }
-  @media (max-width: 640px) {
-    .lang-switcher { margin-left: 0; }
+  @media (max-width: 720px) {
+    .hamburger {
+      display: flex;
+    }
+    .header-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 20px 16px;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: max-height 0.22s ease, opacity 0.18s ease, padding 0.22s ease;
+    }
+    .site-header.menu-open .header-menu {
+      max-height: 320px;
+      opacity: 1;
+      pointer-events: auto;
+      padding: 12px 20px 18px;
+    }
+    .header-menu nav.main-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .header-menu nav.main-nav a {
+      display: block;
+      margin-left: 0;
+      padding: 12px 4px;
+      font-size: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-menu nav.main-nav a:last-child {
+      border-bottom: none;
+    }
+    .header-menu .lang-switcher {
+      margin-top: 14px;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+    .header-menu .lang-link {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
   }
 </style>
