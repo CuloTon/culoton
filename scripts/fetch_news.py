@@ -36,6 +36,7 @@ NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 MODEL = "claude-haiku-4-5-20251001"
 MAX_PER_SOURCE = 5  # cap per run so a fresh feed doesn't burn the budget
 RETRY_LIMIT = 2
+USER_AGENT = "CuloTon-NewsBot/1.0 (+https://culoton.fun)"
 
 REWRITE_SYSTEM = """You are a crypto news editor for CuloTon, an English-language news site about the TON blockchain ecosystem. Rewrite source articles in original wording (no copying), in a clear journalistic tone, 200-400 words. Do not invent facts beyond what is in the source. Always close on a neutral, factual note.
 
@@ -192,10 +193,11 @@ def main() -> int:
 
     for source in SOURCES:
         print(f"\n[{source['name']}] fetching {source['feed']}")
-        feed = feedparser.parse(source["feed"])
+        feed = feedparser.parse(source["feed"], agent=USER_AGENT)
         if feed.bozo and not feed.entries:
             print(f"  feed error: {feed.bozo_exception}")
             continue
+        print(f"  entries: {len(feed.entries)}")
 
         per_source = 0
         for entry in feed.entries:
