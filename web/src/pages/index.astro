@@ -3,42 +3,50 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import NewsCard from '../components/NewsCard.astro';
 import FeaturedToken from '../components/FeaturedToken.astro';
+import { UI } from '../i18n/strings';
 
-const allNews = await getCollection('news');
-const sorted = allNews.sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-);
+const locale = 'en' as const;
+const t = UI[locale];
 
+const allNews = await getCollection('news_en');
+const sorted = allNews.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const latest = sorted.slice(0, 24);
+
+function stripLocaleFromId(id: string): string {
+  return id.replace(/^en\//, '').replace(/\.md$/, '');
+}
 ---
 
 <Layout
-  title="CuloTon — TON Blockchain News"
-  description="Daily news, analysis and updates from the TON blockchain ecosystem. Powered by $CULO."
+  locale={locale}
+  pathWithoutLocale="/"
+  title={t.site_title}
+  description={t.site_description}
 >
   <div class="container">
     <section class="hero-banner">
       <div>
-        <span class="badge">TON Ecosystem</span>
-        <h1>News from <span class="ticker">$TON</span> &mdash; powered by <span class="ticker">$CULO</span></h1>
-        <p>Independent coverage of the TON blockchain &mdash; protocol upgrades, DeFi, payments, Telegram integrations, mini-apps and the broader culture around the network.</p>
+        <span class="badge">{t.hero_badge}</span>
+        <h1 set:html={t.hero_headline_html} />
+        <p>{t.hero_blurb}</p>
       </div>
     </section>
 
     <div class="section-title">
-      <h2>Latest News</h2>
-      <span class="meta">{latest.length} of {sorted.length} articles</span>
+      <h2>{t.latest_news}</h2>
+      <span class="meta">{t.articles_count(latest.length, sorted.length)}</span>
     </div>
 
     {latest.length === 0 ? (
       <div class="empty">
-        <p>No news yet. Run <code>python scripts/fetch_news.py</code> to populate the feed.</p>
+        <p>{t.no_news}</p>
       </div>
     ) : (
       <div class="news-grid">
         {latest.map((entry) => (
           <NewsCard
-            slug={entry.id.replace(/\.md$/, '')}
+            locale={locale}
+            slug={stripLocaleFromId(entry.id)}
             title={entry.data.title}
             summary={entry.data.summary}
             date={entry.data.date}
@@ -49,6 +57,6 @@ const latest = sorted.slice(0, 24);
       </div>
     )}
 
-    <FeaturedToken />
+    <FeaturedToken locale={locale} />
   </div>
 </Layout>

@@ -1,42 +1,67 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import { UI, DATE_LOCALE, localizedPath, LOCALES, LOCALE_FULL, type Locale } from '../../i18n/strings';
 
 export async function getStaticPaths() {
-  const news = await getCollection('news');
+  const news = await getCollection('news_en');
   return news.map((entry) => ({
-    params: { slug: entry.id.replace(/\.md$/, '') },
+    params: { slug: entry.id.replace(/^en\//, '').replace(/\.md$/, '') },
     props: { entry },
   }));
 }
 
-const { entry } = Astro.props;
+interface Props {
+  entry: CollectionEntry<'news_en'>;
+}
+
+const { entry } = Astro.props as Props;
+const locale: Locale = 'en';
+const t = UI[locale];
 const { Content } = await render(entry);
 
-const formattedDate = entry.data.date.toLocaleDateString('en-US', {
+const slug = entry.id.replace(/^en\//, '').replace(/\.md$/, '');
+
+const formattedDate = entry.data.date.toLocaleDateString(DATE_LOCALE[locale], {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
+
+// Check which other locales have this article (matching slug).
+const otherLocales: Locale[] = [];
+for (const loc of LOCALES) {
+  if (loc === locale) continue;
+  let coll;
+  if (loc === 'ru') coll = await getCollection('news_ru');
+  else if (loc === 'pl') coll = await getCollection('news_pl');
+  else if (loc === 'de') coll = await getCollection('news_de');
+  else coll = await getCollection('news_en');
+  if (coll.some((e: any) => e.id === `${loc}/${slug}.md`)) {
+    otherLocales.push(loc);
+  }
+}
 ---
 
 <Layout
+  locale={locale}
+  pathWithoutLocale={`/news/${slug}`}
   title={`${entry.data.title} — CuloTon`}
   description={entry.data.summary}
 >
   <article class="news-article">
     <div class="breadcrumb">
-      <a href="/">News</a> &nbsp;/&nbsp; <span>{entry.data.source_name}</span>
+      <a href={localizedPath(locale, '/')}>{t.nav_news}</a> &nbsp;/&nbsp; <span>{entry.data.source_name}</span>
     </div>
 
     <h1>{entry.data.title}</h1>
 
     <div class="article-meta">
-      <span>📅 {formattedDate}</span>
-      <span>🗞 {entry.data.source_name}</span>
+      <span>{t.date_label} {formattedDate}</span>
+      <span>{t.source_label} {entry.data.source_name}</span>
       {entry.data.tags.length > 0 && (
         <span>
-          {entry.data.tags.map((t: string) => <span class="tag" style="margin-right: 4px;">{t}</span>)}
+          {entry.data.tags.map((tag: string) => <span class="tag" style="margin-right: 4px;">{tag}</span>)}
         </span>
       )}
     </div>
@@ -48,14 +73,76 @@ const formattedDate = entry.data.date.toLocaleDateString('en-US', {
     </div>
 
     <div class="source-attribution">
-      <strong>Source:</strong> This article is based on reporting by{' '}
+      <strong>Source:</strong> {t.source_attribution_lead}{' '}
       <a href={entry.data.source_url} target="_blank" rel="noopener noreferrer">
         {entry.data.source_name}
       </a>
       .{' '}
       <a href={entry.data.original_url} target="_blank" rel="noopener noreferrer">
-        Read the original article →
+        {t.read_original}
       </a>
     </div>
+
+    <div class="culoscribe-byline">
+      <img src="/culoscribe.png" alt="CuloScribe AI" />
+      <div>
+        <strong>CuloScribe AI</strong>
+        <span>{t.footer_edited_by}</span>
+      </div>
+    </div>
+
+    {otherLocales.length > 0 && (
+      <div class="other-langs">
+        <span class="other-langs-label">Also in:</span>
+        {otherLocales.map((loc) => (
+          <a href={localizedPath(loc, `/news/${slug}`)}>{LOCALE_FULL[loc]}</a>
+        ))}
+      </div>
+    )}
   </article>
 </Layout>
+
+<style>
+  .culoscribe-byline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0 16px;
+    padding: 14px 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .culoscribe-byline img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+  }
+  .culoscribe-byline strong {
+    display: block;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+  .culoscribe-byline span {
+    font-size: 13px;
+    color: var(--text-mute);
+  }
+  .other-langs {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--text-mute);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .other-langs-label {
+    font-weight: 600;
+  }
+  .other-langs a {
+    color: var(--ton);
+  }
+</style>

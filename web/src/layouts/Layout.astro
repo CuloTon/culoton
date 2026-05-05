@@ -1,23 +1,38 @@
 ---
 import '../styles/global.css';
+import { UI, LOCALES, LOCALE_LABELS, LOCALE_FULL, HTML_LANG, localizedPath, type Locale } from '../i18n/strings';
 
 interface Props {
+  locale: Locale;
   title?: string;
   description?: string;
   ogImage?: string;
+  /** Path of the current page WITHOUT the locale prefix, e.g. '/' or '/about' or '/news/foo'. */
+  pathWithoutLocale: string;
 }
 
 const {
-  title = 'CuloTon — TON Blockchain News',
-  description = 'Daily news, analysis and updates from the TON blockchain ecosystem. Powered by $CULO.',
+  locale,
+  title,
+  description,
   ogImage = '/culo.png',
+  pathWithoutLocale,
 } = Astro.props;
 
+const t = UI[locale];
+const finalTitle = title ?? t.site_title;
+const finalDescription = description ?? t.site_description;
+
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+
+const alternates = LOCALES.map((loc) => ({
+  loc,
+  href: new URL(localizedPath(loc, pathWithoutLocale), Astro.site).toString(),
+}));
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={HTML_LANG[locale]}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -25,34 +40,50 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="canonical" href={canonical} />
 
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    {alternates.map((a) => (
+      <link rel="alternate" hreflang={a.loc} href={a.href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={alternates[0].href} />
+
+    <title>{finalTitle}</title>
+    <meta name="description" content={finalDescription} />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={finalTitle} />
+    <meta property="og:description" content={finalDescription} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />
+    <meta property="og:locale" content={locale === 'en' ? 'en_US' : `${locale}_${locale.toUpperCase()}`} />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:title" content={finalTitle} />
+    <meta name="twitter:description" content={finalDescription} />
     <meta name="twitter:image" content={new URL(ogImage, Astro.site).toString()} />
   </head>
   <body>
     <header class="site-header">
       <div class="inner">
-        <a href="/" class="logo">
+        <a href={localizedPath(locale, '/')} class="logo">
           <img src="/culo.png" alt="CuloTon logo" />
           <div>
             <span class="brand-culo">Culo</span><span class="brand-ton">Ton</span>
           </div>
         </a>
         <nav class="main-nav">
-          <a href="/">News</a>
-          <a href="/about">About</a>
-          <a href="/culo">$CULO</a>
+          <a href={localizedPath(locale, '/')}>{t.nav_news}</a>
+          <a href={localizedPath(locale, '/about')}>{t.nav_about}</a>
+          <a href="/culo">{t.nav_token}</a>
         </nav>
+        <div class="lang-switcher" aria-label="Language">
+          {LOCALES.map((loc) => (
+            <a
+              href={localizedPath(loc, pathWithoutLocale)}
+              class:list={["lang-link", { active: loc === locale }]}
+              hreflang={loc}
+              title={LOCALE_FULL[loc]}
+            >{LOCALE_LABELS[loc]}</a>
+          ))}
+        </div>
       </div>
     </header>
 
@@ -63,15 +94,71 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <footer class="site-footer">
       <div class="inner">
         <div>
-          <strong>CuloTon</strong> — TON ecosystem news, powered by <span style="color: var(--accent); font-family: var(--font-mono);">$CULO</span>
+          <span set:html={t.footer_tagline_html} />
+          <div class="edited-by">
+            <img src="/culoscribe.png" alt="CuloScribe AI" class="edited-by-avatar" />
+            <span>{t.footer_edited_by}</span>
+          </div>
         </div>
         <div>
-          <a href="/about">About</a>
-          <a href="/culo">$CULO</a>
-          <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>
-          <a href="/rss.xml">RSS</a>
+          <a href={localizedPath(locale, '/about')}>{t.footer_about}</a>
+          <a href="/culo">{t.footer_token}</a>
+          <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">{t.footer_telegram}</a>
+          <a href="/rss.xml">{t.footer_rss}</a>
         </div>
       </div>
     </footer>
   </body>
 </html>
+
+<style>
+  .lang-switcher {
+    display: flex;
+    gap: 4px;
+    margin-left: 12px;
+    align-items: center;
+  }
+  .lang-link {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 4px 7px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--text-mute) !important;
+    text-decoration: none;
+    transition: color 0.12s, border-color 0.12s, background 0.12s;
+  }
+  .lang-link:hover {
+    color: var(--text) !important;
+    border-color: var(--text-dim);
+  }
+  .lang-link.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #1a1408 !important;
+  }
+  .edited-by {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+  .edited-by-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+  }
+  .footer-ticker {
+    color: var(--accent);
+    font-family: var(--font-mono);
+  }
+  @media (max-width: 640px) {
+    .lang-switcher { margin-left: 0; }
+  }
+</style>

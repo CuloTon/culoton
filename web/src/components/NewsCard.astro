@@ -1,5 +1,9 @@
 ---
+import type { Locale } from '../i18n/strings';
+import { DATE_LOCALE, localizedPath } from '../i18n/strings';
+
 interface Props {
+  locale: Locale;
   slug: string;
   title: string;
   summary: string;
@@ -8,18 +12,20 @@ interface Props {
   tags: string[];
 }
 
-const { slug, title, summary, date, source_name, tags } = Astro.props;
+const { locale, slug, title, summary, date, source_name, tags } = Astro.props;
 
-const formattedDate = date.toLocaleDateString('en-US', {
+const formattedDate = date.toLocaleDateString(DATE_LOCALE[locale], {
   year: 'numeric',
   month: 'short',
   day: 'numeric',
 });
+
+const href = localizedPath(locale, `/news/${slug}`);
 ---
 
 <article class="news-card">
   <span class="source">{source_name}</span>
-  <h3><a href={`/news/${slug}`}>{title}</a></h3>
+  <h3><a href={href}>{title}</a></h3>
   <p>{summary}</p>
   <div class="footer-row">
     <div class="tags">

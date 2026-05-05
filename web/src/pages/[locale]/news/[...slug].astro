@@ -1,0 +1,157 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import { UI, DATE_LOCALE, localizedPath, LOCALES, LOCALE_FULL, type Locale } from '../../../i18n/strings';
+
+export async function getStaticPaths() {
+  const out: any[] = [];
+
+  for (const loc of ['ru', 'pl', 'de'] as Locale[]) {
+    let entries;
+    if (loc === 'ru') entries = await getCollection('news_ru');
+    else if (loc === 'pl') entries = await getCollection('news_pl');
+    else entries = await getCollection('news_de');
+
+    for (const entry of entries) {
+      out.push({
+        params: {
+          locale: loc,
+          slug: entry.id.replace(/^[a-z]{2}\//, '').replace(/\.md$/, ''),
+        },
+        props: { entry, locale: loc },
+      });
+    }
+  }
+  return out;
+}
+
+const { entry, locale } = Astro.props as { entry: any; locale: Locale };
+const t = UI[locale];
+const { Content } = await render(entry);
+
+const slug = entry.id.replace(/^[a-z]{2}\//, '').replace(/\.md$/, '');
+
+const formattedDate = entry.data.date.toLocaleDateString(DATE_LOCALE[locale], {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+// Discover sibling locales for "Also in:"
+const otherLocales: Locale[] = [];
+for (const loc of LOCALES) {
+  if (loc === locale) continue;
+  let coll;
+  if (loc === 'en') coll = await getCollection('news_en');
+  else if (loc === 'ru') coll = await getCollection('news_ru');
+  else if (loc === 'pl') coll = await getCollection('news_pl');
+  else coll = await getCollection('news_de');
+  if (coll.some((e: any) => e.id === `${loc}/${slug}.md`)) {
+    otherLocales.push(loc);
+  }
+}
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale={`/news/${slug}`}
+  title={`${entry.data.title} — CuloTon`}
+  description={entry.data.summary}
+>
+  <article class="news-article">
+    <div class="breadcrumb">
+      <a href={localizedPath(locale, '/')}>{t.nav_news}</a> &nbsp;/&nbsp; <span>{entry.data.source_name}</span>
+    </div>
+
+    <h1>{entry.data.title}</h1>
+
+    <div class="article-meta">
+      <span>{t.date_label} {formattedDate}</span>
+      <span>{t.source_label} {entry.data.source_name}</span>
+      {entry.data.tags.length > 0 && (
+        <span>
+          {entry.data.tags.map((tag: string) => <span class="tag" style="margin-right: 4px;">{tag}</span>)}
+        </span>
+      )}
+    </div>
+
+    <p class="article-summary">{entry.data.summary}</p>
+
+    <div class="body">
+      <Content />
+    </div>
+
+    <div class="source-attribution">
+      <strong>Source:</strong> {t.source_attribution_lead}{' '}
+      <a href={entry.data.source_url} target="_blank" rel="noopener noreferrer">
+        {entry.data.source_name}
+      </a>
+      .{' '}
+      <a href={entry.data.original_url} target="_blank" rel="noopener noreferrer">
+        {t.read_original}
+      </a>
+    </div>
+
+    <div class="culoscribe-byline">
+      <img src="/culoscribe.png" alt="CuloScribe AI" />
+      <div>
+        <strong>CuloScribe AI</strong>
+        <span>{t.footer_edited_by}</span>
+      </div>
+    </div>
+
+    {otherLocales.length > 0 && (
+      <div class="other-langs">
+        <span class="other-langs-label">Also in:</span>
+        {otherLocales.map((loc) => (
+          <a href={localizedPath(loc, `/news/${slug}`)}>{LOCALE_FULL[loc]}</a>
+        ))}
+      </div>
+    )}
+  </article>
+</Layout>
+
+<style>
+  .culoscribe-byline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0 16px;
+    padding: 14px 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .culoscribe-byline img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+  }
+  .culoscribe-byline strong {
+    display: block;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+  .culoscribe-byline span {
+    font-size: 13px;
+    color: var(--text-mute);
+  }
+  .other-langs {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--text-mute);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .other-langs-label {
+    font-weight: 600;
+  }
+  .other-langs a {
+    color: var(--ton);
+  }
+</style>

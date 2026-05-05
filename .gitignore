@@ -24,3 +24,6 @@ dist/
 Thumbs.db
 .vscode/
 .idea/
+
+# windows-corrupted dirs (cannot rm; renamed and ignored)
+**/de_corrupt/

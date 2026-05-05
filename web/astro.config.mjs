@@ -7,5 +7,22 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
-  integrations: [sitemap()],
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'ru', 'pl', 'de'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
+  integrations: [sitemap({
+    i18n: {
+      defaultLocale: 'en',
+      locales: {
+        en: 'en-US',
+        ru: 'ru-RU',
+        pl: 'pl-PL',
+        de: 'de-DE',
+      },
+    },
+  })],
 });

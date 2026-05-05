@@ -1,35 +1,69 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { UI } from '../i18n/strings';
+
+const locale = 'en' as const;
+const t = UI[locale];
 ---
 
 <Layout
-  title="About — CuloTon"
-  description="About CuloTon, an independent news platform covering the TON blockchain ecosystem."
+  locale={locale}
+  pathWithoutLocale="/about"
+  title={t.about_title}
+  description={t.about_meta_description}
 >
   <article class="news-article">
-    <h1>About CuloTon</h1>
-
-    <p class="article-summary">
-      CuloTon is an independent English-language news platform covering the TON blockchain ecosystem.
-    </p>
+    <div class="culoscribe-hero">
+      <img src="/culoscribe.png" alt="CuloScribe AI portrait" />
+      <div>
+        <h1>About CuloTon</h1>
+        <p class="article-summary" style="margin: 0; border-left: none; padding-left: 0;">{t.about_summary}</p>
+      </div>
+    </div>
 
     <div class="body">
-      <p>
-        We track protocol upgrades, DeFi activity, payments, Telegram integrations, mini-apps, validator news,
-        and the broader culture forming around the network. Our coverage is sourced from reputable industry
-        publications, official TON Foundation channels, and on-chain analytics, with original articles credited
-        and linked back to the source.
-      </p>
+      <h2>{t.about_what_we_do_h}</h2>
+      <p>{t.about_what_we_do_p}</p>
 
-      <p>
-        CuloTon is brought to you by the community behind <strong style="color: var(--accent);">$CULO</strong>,
-        a memecoin native to the TON network. We believe in a TON ecosystem that is both serious about technology
-        and not afraid to have fun.
-      </p>
+      <h2>{t.about_culoscribe_h}</h2>
+      <p>{t.about_culoscribe_p1}</p>
+      <p set:html={t.about_culoscribe_p2} />
+      <p>{t.about_culoscribe_p3}</p>
 
-      <p>
-        Found a story we missed? Have a tip? Want to advertise? Reach out — we'd love to hear from you.
-      </p>
+      <h2>{t.about_disclaimer_h}</h2>
+      <p>{t.about_disclaimer_p}</p>
+
+      <h2>{t.about_languages_h}</h2>
+      <p>{t.about_languages_p}</p>
+
+      <p set:html={t.about_contact_p} />
     </div>
   </article>
 </Layout>
+
+<style>
+  .culoscribe-hero {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .culoscribe-hero img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    flex-shrink: 0;
+  }
+  .culoscribe-hero h1 {
+    margin: 0 0 8px;
+  }
+  .body h2 {
+    color: var(--accent);
+    font-size: 20px;
+    margin-top: 32px;
+    margin-bottom: 12px;
+  }
+</style>

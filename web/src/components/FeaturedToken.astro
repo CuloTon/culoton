@@ -1,17 +1,25 @@
 ---
+import { UI, localizedPath, type Locale } from '../i18n/strings';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = UI[locale];
 const TELEGRAM = 'https://t.me/culoton';
 ---
 
 <aside class="featured-token">
   <img src="/culo.png" alt="$CULO token" />
   <div class="ft-text">
-    <span class="pill">Featured Token</span>
-    <h3>The native token of CuloTon — <span class="ticker">$CULO</span></h3>
-    <p>A legacy meme token with a track record across Polygon (10,000X) and SUI — now on TON. Powering this publication and the broader culture around the network.</p>
+    <span class="pill">{t.featured_token_pill}</span>
+    <h3 set:html={t.featured_token_h_html} />
+    <p>{t.featured_token_p}</p>
   </div>
   <div class="ft-actions">
-    <a href="/culo" class="ft-btn-primary">Token info</a>
-    <a href={TELEGRAM} target="_blank" rel="noopener noreferrer" class="ft-btn-secondary">Telegram →</a>
+    <a href={localizedPath(locale, '/culo')} class="ft-btn-primary">{t.featured_token_btn_info}</a>
+    <a href={TELEGRAM} target="_blank" rel="noopener noreferrer" class="ft-btn-secondary">{t.featured_token_btn_telegram}</a>
   </div>
 </aside>
 

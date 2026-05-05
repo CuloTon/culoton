@@ -1,0 +1,223 @@
+"""One-off: re-rewrite existing English articles through the CuloScribe
+multilingual prompt and produce RU/PL/DE companions.
+
+Source data:
+- web/src/content/news/en/*.md (already AI-rewritten English versions)
+- We treat each existing body as the "source material" for re-reporting.
+  Quality limit: AI rewriting AI. Acceptable for backfill of pre-CuloScribe
+  articles. New articles fetched via fetch_news.py go through the full
+  CuloScribe pass directly from RSS source content.
+
+Output:
+- Overwrites en/<slug>.md with the new CuloScribe English version
+- Writes ru/, pl/, de/<slug>.md with the new translations
+- Preserves slug, date, source_name, source_url, original_url
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import socket
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+from anthropic import Anthropic
+from dotenv import load_dotenv
+
+socket.setdefaulttimeout(20)
+
+ROOT = Path(__file__).resolve().parent.parent
+NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
+EN_DIR = NEWS_DIR / "en"
+MODEL = "claude-haiku-4-5-20251001"
+RETRY_LIMIT = 2
+LOCALES = ("en", "ru", "pl", "de")
+
+# Same prompts as fetch_news.py — keep in sync.
+CULOSCRIBE_SYSTEM = """You are CuloScribe — the editorial AI for CuloTon, an independent news desk covering the TON blockchain ecosystem.
+
+# Voice
+You are a witty journalist with a serious edge. Think Financial Times reporter who sometimes lets a sharp observation slip in. Your default register is clear, factual, journalistic. You add a light wry note where it fits — especially for community, memecoin, or culture stories — but you stay strictly serious for:
+- security incidents and exploits
+- regulatory and legal news
+- technical protocol details
+- significant market moves and price reporting
+- statements from named individuals or institutions
+
+Never goofy. Never cringe. The humor is in dry phrasing, never in jokes about the topic itself.
+
+# Copyright and originality (CRITICAL)
+You are NOT translating or copying. You are RE-REPORTING. You read the source, understand the substance, and re-write it in your own words, with your own structure, as a journalist would for their own publication.
+
+- Never reuse phrases or sentence structures from the source
+- Paraphrase the facts; do not paraphrase the prose
+- Build your own narrative arc (lede → context → details → what-it-means)
+- Add journalistic framing the source may lack: why-it-matters context, neutral interpretation
+- Never invent facts beyond what is in the source. If the source is thin, the article is short. Better honest than padded.
+- Always close on a neutral, factual note. No editorial calls to action.
+
+# Multilingual output
+You produce the article in four languages: English (en), Russian (ru), Polish (pl), German (de). Each version is a NATIVE rewrite, not a translation — natural idioms, natural rhythm for that language. The facts must match across all four versions, but the phrasing must be independent.
+
+# Length
+Each language version: 200-400 words in body_markdown. Paragraphs separated by blank lines. No headings inside body.
+
+# Output format
+Strict JSON only. No prose outside JSON. No code fences."""
+
+CULOSCRIBE_USER_TEMPLATE = """Re-report the following TON-related article for CuloTon, in your own words, in four languages.
+
+ORIGINAL TITLE: {title}
+ORIGINAL SOURCE: {source_name}
+ORIGINAL URL: {url}
+
+ORIGINAL CONTENT:
+{content}
+
+Output JSON with exactly these keys:
+{{
+  "tags": ["3-6 lowercase tags"],
+  "en": {{"title": "max 80 chars", "summary": "max 180 chars", "body_markdown": "200-400 words"}},
+  "ru": {{"title": "...", "summary": "...", "body_markdown": "..."}},
+  "pl": {{"title": "...", "summary": "...", "body_markdown": "..."}},
+  "de": {{"title": "...", "summary": "...", "body_markdown": "..."}}
+}}"""
+
+
+FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n(.*)$", re.DOTALL)
+
+
+def parse_md(path: Path) -> dict:
+    text = path.read_text(encoding="utf-8")
+    m = FRONTMATTER_RE.match(text)
+    if not m:
+        raise ValueError(f"no frontmatter in {path.name}")
+    fm_text, body = m.group(1), m.group(2).strip()
+    fm: dict = {}
+    for line in fm_text.splitlines():
+        if not line.strip() or ":" not in line:
+            continue
+        key, _, value = line.partition(":")
+        key = key.strip()
+        value = value.strip()
+        if value.startswith('"') and value.endswith('"'):
+            value = value[1:-1].replace('\\"', '"')
+        elif value.startswith("[") and value.endswith("]"):
+            inner = value[1:-1].strip()
+            value = [s.strip().strip('"') for s in inner.split(",") if s.strip()] if inner else []
+        fm[key] = value
+    return {"fm": fm, "body": body}
+
+
+def rewrite(client: Anthropic, *, title: str, source_name: str, url: str, content: str) -> dict:
+    user = CULOSCRIBE_USER_TEMPLATE.format(
+        title=title,
+        source_name=source_name,
+        url=url,
+        content=content,
+    )
+    last_err = None
+    for attempt in range(RETRY_LIMIT + 1):
+        try:
+            msg = client.messages.create(
+                model=MODEL,
+                max_tokens=4500,
+                system=CULOSCRIBE_SYSTEM,
+                messages=[{"role": "user", "content": user}],
+            )
+            text = "".join(b.text for b in msg.content if b.type == "text").strip()
+            if text.startswith("```"):
+                text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.MULTILINE).strip()
+            data = json.loads(text)
+            for loc in LOCALES:
+                if loc not in data or not isinstance(data[loc], dict):
+                    raise ValueError(f"missing locale: {loc}")
+                for key in ("title", "summary", "body_markdown"):
+                    if key not in data[loc] or not data[loc][key]:
+                        raise ValueError(f"missing {loc}.{key}")
+            data.setdefault("tags", [])
+            return data
+        except Exception as e:
+            last_err = e
+            time.sleep(1.5 * (attempt + 1))
+    raise RuntimeError(f"rewrite failed: {last_err}")
+
+
+def write_locale_file(*, locale: str, slug: str, fm: dict, block: dict, tags: list[str]) -> Path:
+    locale_dir = NEWS_DIR / locale
+    locale_dir.mkdir(parents=True, exist_ok=True)
+    path = locale_dir / f"{slug}.md"
+
+    title_e = block["title"].replace('"', '\\"')
+    summary_e = block["summary"].replace('"', '\\"')
+    tags_yaml = "[" + ", ".join(json.dumps(t) for t in tags) + "]"
+
+    frontmatter = (
+        "---\n"
+        f"locale: {locale}\n"
+        f'title: "{title_e}"\n'
+        f'summary: "{summary_e}"\n'
+        f"date: {fm['date']}\n"
+        f'source_name: "{fm["source_name"]}"\n'
+        f'source_url: "{fm["source_url"]}"\n'
+        f'original_url: "{fm["original_url"]}"\n'
+        f"tags: {tags_yaml}\n"
+        "---\n\n"
+    )
+    path.write_text(frontmatter + block["body_markdown"].strip() + "\n", encoding="utf-8")
+    return path
+
+
+def main() -> int:
+    load_dotenv(ROOT / ".env")
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if api_key:
+        api_key = api_key.lstrip("﻿").strip()
+    if not api_key:
+        print("ERROR: ANTHROPIC_API_KEY missing", file=sys.stderr)
+        return 1
+
+    client = Anthropic(api_key=api_key)
+
+    files = sorted(EN_DIR.glob("*.md"))
+    print(f"Found {len(files)} EN articles to re-rewrite")
+
+    ok, fail = 0, 0
+    for i, path in enumerate(files, 1):
+        slug = path.stem
+        print(f"\n[{i}/{len(files)}] {slug}")
+        try:
+            parsed = parse_md(path)
+            fm = parsed["fm"]
+            body = parsed["body"]
+            data = rewrite(
+                client,
+                title=fm["title"],
+                source_name=fm["source_name"],
+                url=fm["original_url"],
+                content=body,
+            )
+            for loc in LOCALES:
+                p = write_locale_file(
+                    locale=loc,
+                    slug=slug,
+                    fm=fm,
+                    block=data[loc],
+                    tags=data["tags"],
+                )
+                print(f"  -> {p.relative_to(ROOT)}")
+            ok += 1
+        except Exception as e:
+            print(f"  FAIL: {type(e).__name__}: {e}")
+            fail += 1
+
+    print(f"\nDone. ok={ok} fail={fail}")
+    return 0 if fail == 0 else 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

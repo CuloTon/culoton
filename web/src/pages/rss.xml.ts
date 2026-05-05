@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import type { APIContext } from 'astro';
 
 export async function GET(context: APIContext) {
-  const news = await getCollection('news');
+  const news = await getCollection('news_en');
   const sorted = news.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
   return rss({
@@ -14,7 +14,7 @@ export async function GET(context: APIContext) {
       title: entry.data.title,
       pubDate: entry.data.date,
       description: entry.data.summary,
-      link: `/news/${entry.id.replace(/\.md$/, '')}`,
+      link: `/news/${entry.id.replace(/^en\//, '').replace(/\.md$/, '')}`,
       categories: entry.data.tags,
     })),
     customData: '<language>en-us</language>',

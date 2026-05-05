@@ -1,12 +1,13 @@
-"""CuloTon news fetcher.
+"""CuloTon news fetcher — multilingual edition (EN/RU/PL/DE).
 
 Pipeline:
 1. Pull RSS feeds from sources.py
 2. Skip entries already in seen.db (dedup by canonical URL)
 3. Filter by keywords if source defines them
-4. Rewrite each new entry through Claude Haiku 4.5 as a 200-400 word
-   English article (JSON output: title, summary, body_markdown, tags)
-5. Write markdown file with frontmatter to web/src/content/news/
+4. Rewrite each new entry through Claude Haiku 4.5 in CuloScribe voice —
+   one API call returns the article in EN, RU, PL and DE.
+5. Write four markdown files (one per locale) with shared slug and metadata
+   to web/src/content/news/{locale}/
 
 Run locally:  python scripts/fetch_news.py
 Run in CI:    same, with ANTHROPIC_API_KEY in env
@@ -39,15 +40,44 @@ ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = Path(__file__).resolve().parent / "seen.db"
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 MODEL = "claude-haiku-4-5-20251001"
-MAX_PER_SOURCE = 5  # cap per run so a fresh feed doesn't burn the budget
+MAX_PER_SOURCE = 5
 RETRY_LIMIT = 2
 USER_AGENT = "CuloTon-NewsBot/1.0 (+https://culoton.fun)"
 
-REWRITE_SYSTEM = """You are a crypto news editor for CuloTon, an English-language news site about the TON blockchain ecosystem. Rewrite source articles in original wording (no copying), in a clear journalistic tone, 200-400 words. Do not invent facts beyond what is in the source. Always close on a neutral, factual note.
+LOCALES = ("en", "ru", "pl", "de")
 
-Output strict JSON only — no prose, no code fences."""
+CULOSCRIBE_SYSTEM = """You are CuloScribe — the editorial AI for CuloTon, an independent news desk covering the TON blockchain ecosystem.
 
-REWRITE_USER_TEMPLATE = """Rewrite the following TON-related article for CuloTon.
+# Voice
+You are a witty journalist with a serious edge. Think Financial Times reporter who sometimes lets a sharp observation slip in. Your default register is clear, factual, journalistic. You add a light wry note where it fits — especially for community, memecoin, or culture stories — but you stay strictly serious for:
+- security incidents and exploits
+- regulatory and legal news
+- technical protocol details
+- significant market moves and price reporting
+- statements from named individuals or institutions
+
+Never goofy. Never cringe. The humor is in dry phrasing, never in jokes about the topic itself.
+
+# Copyright and originality (CRITICAL)
+You are NOT translating or copying. You are RE-REPORTING. You read the source, understand the substance, and re-write it in your own words, with your own structure, as a journalist would for their own publication.
+
+- Never reuse phrases or sentence structures from the source
+- Paraphrase the facts; do not paraphrase the prose
+- Build your own narrative arc (lede → context → details → what-it-means)
+- Add journalistic framing the source may lack: why-it-matters context, neutral interpretation
+- Never invent facts beyond what is in the source. If the source is thin, the article is short. Better honest than padded.
+- Always close on a neutral, factual note. No editorial calls to action.
+
+# Multilingual output
+You produce the article in four languages: English (en), Russian (ru), Polish (pl), German (de). Each version is a NATIVE rewrite, not a translation — natural idioms, natural rhythm for that language. The facts must match across all four versions, but the phrasing must be independent.
+
+# Length
+Each language version: 200-400 words in body_markdown. Paragraphs separated by blank lines. No headings inside body.
+
+# Output format
+Strict JSON only. No prose outside JSON. No code fences."""
+
+CULOSCRIBE_USER_TEMPLATE = """Re-report the following TON-related article for CuloTon, in your own words, in four languages.
 
 ORIGINAL TITLE: {title}
 ORIGINAL SOURCE: {source_name}
@@ -58,10 +88,27 @@ ORIGINAL CONTENT:
 
 Output JSON with exactly these keys:
 {{
-  "title": "Punchy English headline, max 80 chars, no clickbait",
-  "summary": "1-2 sentence dek for the news card, max 180 chars",
-  "body_markdown": "200-400 words, paragraphs separated by blank lines, no headings",
-  "tags": ["3-6 lowercase tags, e.g. ton, defi, toncoin, telegram"]
+  "tags": ["3-6 lowercase tags, e.g. ton, defi, toncoin, telegram"],
+  "en": {{
+    "title": "Punchy English headline, max 80 chars, no clickbait",
+    "summary": "1-2 sentence dek for the news card, max 180 chars",
+    "body_markdown": "200-400 words, paragraphs separated by blank lines, no headings"
+  }},
+  "ru": {{
+    "title": "Заголовок на русском, max 80 chars",
+    "summary": "Краткое описание, max 180 chars",
+    "body_markdown": "Статья на русском, 200-400 слов"
+  }},
+  "pl": {{
+    "title": "Polski tytul, max 80 chars",
+    "summary": "Krotki opis, max 180 znakow",
+    "body_markdown": "Artykul po polsku, 200-400 slow"
+  }},
+  "de": {{
+    "title": "Deutsche Schlagzeile, max 80 chars",
+    "summary": "Kurze Beschreibung, max 180 Zeichen",
+    "body_markdown": "Deutscher Artikel, 200-400 Worter"
+  }}
 }}"""
 
 
@@ -92,11 +139,6 @@ def mark_seen(conn: sqlite3.Connection, url: str, source: str) -> None:
 
 
 def matches_keywords(text: str, keywords: list[str] | None) -> bool:
-    """Match if any keyword pattern (regex, case-insensitive) is found in text.
-
-    Patterns should use word boundaries (\\b) to avoid false positives —
-    e.g. \\btoncoin\\b will not match inside 'Cantonese' or 'Boston'.
-    """
     if not keywords:
         return True
     return any(re.search(kw, text, re.IGNORECASE) for kw in keywords)
@@ -129,7 +171,7 @@ def parse_published(entry) -> datetime:
 
 
 def rewrite_article(client: Anthropic, *, title: str, source_name: str, url: str, content: str) -> dict:
-    user = REWRITE_USER_TEMPLATE.format(
+    user = CULOSCRIBE_USER_TEMPLATE.format(
         title=title,
         source_name=source_name,
         url=url,
@@ -140,46 +182,77 @@ def rewrite_article(client: Anthropic, *, title: str, source_name: str, url: str
         try:
             msg = client.messages.create(
                 model=MODEL,
-                max_tokens=1500,
-                system=REWRITE_SYSTEM,
+                max_tokens=4500,
+                system=CULOSCRIBE_SYSTEM,
                 messages=[{"role": "user", "content": user}],
             )
             text = "".join(block.text for block in msg.content if block.type == "text").strip()
             if text.startswith("```"):
                 text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.MULTILINE).strip()
-            return json.loads(text)
+            data = json.loads(text)
+            for loc in LOCALES:
+                if loc not in data or not isinstance(data[loc], dict):
+                    raise ValueError(f"missing locale block: {loc}")
+                for key in ("title", "summary", "body_markdown"):
+                    if key not in data[loc] or not data[loc][key]:
+                        raise ValueError(f"missing {loc}.{key}")
+            if "tags" not in data:
+                data["tags"] = []
+            return data
         except Exception as e:
             last_err = e
             time.sleep(1.5 * (attempt + 1))
     raise RuntimeError(f"Rewrite failed after {RETRY_LIMIT + 1} attempts: {last_err}")
 
 
-def write_markdown(*, published: datetime, source_name: str, source_url: str, original_url: str, rewritten: dict) -> Path:
-    NEWS_DIR.mkdir(parents=True, exist_ok=True)
+def write_markdown_set(*, published: datetime, source_name: str, source_url: str, original_url: str, rewritten: dict) -> list[Path]:
+    """Write one markdown file per locale, sharing the same slug.
+
+    The slug is derived from the English title so URLs line up across locales:
+      /news/<slug>          → English
+      /<locale>/news/<slug> → other languages
+    """
     date_str = published.strftime("%Y-%m-%d")
-    slug = slugify(rewritten["title"])[:80] or slugify(original_url)[:80]
-    path = NEWS_DIR / f"{date_str}-{slug}.md"
+    en_title = rewritten["en"]["title"]
+    base_slug = slugify(en_title)[:80] or slugify(original_url)[:80]
+    suffix = ""
+    written: list[Path] = []
 
-    if path.exists():
-        path = NEWS_DIR / f"{date_str}-{slug}-{int(time.time())}.md"
+    # Resolve a shared suffix once (collision check on EN file).
+    en_dir = NEWS_DIR / "en"
+    en_dir.mkdir(parents=True, exist_ok=True)
+    candidate = en_dir / f"{date_str}-{base_slug}.md"
+    if candidate.exists():
+        suffix = f"-{int(time.time())}"
 
-    title_escaped = rewritten["title"].replace('"', '\\"')
-    summary_escaped = rewritten["summary"].replace('"', '\\"')
     tags_yaml = "[" + ", ".join(json.dumps(t) for t in rewritten.get("tags", [])) + "]"
+    iso_date = published.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    frontmatter = (
-        "---\n"
-        f'title: "{title_escaped}"\n'
-        f'summary: "{summary_escaped}"\n'
-        f"date: {published.strftime('%Y-%m-%dT%H:%M:%SZ')}\n"
-        f'source_name: "{source_name}"\n'
-        f'source_url: "{source_url}"\n'
-        f'original_url: "{original_url}"\n'
-        f"tags: {tags_yaml}\n"
-        "---\n\n"
-    )
-    path.write_text(frontmatter + rewritten["body_markdown"].strip() + "\n", encoding="utf-8")
-    return path
+    for loc in LOCALES:
+        loc_dir = NEWS_DIR / loc
+        loc_dir.mkdir(parents=True, exist_ok=True)
+        path = loc_dir / f"{date_str}-{base_slug}{suffix}.md"
+
+        block = rewritten[loc]
+        title_escaped = block["title"].replace('"', '\\"')
+        summary_escaped = block["summary"].replace('"', '\\"')
+
+        frontmatter = (
+            "---\n"
+            f"locale: {loc}\n"
+            f'title: "{title_escaped}"\n'
+            f'summary: "{summary_escaped}"\n'
+            f"date: {iso_date}\n"
+            f'source_name: "{source_name}"\n'
+            f'source_url: "{source_url}"\n'
+            f'original_url: "{original_url}"\n'
+            f"tags: {tags_yaml}\n"
+            "---\n\n"
+        )
+        path.write_text(frontmatter + block["body_markdown"].strip() + "\n", encoding="utf-8")
+        written.append(path)
+
+    return written
 
 
 def main() -> int:
@@ -187,8 +260,8 @@ def main() -> int:
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if api_key:
         # Strip BOM and whitespace — PowerShell pipe → `gh secret set` on Windows
-        # has been known to embed CRLF or UTF-8 BOM, which then crashes
-        # httpx header encoding with: 'ascii' codec can't encode character '﻿'.
+        # has been known to embed CRLF or UTF-8 BOM, which crashes httpx
+        # header encoding.
         api_key = api_key.lstrip("﻿").strip()
     if not api_key:
         print("ERROR: ANTHROPIC_API_KEY missing in .env", file=sys.stderr)
@@ -244,7 +317,7 @@ def main() -> int:
                     content=content,
                 )
                 published = parse_published(entry)
-                path = write_markdown(
+                paths = write_markdown_set(
                     published=published,
                     source_name=source["name"],
                     source_url=source["url"],
@@ -254,7 +327,7 @@ def main() -> int:
                 mark_seen(conn, url, source["name"])
                 total_new += 1
                 per_source += 1
-                print(f"  -> {path.name}")
+                print(f"  -> {paths[0].name} (×{len(paths)} locales)")
             except Exception as e:
                 print(f"  ERROR: {e}")
                 total_errors += 1

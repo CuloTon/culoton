@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import FeaturedToken from '../../components/FeaturedToken.astro';
+import { UI, stripLocaleSlugFromId, type Locale } from '../../i18n/strings';
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'ru' } },
+    { params: { locale: 'pl' } },
+    { params: { locale: 'de' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = UI[locale];
+
+async function loadNews(loc: Locale) {
+  if (loc === 'ru') return getCollection('news_ru');
+  if (loc === 'pl') return getCollection('news_pl');
+  if (loc === 'de') return getCollection('news_de');
+  return getCollection('news_en');
+}
+
+const allNews = await loadNews(locale);
+const sorted = allNews.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const latest = sorted.slice(0, 24);
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/"
+  title={t.site_title}
+  description={t.site_description}
+>
+  <div class="container">
+    <section class="hero-banner">
+      <div>
+        <span class="badge">{t.hero_badge}</span>
+        <h1 set:html={t.hero_headline_html} />
+        <p>{t.hero_blurb}</p>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <h2>{t.latest_news}</h2>
+      <span class="meta">{t.articles_count(latest.length, sorted.length)}</span>
+    </div>
+
+    {latest.length === 0 ? (
+      <div class="empty">
+        <p>{t.no_news}</p>
+      </div>
+    ) : (
+      <div class="news-grid">
+        {latest.map((entry) => (
+          <NewsCard
+            locale={locale}
+            slug={stripLocaleSlugFromId(entry.id)}
+            title={entry.data.title}
+            summary={entry.data.summary}
+            date={entry.data.date}
+            source_name={entry.data.source_name}
+            tags={entry.data.tags}
+          />
+        ))}
+      </div>
+    )}
+
+    <FeaturedToken locale={locale} />
+  </div>
+</Layout>
