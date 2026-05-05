@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import socket
 import sqlite3
 import sys
 import time
@@ -29,6 +30,10 @@ from dotenv import load_dotenv
 from slugify import slugify
 
 from sources import SOURCES
+
+# Cap socket reads so a slow/dead feed cannot wedge the whole job.
+# Anthropic SDK uses httpx, which has its own timeouts and ignores this.
+socket.setdefaulttimeout(20)
 
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = Path(__file__).resolve().parent / "seen.db"
@@ -193,7 +198,11 @@ def main() -> int:
 
     for source in SOURCES:
         print(f"\n[{source['name']}] fetching {source['feed']}")
-        feed = feedparser.parse(source["feed"], agent=USER_AGENT)
+        try:
+            feed = feedparser.parse(source["feed"], agent=USER_AGENT)
+        except Exception as e:
+            print(f"  feed fetch failed: {type(e).__name__}: {e}")
+            continue
         if feed.bozo and not feed.entries:
             print(f"  feed error: {feed.bozo_exception}")
             continue
