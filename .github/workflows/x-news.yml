@@ -45,13 +45,6 @@ jobs:
 
       - name: Persist x_announced.db
         run: |
-          git config user.name "culoton-bot"
-          git config user.email "bot@culoton.fun"
-          git add scripts/x_announced.db
-          if git diff --cached --quiet; then
-            echo "Nothing announced this slot — no commit."
-          else
-            git commit -m "auto: x announce $(date -u +%Y-%m-%dT%H:%MZ)"
-            git pull --rebase --autostash origin main || true
-            git push
-          fi
+          bash scripts/git_commit_push.sh \
+            "auto: x announce $(date -u +%Y-%m-%dT%H:%MZ)" \
+            scripts/x_announced.db

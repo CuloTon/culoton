@@ -36,13 +36,6 @@ jobs:
 
       - name: Persist announced.db
         run: |
-          git config user.name "culoton-bot"
-          git config user.email "bot@culoton.fun"
-          git add scripts/announced.db
-          if git diff --cached --quiet; then
-            echo "Nothing announced this hour — no commit."
-          else
-            git commit -m "auto: telegram announce $(date -u +%Y-%m-%dT%H:%MZ)"
-            git pull --rebase --autostash origin main || true
-            git push
-          fi
+          bash scripts/git_commit_push.sh \
+            "auto: telegram announce $(date -u +%Y-%m-%dT%H:%MZ)" \
+            scripts/announced.db
