@@ -160,13 +160,25 @@ def send_draft_to_telegram(*, kind_label: str, tweet_text: str, char_total: int)
     if status != 200:
         print(f"draft post to TG failed: status={status} body={resp_body}", file=sys.stderr)
         return 1
-    # Surface a short tail of the chat_id and the TG echo so we can spot
-    # mis-targeted drafts from run logs (e.g. when X_DRAFTS_CHAT_ID was
-    # set with a typo / BOM / wrong account).
+    # Surface non-secret identity fields from the TG echo so the run log
+    # makes it obvious WHICH chat received the draft. The numeric chat.id
+    # equals the X_DRAFTS_CHAT_ID secret and gets masked by gh as ***,
+    # but chat.type / chat.first_name / chat.title are not redacted.
     chat_tail = drafts_chat[-4:] if len(drafts_chat) >= 4 else drafts_chat
+    chat_descr = "?"
+    try:
+        import json as _json
+        echo = _json.loads(resp_body)
+        chat = (echo.get("result") or {}).get("chat") or {}
+        ctype = chat.get("type", "?")
+        cname = chat.get("first_name") or chat.get("title") or chat.get("username") or "?"
+        cmid = (echo.get("result") or {}).get("message_id", "?")
+        chat_descr = f"type={ctype} name={cname!r} msg_id={cmid}"
+    except Exception as e:  # noqa: BLE001
+        chat_descr = f"parse_err={e!r}"
     print(
         f"draft sent to TG ({kind_label}, {char_total}/280, "
-        f"chat=...{chat_tail}, resp={resp_body[:160]})"
+        f"chat_id_tail=...{chat_tail}, {chat_descr})"
     )
     return 0
 
