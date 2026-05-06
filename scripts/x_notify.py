@@ -160,7 +160,14 @@ def send_draft_to_telegram(*, kind_label: str, tweet_text: str, char_total: int)
     if status != 200:
         print(f"draft post to TG failed: status={status} body={resp_body}", file=sys.stderr)
         return 1
-    print(f"draft sent to TG ({kind_label}, {char_total}/280)")
+    # Surface a short tail of the chat_id and the TG echo so we can spot
+    # mis-targeted drafts from run logs (e.g. when X_DRAFTS_CHAT_ID was
+    # set with a typo / BOM / wrong account).
+    chat_tail = drafts_chat[-4:] if len(drafts_chat) >= 4 else drafts_chat
+    print(
+        f"draft sent to TG ({kind_label}, {char_total}/280, "
+        f"chat=...{chat_tail}, resp={resp_body[:160]})"
+    )
     return 0
 
 
