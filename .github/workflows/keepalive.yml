@@ -1,18 +1,25 @@
-name: Keepalive (prevent scheduler sleep)
+name: Keepalive + healer
 
-# GitHub deprioritises scheduled crons on repos that look "low activity",
-# and a single outage incident can leave that state for hours afterwards
-# (we hit this twice on 2026-05-06). This workflow makes a tiny commit
-# every 6h so the repo always looks active, which keeps the rest of the
-# scheduled pipelines (news/blog/telegram/x) firing on time.
+# Two purposes:
+#  1. KEEPALIVE: micro-commit every 30 min so the repo always looks
+#     active. GitHub deprioritises scheduled workflows on "low-activity"
+#     repos and we hit that state several times.
+#  2. HEALER: list recent runs of every scheduled workflow, find slots
+#     that should have fired in the last few hours but did not, and
+#     re-fire them via workflow_dispatch. This makes the whole
+#     pipeline self-correcting when the GH cron scheduler is flaky.
+#
+# The healer needs `actions: write` so GITHUB_TOKEN can call
+# `gh workflow run` against this repo's other workflows.
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # 00, 06, 12, 18 UTC daily
+    - cron: '*/30 * * * *'   # every 30 min
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: keepalive
@@ -21,13 +28,22 @@ concurrency:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Touch keepalive marker and push
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run healer (re-fire missed scheduled slots)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/healer.py
+
+      - name: Update keepalive marker and push
         run: |
           set -e
           mkdir -p .github
