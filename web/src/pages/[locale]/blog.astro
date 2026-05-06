@@ -1,0 +1,123 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { UI, DATE_LOCALE, localizedPath, type Locale } from '../../i18n/strings';
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'ru' } },
+    { params: { locale: 'pl' } },
+    { params: { locale: 'de' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = UI[locale];
+
+async function loadBlog(loc: Locale) {
+  if (loc === 'ru') return getCollection('blog_ru');
+  if (loc === 'pl') return getCollection('blog_pl');
+  if (loc === 'de') return getCollection('blog_de');
+  return getCollection('blog_en');
+}
+
+const all = await loadBlog(locale);
+const sorted = all.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+function stripLocaleFromId(id: string): string {
+  return id.replace(/^(en|ru|pl|de)\//, '').replace(/\.md$/, '');
+}
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/blog"
+  title={t.blog_index_title}
+  description={t.blog_index_meta_description}
+>
+  <div class="container">
+    <section class="hero-banner blog-hero">
+      <div>
+        <span class="badge">{t.blog_section_kicker}</span>
+        <h1>{t.blog_index_h}</h1>
+        <p>{t.blog_index_blurb}</p>
+      </div>
+    </section>
+
+    {sorted.length === 0 ? (
+      <div class="empty"><p>{t.blog_no_posts}</p></div>
+    ) : (
+      <div class="blog-list">
+        {sorted.map((entry) => {
+          const slug = stripLocaleFromId(entry.id);
+          const formatted = entry.data.date.toLocaleDateString(DATE_LOCALE[locale], {
+            year: 'numeric', month: 'long', day: 'numeric',
+          });
+          return (
+            <a class="blog-list-card" href={localizedPath(locale, `/blog/${slug}`)}>
+              <div class="blog-list-meta">
+                <span class={`kind-pill kind-${entry.data.kind}`}>{t.blog_kind_label(entry.data.kind)}</span>
+                <span class="blog-list-date">{formatted}</span>
+              </div>
+              <h2>{entry.data.title}</h2>
+              <p>{entry.data.summary}</p>
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .blog-hero { margin-bottom: 28px; }
+  .blog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .blog-list-card {
+    display: block;
+    padding: 22px 24px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.12s, transform 0.12s;
+  }
+  .blog-list-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .blog-list-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .kind-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .kind-morning { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b66; }
+  .kind-noon { background: #38bdf822; color: #38bdf8; border: 1px solid #38bdf866; }
+  .kind-evening { background: #a78bfa22; color: #a78bfa; border: 1px solid #a78bfa66; }
+  .blog-list-date { font-size: 13px; color: var(--text-mute); font-family: var(--font-mono); }
+  .blog-list-card h2 {
+    font-size: 22px;
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+  .blog-list-card p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+</style>

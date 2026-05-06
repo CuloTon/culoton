@@ -71,6 +71,7 @@ const alternates = LOCALES.map((loc) => ({
         </a>
         <nav class="main-nav">
           <a href={localizedPath(locale, '/')}>{t.nav_news}</a>
+          <a href={localizedPath(locale, '/blog')}>{t.nav_blog}</a>
           <a href={localizedPath(locale, '/about')}>{t.nav_about}</a>
           <a href={localizedPath(locale, '/culo')}>{t.nav_token}</a>
         </nav>
@@ -101,6 +102,7 @@ const alternates = LOCALES.map((loc) => ({
           </div>
         </div>
         <div>
+          <a href={localizedPath(locale, '/blog')}>{t.nav_blog}</a>
           <a href={localizedPath(locale, '/about')}>{t.footer_about}</a>
           <a href={localizedPath(locale, '/culo')}>{t.footer_token}</a>
           <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">{t.footer_telegram}</a>

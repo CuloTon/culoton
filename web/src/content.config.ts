@@ -32,9 +32,43 @@ const news_de = defineCollection({
   schema: newsSchema,
 });
 
+const blogSchema = z.object({
+  locale: z.enum(['en', 'ru', 'pl', 'de']),
+  kind: z.enum(['morning', 'noon', 'evening']),
+  title: z.string(),
+  summary: z.string(),
+  date: z.coerce.date(),
+  articles_covered: z.array(z.string()).default([]),
+  tags: z.array(z.string()).default([]),
+});
+
+const blog_en = defineCollection({
+  loader: glob({ pattern: 'en/**/*.md', base: './src/content/blog' }),
+  schema: blogSchema,
+});
+
+const blog_ru = defineCollection({
+  loader: glob({ pattern: 'ru/**/*.md', base: './src/content/blog' }),
+  schema: blogSchema,
+});
+
+const blog_pl = defineCollection({
+  loader: glob({ pattern: 'pl/**/*.md', base: './src/content/blog' }),
+  schema: blogSchema,
+});
+
+const blog_de = defineCollection({
+  loader: glob({ pattern: 'de/**/*.md', base: './src/content/blog' }),
+  schema: blogSchema,
+});
+
 export const collections = {
   news_en,
   news_ru,
   news_pl,
   news_de,
+  blog_en,
+  blog_ru,
+  blog_pl,
+  blog_de,
 };

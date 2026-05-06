@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import NewsCard from '../../components/NewsCard.astro';
 import FeaturedToken from '../../components/FeaturedToken.astro';
-import { UI, stripLocaleSlugFromId, type Locale } from '../../i18n/strings';
+import { UI, DATE_LOCALE, localizedPath, stripLocaleSlugFromId, type Locale } from '../../i18n/strings';
 
 export async function getStaticPaths() {
   return [
@@ -23,9 +23,20 @@ async function loadNews(loc: Locale) {
   return getCollection('news_en');
 }
 
+async function loadBlog(loc: Locale) {
+  if (loc === 'ru') return getCollection('blog_ru');
+  if (loc === 'pl') return getCollection('blog_pl');
+  if (loc === 'de') return getCollection('blog_de');
+  return getCollection('blog_en');
+}
+
 const allNews = await loadNews(locale);
 const sorted = allNews.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const latest = sorted.slice(0, 24);
+
+const allBlog = await loadBlog(locale);
+const sortedBlog = allBlog.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const latestBlog = sortedBlog.slice(0, 3);
 ---
 
 <Layout
@@ -42,6 +53,35 @@ const latest = sorted.slice(0, 24);
         <p>{t.hero_blurb}</p>
       </div>
     </section>
+
+    {latestBlog.length > 0 && (
+      <section class="blog-section">
+        <div class="section-title">
+          <div>
+            <span class="kicker">{t.blog_section_kicker}</span>
+            <h2>{t.blog_section_h}</h2>
+          </div>
+          <a class="meta-link" href={localizedPath(locale, '/blog')}>{t.blog_section_view_all}</a>
+        </div>
+        <p class="blog-section-blurb">{t.blog_section_blurb}</p>
+        <div class="blog-cards">
+          {latestBlog.map((entry) => {
+            const bSlug = stripLocaleSlugFromId(entry.id);
+            const bDate = entry.data.date.toLocaleDateString(DATE_LOCALE[locale], {
+              year: 'numeric', month: 'short', day: 'numeric',
+            });
+            return (
+              <a class={`blog-card kind-${entry.data.kind}`} href={localizedPath(locale, `/blog/${bSlug}`)}>
+                <span class="kind-pill">{t.blog_kind_label(entry.data.kind)}</span>
+                <h3>{entry.data.title}</h3>
+                <p>{entry.data.summary}</p>
+                <span class="blog-card-date">{bDate}</span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
 
     <div class="section-title">
       <h2>{t.latest_news}</h2>
@@ -71,3 +111,94 @@ const latest = sorted.slice(0, 24);
     <FeaturedToken locale={locale} />
   </div>
 </Layout>
+
+<style>
+  .blog-section {
+    margin: 32px 0 36px;
+    padding: 24px 24px 26px;
+    background: linear-gradient(180deg, var(--bg-elev) 0%, transparent 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .blog-section .section-title {
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .blog-section .kicker {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .blog-section h2 { margin: 0; }
+  .blog-section .meta-link {
+    color: var(--ton);
+    font-size: 13px;
+    text-decoration: none;
+    align-self: center;
+  }
+  .blog-section .meta-link:hover { text-decoration: underline; }
+  .blog-section-blurb {
+    color: var(--text-mute);
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 8px 0 18px;
+    max-width: 720px;
+  }
+  .blog-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 18px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.12s, transform 0.12s;
+  }
+  .blog-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .blog-card .kind-pill {
+    display: inline-block;
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .blog-card.kind-morning .kind-pill { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b66; }
+  .blog-card.kind-noon .kind-pill { background: #38bdf822; color: #38bdf8; border: 1px solid #38bdf866; }
+  .blog-card.kind-evening .kind-pill { background: #a78bfa22; color: #a78bfa; border: 1px solid #a78bfa66; }
+  .blog-card h3 {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.3;
+  }
+  .blog-card p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.5;
+    flex: 1;
+  }
+  .blog-card-date {
+    font-size: 11px;
+    color: var(--text-mute);
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+</style>

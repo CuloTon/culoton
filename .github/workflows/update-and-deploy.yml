@@ -2,8 +2,25 @@ name: Update news and deploy
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
+    # Routine fetch every 2h, but skip the three roundup hours so we don't
+    # double-run with the dedicated roundup crons below.
+    - cron: '0 0,2,4,8,10,14,16,20,22 * * *'
+    # Three roundup slots (UTC) — morning ~08:00 PL (CEST), noon ~13:00, evening ~19:00.
+    - cron: '0 6 * * *'   # morning
+    - cron: '0 11 * * *'  # noon
+    - cron: '0 17 * * *'  # evening
   workflow_dispatch:
+    inputs:
+      roundup_kind:
+        description: 'Force a blog roundup of this kind (leave blank to skip)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - morning
+          - noon
+          - evening
 
 permissions:
   contents: write
@@ -15,7 +32,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,11 +50,31 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python scripts/fetch_news.py
 
+      - name: Determine blog roundup kind
+        id: roundup
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.roundup_kind }}" ]; then
+            echo "kind=${{ github.event.inputs.roundup_kind }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          case "${{ github.event.schedule }}" in
+            "0 6 * * *")  echo "kind=morning" >> "$GITHUB_OUTPUT" ;;
+            "0 11 * * *") echo "kind=noon" >> "$GITHUB_OUTPUT" ;;
+            "0 17 * * *") echo "kind=evening" >> "$GITHUB_OUTPUT" ;;
+            *) echo "kind=" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Generate blog roundup (${{ steps.roundup.outputs.kind }})
+        if: steps.roundup.outputs.kind != ''
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/blog_roundup.py --kind "${{ steps.roundup.outputs.kind }}"
+
       - name: Commit new content + dedup state
         run: |
           git config user.name "culoton-bot"
           git config user.email "bot@culoton.fun"
-          git add web/src/content/news scripts/seen.db
+          git add web/src/content/news web/src/content/blog scripts/seen.db
           if git diff --cached --quiet; then
             echo "No new content to commit."
           else

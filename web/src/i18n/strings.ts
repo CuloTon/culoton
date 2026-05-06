@@ -40,8 +40,25 @@ interface UIStrings {
   articles_count: (shown: number, total: number) => string;
   no_news: string;
   nav_news: string;
+  nav_blog: string;
   nav_about: string;
   nav_token: string;
+  blog_section_kicker: string;
+  blog_section_h: string;
+  blog_section_blurb: string;
+  blog_section_view_all: string;
+  blog_index_title: string;
+  blog_index_meta_description: string;
+  blog_index_h: string;
+  blog_index_blurb: string;
+  blog_no_posts: string;
+  blog_kind_morning: string;
+  blog_kind_noon: string;
+  blog_kind_evening: string;
+  blog_kind_label: (kind: 'morning' | 'noon' | 'evening') => string;
+  blog_articles_covered_label: string;
+  blog_byline_lead: string;
+  blog_back_to_blog: string;
   footer_tagline_html: string;
   footer_about: string;
   footer_token: string;
@@ -107,8 +124,25 @@ export const UI: Record<Locale, UIStrings> = {
     articles_count: (shown, total) => `${shown} of ${total} articles`,
     no_news: 'No news yet.',
     nav_news: 'News',
+    nav_blog: 'Blog',
     nav_about: 'About',
     nav_token: '$CULO',
+    blog_section_kicker: 'CuloTon Blog',
+    blog_section_h: 'Daily TON roundups',
+    blog_section_blurb: 'Three times a day — morning, noon and evening — CuloScribe takes the latest TON ecosystem news and stitches them into one editorial brief. Catch up in two minutes.',
+    blog_section_view_all: 'All roundups →',
+    blog_index_title: 'CuloTon Blog — Daily TON roundups',
+    blog_index_meta_description: 'Editorial briefs from the TON blockchain ecosystem. Three times a day — morning, noon and evening — CuloScribe synthesises the latest news into one read.',
+    blog_index_h: 'CuloTon Blog',
+    blog_index_blurb: 'A running editorial diary of the TON ecosystem. Three briefs a day — morning, noon, evening — written by CuloScribe AI on top of the latest reporting.',
+    blog_no_posts: 'No roundups yet — the first one will land at the next morning, noon or evening slot.',
+    blog_kind_morning: 'Morning roundup',
+    blog_kind_noon: 'Noon roundup',
+    blog_kind_evening: 'Evening roundup',
+    blog_kind_label: (kind) => kind === 'morning' ? 'Morning roundup' : kind === 'noon' ? 'Noon roundup' : 'Evening roundup',
+    blog_articles_covered_label: 'Built from these articles',
+    blog_byline_lead: 'A CuloScribe AI editorial brief, synthesised from independent TON-ecosystem reporting.',
+    blog_back_to_blog: '← Back to blog',
     footer_tagline_html: '<strong>CuloTon</strong> — TON ecosystem news, powered by <span class="footer-ticker">$CULO</span>',
     footer_about: 'About',
     footer_token: '$CULO',
@@ -172,8 +206,25 @@ export const UI: Record<Locale, UIStrings> = {
     articles_count: (shown, total) => `${shown} из ${total} статей`,
     no_news: 'Пока нет новостей.',
     nav_news: 'Новости',
+    nav_blog: 'Блог',
     nav_about: 'О проекте',
     nav_token: '$CULO',
+    blog_section_kicker: 'Блог CuloTon',
+    blog_section_h: 'Ежедневные обзоры TON',
+    blog_section_blurb: 'Трижды в день — утром, в полдень и вечером — CuloScribe берёт свежие новости экосистемы TON и собирает из них единую редакционную сводку. Полная картина за две минуты.',
+    blog_section_view_all: 'Все обзоры →',
+    blog_index_title: 'Блог CuloTon — ежедневные обзоры TON',
+    blog_index_meta_description: 'Редакционные сводки об экосистеме блокчейна TON. Трижды в день — утром, в полдень и вечером — CuloScribe синтезирует новости в один материал.',
+    blog_index_h: 'Блог CuloTon',
+    blog_index_blurb: 'Текущий редакционный дневник экосистемы TON. Три сводки в день — утром, в полдень, вечером — написанные CuloScribe AI на основе свежих репортажей.',
+    blog_no_posts: 'Пока обзоров нет — первый появится в ближайший утренний, полуденный или вечерний слот.',
+    blog_kind_morning: 'Утренний обзор',
+    blog_kind_noon: 'Дневной обзор',
+    blog_kind_evening: 'Вечерний обзор',
+    blog_kind_label: (kind) => kind === 'morning' ? 'Утренний обзор' : kind === 'noon' ? 'Дневной обзор' : 'Вечерний обзор',
+    blog_articles_covered_label: 'На основе этих материалов',
+    blog_byline_lead: 'Редакционная сводка CuloScribe AI, составленная по независимым репортажам об экосистеме TON.',
+    blog_back_to_blog: '← К блогу',
     footer_tagline_html: '<strong>CuloTon</strong> — новости экосистемы TON, на базе <span class="footer-ticker">$CULO</span>',
     footer_about: 'О проекте',
     footer_token: '$CULO',
@@ -237,8 +288,25 @@ export const UI: Record<Locale, UIStrings> = {
     articles_count: (shown, total) => `${shown} z ${total} artykułów`,
     no_news: 'Brak wiadomości.',
     nav_news: 'Wiadomości',
+    nav_blog: 'Blog',
     nav_about: 'O nas',
     nav_token: '$CULO',
+    blog_section_kicker: 'Blog CuloTon',
+    blog_section_h: 'Codzienne podsumowania TON',
+    blog_section_blurb: 'Trzy razy dziennie — rano, w południe i wieczorem — CuloScribe bierze świeże newsy z ekosystemu TON i składa je w jedną redakcyjną notatkę. Pełen obraz w dwie minuty.',
+    blog_section_view_all: 'Wszystkie podsumowania →',
+    blog_index_title: 'Blog CuloTon — codzienne podsumowania TON',
+    blog_index_meta_description: 'Redakcyjne podsumowania ekosystemu blockchaina TON. Trzy razy dziennie — rano, w południe i wieczorem — CuloScribe syntetyzuje newsy w jeden materiał.',
+    blog_index_h: 'Blog CuloTon',
+    blog_index_blurb: 'Bieżący redakcyjny dziennik ekosystemu TON. Trzy notatki dziennie — rano, w południe, wieczorem — pisane przez CuloScribe AI na bazie świeżych doniesień.',
+    blog_no_posts: 'Brak podsumowań — pierwsze pojawi się w najbliższym slocie porannym, południowym lub wieczornym.',
+    blog_kind_morning: 'Podsumowanie poranne',
+    blog_kind_noon: 'Podsumowanie południowe',
+    blog_kind_evening: 'Podsumowanie wieczorne',
+    blog_kind_label: (kind) => kind === 'morning' ? 'Podsumowanie poranne' : kind === 'noon' ? 'Podsumowanie południowe' : 'Podsumowanie wieczorne',
+    blog_articles_covered_label: 'Na bazie tych artykułów',
+    blog_byline_lead: 'Redakcyjne podsumowanie CuloScribe AI, zsyntetyzowane z niezależnych doniesień o ekosystemie TON.',
+    blog_back_to_blog: '← Wróć do bloga',
     footer_tagline_html: '<strong>CuloTon</strong> — wiadomości z ekosystemu TON, napędzane przez <span class="footer-ticker">$CULO</span>',
     footer_about: 'O nas',
     footer_token: '$CULO',
@@ -302,8 +370,25 @@ export const UI: Record<Locale, UIStrings> = {
     articles_count: (shown, total) => `${shown} von ${total} Artikeln`,
     no_news: 'Noch keine Nachrichten.',
     nav_news: 'Nachrichten',
+    nav_blog: 'Blog',
     nav_about: 'Über uns',
     nav_token: '$CULO',
+    blog_section_kicker: 'CuloTon Blog',
+    blog_section_h: 'Tägliche TON-Roundups',
+    blog_section_blurb: 'Dreimal täglich — morgens, mittags und abends — verdichtet CuloScribe die aktuellen News aus dem TON-Ökosystem zu einem redaktionellen Briefing. In zwei Minuten auf dem Stand.',
+    blog_section_view_all: 'Alle Roundups →',
+    blog_index_title: 'CuloTon Blog — tägliche TON-Roundups',
+    blog_index_meta_description: 'Redaktionelle Briefings aus dem TON-Blockchain-Ökosystem. Dreimal täglich — morgens, mittags und abends — synthetisiert CuloScribe die aktuelle Berichterstattung zu einem Stück.',
+    blog_index_h: 'CuloTon Blog',
+    blog_index_blurb: 'Ein laufendes redaktionelles Tagebuch des TON-Ökosystems. Drei Briefings pro Tag — morgens, mittags, abends — verfasst von CuloScribe AI auf Basis aktueller Berichterstattung.',
+    blog_no_posts: 'Noch keine Roundups — das erste landet im nächsten Morgen-, Mittags- oder Abend-Slot.',
+    blog_kind_morning: 'Morgen-Roundup',
+    blog_kind_noon: 'Mittags-Roundup',
+    blog_kind_evening: 'Abend-Roundup',
+    blog_kind_label: (kind) => kind === 'morning' ? 'Morgen-Roundup' : kind === 'noon' ? 'Mittags-Roundup' : 'Abend-Roundup',
+    blog_articles_covered_label: 'Auf Basis dieser Artikel',
+    blog_byline_lead: 'Ein redaktionelles Briefing von CuloScribe AI, synthetisiert aus unabhängiger Berichterstattung zum TON-Ökosystem.',
+    blog_back_to_blog: '← Zurück zum Blog',
     footer_tagline_html: '<strong>CuloTon</strong> — Nachrichten aus dem TON-Ökosystem, powered by <span class="footer-ticker">$CULO</span>',
     footer_about: 'Über uns',
     footer_token: '$CULO',

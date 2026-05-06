@@ -1,0 +1,234 @@
+---
+import { getCollection, getEntry, render, type CollectionEntry } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import { UI, DATE_LOCALE, localizedPath, LOCALES, LOCALE_FULL, type Locale } from '../../../i18n/strings';
+
+export async function getStaticPaths() {
+  const paths: Array<{ params: { locale: string; slug: string }; props: { entry: any; locale: Locale } }> = [];
+  const localeColl: Record<Locale, any[]> = {
+    en: [],
+    ru: await getCollection('blog_ru'),
+    pl: await getCollection('blog_pl'),
+    de: await getCollection('blog_de'),
+  };
+  for (const loc of ['ru', 'pl', 'de'] as const) {
+    for (const entry of localeColl[loc]) {
+      const slug = entry.id.replace(new RegExp(`^${loc}/`), '').replace(/\.md$/, '');
+      paths.push({
+        params: { locale: loc, slug },
+        props: { entry, locale: loc },
+      });
+    }
+  }
+  return paths;
+}
+
+interface Props {
+  entry: any;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props as Props;
+const t = UI[locale];
+const { Content } = await render(entry);
+
+const slug = entry.id.replace(new RegExp(`^${locale}/`), '').replace(/\.md$/, '');
+
+const formattedDate = entry.data.date.toLocaleDateString(DATE_LOCALE[locale], {
+  year: 'numeric', month: 'long', day: 'numeric',
+  hour: '2-digit', minute: '2-digit',
+});
+
+const otherLocales: Locale[] = [];
+for (const loc of LOCALES) {
+  if (loc === locale) continue;
+  let coll;
+  if (loc === 'ru') coll = await getCollection('blog_ru');
+  else if (loc === 'pl') coll = await getCollection('blog_pl');
+  else if (loc === 'de') coll = await getCollection('blog_de');
+  else coll = await getCollection('blog_en');
+  if (coll.some((e: any) => e.id === `${loc}/${slug}.md`)) {
+    otherLocales.push(loc);
+  }
+}
+
+// Resolve covered news titles in current locale (best-effort).
+async function loadNewsCollection(loc: Locale) {
+  if (loc === 'ru') return getCollection('news_ru');
+  if (loc === 'pl') return getCollection('news_pl');
+  if (loc === 'de') return getCollection('news_de');
+  return getCollection('news_en');
+}
+
+const coveredEntries: Array<{ slug: string; title: string }> = [];
+const newsColl = await loadNewsCollection(locale);
+for (const ref of entry.data.articles_covered) {
+  // ref looks like "en/2026-05-06-foo.md" — translate to current locale.
+  const baseSlug = ref.replace(/^(en|ru|pl|de)\//, '').replace(/\.md$/, '');
+  const localizedRef = `${locale}/${baseSlug}.md`;
+  const found = newsColl.find((e: any) => e.id === localizedRef);
+  if (found) {
+    coveredEntries.push({ slug: baseSlug, title: found.data.title });
+  }
+}
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale={`/blog/${slug}`}
+  title={`${entry.data.title} — CuloTon Blog`}
+  description={entry.data.summary}
+>
+  <article class="news-article">
+    <div class="breadcrumb">
+      <a href={localizedPath(locale, '/blog')}>{t.nav_blog}</a> &nbsp;/&nbsp; <span>{t.blog_kind_label(entry.data.kind)}</span>
+    </div>
+
+    <div class="blog-hero-card">
+      <span class={`kind-pill kind-${entry.data.kind}`}>{t.blog_kind_label(entry.data.kind)}</span>
+      <h1>{entry.data.title}</h1>
+      <div class="article-meta">
+        <span>{t.date_label} {formattedDate}</span>
+        {entry.data.tags.length > 0 && (
+          <span>
+            {entry.data.tags.map((tag: string) => <span class="tag" style="margin-right: 4px;">{tag}</span>)}
+          </span>
+        )}
+      </div>
+      <p class="article-summary">{entry.data.summary}</p>
+    </div>
+
+    <div class="body">
+      <Content />
+    </div>
+
+    <div class="culoscribe-byline">
+      <img src="/culoscribe.png" alt="CuloScribe AI" />
+      <div>
+        <strong>CuloScribe AI</strong>
+        <span>{t.blog_byline_lead}</span>
+      </div>
+    </div>
+
+    {coveredEntries.length > 0 && (
+      <div class="articles-covered">
+        <h3>{t.blog_articles_covered_label}</h3>
+        <ul>
+          {coveredEntries.map((c) => (
+            <li><a href={localizedPath(locale, `/news/${c.slug}`)}>{c.title}</a></li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <div class="back-row">
+      <a href={localizedPath(locale, '/blog')}>{t.blog_back_to_blog}</a>
+    </div>
+
+    {otherLocales.length > 0 && (
+      <div class="other-langs">
+        <span class="other-langs-label">Also in:</span>
+        {otherLocales.map((loc) => (
+          <a href={localizedPath(loc, `/blog/${slug}`)}>{LOCALE_FULL[loc]}</a>
+        ))}
+      </div>
+    )}
+  </article>
+</Layout>
+
+<style>
+  .blog-hero-card {
+    margin: 12px 0 24px;
+    padding: 22px 24px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .blog-hero-card h1 {
+    margin: 12px 0 14px;
+    line-height: 1.25;
+  }
+  .blog-hero-card .article-summary {
+    border-left: none;
+    padding-left: 0;
+    margin-top: 12px;
+  }
+  .kind-pill {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .kind-morning { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b66; }
+  .kind-noon { background: #38bdf822; color: #38bdf8; border: 1px solid #38bdf866; }
+  .kind-evening { background: #a78bfa22; color: #a78bfa; border: 1px solid #a78bfa66; }
+  .culoscribe-byline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0 20px;
+    padding: 14px 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .culoscribe-byline img {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+  }
+  .culoscribe-byline strong {
+    display: block;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+  .culoscribe-byline span {
+    font-size: 13px;
+    color: var(--text-mute);
+  }
+  .articles-covered {
+    margin-top: 20px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .articles-covered h3 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: var(--text-mute);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .articles-covered ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+  .articles-covered li {
+    margin-bottom: 6px;
+  }
+  .articles-covered a {
+    color: var(--ton);
+  }
+  .back-row {
+    margin: 24px 0 8px;
+  }
+  .back-row a { color: var(--ton); }
+  .other-langs {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--text-mute);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .other-langs-label { font-weight: 600; }
+  .other-langs a { color: var(--ton); }
+</style>
