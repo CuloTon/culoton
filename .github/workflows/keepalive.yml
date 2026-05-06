@@ -1,0 +1,44 @@
+name: Keepalive (prevent scheduler sleep)
+
+# GitHub deprioritises scheduled crons on repos that look "low activity",
+# and a single outage incident can leave that state for hours afterwards
+# (we hit this twice on 2026-05-06). This workflow makes a tiny commit
+# every 6h so the repo always looks active, which keeps the rest of the
+# scheduled pipelines (news/blog/telegram/x) firing on time.
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # 00, 06, 12, 18 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Touch keepalive marker and push
+        run: |
+          set -e
+          mkdir -p .github
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/last_keepalive.txt
+          git config user.name "culoton-bot"
+          git config user.email "bot@culoton.fun"
+          git add .github/last_keepalive.txt
+          if git diff --cached --quiet; then
+            echo "No change in keepalive file — skipping."
+            exit 0
+          fi
+          git commit -m "chore: keepalive $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase --autostash origin main || true
+          git push
