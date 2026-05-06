@@ -35,6 +35,8 @@ try:
 except ImportError:
     tweepy = None  # graceful no-op when dep missing
 
+from _culo_market import fetch_culo_data, fmt_change, fmt_money  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 DB_PATH = Path(__file__).resolve().parent / "x_announced.db"
@@ -80,6 +82,17 @@ FOMO_LINES = [
     "Build the media voice first, the bag follows. CuloTon → $CULO → TON. In that order.",
     "While altcoins fight for relevance, TON ships and CuloTon writes it down. $CULO funds the desk.",
     "The fastest chain in crypto runs the most-used messenger on Earth. $CULO is the meme leg.",
+]
+
+# Short tags appended to the live mcap pulse — bullish, brief.
+MCAP_TAGLINES = [
+    "Don't sleep on this one.",
+    "Memecoins on the fastest chain in crypto.",
+    "The TON ecosystem leg of $CULO.",
+    "Native to TON. Loud about it.",
+    "Built different. Priced like a meme. For now.",
+    "We're early. You're not too late.",
+    "Small cap energy on the chain Telegram bets on.",
 ]
 
 
@@ -248,9 +261,46 @@ def post_fomo(client) -> int:
         return 1
 
 
+def post_mcap(client) -> int:
+    data = fetch_culo_data()
+    if not data or data.get("price") is None:
+        print("Could not fetch $CULO data from GeckoTerminal — skipping (no-op).", file=sys.stderr)
+        return 0
+    pulse = "📈" if (data.get("change_h24") or 0) >= 0 else "📉"
+    tagline = random.choice(MCAP_TAGLINES)
+    hashtags = pick_hashtags(niche_count=2)
+    url = f"{SITE}/culo"
+    body = (
+        f"$CULO market pulse\n"
+        f"{pulse} {fmt_money(data['price'])} ({fmt_change(data['change_h24'])} 24h)\n"
+        f"FDV {fmt_money(data['valuation'])} · Vol {fmt_money(data['vol_h24'])}\n\n"
+        f"{tagline}\n\n"
+        f"{hashtags}\n\n"
+        f"{url}"
+    )
+    if char_count(body) > TWEET_MAX:
+        # Drop tagline if we somehow blew the budget
+        body = (
+            f"$CULO market pulse\n"
+            f"{pulse} {fmt_money(data['price'])} ({fmt_change(data['change_h24'])} 24h)\n"
+            f"FDV {fmt_money(data['valuation'])} · Vol {fmt_money(data['vol_h24'])}\n\n"
+            f"{hashtags}\n\n"
+            f"{url}"
+        )
+    print(f"Posting mcap tweet ({char_count(body)} chars):\n{body}\n")
+    try:
+        resp = client.create_tweet(text=body)
+        tid = resp.data.get("id") if resp and getattr(resp, "data", None) else None
+        print(f"Posted: tweet_id={tid}")
+        return 0
+    except Exception as e:
+        print(f"FAIL post_mcap: {type(e).__name__}: {e}", file=sys.stderr)
+        return 1
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--mode", required=True, choices=("news", "fomo"))
+    p.add_argument("--mode", required=True, choices=("news", "fomo", "mcap"))
     args = p.parse_args()
 
     client = get_client()
@@ -260,6 +310,8 @@ def main() -> int:
 
     if args.mode == "news":
         return post_news(client)
+    if args.mode == "mcap":
+        return post_mcap(client)
     return post_fomo(client)
 
 

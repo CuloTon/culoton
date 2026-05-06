@@ -1,0 +1,35 @@
+name: X $CULO market pulse
+
+on:
+  schedule:
+    # 4x a day at :45 (UTC) — offset from telegram-mcap (:30) and from
+    # the X news ping (:05) so we don't fire at the same instant.
+    # UTC 0:45 / 6:45 / 12:45 / 18:45 = ~PL 2:45 / 8:45 / 14:45 / 20:45.
+    - cron: '45 0,6,12,18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: x-mcap
+  cancel-in-progress: false
+
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Post $CULO market pulse to X
+        env:
+          X_CONSUMER_KEY: ${{ secrets.X_CONSUMER_KEY }}
+          X_CONSUMER_SECRET: ${{ secrets.X_CONSUMER_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: python scripts/x_notify.py --mode mcap

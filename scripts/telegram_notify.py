@@ -45,10 +45,13 @@ FLAGS = {"en": "🇬🇧", "ru": "🇷🇺", "pl": "🇵🇱", "de": "🇩🇪"}
 SITE = "https://culoton.fun"
 GH_REPO_URL = "https://github.com/CuloTon/culoton"
 
-# $CULO on TON
-CULO_CONTRACT = "EQD5dCm196cT60OTcCz_MI_f_QtpZYGU5mazX-4rjAOHiKrJ"
-GECKO_NET = "ton"
-GECKO_API = "https://api.geckoterminal.com/api/v2"
+from _culo_market import (  # noqa: E402
+    CULO_CONTRACT,
+    GECKO_NET,
+    fetch_culo_data,
+    fmt_change,
+    fmt_money,
+)
 
 TG_API_TIMEOUT = 20
 TG_MAX_LEN = 4000  # Telegram limit is 4096 — keep margin for safety.
@@ -201,41 +204,6 @@ def news_notify(token: str, chat_id: str) -> int:
     return 0
 
 
-def http_get_json(url: str) -> dict | None:
-    req = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "CuloTon-Bot/1.0"})
-    try:
-        with urllib.request.urlopen(req, timeout=TG_API_TIMEOUT) as r:
-            return json.loads(r.read().decode("utf-8"))
-    except Exception as e:
-        print(f"  GET {url} failed: {e}", file=sys.stderr)
-        return None
-
-
-def fmt_money(amount: float | None) -> str:
-    if amount is None:
-        return "—"
-    n = float(amount)
-    if n < 0.01:
-        # Sub-cent: show enough significant figures
-        return f"${n:.8f}".rstrip("0").rstrip(".")
-    if n < 1:
-        return f"${n:.4f}".rstrip("0").rstrip(".")
-    if n < 1000:
-        return f"${n:,.2f}"
-    if n < 1_000_000:
-        return f"${n/1000:.1f}K"
-    if n < 1_000_000_000:
-        return f"${n/1_000_000:.2f}M"
-    return f"${n/1_000_000_000:.2f}B"
-
-
-def fmt_change(pct: float | None) -> str:
-    if pct is None:
-        return "—"
-    sign = "+" if pct >= 0 else ""
-    return f"{sign}{pct:.2f}%"
-
-
 # A few short FOMO lines per locale. We pick one at random each post so
 # the message is not a copy-paste of itself every six hours. Lines are
 # bullish but not cringe — confident, not begging.
@@ -269,54 +237,6 @@ FOMO_LINES = {
         "Der native Token von CuloTon — und wir fangen gerade erst an.",
     ],
 }
-
-
-def fetch_culo_data() -> dict | None:
-    """Returns dict with price, fdv, change_h24, vol_h24, pool_addr, dex.
-    Returns None on hard failure.
-    """
-    token_data = http_get_json(f"{GECKO_API}/networks/{GECKO_NET}/tokens/{CULO_CONTRACT}")
-    pool_data = http_get_json(f"{GECKO_API}/networks/{GECKO_NET}/tokens/{CULO_CONTRACT}/pools")
-    if not token_data or not pool_data:
-        return None
-    attrs = (token_data.get("data") or {}).get("attributes") or {}
-    price = float(attrs.get("price_usd") or 0) or None
-    # Memecoins on DEX rarely have market_cap_usd populated — fall back to FDV.
-    mcap = attrs.get("market_cap_usd")
-    fdv = attrs.get("fdv_usd")
-    valuation = float(mcap) if mcap not in (None, "") else (float(fdv) if fdv not in (None, "") else None)
-    change_h24 = None
-    vol_h24 = None
-    pool_addr = None
-    dex = None
-    pools = pool_data.get("data") or []
-    if pools:
-        # Highest 24h volume pool wins.
-        def vol_key(p):
-            try:
-                return float(((p.get("attributes") or {}).get("volume_usd") or {}).get("h24") or 0)
-            except Exception:
-                return 0
-        pools = sorted(pools, key=vol_key, reverse=True)
-        top = pools[0].get("attributes") or {}
-        try:
-            change_h24 = float((top.get("price_change_percentage") or {}).get("h24") or 0)
-        except Exception:
-            change_h24 = None
-        try:
-            vol_h24 = float((top.get("volume_usd") or {}).get("h24") or 0)
-        except Exception:
-            vol_h24 = None
-        pool_addr = top.get("address")
-        dex = ((pools[0].get("relationships") or {}).get("dex") or {}).get("data", {}).get("id")
-    return {
-        "price": price,
-        "valuation": valuation,
-        "change_h24": change_h24,
-        "vol_h24": vol_h24,
-        "pool_addr": pool_addr,
-        "dex": dex,
-    }
 
 
 def mcap_notify(token: str, chat_id: str) -> int:
