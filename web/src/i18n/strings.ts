@@ -72,6 +72,28 @@ interface UIStrings {
   featured_token_p: string;
   featured_token_btn_info: string;
   featured_token_btn_telegram: string;
+  culo_title: string;
+  culo_meta_description: string;
+  culo_summary: string;
+  culo_cta_join: string;
+  culo_cta_view: string;
+  culo_contract_label: string;
+  culo_copy: string;
+  culo_copied: string;
+  culo_copy_failed: string;
+  culo_understanding_h: string;
+  culo_understanding_p1_html: string;
+  culo_understanding_p2_html: string;
+  culo_track_h: string;
+  culo_track_li1_html: string;
+  culo_track_li2_html: string;
+  culo_track_li3_html: string;
+  culo_why_h: string;
+  culo_why_p: string;
+  culo_community_h: string;
+  culo_community_p_html: string;
+  culo_disclaimer_h: string;
+  culo_disclaimer_p: string;
 }
 
 export const UI: Record<Locale, UIStrings> = {
@@ -117,6 +139,28 @@ export const UI: Record<Locale, UIStrings> = {
     featured_token_p: 'A legacy meme token with a track record across Polygon (10,000X) and SUI — now on TON. Powering this publication and the broader culture around the network.',
     featured_token_btn_info: 'Token info',
     featured_token_btn_telegram: 'Telegram →',
+    culo_title: '$CULO — The native token of CuloTon',
+    culo_meta_description: '$CULO is a legacy meme token now live on TON. Multi-chain track record: 10,000X on Polygon, success on SUI, now bringing it home on TON.',
+    culo_summary: 'A legacy meme token — multi-chain veteran, now live on the TON blockchain.',
+    culo_cta_join: 'Join Telegram →',
+    culo_cta_view: 'View on Tonviewer',
+    culo_contract_label: 'Contract Address (TON)',
+    culo_copy: 'Copy',
+    culo_copied: 'Copied!',
+    culo_copy_failed: 'Copy failed',
+    culo_understanding_h: 'Understanding $CULO on TON',
+    culo_understanding_p1_html: 'Culo is a legacy meme spanning blockchains since early 2024. The team achieved a phenomenal <strong>10,000X move in MCAP on Polygon</strong>, attracting names like <em>CryptosRUS, JAKE, RODNEY, Crypto Crow, Wendy O</em> and <em>WARREN SAPP</em>, among many others.',
+    culo_understanding_p2_html: 'The project also achieved significant success on the <strong>SUI</strong> network, proving its resilience across different ecosystems. We are now committed to following that same path of massive growth on <strong>TON</strong> — including the launch of this dedicated website and a comprehensive development roadmap.',
+    culo_track_h: 'Track record',
+    culo_track_li1_html: '<strong>2024 — Polygon:</strong> 10,000X market-cap move; coverage and shoutouts from major crypto KOLs',
+    culo_track_li2_html: '<strong>SUI:</strong> Strong follow-through on a second chain — proven cross-ecosystem traction',
+    culo_track_li3_html: '<strong>2026 — TON:</strong> Launch on the network with native Telegram distribution and the CuloTon news platform',
+    culo_why_h: 'Why TON',
+    culo_why_p: 'TON — The Open Network, originally conceived by Telegram — is one of the fastest-growing blockchains of 2025-2026. With native Telegram integration, sub-second finality, and a rapidly expanding ecosystem of mini-apps and DeFi protocols, TON is uniquely positioned to bring crypto to hundreds of millions of Telegram users. $CULO arrives on TON with momentum from two prior chains and a community that already knows how to ship.',
+    culo_community_h: 'Community',
+    culo_community_p_html: 'The fastest way to get involved is the official Telegram group: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. News, announcements and trade chatter all happen there.',
+    culo_disclaimer_h: 'Disclaimer',
+    culo_disclaimer_p: 'Nothing on this page is financial advice. $CULO is a memecoin; cryptocurrencies are highly volatile and you may lose your entire investment. Past performance on Polygon or SUI is no guarantee of future results on TON or any other chain. Always do your own research and only buy what you can afford to lose. CuloTon news coverage is editorially independent of token activity.',
   },
   ru: {
     site_title: 'CuloTon — Новости блокчейна TON',
@@ -160,6 +204,28 @@ export const UI: Record<Locale, UIStrings> = {
     featured_token_p: 'Легендарный мем-токен с историей на Polygon (10,000X) и SUI — теперь на TON. Питает это издание и культуру вокруг сети.',
     featured_token_btn_info: 'О токене',
     featured_token_btn_telegram: 'Telegram →',
+    culo_title: '$CULO — нативный токен CuloTon',
+    culo_meta_description: '$CULO — легендарный мем-токен, теперь в сети TON. Кросс-чейн история: 10,000X на Polygon, успех на SUI, теперь на родной TON.',
+    culo_summary: 'Легендарный мем-токен — мультичейн-ветеран, теперь в блокчейне TON.',
+    culo_cta_join: 'Войти в Telegram →',
+    culo_cta_view: 'Смотреть на Tonviewer',
+    culo_contract_label: 'Адрес контракта (TON)',
+    culo_copy: 'Копировать',
+    culo_copied: 'Скопировано!',
+    culo_copy_failed: 'Ошибка копирования',
+    culo_understanding_h: '$CULO на TON — что это',
+    culo_understanding_p1_html: 'Culo — легендарный мем-токен, путешествующий по блокчейнам с начала 2024 года. Команда добилась феноменального <strong>роста капитализации в 10,000 раз на Polygon</strong>, привлекая внимание таких имён, как <em>CryptosRUS, JAKE, RODNEY, Crypto Crow, Wendy O</em> и <em>WARREN SAPP</em>, среди многих других.',
+    culo_understanding_p2_html: 'Проект также достиг значительного успеха в сети <strong>SUI</strong>, доказав свою устойчивость в разных экосистемах. Сейчас мы намерены повторить тот же путь масштабного роста на <strong>TON</strong> — включая запуск этого специализированного сайта и развёрнутую дорожную карту развития.',
+    culo_track_h: 'История проекта',
+    culo_track_li1_html: '<strong>2024 — Polygon:</strong> рост капитализации в 10,000 раз; освещение и упоминания от крупных крипто-KOL',
+    culo_track_li2_html: '<strong>SUI:</strong> уверенное продолжение на втором блокчейне — подтверждённая мультиэкосистемная тяга',
+    culo_track_li3_html: '<strong>2026 — TON:</strong> запуск в сети с нативной дистрибуцией через Telegram и платформой новостей CuloTon',
+    culo_why_h: 'Почему TON',
+    culo_why_p: 'TON — The Open Network, изначально задуманный Telegram, — один из самых быстрорастущих блокчейнов 2025-2026. Благодаря нативной интеграции с Telegram, финальности менее секунды и стремительно растущей экосистеме мини-приложений и DeFi-протоколов TON в уникальном положении, чтобы привести крипто к сотням миллионов пользователей Telegram. $CULO приходит на TON с импульсом двух предыдущих блокчейнов и сообществом, которое уже умеет доставлять результат.',
+    culo_community_h: 'Сообщество',
+    culo_community_p_html: 'Быстрее всего подключиться — через официальную Telegram-группу: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. Новости, анонсы и трейдерский чат — всё там.',
+    culo_disclaimer_h: 'Дисклеймер',
+    culo_disclaimer_p: 'Ничто на этой странице не является финансовой рекомендацией. $CULO — мем-токен; криптовалюты крайне волатильны, и вы можете потерять весь вклад. Прошлые результаты на Polygon или SUI не гарантируют будущих результатов на TON или любом другом блокчейне. Всегда проводите собственное исследование и покупайте только то, что можете позволить себе потерять. Новостное освещение CuloTon редакционно независимо от деятельности токена.',
   },
   pl: {
     site_title: 'CuloTon — Wiadomości z blockchaina TON',
@@ -203,6 +269,28 @@ export const UI: Record<Locale, UIStrings> = {
     featured_token_p: 'Legendarny memecoin z historią na Polygon (10,000X) i SUI — teraz na TON. Zasila to wydawnictwo i kulturę wokół sieci.',
     featured_token_btn_info: 'O tokenie',
     featured_token_btn_telegram: 'Telegram →',
+    culo_title: '$CULO — natywny token CuloTon',
+    culo_meta_description: '$CULO to legendarny memecoin, teraz dostępny w sieci TON. Cross-chain track record: 10,000X na Polygonie, sukces na SUI, teraz na rodzimym TON.',
+    culo_summary: 'Legendarny memecoin — weteran wielu blockchainów, teraz w sieci TON.',
+    culo_cta_join: 'Dołącz na Telegramie →',
+    culo_cta_view: 'Zobacz na Tonviewer',
+    culo_contract_label: 'Adres kontraktu (TON)',
+    culo_copy: 'Kopiuj',
+    culo_copied: 'Skopiowano!',
+    culo_copy_failed: 'Błąd kopiowania',
+    culo_understanding_h: '$CULO na TON — o co chodzi',
+    culo_understanding_p1_html: 'Culo to legendarny mem przemierzający blockchainy od początku 2024 roku. Zespół osiągnął fenomenalny <strong>wzrost kapitalizacji 10,000X na Polygonie</strong>, przyciągając takie nazwiska jak <em>CryptosRUS, JAKE, RODNEY, Crypto Crow, Wendy O</em> oraz <em>WARREN SAPP</em>, wśród wielu innych.',
+    culo_understanding_p2_html: 'Projekt odniósł także znaczący sukces w sieci <strong>SUI</strong>, dowodząc odporności w różnych ekosystemach. Obecnie kontynuujemy tę samą ścieżkę masowego wzrostu na <strong>TON</strong> — w tym uruchomienie tej dedykowanej strony oraz rozbudowaną mapę drogową rozwoju.',
+    culo_track_h: 'Historia projektu',
+    culo_track_li1_html: '<strong>2024 — Polygon:</strong> wzrost kapitalizacji 10,000X; pokrycie i wzmianki od czołowych krypto-KOL-ów',
+    culo_track_li2_html: '<strong>SUI:</strong> mocna kontynuacja na drugim blockchainie — potwierdzona przyczepność między ekosystemami',
+    culo_track_li3_html: '<strong>2026 — TON:</strong> debiut w sieci z natywną dystrybucją przez Telegram oraz platformą wiadomości CuloTon',
+    culo_why_h: 'Dlaczego TON',
+    culo_why_p: 'TON — The Open Network, pierwotnie zaprojektowany przez Telegram — to jeden z najszybciej rosnących blockchainów lat 2025-2026. Dzięki natywnej integracji z Telegramem, finalności poniżej sekundy oraz dynamicznie rosnącemu ekosystemowi mini-aplikacji i protokołów DeFi, TON ma unikalną pozycję, by dostarczyć kryptowaluty setkom milionów użytkowników Telegrama. $CULO wchodzi na TON z impetem z dwóch wcześniejszych blockchainów i społecznością, która już potrafi dowieźć wynik.',
+    culo_community_h: 'Społeczność',
+    culo_community_p_html: 'Najszybszy sposób, by się włączyć, to oficjalna grupa Telegram: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. Wiadomości, ogłoszenia i rozmowy traderów — wszystko tam.',
+    culo_disclaimer_h: 'Zastrzeżenie',
+    culo_disclaimer_p: 'Nic na tej stronie nie stanowi porady finansowej. $CULO to memecoin; kryptowaluty są wysoce zmienne i możesz stracić całą inwestycję. Wyniki z przeszłości na Polygonie lub SUI nie gwarantują przyszłych rezultatów na TON ani na żadnym innym blockchainie. Zawsze rób własny research i kupuj wyłącznie tyle, ile możesz stracić. Newsy na CuloTon są redakcyjnie niezależne od aktywności tokena.',
   },
   de: {
     site_title: 'CuloTon — Nachrichten zur TON-Blockchain',
@@ -246,6 +334,28 @@ export const UI: Record<Locale, UIStrings> = {
     featured_token_p: 'Ein Legacy-Memecoin mit Track Record auf Polygon (10,000X) und SUI — jetzt auf TON. Treibt diese Publikation und die Kultur rund um das Netzwerk an.',
     featured_token_btn_info: 'Token-Info',
     featured_token_btn_telegram: 'Telegram →',
+    culo_title: '$CULO — der native Token von CuloTon',
+    culo_meta_description: '$CULO ist ein Legacy-Memecoin, jetzt live auf TON. Multi-Chain-Track-Record: 10,000X auf Polygon, Erfolg auf SUI, jetzt zu Hause auf TON.',
+    culo_summary: 'Ein Legacy-Memecoin — Multi-Chain-Veteran, jetzt live auf der TON-Blockchain.',
+    culo_cta_join: 'Telegram beitreten →',
+    culo_cta_view: 'Auf Tonviewer ansehen',
+    culo_contract_label: 'Contract-Adresse (TON)',
+    culo_copy: 'Kopieren',
+    culo_copied: 'Kopiert!',
+    culo_copy_failed: 'Kopieren fehlgeschlagen',
+    culo_understanding_h: '$CULO auf TON — worum es geht',
+    culo_understanding_p1_html: 'Culo ist ein Legacy-Meme, das seit Anfang 2024 mehrere Blockchains durchquert. Das Team erzielte einen phänomenalen <strong>10,000X-Anstieg der Marktkapitalisierung auf Polygon</strong> und zog dabei Namen wie <em>CryptosRUS, JAKE, RODNEY, Crypto Crow, Wendy O</em> sowie <em>WARREN SAPP</em> an — neben vielen anderen.',
+    culo_understanding_p2_html: 'Das Projekt erzielte auch im <strong>SUI</strong>-Netzwerk bedeutende Erfolge und bewies seine Widerstandsfähigkeit über verschiedene Ökosysteme hinweg. Wir setzen jetzt denselben Weg massiven Wachstums auf <strong>TON</strong> fort — einschließlich des Starts dieser dedizierten Website und einer umfassenden Entwicklungs-Roadmap.',
+    culo_track_h: 'Track Record',
+    culo_track_li1_html: '<strong>2024 — Polygon:</strong> 10,000X-Anstieg der Marktkapitalisierung; Berichterstattung und Erwähnungen großer Krypto-KOLs',
+    culo_track_li2_html: '<strong>SUI:</strong> starke Fortsetzung auf einer zweiten Chain — nachgewiesene Cross-Ecosystem-Traktion',
+    culo_track_li3_html: '<strong>2026 — TON:</strong> Launch im Netzwerk mit nativer Telegram-Distribution und der CuloTon-Nachrichtenplattform',
+    culo_why_h: 'Warum TON',
+    culo_why_p: 'TON — The Open Network, ursprünglich von Telegram konzipiert — ist eine der am schnellsten wachsenden Blockchains der Jahre 2025-2026. Mit nativer Telegram-Integration, Sub-Sekunden-Finalität und einem rasch expandierenden Ökosystem aus Mini-Apps und DeFi-Protokollen ist TON einzigartig positioniert, um Krypto zu Hunderten Millionen Telegram-Nutzern zu bringen. $CULO kommt mit dem Schwung zweier vorheriger Chains und einer Community, die bereits weiß, wie man liefert.',
+    culo_community_h: 'Community',
+    culo_community_p_html: 'Am schnellsten beteiligen Sie sich über die offizielle Telegram-Gruppe: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. Nachrichten, Ankündigungen und Trade-Gespräche finden dort statt.',
+    culo_disclaimer_h: 'Disclaimer',
+    culo_disclaimer_p: 'Nichts auf dieser Seite stellt eine Finanzberatung dar. $CULO ist ein Memecoin; Kryptowährungen sind hochvolatil und Sie können Ihre gesamte Investition verlieren. Vergangene Performance auf Polygon oder SUI ist keine Garantie für zukünftige Ergebnisse auf TON oder einer anderen Chain. Recherchieren Sie stets selbst und kaufen Sie nur, was Sie sich zu verlieren leisten können. Die CuloTon-Berichterstattung ist redaktionell unabhängig von Token-Aktivitäten.',
   },
 };
 
