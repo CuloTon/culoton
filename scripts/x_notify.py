@@ -1,30 +1,33 @@
 """CuloTon X (Twitter) notifier.
 
-Two modes:
+Three modes (--mode news/fomo/mcap), each can run in TWO delivery modes:
 
-  --mode news
-      Picks the newest EN article that has not yet been tweeted,
-      builds a 280-char tweet (title + summary if it fits + a few
-      hashtags + link to culoton.fun) and posts it. Marks the
-      article as announced in scripts/x_announced.db.
+  • LIVE mode (default when X_DRAFTS_CHAT_ID is NOT set): uses tweepy
+    OAuth 1.0a to POST /2/tweets directly. Requires Basic tier
+    ($100/month) — Free tier returns 402.
 
-  --mode fomo
-      Posts a randomised one-liner about CuloTon's role in the TON
-      ecosystem with #TON #CULO hashtags and a link to /culo.
+  • DRAFT mode (active when X_DRAFTS_CHAT_ID is set): does NOT call
+    the X API at all. Builds the tweet text, then sends it to a
+    private Telegram chat with the bot together with a one-tap
+    "Open in X" deep link (https://twitter.com/intent/tweet?text=…).
+    User taps the link → X compose opens with the tweet pre-filled
+    → user taps Post. $0 / month, ~5 seconds of manual work per
+    post. Dedup still works (news_drafted state), so the same news
+    is not drafted twice.
 
-Both modes are graceful no-ops when any of the four X OAuth 1.0a
-secrets is missing — so the workflow can be merged before keys
-are configured.
+Graceful no-ops when neither delivery path is configured.
 """
 
 from __future__ import annotations
 
 import argparse
+import html
 import os
 import random
 import re
 import sqlite3
 import sys
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -36,6 +39,10 @@ except ImportError:
     tweepy = None  # graceful no-op when dep missing
 
 from _culo_market import fetch_culo_data, fmt_change, fmt_money  # noqa: E402
+
+# tg_send is reused from telegram_notify so we don't duplicate the
+# Telegram HTTP wiring. Imported lazily inside draft path so the X
+# script still works in live mode without telegram secrets.
 
 ROOT = Path(__file__).resolve().parent.parent
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
@@ -96,15 +103,31 @@ MCAP_TAGLINES = [
 ]
 
 
+def get_delivery_mode() -> str:
+    """Returns 'draft', 'live' or 'noop' depending on which secrets are present.
+
+    DRAFT wins over LIVE when both could work — that's the cheap path,
+    and X live currently needs paid tier anyway.
+    """
+    drafts_chat = (os.getenv("X_DRAFTS_CHAT_ID") or "").strip()
+    tg_token = (os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
+    if drafts_chat and tg_token:
+        return "draft"
+    ck = (os.getenv("X_CONSUMER_KEY") or "").strip()
+    cs = (os.getenv("X_CONSUMER_SECRET") or "").strip()
+    at = (os.getenv("X_ACCESS_TOKEN") or "").strip()
+    ats = (os.getenv("X_ACCESS_TOKEN_SECRET") or "").strip()
+    if all([ck, cs, at, ats]) and tweepy is not None:
+        return "live"
+    return "noop"
+
+
 def get_client():
     ck = (os.getenv("X_CONSUMER_KEY") or "").strip()
     cs = (os.getenv("X_CONSUMER_SECRET") or "").strip()
     at = (os.getenv("X_ACCESS_TOKEN") or "").strip()
     ats = (os.getenv("X_ACCESS_TOKEN_SECRET") or "").strip()
-    if not all([ck, cs, at, ats]):
-        return None
-    if tweepy is None:
-        print("tweepy not installed — install via requirements.txt", file=sys.stderr)
+    if not all([ck, cs, at, ats]) or tweepy is None:
         return None
     return tweepy.Client(
         consumer_key=ck,
@@ -112,6 +135,33 @@ def get_client():
         access_token=at,
         access_token_secret=ats,
     )
+
+
+def send_draft_to_telegram(*, kind_label: str, tweet_text: str, char_total: int) -> int:
+    """Posts the tweet text to the private TG drafts chat with a one-tap
+    'Open in X compose' link. Returns 0/1 like the rest of the post_* helpers.
+    """
+    from telegram_notify import tg_send  # local import — only needed for draft path
+
+    tg_token = (os.getenv("TELEGRAM_BOT_TOKEN") or "").strip()
+    drafts_chat = (os.getenv("X_DRAFTS_CHAT_ID") or "").strip()
+    if not tg_token or not drafts_chat:
+        print("draft mode missing TELEGRAM_BOT_TOKEN or X_DRAFTS_CHAT_ID", file=sys.stderr)
+        return 1
+
+    intent_url = "https://twitter.com/intent/tweet?text=" + urllib.parse.quote(tweet_text, safe="")
+
+    body = (
+        f"📝 <b>X DRAFT — {html.escape(kind_label)}</b>  ({char_total}/280)\n\n"
+        f"<pre>{html.escape(tweet_text)}</pre>\n\n"
+        f"→ <a href=\"{intent_url}\">Open in X (1 tap to post)</a>"
+    )
+    status, resp_body = tg_send(tg_token, drafts_chat, body, disable_preview=True)
+    if status != 200:
+        print(f"draft post to TG failed: status={status} body={resp_body}", file=sys.stderr)
+        return 1
+    print(f"draft sent to TG ({kind_label}, {char_total}/280)")
+    return 0
 
 
 def parse_frontmatter(md_text: str) -> tuple[dict, str]:
@@ -218,7 +268,30 @@ def build_news_tweet(title: str, summary: str, tags: list[str], url: str) -> str
     return truncated + fixed_tail
 
 
-def post_news(client) -> int:
+def deliver(*, kind_label: str, dedup_slug: str | None, tweet_text: str, delivery: str, client) -> int:
+    """Either post the tweet through tweepy (live) or send it as a draft to TG.
+    On live success or draft success, mark dedup_slug as announced (if given).
+    """
+    chars = char_count(tweet_text)
+    if delivery == "draft":
+        rc = send_draft_to_telegram(kind_label=kind_label, tweet_text=tweet_text, char_total=chars)
+    else:
+        print(f"Posting {kind_label} ({chars}/280):\n{tweet_text}\n")
+        try:
+            resp = client.create_tweet(text=tweet_text)
+            tid = resp.data.get("id") if resp and getattr(resp, "data", None) else None
+            print(f"Posted: tweet_id={tid}")
+            rc = 0
+        except Exception as e:
+            print(f"FAIL post: {type(e).__name__}: {e}", file=sys.stderr)
+            rc = 1
+    if rc == 0 and dedup_slug:
+        conn = db_init()
+        mark_announced(conn, dedup_slug, "news")
+    return rc
+
+
+def post_news(client, delivery: str) -> int:
     conn = db_init()
     found = find_next_news(conn)
     if not found:
@@ -230,38 +303,20 @@ def post_news(client) -> int:
     tags = fm.get("tags") or []
     url = f"{SITE}/news/{slug}"
     text = build_news_tweet(title, summary, tags, url)
-    print(f"Posting news tweet ({char_count(text)} chars):\n{text}\n")
-    try:
-        resp = client.create_tweet(text=text)
-        tid = resp.data.get("id") if resp and getattr(resp, "data", None) else None
-        print(f"Posted: tweet_id={tid}")
-        mark_announced(conn, slug, "news")
-        return 0
-    except Exception as e:
-        print(f"FAIL post_news: {type(e).__name__}: {e}", file=sys.stderr)
-        return 1
+    return deliver(kind_label="News", dedup_slug=slug, tweet_text=text, delivery=delivery, client=client)
 
 
-def post_fomo(client) -> int:
+def post_fomo(client, delivery: str) -> int:
     line = random.choice(FOMO_LINES)
     url = f"{SITE}/culo"
-    hashtags = pick_hashtags(niche_count=2)  # 2 core + 2 niche = 4 total
+    hashtags = pick_hashtags(niche_count=2)
     text = f"{line}\n\n{hashtags}\n\n{url}"
     if char_count(text) > TWEET_MAX:
-        # Fallback: drop hashtags if line itself is unusually long
         text = f"{line}\n\n{url}"
-    print(f"Posting fomo tweet ({char_count(text)} chars):\n{text}\n")
-    try:
-        resp = client.create_tweet(text=text)
-        tid = resp.data.get("id") if resp and getattr(resp, "data", None) else None
-        print(f"Posted: tweet_id={tid}")
-        return 0
-    except Exception as e:
-        print(f"FAIL post_fomo: {type(e).__name__}: {e}", file=sys.stderr)
-        return 1
+    return deliver(kind_label="FOMO", dedup_slug=None, tweet_text=text, delivery=delivery, client=client)
 
 
-def post_mcap(client) -> int:
+def post_mcap(client, delivery: str) -> int:
     data = fetch_culo_data()
     if not data or data.get("price") is None:
         print("Could not fetch $CULO data from GeckoTerminal — skipping (no-op).", file=sys.stderr)
@@ -279,7 +334,6 @@ def post_mcap(client) -> int:
         f"{url}"
     )
     if char_count(body) > TWEET_MAX:
-        # Drop tagline if we somehow blew the budget
         body = (
             f"$CULO market pulse\n"
             f"{pulse} {fmt_money(data['price'])} ({fmt_change(data['change_h24'])} 24h)\n"
@@ -287,15 +341,7 @@ def post_mcap(client) -> int:
             f"{hashtags}\n\n"
             f"{url}"
         )
-    print(f"Posting mcap tweet ({char_count(body)} chars):\n{body}\n")
-    try:
-        resp = client.create_tweet(text=body)
-        tid = resp.data.get("id") if resp and getattr(resp, "data", None) else None
-        print(f"Posted: tweet_id={tid}")
-        return 0
-    except Exception as e:
-        print(f"FAIL post_mcap: {type(e).__name__}: {e}", file=sys.stderr)
-        return 1
+    return deliver(kind_label="Market pulse", dedup_slug=None, tweet_text=body, delivery=delivery, client=client)
 
 
 def main() -> int:
@@ -303,16 +349,19 @@ def main() -> int:
     p.add_argument("--mode", required=True, choices=("news", "fomo", "mcap"))
     args = p.parse_args()
 
-    client = get_client()
-    if client is None:
-        print("X credentials missing or tweepy unavailable — skipping (no-op).")
+    delivery = get_delivery_mode()
+    if delivery == "noop":
+        print("Neither X live keys nor TG draft chat configured — skipping (no-op).")
         return 0
+    print(f"Delivery mode: {delivery}")
+
+    client = get_client() if delivery == "live" else None
 
     if args.mode == "news":
-        return post_news(client)
+        return post_news(client, delivery)
     if args.mode == "mcap":
-        return post_mcap(client)
-    return post_fomo(client)
+        return post_mcap(client, delivery)
+    return post_fomo(client, delivery)
 
 
 if __name__ == "__main__":

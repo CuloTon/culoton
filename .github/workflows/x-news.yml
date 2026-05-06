@@ -37,6 +37,10 @@ jobs:
           X_CONSUMER_SECRET: ${{ secrets.X_CONSUMER_SECRET }}
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          # Draft mode (no X cost): when X_DRAFTS_CHAT_ID is set, the
+          # script sends the tweet as a TG draft instead of calling X.
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          X_DRAFTS_CHAT_ID: ${{ secrets.X_DRAFTS_CHAT_ID }}
         run: python scripts/x_notify.py --mode news
 
       - name: Persist x_announced.db
