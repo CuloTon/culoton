@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: write   # required for self-dispatch at the end of each run
 
 concurrency:
   group: tg-interact
@@ -39,3 +40,9 @@ jobs:
           bash scripts/git_commit_push.sh \
             "auto: tg bot interact $(date -u +%Y-%m-%dT%H:%MZ)" \
             data/points.json data/tg_offset.txt
+
+      - name: Re-arm next iteration (self-dispatch)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run tg-interact.yml
