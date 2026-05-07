@@ -2,12 +2,12 @@
   "users": {
     "8354207388": {
       "daily_day": "2026-05-07",
-      "daily_points": 3,
+      "daily_points": 7,
       "last_ask_at": "",
-      "last_command_at": "2026-05-07T19:33:52.564748+00:00",
-      "total_points": 3,
+      "last_command_at": "2026-05-07T19:35:46.920457+00:00",
+      "total_points": 7,
       "username": "@culodaddy_ton",
-      "weekly_points": 3
+      "weekly_points": 7
     }
   },
   "week_started_at": "2026-05-07T20:00:00+00:00"
