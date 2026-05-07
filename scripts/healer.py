@@ -44,6 +44,14 @@ GRACE_MIN = 10
 LOOKBACK_HOURS = 4
 COVERAGE_WINDOW_MIN = 60
 
+# update-and-deploy.yml hour-of-day → blog roundup_kind. Slots not in
+# this map are routine news-only runs.
+ROUNDUP_KIND_BY_HOUR: dict[int, str] = {
+    6: "morning",
+    11: "noon",
+    17: "evening",
+}
+
 
 def list_runs(workflow: str) -> list[datetime]:
     out = subprocess.check_output(
@@ -68,8 +76,12 @@ def list_runs(workflow: str) -> list[datetime]:
     return times
 
 
-def dispatch(workflow: str) -> None:
-    subprocess.run(["gh", "workflow", "run", workflow], check=True)
+def dispatch(workflow: str, fields: dict[str, str] | None = None) -> None:
+    cmd = ["gh", "workflow", "run", workflow]
+    if fields:
+        for k, v in fields.items():
+            cmd += ["--field", f"{k}={v}"]
+    subprocess.run(cmd, check=True)
 
 
 def main() -> int:
@@ -114,9 +126,16 @@ def main() -> int:
             print(f"[healer] {workflow}: all slots in window covered")
             continue
 
-        print(f"[healer] {workflow}: missed slot {missed.isoformat()} — dispatching")
+        fields: dict[str, str] | None = None
+        if workflow == "update-and-deploy.yml":
+            kind = ROUNDUP_KIND_BY_HOUR.get(missed.hour)
+            if kind:
+                fields = {"roundup_kind": kind}
+
+        label = f" (kind={fields['roundup_kind']})" if fields else ""
+        print(f"[healer] {workflow}: missed slot {missed.isoformat()}{label} — dispatching")
         try:
-            dispatch(workflow)
+            dispatch(workflow, fields)
             fired.append(workflow)
         except subprocess.CalledProcessError as e:
             print(f"[healer] {workflow}: dispatch FAILED ({e})")
