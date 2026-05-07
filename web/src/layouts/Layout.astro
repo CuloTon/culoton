@@ -69,14 +69,10 @@ const alternates = LOCALES.map((loc) => ({
 
     <script is:inline>
       (function () {
-        var valid = ['magazine', 'memecoin', 'minimal', 'memecoin-white', 'terminal', 'newspaper'];
-        try {
-          var t = localStorage.getItem('culoton-theme') || 'magazine';
-          if (valid.indexOf(t) === -1) t = 'magazine';
-          document.documentElement.setAttribute('data-theme', t);
-        } catch (_) {
-          document.documentElement.setAttribute('data-theme', 'magazine');
-        }
+        // Single live theme — terminal. Switcher widget is hidden in CSS.
+        // Force-overwrite any prior localStorage value from when A/B/C/D/F were exposed.
+        document.documentElement.setAttribute('data-theme', 'terminal');
+        try { localStorage.setItem('culoton-theme', 'terminal'); } catch (_) {}
       })();
     </script>
   </head>
@@ -278,7 +274,7 @@ const alternates = LOCALES.map((loc) => ({
     color: var(--accent) !important;
   }
   .theme-switcher {
-    display: flex;
+    display: none;
     gap: 2px;
     align-items: center;
     margin-left: 14px;
