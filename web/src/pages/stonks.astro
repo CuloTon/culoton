@@ -2,83 +2,112 @@
 import Layout from '../layouts/Layout.astro';
 
 const locale = 'en' as const;
-const TG_STONKS = 'https://t.me/stonksonton';
+const STONKS_SITE = 'https://stonksbots.com/';
+const STONKS_TRADER = 'https://t.me/stonks_sniper_bot';
+const TG_STONKSONTON = 'https://t.me/stonksonton';
 ---
 
 <Layout
   locale={locale}
   pathWithoutLocale="/stonks"
-  title="sTONks — the launchpad behind $CULO"
-  description="What sTONks is, how it works, and how $CULO was launched on it."
+  title="sTONks — the on-chain ecosystem behind $CULO"
+  description="What sTONks is, how the build-to-trade pipeline works, and how $CULO was launched on it."
 >
   <article class="news-article">
     <div class="breadcrumb">
       <a href="/">News</a> &nbsp;/&nbsp; <span>sTONks</span>
     </div>
 
-    <h1>sTONks — the launchpad behind $CULO</h1>
+    <h1>sTONks — the on-chain ecosystem behind $CULO</h1>
 
     <p class="article-summary">
-      $CULO did not start in a vacuum. It was deployed on <strong>sTONks</strong>,
-      a community-first launch platform built on the TON blockchain.
-      Here's what that means and why it matters.
+      $CULO was not deployed in a vacuum. It was launched on
+      <strong><a href={STONKS_SITE} target="_blank" rel="noopener noreferrer">sTONks</a></strong>,
+      an end-to-end on-chain platform that lets you build, deploy, tokenize and trade — all in
+      one place, all on TON. Here is what that means.
     </p>
 
     <div class="body">
-      <h2>What is sTONks?</h2>
+      <h2>What sTONks actually is</h2>
       <p>
-        sTONks is a memecoin launch platform on the TON blockchain. It lets
-        anyone deploy a token in minutes — no Solidity, no manual liquidity
-        bootstrap, no DEX configuration. The platform handles the bonding
-        curve, the on-chain deployment, and the bridge to a public DEX once
-        the token reaches threshold liquidity.
+        sTONks is not just a launchpad. It is a four-stage on-chain pipeline that closes the loop
+        between writing code and trading the result:
+      </p>
+      <ol>
+        <li><strong>Build</strong> — agentic LLM pipelines (Claude, GPT, Gemini, Grok or any model) write the code. Humans review, edit, ship.</li>
+        <li><strong>Deploy</strong> — one-click deploy to managed infra, your own VPS, bare metal, Telegram Cloud or LLM APIs. Encrypted secrets vault, instant logs, autoscaling. Zero ops.</li>
+        <li><strong>Tokenize</strong> — fairlaunch, presale, bonding curve, revshare, dividends or a fully custom tokenomic. Or skip tokens entirely and accept crypto payments.</li>
+        <li><strong>Govern</strong> — Roundtable DAO with an Oracle AI that audits every commit, deploy and milestone against the roadmap holders voted on. Closed-source projects too.</li>
+      </ol>
+      <p>
+        The platform's own numbers (as published on stonksbots.com): <strong>2,170 projects launched</strong>,
+        <strong>12,000+ monthly active traders</strong>, <strong>41,300 TON in ecosystem liquidity</strong>,
+        and <strong>160,000 TON in dividends</strong> already paid out to holders.
+      </p>
+
+      <h2>The trading side</h2>
+      <p>
+        On top of the build pipeline, sTONks ships a full trading stack:
+      </p>
+      <ul>
+        <li><strong>Trading Terminal</strong> — multi-wallet, sniper bot, TradingView charts, limit orders, on-chain fills, sub-100ms execution.</li>
+        <li><strong>Telegram trading bot</strong> — <a href={STONKS_TRADER} target="_blank" rel="noopener noreferrer">@stonks_sniper_bot</a>: full terminal in a DM. Buy, sell, snipe, track wallets, instant PnL.</li>
+        <li><strong>Stonks Gem Bot</strong> + <strong>New Pairs Bot</strong> — alpha straight to Telegram, no gatekeeping, every launch is fair.</li>
+      </ul>
+
+      <h2>Real RWA — token cryptographically tied to a repo</h2>
+      <p>
+        This is the part that makes sTONks different. Every token launched on the platform is
+        bound on-chain to its project's GitHub repository. Holders watch real commits land in
+        real time. Even closed-source projects can prove progress: the AI Oracle audits each
+        commit, deploy and milestone against the on-chain roadmap before the token keeps its
+        verified status.
       </p>
       <p>
-        In practice, sTONks does for TON what platforms like pump.fun did
-        for Solana: it removes the technical wall between an idea and a
-        live, tradable token. You bring a name, a logo and a community —
-        the platform takes care of the wiring.
+        Supply, fees and curves are locked on-chain at launch — no hidden mints, no dev
+        unlocks, no rug levers. The binding between token and code is publicly verifiable.
       </p>
 
       <h2>How $CULO was born</h2>
       <p>
-        $CULO was launched on sTONks. The platform handled the deployment,
-        bootstrapped the bonding curve, and bridged the token to a public
-        DEX once the threshold was hit. From day one $CULO has lived as a
-        community-first memecoin native to TON.
+        $CULO was launched on sTONks using the <strong>Deploy-with-TAX</strong> tokenomic — not
+        the bonding-curve route. That means a fixed-supply token with a small fee on every
+        buy/sell, instead of a curve-graduated launch. The platform handled the deployment, the
+        on-chain tax wiring, and the listing on the integrated trading layer from day one.
       </p>
       <p>
-        CuloTon — the news desk you are reading right now — was built
-        around it. The token came first; the editorial layer (this site,
-        the Telegram bot, the multilingual news pipeline) was added on
-        top so $CULO would have something to grow into beyond a launch
-        chart.
+        CuloTon — the news desk you're reading right now — was built around the token. First
+        came $CULO; then the editorial layer (this site, the multilingual news pipeline, the
+        Telegram bot, the X feed) was added on top so $CULO had something to grow into beyond a
+        launch chart.
       </p>
 
-      <h2>Why it matters</h2>
+      <h2>Why it matters for the TON ecosystem</h2>
       <p>
-        sTONks lowers the barrier to entry for native TON memecoins.
-        Anyone with a Telegram account and a TON wallet can ship a token.
-        That openness fits the TON ethos — the chain is wired directly
-        into Telegram, the largest messaging platform people already use
-        every day.
+        sTONks lowers the barrier to entry for serious on-chain projects, not just memecoins.
+        Anyone with a Telegram account and a TON wallet can ship a real product, tokenize it
+        with locked-on-chain tokenomics, and reach an audience that is already trading. That
+        fits the TON ethos — the chain is wired directly into Telegram, the largest messaging
+        platform people already use every day.
       </p>
       <p>
-        A frictionless launchpad means more memes, more experiments, and
-        more reasons for the TON ecosystem to grow. CuloTon covers it as
-        a news desk, but $CULO itself is part of that wave.
+        For traders, the value prop is simpler: every token on sTONks comes with a verifiable
+        link to actual code. Less LARP. More signal.
       </p>
 
       <h2>Where to go next</h2>
       <ul>
-        <li>💬 <a href={TG_STONKS} target="_blank" rel="noopener noreferrer">Join the sTONks community chat</a> — where the launches are discussed in real time.</li>
+        <li>🌐 <a href={STONKS_SITE} target="_blank" rel="noopener noreferrer">stonksbots.com</a> — the official sTONks platform.</li>
+        <li>🤖 <a href={STONKS_TRADER} target="_blank" rel="noopener noreferrer">@stonks_sniper_bot</a> — the trading terminal in a Telegram DM.</li>
+        <li>💬 <a href={TG_STONKSONTON} target="_blank" rel="noopener noreferrer">t.me/stonksonton</a> — the community chat where launches are discussed in real time.</li>
         <li>🟡 <a href="/culo">Track $CULO live</a> — price, FDV, 24h flow, where to buy.</li>
         <li>📰 <a href="/">Latest TON news</a> — full feed, updated every 2 hours.</li>
       </ul>
 
       <p>
-        <em>This page is a living explainer. If you spot a fact that needs
-        fixing, drop us a tip in the
+        <em>This page is a living explainer based on public information from
+        <a href={STONKS_SITE} target="_blank" rel="noopener noreferrer">stonksbots.com</a>. Spot
+        a fact that needs sharpening? Drop us a tip in the
         <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>
       </p>
     </div>
