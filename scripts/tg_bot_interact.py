@@ -450,20 +450,27 @@ def main() -> int:
         new_offset = max(new_offset, upd.get("update_id", 0) + 1)
         msg = upd.get("message")
         if not msg:
+            print(f"  upd {upd.get('update_id')}: not a message (keys={list(upd.keys())}) — skip")
             continue
         text = (msg.get("text") or "").strip()
-        if not text.startswith("/"):
-            continue
-        from_user = msg.get("from") or {}
         chat = msg.get("chat") or {}
+        from_user = msg.get("from") or {}
+        chat_summary = f"chat_id={chat.get('id')} type={chat.get('type')} from=@{from_user.get('username')}/{from_user.get('first_name')}"
+        if not text.startswith("/"):
+            print(f"  upd {upd.get('update_id')}: non-command text {text[:40]!r} ({chat_summary}) — skip")
+            continue
         if not from_user or from_user.get("is_bot"):
+            print(f"  upd {upd.get('update_id')}: bot/empty sender ({chat_summary}) — skip")
             continue
         if not chat:
+            print(f"  upd {upd.get('update_id')}: no chat — skip")
             continue
 
         cmd, arg = route_command(text)
         if not cmd:
+            print(f"  upd {upd.get('update_id')}: route returned empty — skip")
             continue
+        print(f"  upd {upd.get('update_id')}: /{cmd} arg={arg!r} ({chat_summary})")
 
         rec = get_user(state, from_user["id"], display_name(from_user))
 
@@ -500,7 +507,11 @@ def main() -> int:
             # Append a tiny pts hint for the ask path (visible reward signal).
             reply = reply + f"\n\n<i>+{granted} pts</i>"
 
-        tg_send(token, chat["id"], reply, reply_to=msg.get("message_id"))
+        send_resp = tg_send(token, chat["id"], reply, reply_to=msg.get("message_id"))
+        ok = bool(send_resp and send_resp.get("ok"))
+        print(f"    -> sent={ok} ({len(reply)} chars, +{granted} pts)")
+        if send_resp and not send_resp.get("ok"):
+            print(f"    TG error: {send_resp}")
 
     save_state(state)
     save_offset(new_offset)
