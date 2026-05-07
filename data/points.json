@@ -1,13 +1,22 @@
 {
   "users": {
+    "519120279": {
+      "daily_day": "2026-05-07",
+      "daily_points": 3,
+      "last_ask_at": "",
+      "last_command_at": "2026-05-07T19:53:57.831337+00:00",
+      "total_points": 3,
+      "username": "@qpdqpdqpd",
+      "weekly_points": 3
+    },
     "8354207388": {
       "daily_day": "2026-05-07",
-      "daily_points": 15,
+      "daily_points": 20,
       "last_ask_at": "2026-05-07T19:39:44.693116+00:00",
-      "last_command_at": "2026-05-07T19:39:45.509924+00:00",
-      "total_points": 15,
+      "last_command_at": "2026-05-07T19:54:00.966784+00:00",
+      "total_points": 20,
       "username": "@culodaddy_ton",
-      "weekly_points": 15
+      "weekly_points": 20
     }
   },
   "week_started_at": "2026-05-07T20:00:00+00:00"
