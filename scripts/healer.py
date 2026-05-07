@@ -38,8 +38,9 @@ CRONS: dict[str, list[tuple[int, int]]] = {
     "update-and-deploy.yml": [
         (h, 0) for h in (0, 2, 4, 6, 8, 10, 11, 14, 16, 17, 20, 22)
     ],
-    # tg-interact runs every 2 minutes — too dense to slot-track here;
-    # the volume itself acts as natural redundancy.
+    # tg-interact runs every 5 min (each run holds a 4.5-min long-poll
+    # loop). Healer's COVERAGE_WINDOW_MIN=60 would mark every slot
+    # covered so monitoring is moot — relying on cron density instead.
     # tg-weekly-recap runs once a week (Sun 20:00 UTC) — the healer's
     # daily-slot logic doesn't fit; if it ever skips, manual dispatch.
 }

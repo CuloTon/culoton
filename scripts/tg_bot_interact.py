@@ -51,8 +51,10 @@ NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 BLOG_DIR = ROOT / "web" / "src" / "content" / "blog"
 SITE = "https://culoton.fun"
 
-TG_API_TIMEOUT = 25
+TG_API_TIMEOUT = 35  # > long-poll timeout below, with margin
+LONG_POLL_TIMEOUT = 25  # seconds; getUpdates returns immediately on new msg
 GET_UPDATES_LIMIT = 100
+LOOP_BUDGET_SEC = 270  # 4.5 minutes — leaves margin under workflow's 6-min cap
 NEWS_FOR_LIST_HOURS = 6
 NEWS_FOR_LIST_MAX = 5
 ASK_CONTEXT_NEWS_COUNT = 50
@@ -112,11 +114,11 @@ def tg_send(token: str, chat_id: int | str, text: str, *, reply_to: int | None =
     return tg_api(token, "sendMessage", payload)
 
 
-def tg_get_updates(token: str, offset: int) -> list[dict]:
+def tg_get_updates(token: str, offset: int, timeout: int = 0) -> list[dict]:
     payload = {
         "offset": offset,
         "limit": GET_UPDATES_LIMIT,
-        "timeout": 0,
+        "timeout": timeout,
         "allowed_updates": json.dumps(["message"]),
     }
     resp = tg_api(token, "getUpdates", payload)
@@ -430,22 +432,9 @@ def display_name(user: dict) -> str:
     return " ".join(parts) or "anon"
 
 
-def main() -> int:
-    token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
-    if not token:
-        print("TELEGRAM_BOT_TOKEN missing — bot is offline. No-op.", file=sys.stderr)
-        return 0
-
-    offset = load_offset()
-    updates = tg_get_updates(token, offset)
-    if not updates:
-        print("No new updates.")
-        return 0
-    print(f"Got {len(updates)} update(s). Starting offset={offset}.")
-
-    state = load_state()
-    new_offset = offset
-
+def process_updates(updates: list[dict], state: dict, token: str, start_offset: int) -> int:
+    """Process a batch of updates. Returns new offset (max update_id + 1)."""
+    new_offset = start_offset
     for upd in updates:
         new_offset = max(new_offset, upd.get("update_id", 0) + 1)
         msg = upd.get("message")
@@ -513,9 +502,37 @@ def main() -> int:
         if send_resp and not send_resp.get("ok"):
             print(f"    TG error: {send_resp}")
 
-    save_state(state)
-    save_offset(new_offset)
-    print(f"Done. New offset={new_offset}.")
+    return new_offset
+
+
+def main() -> int:
+    import time
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+    if not token:
+        print("TELEGRAM_BOT_TOKEN missing — bot is offline. No-op.", file=sys.stderr)
+        return 0
+
+    state = load_state()
+    offset = load_offset()
+    deadline = time.monotonic() + LOOP_BUDGET_SEC
+    print(f"Starting long-poll loop. offset={offset}, budget={LOOP_BUDGET_SEC}s.")
+
+    iters = 0
+    total_processed = 0
+    while time.monotonic() < deadline:
+        iters += 1
+        updates = tg_get_updates(token, offset, timeout=LONG_POLL_TIMEOUT)
+        if not updates:
+            continue
+        print(f"[iter {iters}] got {len(updates)} update(s) at offset={offset}")
+        offset = process_updates(updates, state, token, offset)
+        total_processed += len(updates)
+        # Persist after each batch so a job kill mid-loop can't replay
+        # already-answered commands.
+        save_offset(offset)
+        save_state(state)
+
+    print(f"Loop done. iters={iters}, processed={total_processed}, final offset={offset}.")
     return 0
 
 

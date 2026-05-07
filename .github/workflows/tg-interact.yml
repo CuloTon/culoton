@@ -2,7 +2,7 @@ name: TG bot interactions
 
 on:
   schedule:
-    - cron: '* * * * *'   # every minute — fastest cadence GH Actions allows
+    - cron: '*/5 * * * *'   # every 5 min; each run holds a 4.5-min long-poll loop
   workflow_dispatch:
 
 permissions:
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
         with:
