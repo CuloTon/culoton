@@ -1,0 +1,86 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const locale = 'en' as const;
+const TG_STONKS = 'https://t.me/stonksonton';
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/stonks"
+  title="sTONks — the launchpad behind $CULO"
+  description="What sTONks is, how it works, and how $CULO was launched on it."
+>
+  <article class="news-article">
+    <div class="breadcrumb">
+      <a href="/">News</a> &nbsp;/&nbsp; <span>sTONks</span>
+    </div>
+
+    <h1>sTONks — the launchpad behind $CULO</h1>
+
+    <p class="article-summary">
+      $CULO did not start in a vacuum. It was deployed on <strong>sTONks</strong>,
+      a community-first launch platform built on the TON blockchain.
+      Here's what that means and why it matters.
+    </p>
+
+    <div class="body">
+      <h2>What is sTONks?</h2>
+      <p>
+        sTONks is a memecoin launch platform on the TON blockchain. It lets
+        anyone deploy a token in minutes — no Solidity, no manual liquidity
+        bootstrap, no DEX configuration. The platform handles the bonding
+        curve, the on-chain deployment, and the bridge to a public DEX once
+        the token reaches threshold liquidity.
+      </p>
+      <p>
+        In practice, sTONks does for TON what platforms like pump.fun did
+        for Solana: it removes the technical wall between an idea and a
+        live, tradable token. You bring a name, a logo and a community —
+        the platform takes care of the wiring.
+      </p>
+
+      <h2>How $CULO was born</h2>
+      <p>
+        $CULO was launched on sTONks. The platform handled the deployment,
+        bootstrapped the bonding curve, and bridged the token to a public
+        DEX once the threshold was hit. From day one $CULO has lived as a
+        community-first memecoin native to TON.
+      </p>
+      <p>
+        CuloTon — the news desk you are reading right now — was built
+        around it. The token came first; the editorial layer (this site,
+        the Telegram bot, the multilingual news pipeline) was added on
+        top so $CULO would have something to grow into beyond a launch
+        chart.
+      </p>
+
+      <h2>Why it matters</h2>
+      <p>
+        sTONks lowers the barrier to entry for native TON memecoins.
+        Anyone with a Telegram account and a TON wallet can ship a token.
+        That openness fits the TON ethos — the chain is wired directly
+        into Telegram, the largest messaging platform people already use
+        every day.
+      </p>
+      <p>
+        A frictionless launchpad means more memes, more experiments, and
+        more reasons for the TON ecosystem to grow. CuloTon covers it as
+        a news desk, but $CULO itself is part of that wave.
+      </p>
+
+      <h2>Where to go next</h2>
+      <ul>
+        <li>💬 <a href={TG_STONKS} target="_blank" rel="noopener noreferrer">Join the sTONks community chat</a> — where the launches are discussed in real time.</li>
+        <li>🟡 <a href="/culo">Track $CULO live</a> — price, FDV, 24h flow, where to buy.</li>
+        <li>📰 <a href="/">Latest TON news</a> — full feed, updated every 2 hours.</li>
+      </ul>
+
+      <p>
+        <em>This page is a living explainer. If you spot a fact that needs
+        fixing, drop us a tip in the
+        <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>
+      </p>
+    </div>
+  </article>
+</Layout>

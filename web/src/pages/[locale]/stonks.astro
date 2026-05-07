@@ -1,0 +1,146 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import type { Locale } from '../../i18n/strings';
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'ru' } },
+    { params: { locale: 'pl' } },
+    { params: { locale: 'de' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const TG_STONKS = 'https://t.me/stonksonton';
+
+type Copy = {
+  title: string;
+  meta: string;
+  h1: string;
+  summary_html: string;
+  what_h: string;
+  what_p1: string;
+  what_p2: string;
+  origin_h: string;
+  origin_p1: string;
+  origin_p2: string;
+  why_h: string;
+  why_p1: string;
+  why_p2: string;
+  next_h: string;
+  next_chat: string;
+  next_culo: string;
+  next_news: string;
+  living_html: string;
+  breadcrumb_news: string;
+};
+
+const COPY: Record<Locale, Copy> = {
+  en: {} as Copy, // not used here; primary EN page lives at /stonks
+  ru: {
+    title: 'sTONks — лаунчпад, на котором запустили $CULO',
+    meta: 'Что такое sTONks, как он работает и как на нём появился $CULO.',
+    h1: 'sTONks — лаунчпад, на котором запустили $CULO',
+    summary_html: '$CULO появился не на пустом месте. Он был задеплоен на <strong>sTONks</strong> — community-first платформе для запуска токенов в блокчейне TON. Разбираем что это значит и почему важно.',
+    what_h: 'Что такое sTONks?',
+    what_p1: 'sTONks — это платформа для запуска мемкоинов на блокчейне TON. Она позволяет за пару минут задеплоить токен без Solidity, без ручной настройки ликвидности и без конфигурации DEX. Платформа сама занимается бондинг-кривой, on-chain деплоем и переводом токена на публичный DEX когда достигается пороговая ликвидность.',
+    what_p2: 'На практике sTONks делает для TON то, что pump.fun сделал для Solana: убирает технический барьер между идеей и живым торгуемым токеном. Вы приносите название, логотип и сообщество — платформа берёт на себя инфраструктуру.',
+    origin_h: 'Как появился $CULO',
+    origin_p1: '$CULO был запущен на sTONks. Платформа провела деплой, разогнала бондинг-кривую и перевела токен на публичный DEX по достижении порога. С первого дня $CULO живёт как community-first мемкоин, нативный для TON.',
+    origin_p2: 'CuloTon — этот новостной деск, который вы сейчас читаете — был построен вокруг него. Сначала появился токен, потом редакционный слой (этот сайт, Telegram-бот, мультиязычный новостной конвейер) — чтобы у $CULO было во что вырасти, помимо графика на запуске.',
+    why_h: 'Почему это важно',
+    why_p1: 'sTONks снижает порог входа для нативных TON-мемкоинов. У любого, у кого есть Telegram и TON-кошелёк, есть возможность запустить токен. Это вписывается в идеологию TON — блокчейн встроен напрямую в Telegram, самую массовую мессенджер-платформу.',
+    why_p2: 'Лёгкий лаунчпад — это больше мемов, больше экспериментов и больше поводов для роста экосистемы. CuloTon освещает это как новостной деск, но сам $CULO — часть этой волны.',
+    next_h: 'Куда дальше',
+    next_chat: 'Зайти в комьюнити-чат sTONks',
+    next_culo: 'Следить за $CULO в реальном времени',
+    next_news: 'Свежие новости TON',
+    living_html: '<em>Это живой объяснитель. Если заметили факт, требующий уточнения, кидайте наводку в <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>',
+    breadcrumb_news: 'Новости',
+  },
+  pl: {
+    title: 'sTONks — launchpad, na którym powstał $CULO',
+    meta: 'Czym jest sTONks, jak działa i jak na nim pojawił się $CULO.',
+    h1: 'sTONks — launchpad, na którym powstał $CULO',
+    summary_html: '$CULO nie wziął się znikąd. Został zdeployowany na <strong>sTONks</strong> — community-first platformie do launchu tokenów w blockchainie TON. Tłumaczymy co to znaczy i dlaczego ma znaczenie.',
+    what_h: 'Czym jest sTONks?',
+    what_p1: 'sTONks to platforma do launchu memecoinów na blockchainie TON. W kilka minut można zdeployować token — bez Solidity, bez ręcznego bootstrapu płynności i bez konfiguracji DEX-a. Platforma obsługuje krzywą bondingu, on-chain deploy i bridge do publicznego DEX-a, gdy token osiąga próg płynności.',
+    what_p2: 'W praktyce sTONks robi dla TON to, co pump.fun zrobił dla Solany: ściąga techniczną ścianę między pomysłem a żywym, handlowanym tokenem. Wnosisz nazwę, logo i społeczność — platforma ogarnia infrastrukturę.',
+    origin_h: 'Jak powstał $CULO',
+    origin_p1: '$CULO został zdeployowany na sTONks. Platforma przeprowadziła deploy, rozkręciła krzywą bondingu i przerzuciła token na publiczny DEX po osiągnięciu progu. Od pierwszego dnia $CULO żyje jako community-first memecoin natywny dla TON.',
+    origin_p2: 'CuloTon — newsdesk, który właśnie czytasz — został zbudowany wokół niego. Najpierw był token; warstwa redakcyjna (ta strona, bot na Telegramie, wielojęzyczny pipeline newsów) doszła później, żeby $CULO miał w co urosnąć poza wykresem startu.',
+    why_h: 'Dlaczego to ważne',
+    why_p1: 'sTONks obniża próg wejścia dla natywnych memecoinów na TON. Każdy z kontem na Telegramie i portfelem TON może wypuścić token. To wpisuje się w etos TON — blockchain jest podpięty bezpośrednio do Telegrama, największej platformy komunikacyjnej, której ludzie już codziennie używają.',
+    why_p2: 'Bezproblemowy launchpad to więcej memów, więcej eksperymentów i więcej powodów, by ekosystem rósł. CuloTon relacjonuje to jako newsdesk, ale sam $CULO jest częścią tej fali.',
+    next_h: 'Co dalej',
+    next_chat: 'Wejdź na czat społeczności sTONks',
+    next_culo: 'Śledź $CULO na żywo',
+    next_news: 'Najnowsze newsy TON',
+    living_html: '<em>To żywy explainer. Jeśli dostrzeżesz fakt do poprawy, wrzuć cynk na <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>',
+    breadcrumb_news: 'Newsy',
+  },
+  de: {
+    title: 'sTONks — die Launchpad hinter $CULO',
+    meta: 'Was sTONks ist, wie es funktioniert und wie $CULO darauf gestartet wurde.',
+    h1: 'sTONks — die Launchpad hinter $CULO',
+    summary_html: '$CULO ist nicht aus dem Nichts entstanden. Er wurde auf <strong>sTONks</strong> deployed — einer community-first Launchpad-Plattform auf der TON-Blockchain. Hier erklären wir, was das bedeutet und warum es wichtig ist.',
+    what_h: 'Was ist sTONks?',
+    what_p1: 'sTONks ist eine Memecoin-Launchpad auf der TON-Blockchain. Sie ermöglicht den Deployment eines Tokens in wenigen Minuten — ohne Solidity, ohne manuelles Liquidity-Bootstrap und ohne DEX-Konfiguration. Die Plattform übernimmt die Bonding-Kurve, den On-Chain-Deployment und die Brücke zu einem öffentlichen DEX, sobald der Schwellenwert erreicht ist.',
+    what_p2: 'In der Praxis macht sTONks für TON das, was pump.fun für Solana getan hat: die technische Mauer zwischen einer Idee und einem live handelbaren Token verschwindet. Du bringst Name, Logo und Community — die Plattform übernimmt die Infrastruktur.',
+    origin_h: 'Wie $CULO entstand',
+    origin_p1: '$CULO wurde auf sTONks gestartet. Die Plattform übernahm das Deployment, brachte die Bonding-Kurve in Gang und brückte den Token zu einem öffentlichen DEX, sobald der Schwellenwert erreicht war. Seit dem ersten Tag lebt $CULO als community-first Memecoin nativ auf TON.',
+    origin_p2: 'CuloTon — das Nachrichtenpult, das du gerade liest — wurde rund um den Token aufgebaut. Erst kam der Token; die redaktionelle Schicht (diese Seite, der Telegram-Bot, die mehrsprachige Nachrichtenpipeline) kam später dazu, damit $CULO über die Launch-Charts hinaus wachsen kann.',
+    why_h: 'Warum es wichtig ist',
+    why_p1: 'sTONks senkt die Einstiegshürde für native TON-Memecoins. Wer einen Telegram-Account und ein TON-Wallet hat, kann einen Token launchen. Das passt zur TON-Philosophie — die Blockchain ist direkt in Telegram integriert, der größten Messaging-Plattform, die Menschen ohnehin täglich nutzen.',
+    why_p2: 'Eine reibungslose Launchpad bedeutet mehr Memes, mehr Experimente und mehr Gründe für das Wachstum des Ökosystems. CuloTon berichtet darüber als Nachrichtenpult, aber $CULO selbst ist Teil dieser Welle.',
+    next_h: 'Was kommt als Nächstes',
+    next_chat: 'Tritt dem sTONks-Community-Chat bei',
+    next_culo: 'Verfolge $CULO live',
+    next_news: 'Aktuelle TON-Nachrichten',
+    living_html: '<em>Diese Seite ist ein lebendiger Explainer. Wenn du einen Fakt entdeckst, der korrigiert werden muss, schick uns einen Tipp im <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>',
+    breadcrumb_news: 'Nachrichten',
+  },
+};
+
+const c = COPY[locale];
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/stonks"
+  title={c.title}
+  description={c.meta}
+>
+  <article class="news-article">
+    <div class="breadcrumb">
+      <a href={`/${locale}/`}>{c.breadcrumb_news}</a> &nbsp;/&nbsp; <span>sTONks</span>
+    </div>
+
+    <h1>{c.h1}</h1>
+
+    <p class="article-summary" set:html={c.summary_html} />
+
+    <div class="body">
+      <h2>{c.what_h}</h2>
+      <p>{c.what_p1}</p>
+      <p>{c.what_p2}</p>
+
+      <h2>{c.origin_h}</h2>
+      <p>{c.origin_p1}</p>
+      <p>{c.origin_p2}</p>
+
+      <h2>{c.why_h}</h2>
+      <p>{c.why_p1}</p>
+      <p>{c.why_p2}</p>
+
+      <h2>{c.next_h}</h2>
+      <ul>
+        <li>💬 <a href={TG_STONKS} target="_blank" rel="noopener noreferrer">{c.next_chat}</a></li>
+        <li>🟡 <a href={`/${locale}/culo`}>{c.next_culo}</a></li>
+        <li>📰 <a href={`/${locale}/`}>{c.next_news}</a></li>
+      </ul>
+
+      <p set:html={c.living_html} />
+    </div>
+  </article>
+</Layout>

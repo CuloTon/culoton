@@ -42,6 +42,7 @@ interface UIStrings {
   nav_news: string;
   nav_blog: string;
   nav_about: string;
+  nav_stonks: string;
   nav_token: string;
   blog_section_kicker: string;
   blog_section_h: string;
@@ -127,6 +128,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_news: 'News',
     nav_blog: 'Blog',
     nav_about: 'About',
+    nav_stonks: 'sTONks',
     nav_token: '$CULO',
     blog_section_kicker: 'CuloTon Blog',
     blog_section_h: 'Daily TON roundups',
@@ -210,6 +212,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_news: 'Новости',
     nav_blog: 'Блог',
     nav_about: 'О проекте',
+    nav_stonks: 'sTONks',
     nav_token: '$CULO',
     blog_section_kicker: 'Блог CuloTon',
     blog_section_h: 'Ежедневные обзоры TON',
@@ -293,6 +296,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_news: 'Wiadomości',
     nav_blog: 'Blog',
     nav_about: 'O nas',
+    nav_stonks: 'sTONks',
     nav_token: '$CULO',
     blog_section_kicker: 'Blog CuloTon',
     blog_section_h: 'Codzienne podsumowania TON',
@@ -376,6 +380,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_news: 'Nachrichten',
     nav_blog: 'Blog',
     nav_about: 'Über uns',
+    nav_stonks: 'sTONks',
     nav_token: '$CULO',
     blog_section_kicker: 'CuloTon Blog',
     blog_section_h: 'Tägliche TON-Roundups',
