@@ -27,26 +27,33 @@ const TELEGRAM = 'https://t.me/culoton';
   .ft-actions {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+  }
+  .ft-btn-primary,
+  .ft-btn-secondary {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 11px 18px;
+    border-radius: 0;
+    text-align: center;
+    border: 2px solid var(--accent);
+    transition: background 0.12s, color 0.12s;
   }
   .ft-btn-primary {
     background: var(--accent);
     color: #1a1408 !important;
-    padding: 10px 18px;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 14px;
-    text-align: center;
+  }
+  .ft-btn-primary:hover {
+    background: transparent;
+    color: var(--accent) !important;
   }
   .ft-btn-secondary {
     background: transparent;
-    border: 1px solid var(--text-dim);
-    color: var(--text-dim) !important;
-    padding: 9px 17px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 13px;
-    text-align: center;
+    color: #fff8e0 !important;
+    border-color: #4d4032;
   }
   .ft-btn-secondary:hover {
     border-color: var(--accent);

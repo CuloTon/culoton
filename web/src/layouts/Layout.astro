@@ -59,6 +59,13 @@ const alternates = LOCALES.map((loc) => ({
     <meta name="twitter:title" content={finalTitle} />
     <meta name="twitter:description" content={finalDescription} />
     <meta name="twitter:image" content={new URL(ogImage, Astro.site).toString()} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+    />
   </head>
   <body>
     <header class="site-header" id="site-header">
@@ -68,6 +75,7 @@ const alternates = LOCALES.map((loc) => ({
           <div>
             <span class="brand-culo">Culo</span><span class="brand-ton">Ton</span>
           </div>
+          <span class="masthead-tag">— TON Desk</span>
         </a>
         <button
           type="button"
@@ -118,6 +126,19 @@ const alternates = LOCALES.map((loc) => ({
       })();
     </script>
 
+    <div class="ticker" aria-hidden="true">
+      <div class="track">
+        <span><span class="ticker-tag">$TON</span> tracking telegram-driven flows</span>
+        <span><span class="ticker-tag">$CULO</span> native token of the desk</span>
+        <span>edited by <span class="ticker-tag">CuloScribe</span> AI</span>
+        <span><span class="ticker-tag">desk</span> covers ton ecosystem 24/7</span>
+        <span><span class="ticker-tag">$TON</span> tracking telegram-driven flows</span>
+        <span><span class="ticker-tag">$CULO</span> native token of the desk</span>
+        <span>edited by <span class="ticker-tag">CuloScribe</span> AI</span>
+        <span><span class="ticker-tag">desk</span> covers ton ecosystem 24/7</span>
+      </div>
+    </div>
+
     <main>
       <slot />
     </main>
@@ -144,6 +165,16 @@ const alternates = LOCALES.map((loc) => ({
 </html>
 
 <style>
+  .masthead-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-left: 6px;
+    align-self: flex-end;
+    padding-bottom: 4px;
+  }
   .header-menu {
     display: flex;
     align-items: center;
@@ -152,8 +183,8 @@ const alternates = LOCALES.map((loc) => ({
   .hamburger {
     display: none;
     background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    border: 1px solid var(--rule);
+    border-radius: 0;
     padding: 8px 10px;
     cursor: pointer;
     flex-direction: column;
@@ -168,7 +199,6 @@ const alternates = LOCALES.map((loc) => ({
     width: 18px;
     height: 2px;
     background: var(--text);
-    border-radius: 1px;
     transition: transform 0.18s, opacity 0.18s;
   }
   .site-header.menu-open .hamburger span:nth-child(1) {
@@ -184,51 +214,49 @@ const alternates = LOCALES.map((loc) => ({
     display: flex;
     gap: 4px;
     align-items: center;
+    margin-left: 16px;
+    padding-left: 16px;
+    border-left: 1px solid var(--rule-soft);
   }
   .lang-link {
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     padding: 4px 7px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
+    border-radius: 0;
+    border: 1px solid transparent;
     color: var(--text-mute) !important;
     text-decoration: none;
-    transition: color 0.12s, border-color 0.12s, background 0.12s;
+    transition: color 0.12s, background 0.12s;
   }
   .lang-link:hover {
     color: var(--text) !important;
-    border-color: var(--text-dim);
   }
   .lang-link.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #1a1408 !important;
+    background: var(--text);
+    color: var(--accent) !important;
   }
   .edited-by {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 8px;
+    margin-top: 10px;
     font-size: 12px;
     color: var(--text-mute);
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
   }
   .edited-by-avatar {
     width: 24px;
     height: 24px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid var(--border);
-  }
-  .footer-ticker {
-    color: var(--accent);
-    font-family: var(--font-mono);
+    border: 1px solid var(--rule);
   }
   @media (max-width: 720px) {
-    .hamburger {
-      display: flex;
-    }
+    .masthead-tag { display: none; }
+    .hamburger { display: flex; }
     .header-menu {
       position: absolute;
       top: 100%;
@@ -238,7 +266,7 @@ const alternates = LOCALES.map((loc) => ({
       align-items: stretch;
       gap: 0;
       background: var(--bg);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--rule);
       padding: 8px 20px 16px;
       max-height: 0;
       overflow: hidden;
@@ -247,7 +275,7 @@ const alternates = LOCALES.map((loc) => ({
       transition: max-height 0.22s ease, opacity 0.18s ease, padding 0.22s ease;
     }
     .site-header.menu-open .header-menu {
-      max-height: 320px;
+      max-height: 360px;
       opacity: 1;
       pointer-events: auto;
       padding: 12px 20px 18px;
@@ -260,21 +288,25 @@ const alternates = LOCALES.map((loc) => ({
     .header-menu nav.main-nav a {
       display: block;
       margin-left: 0;
-      padding: 12px 4px;
-      font-size: 16px;
-      border-bottom: 1px solid var(--border);
+      padding: 14px 4px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--rule-soft);
     }
     .header-menu nav.main-nav a:last-child {
       border-bottom: none;
     }
     .header-menu .lang-switcher {
       margin-top: 14px;
+      margin-left: 0;
+      padding-left: 0;
+      border-left: none;
       justify-content: flex-start;
       flex-wrap: wrap;
     }
     .header-menu .lang-link {
       padding: 8px 12px;
-      font-size: 13px;
+      font-size: 12px;
+      border: 1px solid var(--rule-soft);
     }
   }
 </style>
