@@ -2,7 +2,7 @@ name: TG bot interactions
 
 on:
   schedule:
-    - cron: '*/2 * * * *'
+    - cron: '* * * * *'   # every minute — fastest cadence GH Actions allows
   workflow_dispatch:
 
 permissions:
