@@ -1,0 +1,41 @@
+name: TG weekly leaderboard recap
+
+on:
+  schedule:
+    - cron: '0 20 * * 0'   # Sunday 20:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tg-weekly-recap
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Post weekly leaderboard + reset
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/tg_weekly_recap.py
+
+      - name: Commit weekly_points reset
+        run: |
+          bash scripts/git_commit_push.sh \
+            "auto: tg weekly recap reset $(date -u +%Y-%m-%dT%H:%MZ)" \
+            data/points.json
