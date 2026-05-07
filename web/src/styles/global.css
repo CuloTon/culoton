@@ -692,10 +692,11 @@ article.news-article .source-attribution strong {
 /* ================================================================== */
 
 :root[data-theme="memecoin"] {
-  --bg: #fff200;
+  --bg: #ffb070;
   --bg-section: #ff3b8a;
   --bg-card: #0a0a0a;
-  --bg-elev: #ffd400;
+  --bg-elev: #ff9b4a;
+  --bg-soft-cream: #ffe6b8;
   --rule: #0a0a0a;
   --rule-soft: #0a0a0a;
   --border: #0a0a0a;
@@ -704,10 +705,10 @@ article.news-article .source-attribution strong {
   --text-dim: #1a1a1a;
   --text-mute: #444444;
   --accent: #00ffd1;
-  --accent-text: #ff007a;
-  --accent-hot: #ff007a;
-  --ton: #008cff;
-  --danger: #ff3030;
+  --accent-text: #c40060;
+  --accent-hot: #c40060;
+  --ton: #006fcc;
+  --danger: #c41a1a;
   --font-display: "Archivo Black", "Bebas Neue", system-ui, sans-serif;
   --font-sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "Space Grotesk", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -794,7 +795,7 @@ article.news-article .source-attribution strong {
 }
 [data-theme="memecoin"] .feature-hero .secondary .sec-card {
   background: #0a0a0a;
-  color: #fff200;
+  color: #ffe6b8;
   padding: 22px 24px;
   border: none;
   transform: rotate(0.6deg);
@@ -805,7 +806,7 @@ article.news-article .source-attribution strong {
   box-shadow: 6px 6px 0 #00ffd1;
 }
 [data-theme="memecoin"] .feature-hero .secondary .sec-card .source { color: #00ffd1; }
-[data-theme="memecoin"] .feature-hero .secondary .sec-card h3 a { color: #fff200; }
+[data-theme="memecoin"] .feature-hero .secondary .sec-card h3 a { color: #ffe6b8; }
 [data-theme="memecoin"] .feature-hero .secondary .sec-card h3 a:hover { color: #00ffd1; border: none; }
 [data-theme="memecoin"] .feature-hero .secondary .sec-card p { color: #d8d6c4; }
 
@@ -829,7 +830,7 @@ article.news-article .source-attribution strong {
 }
 [data-theme="memecoin"] .news-card {
   background: var(--bg-card);
-  color: #fff200;
+  color: #ffe6b8;
   border: 3px solid #0a0a0a;
   border-right: 3px solid #0a0a0a;
   border-bottom: 3px solid #0a0a0a;
@@ -844,7 +845,7 @@ article.news-article .source-attribution strong {
   background: #0a0a0a;
 }
 [data-theme="memecoin"] .news-card .source { color: #00ffd1; font-weight: 700; }
-[data-theme="memecoin"] .news-card h3 a { color: #fff200; border: none; }
+[data-theme="memecoin"] .news-card h3 a { color: #ffe6b8; border: none; }
 [data-theme="memecoin"] .news-card h3 a:hover { color: #00ffd1; }
 [data-theme="memecoin"] .news-card p { color: #d8d6c4; }
 [data-theme="memecoin"] .news-card .footer-row { color: #888; }
@@ -886,7 +887,7 @@ article.news-article .source-attribution strong {
 }
 [data-theme="memecoin"] article.news-article .source-attribution {
   background: #0a0a0a;
-  color: #fff200;
+  color: #ffe6b8;
   border-left: 6px solid #00ffd1;
 }
 [data-theme="memecoin"] article.news-article .source-attribution strong { color: #00ffd1; }
@@ -919,10 +920,10 @@ article.news-article .source-attribution strong {
 
 [data-theme="memecoin"] .site-footer {
   background: #0a0a0a;
-  color: #fff200;
+  color: #ffe6b8;
   border-top: 6px solid var(--accent);
 }
-[data-theme="memecoin"] .site-footer a { color: #fff200; }
+[data-theme="memecoin"] .site-footer a { color: #ffe6b8; }
 [data-theme="memecoin"] .site-footer a:hover { color: var(--accent); }
 
 [data-theme="memecoin"] .hero-banner {
