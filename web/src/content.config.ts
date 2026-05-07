@@ -62,6 +62,38 @@ const blog_de = defineCollection({
   schema: blogSchema,
 });
 
+const pulseSchema = z.object({
+  locale: z.enum(['en', 'ru', 'pl', 'de']),
+  slot: z.enum(['morning', 'afternoon', 'overnight']),
+  title: z.string(),
+  summary: z.string(),
+  date: z.coerce.date(),
+  source_chat: z.string().default('t.me/stonksonton'),
+  message_count: z.number().int().nonnegative().default(0),
+  participants: z.array(z.string()).default([]),
+  tags: z.array(z.string()).default([]),
+});
+
+const pulse_en = defineCollection({
+  loader: glob({ pattern: 'en/**/*.md', base: './src/content/pulse' }),
+  schema: pulseSchema,
+});
+
+const pulse_ru = defineCollection({
+  loader: glob({ pattern: 'ru/**/*.md', base: './src/content/pulse' }),
+  schema: pulseSchema,
+});
+
+const pulse_pl = defineCollection({
+  loader: glob({ pattern: 'pl/**/*.md', base: './src/content/pulse' }),
+  schema: pulseSchema,
+});
+
+const pulse_de = defineCollection({
+  loader: glob({ pattern: 'de/**/*.md', base: './src/content/pulse' }),
+  schema: pulseSchema,
+});
+
 export const collections = {
   news_en,
   news_ru,
@@ -71,4 +103,8 @@ export const collections = {
   blog_ru,
   blog_pl,
   blog_de,
+  pulse_en,
+  pulse_ru,
+  pulse_pl,
+  pulse_de,
 };

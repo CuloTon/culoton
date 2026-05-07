@@ -65,6 +65,7 @@ interface UIStrings {
   footer_token: string;
   footer_telegram: string;
   footer_x: string;
+  footer_pulse: string;
   footer_rss: string;
   footer_edited_by: string;
   source_attribution_lead: string;
@@ -151,6 +152,7 @@ export const UI: Record<Locale, UIStrings> = {
     footer_token: '$CULO',
     footer_telegram: 'Telegram',
     footer_x: 'X / Twitter',
+    footer_pulse: 'sTONks Pulse',
     footer_rss: 'RSS',
     footer_edited_by: 'Edited by CuloScribe AI',
     source_attribution_lead: 'This article is based on reporting by',
@@ -235,6 +237,7 @@ export const UI: Record<Locale, UIStrings> = {
     footer_token: '$CULO',
     footer_telegram: 'Telegram',
     footer_x: 'X / Twitter',
+    footer_pulse: 'sTONks Pulse',
     footer_rss: 'RSS',
     footer_edited_by: 'Редактор: CuloScribe AI',
     source_attribution_lead: 'Статья основана на материалах',
@@ -319,6 +322,7 @@ export const UI: Record<Locale, UIStrings> = {
     footer_token: '$CULO',
     footer_telegram: 'Telegram',
     footer_x: 'X / Twitter',
+    footer_pulse: 'sTONks Pulse',
     footer_rss: 'RSS',
     footer_edited_by: 'Redaktor: CuloScribe AI',
     source_attribution_lead: 'Artykuł powstał w oparciu o materiał',
@@ -403,6 +407,7 @@ export const UI: Record<Locale, UIStrings> = {
     footer_token: '$CULO',
     footer_telegram: 'Telegram',
     footer_x: 'X / Twitter',
+    footer_pulse: 'sTONks Pulse',
     footer_rss: 'RSS',
     footer_edited_by: 'Redaktion: CuloScribe AI',
     source_attribution_lead: 'Dieser Artikel basiert auf Berichterstattung von',
