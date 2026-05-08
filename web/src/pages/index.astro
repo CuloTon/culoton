@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import NewsCard from '../components/NewsCard.astro';
 import FeaturedToken from '../components/FeaturedToken.astro';
+import StatsBadge from '../components/StatsBadge.astro';
 import { UI, DATE_LOCALE, localizedPath } from '../i18n/strings';
 
 const locale = 'en' as const;
@@ -126,6 +127,8 @@ function fmt(d: Date) {
         <p>{t.no_news}</p>
       </div>
     )}
+
+    <StatsBadge locale={locale} />
 
     <FeaturedToken locale={locale} />
   </div>

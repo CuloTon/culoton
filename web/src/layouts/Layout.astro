@@ -24,6 +24,7 @@ const finalTitle = title ?? t.site_title;
 const finalDescription = description ?? t.site_description;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const STATS_API = (import.meta.env.PUBLIC_STATS_API ?? '').toString().replace(/\/$/, '');
 
 const alternates = LOCALES.map((loc) => ({
   loc,
@@ -39,6 +40,7 @@ const alternates = LOCALES.map((loc) => ({
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="canonical" href={canonical} />
+    {STATS_API && <meta name="stats-api" content={STATS_API} />}
 
     {alternates.map((a) => (
       <link rel="alternate" hreflang={a.loc} href={a.href} />
@@ -73,6 +75,47 @@ const alternates = LOCALES.map((loc) => ({
         // Force-overwrite any prior localStorage value from when A/B/C/D/F were exposed.
         document.documentElement.setAttribute('data-theme', 'terminal');
         try { localStorage.setItem('culoton-theme', 'terminal'); } catch (_) {}
+      })();
+    </script>
+    <script is:inline>
+      (function () {
+        var meta = document.querySelector('meta[name="stats-api"]');
+        if (!meta) return;
+        var api = (meta.getAttribute('content') || '').replace(/\/$/, '');
+        if (!api) return;
+
+        function sid() {
+          try {
+            var s = sessionStorage.getItem('culoton-sid');
+            if (s) return s;
+            var arr = new Uint8Array(12);
+            (window.crypto || window.msCrypto).getRandomValues(arr);
+            s = Array.from(arr, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+            sessionStorage.setItem('culoton-sid', s);
+            return s;
+          } catch (_) { return null; }
+        }
+        var id = sid();
+        if (!id) return;
+
+        function visit() {
+          try {
+            fetch(api + '/visit', { method: 'POST', keepalive: true, credentials: 'omit' });
+          } catch (_) {}
+        }
+        function beat() {
+          if (document.hidden) return;
+          try {
+            fetch(api + '/heartbeat?sid=' + encodeURIComponent(id), {
+              method: 'POST', keepalive: true, credentials: 'omit'
+            });
+          } catch (_) {}
+        }
+        // One pageview, then keep heartbeating while the tab is open.
+        visit();
+        beat();
+        setInterval(beat, 25000);
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) beat(); });
       })();
     </script>
   </head>

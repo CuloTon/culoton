@@ -1,0 +1,13 @@
+name = "culoton-stats"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+workers_dev = true
+
+[vars]
+# Comma-separated list of allowed Origin headers. Set to "*" to disable.
+ALLOWED_ORIGIN = "https://culoton.fun"
+
+[[kv_namespaces]]
+binding = "STATS_KV"
+# Replace with the namespace id printed by `wrangler kv namespace create stats`.
+id = "REPLACE_WITH_STATS_KV_NAMESPACE_ID"

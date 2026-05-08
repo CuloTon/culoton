@@ -52,6 +52,15 @@ interface UIStrings {
   archive_total: (n: number) => string;
   archive_view_all: string;
   archive_no_articles: string;
+  stats_h: string;
+  stats_online: string;
+  stats_total: string;
+  stats_avg_hour: string;
+  stats_avg_day: string;
+  stats_avg_week: string;
+  stats_avg_month: string;
+  stats_since: (date: string) => string;
+  stats_pending: string;
   blog_section_kicker: string;
   blog_section_h: string;
   blog_section_blurb: string;
@@ -147,6 +156,15 @@ export const UI: Record<Locale, UIStrings> = {
     archive_total: (n) => `${n} articles in the archive`,
     archive_view_all: 'Browse the full archive →',
     archive_no_articles: 'The archive is empty for now.',
+    stats_h: 'Live desk metrics',
+    stats_online: 'Online now',
+    stats_total: 'Total visits',
+    stats_avg_hour: 'Avg / hour',
+    stats_avg_day: 'Avg / day',
+    stats_avg_week: 'Avg / week',
+    stats_avg_month: 'Avg / month',
+    stats_since: (date) => `Tracking since ${date}`,
+    stats_pending: 'Numbers will fill in as data is collected.',
     blog_section_kicker: 'CuloTon Blog',
     blog_section_h: 'Daily TON roundups',
     blog_section_blurb: 'Three times a day — morning, noon and evening — CuloScribe takes the latest TON ecosystem news and stitches them into one editorial brief. Catch up in two minutes.',
@@ -240,6 +258,15 @@ export const UI: Record<Locale, UIStrings> = {
     archive_total: (n) => `всего материалов: ${n}`,
     archive_view_all: 'Перейти в полный архив →',
     archive_no_articles: 'Архив пока пуст.',
+    stats_h: 'Метрики деска в реальном времени',
+    stats_online: 'Сейчас онлайн',
+    stats_total: 'Всего визитов',
+    stats_avg_hour: 'Среднее / час',
+    stats_avg_day: 'Среднее / день',
+    stats_avg_week: 'Среднее / неделя',
+    stats_avg_month: 'Среднее / месяц',
+    stats_since: (date) => `Учёт с ${date}`,
+    stats_pending: 'Цифры появятся по мере накопления данных.',
     blog_section_kicker: 'Блог CuloTon',
     blog_section_h: 'Ежедневные обзоры TON',
     blog_section_blurb: 'Трижды в день — утром, в полдень и вечером — CuloScribe берёт свежие новости экосистемы TON и собирает из них единую редакционную сводку. Полная картина за две минуты.',
@@ -333,6 +360,15 @@ export const UI: Record<Locale, UIStrings> = {
     archive_total: (n) => `materiałów łącznie: ${n}`,
     archive_view_all: 'Przejdź do pełnego archiwum →',
     archive_no_articles: 'Archiwum jest na razie puste.',
+    stats_h: 'Metryki redakcji na żywo',
+    stats_online: 'Teraz online',
+    stats_total: 'Łącznie wizyt',
+    stats_avg_hour: 'Śr. / godz.',
+    stats_avg_day: 'Śr. / dzień',
+    stats_avg_week: 'Śr. / tydzień',
+    stats_avg_month: 'Śr. / mies.',
+    stats_since: (date) => `Liczone od ${date}`,
+    stats_pending: 'Cyfry wypełnią się w miarę zbierania danych.',
     blog_section_kicker: 'Blog CuloTon',
     blog_section_h: 'Codzienne podsumowania TON',
     blog_section_blurb: 'Trzy razy dziennie — rano, w południe i wieczorem — CuloScribe bierze świeże newsy z ekosystemu TON i składa je w jedną redakcyjną notatkę. Pełen obraz w dwie minuty.',
@@ -426,6 +462,15 @@ export const UI: Record<Locale, UIStrings> = {
     archive_total: (n) => `Beiträge im Archiv: ${n}`,
     archive_view_all: 'Zum vollständigen Archiv →',
     archive_no_articles: 'Das Archiv ist derzeit leer.',
+    stats_h: 'Live-Desk-Metriken',
+    stats_online: 'Jetzt online',
+    stats_total: 'Besuche gesamt',
+    stats_avg_hour: 'Ø / Stunde',
+    stats_avg_day: 'Ø / Tag',
+    stats_avg_week: 'Ø / Woche',
+    stats_avg_month: 'Ø / Monat',
+    stats_since: (date) => `Erfassung seit ${date}`,
+    stats_pending: 'Die Zahlen füllen sich, sobald Daten vorliegen.',
     blog_section_kicker: 'CuloTon Blog',
     blog_section_h: 'Tägliche TON-Roundups',
     blog_section_blurb: 'Dreimal täglich — morgens, mittags und abends — verdichtet CuloScribe die aktuellen News aus dem TON-Ökosystem zu einem redaktionellen Briefing. In zwei Minuten auf dem Stand.',

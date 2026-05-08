@@ -1,0 +1,202 @@
+---
+import { UI, DATE_LOCALE, type Locale } from '../i18n/strings';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = UI[locale];
+---
+
+<section
+  class="stats-badge"
+  data-stats
+  data-locale={locale}
+  data-date-locale={DATE_LOCALE[locale]}
+  data-l-online={t.stats_online}
+  data-l-total={t.stats_total}
+  data-l-hour={t.stats_avg_hour}
+  data-l-day={t.stats_avg_day}
+  data-l-week={t.stats_avg_week}
+  data-l-month={t.stats_avg_month}
+>
+  <header class="stats-head">
+    <span class="kicker">{t.stats_h}</span>
+    <span class="stats-since" data-since>&nbsp;</span>
+  </header>
+  <div class="stats-grid" data-grid>
+    <div class="stat"><span class="label">{t.stats_online}</span><span class="value" data-k="online">—</span></div>
+    <div class="stat"><span class="label">{t.stats_total}</span><span class="value" data-k="total">—</span></div>
+    <div class="stat"><span class="label">{t.stats_avg_hour}</span><span class="value" data-k="avg_per_hour">—</span></div>
+    <div class="stat"><span class="label">{t.stats_avg_day}</span><span class="value" data-k="avg_per_day">—</span></div>
+    <div class="stat"><span class="label">{t.stats_avg_week}</span><span class="value" data-k="avg_per_week">—</span></div>
+    <div class="stat"><span class="label">{t.stats_avg_month}</span><span class="value" data-k="avg_per_month">—</span></div>
+  </div>
+  <p class="stats-pending" data-pending>{t.stats_pending}</p>
+</section>
+
+<style>
+  .stats-badge {
+    margin: 36px 0 20px;
+    padding: 22px 22px 18px;
+    border: 1px solid var(--rule);
+    background: var(--bg-section, transparent);
+  }
+  .stats-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .stats-head .kicker {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 3px 8px;
+  }
+  .stats-since {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 14px 12px 0;
+    border-right: 1px solid var(--rule-soft);
+  }
+  .stat:last-child { border-right: none; padding-right: 0; }
+  .stat:not(:first-child) { padding-left: 14px; }
+  .stat .label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-mute);
+  }
+  .stat .value {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .stat[data-live='true'] .value::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    margin-right: 8px;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
+    animation: pulse 1.6s ease-out infinite;
+    vertical-align: middle;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.55); }
+    70%  { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+  }
+  .stats-pending {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-mute);
+    margin: 12px 0 0;
+    display: none;
+  }
+  .stats-badge[data-empty='true'] .stats-pending { display: block; }
+  @media (max-width: 920px) {
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    .stat { border-bottom: 1px solid var(--rule-soft); padding: 12px 12px 10px; }
+    .stat:not(:first-child) { padding-left: 12px; }
+    .stat:nth-child(3n) { border-right: none; }
+    .stat:nth-last-child(-n+3) { border-bottom: none; }
+  }
+  @media (max-width: 540px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(3n) { border-right: 1px solid var(--rule-soft); }
+    .stat:nth-child(2n) { border-right: none; }
+    .stat:nth-last-child(-n+2) { border-bottom: none; }
+  }
+</style>
+
+<script>
+  (function () {
+    const root = document.querySelector('[data-stats]') as HTMLElement | null;
+    if (!root) return;
+    const meta = document.querySelector('meta[name="stats-api"]') as HTMLMetaElement | null;
+    const api = (meta?.content || '').replace(/\/$/, '');
+    if (!api) {
+      root.setAttribute('data-empty', 'true');
+      return;
+    }
+
+    function fmt(n: number, dl: string) {
+      try { return new Intl.NumberFormat(dl).format(n); } catch { return String(n); }
+    }
+
+    async function load() {
+      try {
+        const r = await fetch(`${api}/stats`, { method: 'GET', credentials: 'omit' });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        const dl = root!.dataset.dateLocale || 'en-US';
+        const empty = !data || (data.total === 0 && data.online === 0);
+
+        const setVal = (k: string, v: number | undefined, live = false) => {
+          const el = root!.querySelector(`[data-k="${k}"]`) as HTMLElement | null;
+          const wrap = el?.closest('.stat') as HTMLElement | null;
+          if (!el) return;
+          if (typeof v !== 'number') {
+            el.textContent = '—';
+            return;
+          }
+          el.textContent = fmt(v, dl);
+          if (wrap && live) wrap.setAttribute('data-live', 'true');
+        };
+
+        setVal('online', data.online, true);
+        setVal('total', data.total);
+        setVal('avg_per_hour', data.avg_per_hour);
+        setVal('avg_per_day', data.avg_per_day);
+        setVal('avg_per_week', data.avg_per_week);
+        setVal('avg_per_month', data.avg_per_month);
+
+        const sinceEl = root!.querySelector('[data-since]') as HTMLElement | null;
+        if (sinceEl && data.since) {
+          const d = new Date(data.since);
+          if (!Number.isNaN(d.valueOf())) {
+            const formatted = d.toLocaleDateString(dl, { year: 'numeric', month: 'short', day: 'numeric' });
+            sinceEl.textContent = `· since ${formatted}`;
+          }
+        }
+
+        if (empty) root!.setAttribute('data-empty', 'true');
+        else root!.removeAttribute('data-empty');
+      } catch {
+        root!.setAttribute('data-empty', 'true');
+      }
+    }
+
+    load();
+    setInterval(load, 30_000);
+  })();
+</script>
