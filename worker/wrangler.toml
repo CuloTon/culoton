@@ -10,4 +10,4 @@ ALLOWED_ORIGIN = "https://culoton.fun"
 [[kv_namespaces]]
 binding = "STATS_KV"
 # Replace with the namespace id printed by `wrangler kv namespace create stats`.
-id = "REPLACE_WITH_STATS_KV_NAMESPACE_ID"
+id = "02f48a2f9ae4441599c29f1187c6bdc5"
