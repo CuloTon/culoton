@@ -1,0 +1,184 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { UI, DATE_LOCALE, localizedPath } from '../i18n/strings';
+
+const locale = 'en' as const;
+const t = UI[locale];
+
+const all = await getCollection('news_en');
+const sorted = all.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+function stripLocaleFromId(id: string): string {
+  return id.replace(/^en\//, '').replace(/\.md$/, '');
+}
+
+type Group = {
+  key: string;
+  label: string;
+  entries: typeof sorted;
+};
+
+const groups: Group[] = [];
+const groupIndex = new Map<string, Group>();
+const monthFmt = new Intl.DateTimeFormat(DATE_LOCALE[locale], { year: 'numeric', month: 'long' });
+
+for (const entry of sorted) {
+  const d = entry.data.date;
+  const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+  let g = groupIndex.get(key);
+  if (!g) {
+    g = { key, label: monthFmt.format(d), entries: [] };
+    groupIndex.set(key, g);
+    groups.push(g);
+  }
+  g.entries.push(entry);
+}
+
+const dayFmt = new Intl.DateTimeFormat(DATE_LOCALE[locale], { day: '2-digit', month: 'short' });
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/archive"
+  title={t.archive_title}
+  description={t.archive_meta_description}
+>
+  <div class="container archive-page">
+    <header class="archive-hero">
+      <span class="badge">{t.nav_archive}</span>
+      <h1>{t.archive_h}</h1>
+      <p>{t.archive_blurb}</p>
+      <span class="archive-total">{t.archive_total(sorted.length)}</span>
+    </header>
+
+    {sorted.length === 0 ? (
+      <div class="empty"><p>{t.archive_no_articles}</p></div>
+    ) : (
+      <div class="archive-groups">
+        {groups.map((g) => (
+          <section class="archive-group" id={`m-${g.key}`}>
+            <h2>{g.label}</h2>
+            <ul class="archive-list">
+              {g.entries.map((entry) => {
+                const slug = stripLocaleFromId(entry.id);
+                return (
+                  <li class="archive-row">
+                    <time datetime={entry.data.date.toISOString()}>{dayFmt.format(entry.data.date)}</time>
+                    <span class="src">{entry.data.source_name}</span>
+                    <a href={localizedPath(locale, `/news/${slug}`)}>{entry.data.title}</a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .archive-page { padding-top: 8px; padding-bottom: 56px; }
+  .archive-hero {
+    border-bottom: 2px solid var(--rule);
+    padding: 24px 0 28px;
+    margin-bottom: 20px;
+  }
+  .archive-hero .badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 3px 8px;
+    margin-bottom: 12px;
+  }
+  .archive-hero h1 {
+    font-family: var(--font-display);
+    font-size: 40px;
+    line-height: 1.05;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .archive-hero p {
+    margin: 0 0 8px;
+    color: var(--text-dim);
+    font-size: 17px;
+    line-height: 1.55;
+    max-width: 720px;
+  }
+  .archive-total {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .archive-groups { display: flex; flex-direction: column; gap: 28px; }
+  .archive-group h2 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    margin: 14px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rule-soft);
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .archive-list { list-style: none; margin: 0; padding: 0; }
+  .archive-row {
+    display: grid;
+    grid-template-columns: 80px 160px 1fr;
+    gap: 14px;
+    align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--rule-soft);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .archive-row:last-child { border-bottom: none; }
+  .archive-row time {
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 12px;
+  }
+  .archive-row .src {
+    color: var(--text-dim);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .archive-row a {
+    color: var(--text);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 1.35;
+    border-bottom: 1px solid transparent;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .archive-row a:hover {
+    color: var(--accent-hot, var(--accent));
+    border-bottom-color: var(--accent);
+  }
+  @media (max-width: 720px) {
+    .archive-hero h1 { font-size: 30px; }
+    .archive-row {
+      grid-template-columns: 1fr;
+      gap: 2px;
+      padding: 10px 0;
+    }
+    .archive-row time { font-size: 11px; }
+    .archive-row .src { font-size: 11px; }
+    .archive-row a { font-size: 15px; }
+  }
+</style>

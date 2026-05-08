@@ -41,9 +41,17 @@ interface UIStrings {
   no_news: string;
   nav_news: string;
   nav_blog: string;
+  nav_archive: string;
   nav_about: string;
   nav_stonks: string;
   nav_token: string;
+  archive_title: string;
+  archive_meta_description: string;
+  archive_h: string;
+  archive_blurb: string;
+  archive_total: (n: number) => string;
+  archive_view_all: string;
+  archive_no_articles: string;
   blog_section_kicker: string;
   blog_section_h: string;
   blog_section_blurb: string;
@@ -128,9 +136,17 @@ export const UI: Record<Locale, UIStrings> = {
     no_news: 'No news yet.',
     nav_news: 'News',
     nav_blog: 'Blog',
+    nav_archive: 'Archive',
     nav_about: 'About',
     nav_stonks: 'sTONks',
     nav_token: '$CULO',
+    archive_title: 'News archive — CuloTon',
+    archive_meta_description: 'Every TON ecosystem story published on CuloTon, grouped by month. The full back-catalogue of independent TON news.',
+    archive_h: 'News archive',
+    archive_blurb: 'Every story CuloScribe has filed on the TON ecosystem, grouped by month — newest first. Older context for the latest moves.',
+    archive_total: (n) => `${n} articles in the archive`,
+    archive_view_all: 'Browse the full archive →',
+    archive_no_articles: 'The archive is empty for now.',
     blog_section_kicker: 'CuloTon Blog',
     blog_section_h: 'Daily TON roundups',
     blog_section_blurb: 'Three times a day — morning, noon and evening — CuloScribe takes the latest TON ecosystem news and stitches them into one editorial brief. Catch up in two minutes.',
@@ -213,9 +229,17 @@ export const UI: Record<Locale, UIStrings> = {
     no_news: 'Пока нет новостей.',
     nav_news: 'Новости',
     nav_blog: 'Блог',
+    nav_archive: 'Архив',
     nav_about: 'О проекте',
     nav_stonks: 'sTONks',
     nav_token: '$CULO',
+    archive_title: 'Архив новостей — CuloTon',
+    archive_meta_description: 'Каждая публикация об экосистеме TON на CuloTon, сгруппированная по месяцам. Полный архив независимых новостей TON.',
+    archive_h: 'Архив новостей',
+    archive_blurb: 'Все материалы CuloScribe об экосистеме TON, сгруппированные по месяцам — новые сверху. Исторический контекст для свежих движений.',
+    archive_total: (n) => `всего материалов: ${n}`,
+    archive_view_all: 'Перейти в полный архив →',
+    archive_no_articles: 'Архив пока пуст.',
     blog_section_kicker: 'Блог CuloTon',
     blog_section_h: 'Ежедневные обзоры TON',
     blog_section_blurb: 'Трижды в день — утром, в полдень и вечером — CuloScribe берёт свежие новости экосистемы TON и собирает из них единую редакционную сводку. Полная картина за две минуты.',
@@ -298,9 +322,17 @@ export const UI: Record<Locale, UIStrings> = {
     no_news: 'Brak wiadomości.',
     nav_news: 'Wiadomości',
     nav_blog: 'Blog',
+    nav_archive: 'Archiwum',
     nav_about: 'O nas',
     nav_stonks: 'sTONks',
     nav_token: '$CULO',
+    archive_title: 'Archiwum wiadomości — CuloTon',
+    archive_meta_description: 'Każda historia z ekosystemu TON opublikowana na CuloTon, pogrupowana po miesiącach. Pełne archiwum niezależnych newsów TON.',
+    archive_h: 'Archiwum wiadomości',
+    archive_blurb: 'Wszystkie materiały CuloScribe o ekosystemie TON, pogrupowane po miesiącach — najnowsze na górze. Kontekst historyczny dla świeżych ruchów.',
+    archive_total: (n) => `materiałów łącznie: ${n}`,
+    archive_view_all: 'Przejdź do pełnego archiwum →',
+    archive_no_articles: 'Archiwum jest na razie puste.',
     blog_section_kicker: 'Blog CuloTon',
     blog_section_h: 'Codzienne podsumowania TON',
     blog_section_blurb: 'Trzy razy dziennie — rano, w południe i wieczorem — CuloScribe bierze świeże newsy z ekosystemu TON i składa je w jedną redakcyjną notatkę. Pełen obraz w dwie minuty.',
@@ -383,9 +415,17 @@ export const UI: Record<Locale, UIStrings> = {
     no_news: 'Noch keine Nachrichten.',
     nav_news: 'Nachrichten',
     nav_blog: 'Blog',
+    nav_archive: 'Archiv',
     nav_about: 'Über uns',
     nav_stonks: 'sTONks',
     nav_token: '$CULO',
+    archive_title: 'Nachrichtenarchiv — CuloTon',
+    archive_meta_description: 'Jede Geschichte aus dem TON-Ökosystem, die auf CuloTon veröffentlicht wurde, nach Monaten gruppiert. Das vollständige Archiv unabhängiger TON-Nachrichten.',
+    archive_h: 'Nachrichtenarchiv',
+    archive_blurb: 'Alle Beiträge, die CuloScribe zum TON-Ökosystem verfasst hat — nach Monaten gruppiert, neueste zuerst. Historischer Kontext für die jüngsten Bewegungen.',
+    archive_total: (n) => `Beiträge im Archiv: ${n}`,
+    archive_view_all: 'Zum vollständigen Archiv →',
+    archive_no_articles: 'Das Archiv ist derzeit leer.',
     blog_section_kicker: 'CuloTon Blog',
     blog_section_h: 'Tägliche TON-Roundups',
     blog_section_blurb: 'Dreimal täglich — morgens, mittags und abends — verdichtet CuloScribe die aktuellen News aus dem TON-Ökosystem zu einem redaktionellen Briefing. In zwei Minuten auf dem Stand.',

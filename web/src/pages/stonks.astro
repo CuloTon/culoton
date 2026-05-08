@@ -5,20 +5,30 @@ const locale = 'en' as const;
 const STONKS_SITE = 'https://stonksbots.com/';
 const STONKS_TRADER = 'https://t.me/stonks_sniper_bot';
 const TG_STONKSONTON = 'https://t.me/stonksonton';
+const STONKS_PUMP_LAUNCH = 'https://stonkslabs.com/launch/ton';
+const STONKS_PUMP_DOCS = 'https://stonks-bot.gitbook.io/stonks-bot-manual/stonks.pump-launchpad';
+const YT_VIDEO_ID = 'IaodzcNhy_4';
+const YT_EMBED = `https://www.youtube-nocookie.com/embed/${YT_VIDEO_ID}?start=2&rel=0`;
 ---
 
 <Layout
   locale={locale}
   pathWithoutLocale="/stonks"
   title="sTONks — the on-chain ecosystem behind $CULO"
-  description="What sTONks is, how the build-to-trade pipeline works, and how $CULO was launched on it."
+  description="What sTONks is, how the stonks.pump launchpad works, and how $CULO was launched on it."
 >
-  <article class="news-article">
+  <article class="news-article stonks-article">
     <div class="breadcrumb">
       <a href="/">News</a> &nbsp;/&nbsp; <span>sTONks</span>
     </div>
 
-    <h1>sTONks — the on-chain ecosystem behind $CULO</h1>
+    <header class="stonks-hero">
+      <img class="stonks-logo" src="/stonks.jpg" alt="sTONks logo" width="120" height="120" />
+      <div>
+        <span class="stonks-kicker">TON · Build · Tokenize · Trade</span>
+        <h1>sTONks — the on-chain ecosystem behind $CULO</h1>
+      </div>
+    </header>
 
     <p class="article-summary">
       $CULO was not deployed in a vacuum. It was launched on
@@ -82,6 +92,74 @@ const TG_STONKSONTON = 'https://t.me/stonksonton';
         launch chart.
       </p>
 
+      <h2 id="stonks-pump">stonks.pump — how the launchpad actually works</h2>
+      <p>
+        <strong>stonks.pump</strong> is the free jetton launchpad inside sTONks — the actual
+        surface where a new TON token (like $CULO) gets deployed. The four-stage ecosystem above
+        is the platform; stonks.pump is the &quot;launch&quot; button on it. Source:
+        <a href={STONKS_PUMP_DOCS} target="_blank" rel="noopener noreferrer">stonks-bot manual</a>.
+      </p>
+
+      <h3>Launch flow (creator side)</h3>
+      <ol>
+        <li><strong>Open the launcher</strong> — either <a href={STONKS_TRADER} target="_blank" rel="noopener noreferrer">@stonks_sniper_bot</a> on Telegram (<code>/start</code> → &quot;🚀 Launch coin&quot;) or the web terminal at <a href={STONKS_PUMP_LAUNCH} target="_blank" rel="noopener noreferrer">stonkslabs.com/launch/ton</a>.</li>
+        <li><strong>Coin details</strong> — name, symbol, image, description.</li>
+        <li><strong>Liquidity mode</strong> — choose <em>Seed LP</em> (you set the LP amount manually) or <em>Virtual LP</em> (algorithmic, equivalent to ~500 TON of liquidity for a flat 3.2 TON fee).</li>
+        <li><strong>Tokenomics</strong> — pick <em>Simple coin</em> (no taxes) or <em>Customize</em> for buy/sell taxes (max 30% each), anti-sniper limits, a dev bag (max 5% of supply), marketing wallet and holder reward distribution.</li>
+        <li><strong>Deploy</strong> — submit one transaction. Processing time: ~5 min for Seed LP, 1-2 min for Virtual LP.</li>
+      </ol>
+
+      <h3>Two liquidity modes side by side</h3>
+      <div class="pump-modes">
+        <div class="pump-mode">
+          <h4>Seed LP</h4>
+          <ul>
+            <li>You provide the LP yourself, drawn from the deployer wallet.</li>
+            <li>Cost: <strong>LP amount + 4 TON</strong>; plus <strong>5% of tax revenue</strong> to the launchpad. Zero-tax launches are free.</li>
+            <li>Lets you split tax between marketing wallet and holder rewards.</li>
+            <li>Processing ~5 minutes.</li>
+          </ul>
+        </div>
+        <div class="pump-mode">
+          <h4>Virtual LP</h4>
+          <ul>
+            <li>Algorithmic bonding curve — equivalent to <strong>~500 TON</strong> of liquidity for a flat <strong>3.2 TON</strong>.</li>
+            <li>Fee: <strong>0.3% (with tax)</strong> or <strong>0.4% (no tax)</strong>; plus 5% of tax revenue.</li>
+            <li>All rewards go to holders (no marketing-wallet split in this mode).</li>
+            <li>Curve graduates as the real price catches up to the virtual price; processing ~1-2 minutes.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="hint">
+        Recommended buffer on the deployer wallet: 5-7 TON for network fees. Total supply is
+        fixed at <strong>100 million tokens</strong> regardless of mode.
+      </p>
+
+      <h3>Built-in protections</h3>
+      <ul>
+        <li><strong>LP burned</strong> at launch — the deployer cannot remove liquidity. No rug lever.</li>
+        <li><strong>Auto ownership revoke</strong> — mint/burn rights are dropped on the deployer post-launch.</li>
+        <li><strong>Anti-sniper</strong> — optional max-buy cap for the first 30 minutes (effectively first 15 per FAQ); excess goes to LP.</li>
+        <li><strong>Single-transaction LP add</strong> on STON.fi prevents micro-LP snipes.</li>
+        <li><strong>Holder rewards</strong> — when taxes are enabled, distributions to holders begin roughly an hour after launch and depend on volume.</li>
+      </ul>
+
+      <h3>Watch the walkthrough</h3>
+      <div class="video-wrap">
+        <iframe
+          src={YT_EMBED}
+          title="stonks.pump launchpad walkthrough"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </div>
+      <p class="hint">
+        For full official documentation, see the
+        <a href={STONKS_PUMP_DOCS} target="_blank" rel="noopener noreferrer">stonks.pump manual</a>.
+      </p>
+
       <h2>Why it matters for the TON ecosystem</h2>
       <p>
         sTONks lowers the barrier to entry for serious on-chain projects, not just memecoins.
@@ -98,6 +176,7 @@ const TG_STONKSONTON = 'https://t.me/stonksonton';
       <h2>Where to go next</h2>
       <ul>
         <li>🌐 <a href={STONKS_SITE} target="_blank" rel="noopener noreferrer">stonksbots.com</a> — the official sTONks platform.</li>
+        <li>🚀 <a href={STONKS_PUMP_LAUNCH} target="_blank" rel="noopener noreferrer">stonkslabs.com/launch/ton</a> — the stonks.pump launcher.</li>
         <li>🤖 <a href={STONKS_TRADER} target="_blank" rel="noopener noreferrer">@stonks_sniper_bot</a> — the trading terminal in a Telegram DM.</li>
         <li>💬 <a href={TG_STONKSONTON} target="_blank" rel="noopener noreferrer">t.me/stonksonton</a> — the community chat where launches are discussed in real time.</li>
         <li>🟡 <a href="/culo">Track $CULO live</a> — price, FDV, 24h flow, where to buy.</li>
@@ -106,10 +185,95 @@ const TG_STONKSONTON = 'https://t.me/stonksonton';
 
       <p>
         <em>This page is a living explainer based on public information from
-        <a href={STONKS_SITE} target="_blank" rel="noopener noreferrer">stonksbots.com</a>. Spot
-        a fact that needs sharpening? Drop us a tip in the
+        <a href={STONKS_SITE} target="_blank" rel="noopener noreferrer">stonksbots.com</a> and the
+        <a href={STONKS_PUMP_DOCS} target="_blank" rel="noopener noreferrer">stonks.pump manual</a>.
+        Spot a fact that needs sharpening? Drop us a tip in the
         <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>
       </p>
     </div>
   </article>
 </Layout>
+
+<style>
+  .stonks-hero {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin: 18px 0 14px;
+  }
+  .stonks-logo {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border: 2px solid var(--rule);
+    border-radius: 0;
+    flex-shrink: 0;
+  }
+  .stonks-kicker {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 3px 8px;
+    margin-bottom: 10px;
+  }
+  .stonks-article h1 { margin: 0; }
+  .pump-modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 14px 0 18px;
+  }
+  .pump-mode {
+    border: 1px solid var(--rule);
+    padding: 16px 18px 14px;
+    background: var(--bg-section, transparent);
+  }
+  .pump-mode h4 {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-hot, var(--accent));
+    margin: 0 0 8px;
+  }
+  .pump-mode ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .pump-mode li { margin: 4px 0; }
+  .pump-mode strong { color: var(--text); }
+  .video-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin: 16px 0 8px;
+    border: 1px solid var(--rule);
+    background: #000;
+  }
+  .video-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .hint {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-mute);
+    margin: 6px 0 12px;
+  }
+  @media (max-width: 720px) {
+    .stonks-hero { gap: 14px; }
+    .stonks-logo { width: 72px; height: 72px; }
+    .pump-modes { grid-template-columns: 1fr; }
+  }
+</style>

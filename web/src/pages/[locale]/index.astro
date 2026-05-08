@@ -133,6 +133,9 @@ function fmt(d: Date) {
             />
           ))}
         </div>
+        <p class="archive-link-row">
+          <a href={localizedPath(locale, '/archive')}>{t.archive_view_all}</a>
+        </p>
       </>
     )}
 
@@ -147,6 +150,24 @@ function fmt(d: Date) {
 </Layout>
 
 <style>
+  .archive-link-row {
+    margin: 28px 0 8px;
+    text-align: right;
+  }
+  .archive-link-row a {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 2px;
+    text-decoration: none;
+  }
+  .archive-link-row a:hover {
+    color: var(--accent-hot, var(--accent));
+    border-bottom-color: var(--accent);
+  }
   .blog-section {
     margin: 44px 0;
     padding: 28px 0 32px;

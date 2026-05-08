@@ -14,10 +14,15 @@ const { locale } = Astro.params as { locale: Locale };
 const STONKS_SITE = 'https://stonksbots.com/';
 const STONKS_TRADER = 'https://t.me/stonks_sniper_bot';
 const TG_STONKSONTON = 'https://t.me/stonksonton';
+const STONKS_PUMP_LAUNCH = 'https://stonkslabs.com/launch/ton';
+const STONKS_PUMP_DOCS = 'https://stonks-bot.gitbook.io/stonks-bot-manual/stonks.pump-launchpad';
+const YT_VIDEO_ID = 'IaodzcNhy_4';
+const YT_EMBED = `https://www.youtube-nocookie.com/embed/${YT_VIDEO_ID}?start=2&rel=0`;
 
 type Copy = {
   title: string;
   meta: string;
+  kicker: string;
   h1: string;
   summary_html: string;
   what_h: string;
@@ -33,11 +38,27 @@ type Copy = {
   origin_h: string;
   origin_p1_html: string;
   origin_p2: string;
+  pump_h: string;
+  pump_intro_html: string;
+  pump_flow_h: string;
+  pump_flow_li_html: string[];
+  pump_modes_h: string;
+  pump_seed_h: string;
+  pump_seed_li_html: string[];
+  pump_virtual_h: string;
+  pump_virtual_li_html: string[];
+  pump_modes_hint_html: string;
+  pump_protect_h: string;
+  pump_protect_li_html: string[];
+  pump_video_h: string;
+  pump_video_iframe_title: string;
+  pump_docs_hint_html: string;
   why_h: string;
   why_p1: string;
   why_p2: string;
   next_h: string;
   next_site: string;
+  next_pump: string;
   next_trader: string;
   next_chat: string;
   next_culo: string;
@@ -47,10 +68,11 @@ type Copy = {
 };
 
 const COPY: Record<Locale, Copy> = {
-  en: {} as Copy, // not used; primary EN page lives at /stonks
+  en: {} as Copy,
   ru: {
     title: 'sTONks — on-chain экосистема, на которой запустили $CULO',
-    meta: 'Что такое sTONks, как работает пайплайн build-to-trade и как на нём запустили $CULO.',
+    meta: 'Что такое sTONks, как работает stonks.pump лаунчпад и как на нём запустили $CULO.',
+    kicker: 'TON · Build · Tokenize · Trade',
     h1: 'sTONks — on-chain экосистема, на которой запустили $CULO',
     summary_html: '$CULO появился не на пустом месте. Он был запущен на <strong><a href="' + STONKS_SITE + '" target="_blank" rel="noopener noreferrer">sTONks</a></strong> — end-to-end on-chain платформе, которая позволяет билдить, деплоить, токенизировать и торговать в одном месте, всё на TON. Разбираем что это значит.',
     what_h: 'Что такое sTONks на самом деле',
@@ -75,21 +97,60 @@ const COPY: Record<Locale, Copy> = {
     origin_h: 'Как появился $CULO',
     origin_p1_html: '$CULO был запущен на sTONks через токеномику <strong>Deploy-with-TAX</strong> — не через bonding curve. Это значит токен с фиксированным supply и небольшой комиссией на buy/sell, вместо curve-graduate запуска. Платформа провела деплой, прописала on-chain tax и листинг на интегрированном торговом слое с первого дня.',
     origin_p2: 'CuloTon — новостной деск, который вы сейчас читаете — был построен вокруг токена. Сначала появился $CULO, потом редакционный слой (этот сайт, мультиязычный новостной конвейер, Telegram-бот, X-фид), чтобы у токена было во что вырасти, помимо графика на запуске.',
+    pump_h: 'stonks.pump — как именно работает лаунчпад',
+    pump_intro_html: '<strong>stonks.pump</strong> — это бесплатный jetton-лаунчпад внутри sTONks, та самая поверхность, где деплоится новый TON-токен (как $CULO). Четырёхступенчатая экосистема выше — это платформа; stonks.pump — кнопка «launch» на ней. Источник: <a href="' + STONKS_PUMP_DOCS + '" target="_blank" rel="noopener noreferrer">официальный мануал stonks-bot</a>.',
+    pump_flow_h: 'Поток запуска (со стороны создателя)',
+    pump_flow_li_html: [
+      '<strong>Открыть лаунчер</strong> — либо <a href="' + STONKS_TRADER + '" target="_blank" rel="noopener noreferrer">@stonks_sniper_bot</a> в Telegram (<code>/start</code> → «🚀 Launch coin»), либо веб-терминал <a href="' + STONKS_PUMP_LAUNCH + '" target="_blank" rel="noopener noreferrer">stonkslabs.com/launch/ton</a>.',
+      '<strong>Параметры монеты</strong> — название, символ, картинка, описание.',
+      '<strong>Режим ликвидности</strong> — <em>Seed LP</em> (сами задаёте размер LP) или <em>Virtual LP</em> (алгоритмически, эквивалент ~500 TON ликвидности за фиксированные 3,2 TON).',
+      '<strong>Токеномика</strong> — <em>Simple coin</em> (без налогов) или <em>Customize</em>: налоги на buy/sell (макс. 30% каждый), anti-sniper лимиты, dev bag (макс. 5% supply), маркетинг-кошелёк, дистрибуция наград держателям.',
+      '<strong>Деплой</strong> — одна транзакция. Время обработки: ~5 мин для Seed LP, 1-2 мин для Virtual LP.',
+    ],
+    pump_modes_h: 'Два режима ликвидности — сравнение',
+    pump_seed_h: 'Seed LP',
+    pump_seed_li_html: [
+      'Ликвидность вы вкладываете сами, со своего deployer-кошелька.',
+      'Стоимость: <strong>сумма LP + 4 TON</strong>; плюс <strong>5% от налоговых сборов</strong> в пользу лаунчпада. Запуски без налога — бесплатно.',
+      'Позволяет разделять налог между marketing-кошельком и наградами держателям.',
+      'Обработка ~5 минут.',
+    ],
+    pump_virtual_h: 'Virtual LP',
+    pump_virtual_li_html: [
+      'Алгоритмическая bonding curve — эквивалент <strong>~500 TON</strong> ликвидности за фиксированные <strong>3,2 TON</strong>.',
+      'Комиссия: <strong>0,3% (с налогом)</strong> или <strong>0,4% (без налога)</strong>; плюс 5% от налоговых сборов.',
+      'Все награды идут держателям (без разделения с marketing-кошельком).',
+      'Кривая «градуирует», когда реальная цена догоняет виртуальную; обработка ~1-2 минуты.',
+    ],
+    pump_modes_hint_html: 'Рекомендуемый запас на deployer-кошельке: 5-7 TON на сетевые комиссии. Total supply фиксирован — <strong>100 миллионов токенов</strong>, независимо от режима.',
+    pump_protect_h: 'Встроенные защиты',
+    pump_protect_li_html: [
+      '<strong>LP сжигается</strong> на запуске — деплоер не может вытащить ликвидность. Никакого rug-рычага.',
+      '<strong>Auto ownership revoke</strong> — права mint/burn у деплоера снимаются после запуска.',
+      '<strong>Anti-sniper</strong> — опциональный лимит макс. покупки на первые 30 минут (де-факто первые 15 по FAQ); излишек уходит в LP.',
+      '<strong>LP-add одной транзакцией</strong> на STON.fi защищает от микро-LP-снайпов.',
+      '<strong>Награды держателям</strong> — при включённых налогах распределения начинаются примерно через час после запуска и зависят от объёма.',
+    ],
+    pump_video_h: 'Посмотреть в действии',
+    pump_video_iframe_title: 'Обзор лаунчпада stonks.pump',
+    pump_docs_hint_html: 'Полная официальная документация — <a href="' + STONKS_PUMP_DOCS + '" target="_blank" rel="noopener noreferrer">мануал stonks.pump</a>.',
     why_h: 'Почему это важно для экосистемы TON',
     why_p1: 'sTONks снижает порог входа для серьёзных on-chain проектов, не только мемкоинов. Любой с Telegram-аккаунтом и TON-кошельком может задеплоить реальный продукт, токенизировать его с залоченной on-chain токеномикой и выйти на аудиторию, которая уже торгует. Это вписывается в идеологию TON — блокчейн встроен напрямую в Telegram.',
     why_p2: 'Для трейдеров value-prop проще: у каждого токена на sTONks есть верифицируемая связь с реальным кодом. Меньше LARP-а, больше сигнала.',
     next_h: 'Куда дальше',
     next_site: 'официальная платформа sTONks',
+    next_pump: 'лаунчер stonks.pump',
     next_trader: 'торговый терминал в Telegram DM',
     next_chat: 'комьюнити-чат, где обсуждают запуски в реальном времени',
     next_culo: 'Следить за $CULO в реальном времени',
     next_news: 'Свежие новости TON',
-    living_html: '<em>Это живой объяснитель на базе публичной информации с <a href="' + STONKS_SITE + '" target="_blank" rel="noopener noreferrer">stonksbots.com</a>. Заметили факт, требующий уточнения? Кидайте наводку в <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>',
+    living_html: '<em>Это живой объяснитель на базе публичной информации с <a href="' + STONKS_SITE + '" target="_blank" rel="noopener noreferrer">stonksbots.com</a> и <a href="' + STONKS_PUMP_DOCS + '" target="_blank" rel="noopener noreferrer">мануала stonks.pump</a>. Заметили факт, требующий уточнения? Кидайте наводку в <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>',
     breadcrumb_news: 'Новости',
   },
   pl: {
     title: 'sTONks — on-chain ekosystem, na którym powstał $CULO',
-    meta: 'Czym jest sTONks, jak działa pipeline build-to-trade i jak na nim powstał $CULO.',
+    meta: 'Czym jest sTONks, jak działa launchpad stonks.pump i jak na nim powstał $CULO.',
+    kicker: 'TON · Build · Tokenize · Trade',
     h1: 'sTONks — on-chain ekosystem, na którym powstał $CULO',
     summary_html: '$CULO nie wziął się znikąd. Został zdeployowany na <strong><a href="' + STONKS_SITE + '" target="_blank" rel="noopener noreferrer">sTONks</a></strong> — end-to-end on-chain platformie, która pozwala budować, deployować, tokenizować i handlować w jednym miejscu, w całości na TON. Tłumaczymy co to znaczy.',
     what_h: 'Czym jest sTONks naprawdę',
@@ -114,21 +175,60 @@ const COPY: Record<Locale, Copy> = {
     origin_h: 'Jak powstał $CULO',
     origin_p1_html: '$CULO został zdeployowany na sTONks przez tokenomikę <strong>Deploy-with-TAX</strong> — NIE przez bonding curve. To znaczy token z fixed supply i niewielką prowizją na każdy buy/sell, zamiast curve-graduated launchu. Platforma przeprowadziła deploy, on-chain tax wiring i listing na zintegrowanej warstwie tradingowej od pierwszego dnia.',
     origin_p2: 'CuloTon — newsdesk, który właśnie czytasz — został zbudowany wokół tokena. Najpierw był $CULO; potem doszła warstwa redakcyjna (ta strona, wielojęzyczny pipeline newsów, bot na Telegramie, feed na X), żeby token miał w co urosnąć poza wykresem startu.',
+    pump_h: 'stonks.pump — jak naprawdę działa launchpad',
+    pump_intro_html: '<strong>stonks.pump</strong> to darmowy jetton-launchpad wewnątrz sTONks, czyli ta powierzchnia, na której nowy token TON (taki jak $CULO) jest faktycznie deployowany. Czterostopniowa ekosystem powyżej to platforma; stonks.pump to przycisk „launch” na niej. Źródło: <a href="' + STONKS_PUMP_DOCS + '" target="_blank" rel="noopener noreferrer">oficjalny manual stonks-bot</a>.',
+    pump_flow_h: 'Flow uruchomienia (po stronie twórcy)',
+    pump_flow_li_html: [
+      '<strong>Otwórz launcher</strong> — albo <a href="' + STONKS_TRADER + '" target="_blank" rel="noopener noreferrer">@stonks_sniper_bot</a> na Telegramie (<code>/start</code> → „🚀 Launch coin”), albo terminal web na <a href="' + STONKS_PUMP_LAUNCH + '" target="_blank" rel="noopener noreferrer">stonkslabs.com/launch/ton</a>.',
+      '<strong>Dane monety</strong> — nazwa, symbol, obrazek, opis.',
+      '<strong>Tryb płynności</strong> — <em>Seed LP</em> (sam ustalasz wielkość LP) albo <em>Virtual LP</em> (algorytmicznie, ekwiwalent ~500 TON płynności za stałą opłatę 3,2 TON).',
+      '<strong>Tokenomika</strong> — <em>Simple coin</em> (bez podatków) albo <em>Customize</em>: podatki buy/sell (max 30% każdy), anti-sniper, dev bag (max 5% supply), portfel marketingowy, dystrybucja nagród dla holderów.',
+      '<strong>Deploy</strong> — jedna transakcja. Czas: ~5 min dla Seed LP, 1-2 min dla Virtual LP.',
+    ],
+    pump_modes_h: 'Dwa tryby płynności — porównanie',
+    pump_seed_h: 'Seed LP',
+    pump_seed_li_html: [
+      'Płynność wkładasz sam, z portfela deployera.',
+      'Koszt: <strong>kwota LP + 4 TON</strong>; plus <strong>5% przychodu z podatku</strong> dla launchpada. Launche bez podatku są darmowe.',
+      'Pozwala podzielić podatek między portfel marketingowy a nagrody dla holderów.',
+      'Czas obróbki ~5 minut.',
+    ],
+    pump_virtual_h: 'Virtual LP',
+    pump_virtual_li_html: [
+      'Algorytmiczna bonding curve — ekwiwalent <strong>~500 TON</strong> płynności za stałą opłatę <strong>3,2 TON</strong>.',
+      'Opłata: <strong>0,3% (z podatkiem)</strong> lub <strong>0,4% (bez podatku)</strong>; plus 5% przychodu z podatku.',
+      'Wszystkie nagrody idą do holderów (brak podziału z portfelem marketingowym).',
+      'Krzywa „graduuje”, gdy realna cena dogania wirtualną; obróbka ~1-2 minuty.',
+    ],
+    pump_modes_hint_html: 'Zalecany bufor na portfelu deployera: 5-7 TON na opłaty sieciowe. Total supply jest stały — <strong>100 milionów tokenów</strong>, niezależnie od trybu.',
+    pump_protect_h: 'Wbudowane zabezpieczenia',
+    pump_protect_li_html: [
+      '<strong>LP spalone</strong> przy launchu — deployer nie może wyciągnąć płynności. Brak rug-dźwigni.',
+      '<strong>Auto ownership revoke</strong> — prawa mint/burn u deployera są ściągane po launchu.',
+      '<strong>Anti-sniper</strong> — opcjonalny limit max-buy na pierwsze 30 minut (de facto pierwsze 15 wg FAQ); nadwyżka idzie do LP.',
+      '<strong>LP-add jedną transakcją</strong> na STON.fi blokuje micro-LP snajpy.',
+      '<strong>Nagrody dla holderów</strong> — przy włączonych podatkach dystrybucje startują mniej więcej godzinę po launchu i zależą od wolumenu.',
+    ],
+    pump_video_h: 'Zobacz w akcji',
+    pump_video_iframe_title: 'Przegląd launchpada stonks.pump',
+    pump_docs_hint_html: 'Pełna oficjalna dokumentacja — <a href="' + STONKS_PUMP_DOCS + '" target="_blank" rel="noopener noreferrer">manual stonks.pump</a>.',
     why_h: 'Dlaczego to ważne dla ekosystemu TON',
     why_p1: 'sTONks obniża próg wejścia dla poważnych on-chain projektów, nie tylko memecoinów. Każdy z kontem na Telegramie i portfelem TON może wypuścić realny produkt, ztokenizować go z zalokowaną on-chain tokenomiką i dotrzeć do audiencji, która już handluje. To wpisuje się w etos TON — blockchain jest podpięty bezpośrednio do Telegrama.',
     why_p2: 'Dla traderów value-prop jest prostszy: każdy token na sTONks ma weryfikowalne połączenie z realnym kodem. Mniej LARP-u, więcej sygnału.',
     next_h: 'Co dalej',
     next_site: 'oficjalna platforma sTONks',
+    next_pump: 'launcher stonks.pump',
     next_trader: 'terminal tradingowy w Telegram DM',
     next_chat: 'czat społeczności, gdzie launche są dyskutowane na żywo',
     next_culo: 'Śledź $CULO na żywo',
     next_news: 'Najnowsze newsy TON',
-    living_html: '<em>To żywy explainer oparty na publicznych informacjach z <a href="' + STONKS_SITE + '" target="_blank" rel="noopener noreferrer">stonksbots.com</a>. Dostrzegasz fakt do wyostrzenia? Wrzuć cynk na <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>',
+    living_html: '<em>To żywy explainer oparty na publicznych informacjach z <a href="' + STONKS_SITE + '" target="_blank" rel="noopener noreferrer">stonksbots.com</a> i <a href="' + STONKS_PUMP_DOCS + '" target="_blank" rel="noopener noreferrer">manuala stonks.pump</a>. Dostrzegasz fakt do wyostrzenia? Wrzuć cynk na <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>',
     breadcrumb_news: 'Newsy',
   },
   de: {
     title: 'sTONks — das On-Chain-Ökosystem hinter $CULO',
-    meta: 'Was sTONks ist, wie die Build-to-Trade-Pipeline funktioniert und wie $CULO darauf gestartet wurde.',
+    meta: 'Was sTONks ist, wie die stonks.pump-Launchpad funktioniert und wie $CULO darauf gestartet wurde.',
+    kicker: 'TON · Build · Tokenize · Trade',
     h1: 'sTONks — das On-Chain-Ökosystem hinter $CULO',
     summary_html: '$CULO ist nicht aus dem Nichts entstanden. Er wurde auf <strong><a href="' + STONKS_SITE + '" target="_blank" rel="noopener noreferrer">sTONks</a></strong> deployed — einer End-to-End-On-Chain-Plattform, auf der man bauen, deployen, tokenisieren und handeln kann — alles an einem Ort, alles auf TON. Hier erklären wir, was das bedeutet.',
     what_h: 'Was sTONks tatsächlich ist',
@@ -153,16 +253,54 @@ const COPY: Record<Locale, Copy> = {
     origin_h: 'Wie $CULO entstand',
     origin_p1_html: '$CULO wurde auf sTONks mit der <strong>Deploy-with-TAX</strong>-Tokenomic gestartet — NICHT über die Bonding-Curve. Das bedeutet ein Token mit fester Supply und einer kleinen Gebühr auf jeden Buy/Sell, statt eines kurvengestützten Graduate-Launches. Die Plattform übernahm das Deployment, die On-Chain-Tax-Verdrahtung und das Listing auf der integrierten Trading-Schicht ab Tag eins.',
     origin_p2: 'CuloTon — das Nachrichtenpult, das du gerade liest — wurde rund um den Token gebaut. Erst kam $CULO; dann kam die redaktionelle Schicht (diese Seite, die mehrsprachige News-Pipeline, der Telegram-Bot, der X-Feed) dazu, damit der Token über die Launch-Charts hinaus wachsen kann.',
+    pump_h: 'stonks.pump — wie die Launchpad wirklich funktioniert',
+    pump_intro_html: '<strong>stonks.pump</strong> ist die kostenlose Jetton-Launchpad innerhalb von sTONks — die eigentliche Oberfläche, auf der ein neuer TON-Token (wie $CULO) deployed wird. Die vierstufige Ökosystem-Beschreibung oben ist die Plattform; stonks.pump ist der „Launch&quot;-Button darauf. Quelle: <a href="' + STONKS_PUMP_DOCS + '" target="_blank" rel="noopener noreferrer">offizielles stonks-bot-Manual</a>.',
+    pump_flow_h: 'Launch-Flow (Creator-Seite)',
+    pump_flow_li_html: [
+      '<strong>Launcher öffnen</strong> — entweder <a href="' + STONKS_TRADER + '" target="_blank" rel="noopener noreferrer">@stonks_sniper_bot</a> auf Telegram (<code>/start</code> → „🚀 Launch coin&quot;) oder das Web-Terminal unter <a href="' + STONKS_PUMP_LAUNCH + '" target="_blank" rel="noopener noreferrer">stonkslabs.com/launch/ton</a>.',
+      '<strong>Coin-Daten</strong> — Name, Symbol, Bild, Beschreibung.',
+      '<strong>Liquiditäts-Modus</strong> — <em>Seed LP</em> (du legst die LP-Menge selbst fest) oder <em>Virtual LP</em> (algorithmisch, äquivalent zu ~500 TON Liquidität bei pauschal 3,2 TON Gebühr).',
+      '<strong>Tokenomic</strong> — <em>Simple coin</em> (ohne Steuern) oder <em>Customize</em>: Buy/Sell-Steuern (max. 30% je), Anti-Sniper-Limits, Dev-Bag (max. 5% des Supply), Marketing-Wallet, Holder-Reward-Verteilung.',
+      '<strong>Deploy</strong> — eine Transaktion. Bearbeitungszeit: ~5 Min für Seed LP, 1-2 Min für Virtual LP.',
+    ],
+    pump_modes_h: 'Zwei Liquiditäts-Modi im Vergleich',
+    pump_seed_h: 'Seed LP',
+    pump_seed_li_html: [
+      'Du stellst die LP selbst aus dem Deployer-Wallet bereit.',
+      'Kosten: <strong>LP-Betrag + 4 TON</strong>; zusätzlich <strong>5% des Steuer-Umsatzes</strong> an die Launchpad. Launches ohne Steuer sind kostenlos.',
+      'Erlaubt die Aufteilung der Steuer zwischen Marketing-Wallet und Holder-Rewards.',
+      'Bearbeitung ~5 Minuten.',
+    ],
+    pump_virtual_h: 'Virtual LP',
+    pump_virtual_li_html: [
+      'Algorithmische Bonding Curve — äquivalent zu <strong>~500 TON</strong> Liquidität bei pauschal <strong>3,2 TON</strong>.',
+      'Gebühr: <strong>0,3% (mit Steuer)</strong> oder <strong>0,4% (ohne Steuer)</strong>; zusätzlich 5% des Steuer-Umsatzes.',
+      'Alle Rewards gehen an Holder (keine Aufteilung mit Marketing-Wallet in diesem Modus).',
+      'Curve „graduiert&quot;, sobald der reale Preis den virtuellen Preis einholt; Bearbeitung ~1-2 Minuten.',
+    ],
+    pump_modes_hint_html: 'Empfohlener Puffer auf dem Deployer-Wallet: 5-7 TON für Netzwerk-Gebühren. Total Supply ist fest — <strong>100 Millionen Tokens</strong>, unabhängig vom Modus.',
+    pump_protect_h: 'Eingebaute Schutzmechanismen',
+    pump_protect_li_html: [
+      '<strong>LP wird verbrannt</strong> beim Launch — der Deployer kann keine Liquidität mehr abziehen. Kein Rug-Hebel.',
+      '<strong>Auto Ownership Revoke</strong> — Mint/Burn-Rechte werden dem Deployer nach dem Launch entzogen.',
+      '<strong>Anti-Sniper</strong> — optionaler Max-Buy-Cap für die ersten 30 Minuten (laut FAQ effektiv die ersten 15); Überschuss geht an die LP.',
+      '<strong>LP-Add in einer Transaktion</strong> auf STON.fi verhindert Mikro-LP-Snipes.',
+      '<strong>Holder-Rewards</strong> — bei aktivierten Steuern starten Verteilungen ca. eine Stunde nach Launch und hängen vom Volumen ab.',
+    ],
+    pump_video_h: 'Im Video ansehen',
+    pump_video_iframe_title: 'stonks.pump-Launchpad-Walkthrough',
+    pump_docs_hint_html: 'Vollständige offizielle Dokumentation — <a href="' + STONKS_PUMP_DOCS + '" target="_blank" rel="noopener noreferrer">stonks.pump-Manual</a>.',
     why_h: 'Warum es für das TON-Ökosystem wichtig ist',
     why_p1: 'sTONks senkt die Einstiegshürde für ernsthafte On-Chain-Projekte, nicht nur Memecoins. Wer einen Telegram-Account und ein TON-Wallet hat, kann ein echtes Produkt deployen, mit on-chain gelockten Tokenomics tokenisieren und ein Publikum erreichen, das bereits handelt. Das passt zur TON-Philosophie — die Blockchain ist direkt in Telegram integriert.',
     why_p2: 'Für Trader ist das Value-Prop einfacher: Jeder Token auf sTONks kommt mit einer verifizierbaren Verbindung zu echtem Code. Weniger LARP, mehr Signal.',
     next_h: 'Wie geht es weiter',
     next_site: 'die offizielle sTONks-Plattform',
+    next_pump: 'der stonks.pump-Launcher',
     next_trader: 'das Trading-Terminal im Telegram-DM',
     next_chat: 'Community-Chat, in dem Launches in Echtzeit diskutiert werden',
     next_culo: 'Verfolge $CULO live',
     next_news: 'Aktuelle TON-Nachrichten',
-    living_html: '<em>Diese Seite ist ein lebendiger Explainer, basierend auf öffentlichen Informationen von <a href="' + STONKS_SITE + '" target="_blank" rel="noopener noreferrer">stonksbots.com</a>. Wenn du einen Fakt entdeckst, der korrigiert werden muss, schick uns einen Tipp im <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>',
+    living_html: '<em>Diese Seite ist ein lebendiger Explainer, basierend auf öffentlichen Informationen von <a href="' + STONKS_SITE + '" target="_blank" rel="noopener noreferrer">stonksbots.com</a> und dem <a href="' + STONKS_PUMP_DOCS + '" target="_blank" rel="noopener noreferrer">stonks.pump-Manual</a>. Wenn du einen Fakt entdeckst, der korrigiert werden muss, schick uns einen Tipp im <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">CuloTon Telegram</a>.</em>',
     breadcrumb_news: 'Nachrichten',
   },
 };
@@ -176,12 +314,18 @@ const c = COPY[locale];
   title={c.title}
   description={c.meta}
 >
-  <article class="news-article">
+  <article class="news-article stonks-article">
     <div class="breadcrumb">
       <a href={`/${locale}/`}>{c.breadcrumb_news}</a> &nbsp;/&nbsp; <span>sTONks</span>
     </div>
 
-    <h1>{c.h1}</h1>
+    <header class="stonks-hero">
+      <img class="stonks-logo" src="/stonks.jpg" alt="sTONks logo" width="120" height="120" />
+      <div>
+        <span class="stonks-kicker">{c.kicker}</span>
+        <h1>{c.h1}</h1>
+      </div>
+    </header>
 
     <p class="article-summary" set:html={c.summary_html} />
 
@@ -207,6 +351,49 @@ const c = COPY[locale];
       <p set:html={c.origin_p1_html} />
       <p>{c.origin_p2}</p>
 
+      <h2 id="stonks-pump">{c.pump_h}</h2>
+      <p set:html={c.pump_intro_html} />
+
+      <h3>{c.pump_flow_h}</h3>
+      <ol>
+        {c.pump_flow_li_html.map((item) => (<li set:html={item} />))}
+      </ol>
+
+      <h3>{c.pump_modes_h}</h3>
+      <div class="pump-modes">
+        <div class="pump-mode">
+          <h4>{c.pump_seed_h}</h4>
+          <ul>
+            {c.pump_seed_li_html.map((item) => (<li set:html={item} />))}
+          </ul>
+        </div>
+        <div class="pump-mode">
+          <h4>{c.pump_virtual_h}</h4>
+          <ul>
+            {c.pump_virtual_li_html.map((item) => (<li set:html={item} />))}
+          </ul>
+        </div>
+      </div>
+      <p class="hint" set:html={c.pump_modes_hint_html} />
+
+      <h3>{c.pump_protect_h}</h3>
+      <ul>
+        {c.pump_protect_li_html.map((item) => (<li set:html={item} />))}
+      </ul>
+
+      <h3>{c.pump_video_h}</h3>
+      <div class="video-wrap">
+        <iframe
+          src={YT_EMBED}
+          title={c.pump_video_iframe_title}
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </div>
+      <p class="hint" set:html={c.pump_docs_hint_html} />
+
       <h2>{c.why_h}</h2>
       <p>{c.why_p1}</p>
       <p>{c.why_p2}</p>
@@ -214,6 +401,7 @@ const c = COPY[locale];
       <h2>{c.next_h}</h2>
       <ul>
         <li>🌐 <a href={STONKS_SITE} target="_blank" rel="noopener noreferrer">stonksbots.com</a> — {c.next_site}.</li>
+        <li>🚀 <a href={STONKS_PUMP_LAUNCH} target="_blank" rel="noopener noreferrer">stonkslabs.com/launch/ton</a> — {c.next_pump}.</li>
         <li>🤖 <a href={STONKS_TRADER} target="_blank" rel="noopener noreferrer">@stonks_sniper_bot</a> — {c.next_trader}.</li>
         <li>💬 <a href={TG_STONKSONTON} target="_blank" rel="noopener noreferrer">t.me/stonksonton</a> — {c.next_chat}.</li>
         <li>🟡 <a href={`/${locale}/culo`}>{c.next_culo}</a></li>
@@ -224,3 +412,87 @@ const c = COPY[locale];
     </div>
   </article>
 </Layout>
+
+<style>
+  .stonks-hero {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin: 18px 0 14px;
+  }
+  .stonks-logo {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border: 2px solid var(--rule);
+    border-radius: 0;
+    flex-shrink: 0;
+  }
+  .stonks-kicker {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 3px 8px;
+    margin-bottom: 10px;
+  }
+  .stonks-article h1 { margin: 0; }
+  .pump-modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 14px 0 18px;
+  }
+  .pump-mode {
+    border: 1px solid var(--rule);
+    padding: 16px 18px 14px;
+    background: var(--bg-section, transparent);
+  }
+  .pump-mode h4 {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-hot, var(--accent));
+    margin: 0 0 8px;
+  }
+  .pump-mode ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .pump-mode li { margin: 4px 0; }
+  .pump-mode strong { color: var(--text); }
+  .video-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin: 16px 0 8px;
+    border: 1px solid var(--rule);
+    background: #000;
+  }
+  .video-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .hint {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-mute);
+    margin: 6px 0 12px;
+  }
+  @media (max-width: 720px) {
+    .stonks-hero { gap: 14px; }
+    .stonks-logo { width: 72px; height: 72px; }
+    .pump-modes { grid-template-columns: 1fr; }
+  }
+</style>
