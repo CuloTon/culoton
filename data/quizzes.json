@@ -1,1 +1,15 @@
-{}
+{
+  "2026-05-09": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Toncoin is TON's native token used to pay gas fees for transactions and can be staked by validators to secure the network; the other options misrepresent its actual function.",
+    "options": {
+      "A": "Paying transaction fees and staking with validators",
+      "B": "Exclusively trading on decentralized exchanges",
+      "C": "Storing user data on the blockchain permanently",
+      "D": "Funding Telegram's advertising campaigns"
+    },
+    "posted_at": "2026-05-09T16:24:53.984612+00:00",
+    "question": "What is the primary use of Toncoin (TON) in the TON ecosystem?"
+  }
+}
