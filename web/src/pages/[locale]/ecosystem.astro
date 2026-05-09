@@ -1,9 +1,17 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { UI } from '../i18n/strings';
-import { ECOSYSTEM } from '../data/ecosystem';
+import Layout from '../../layouts/Layout.astro';
+import { UI, type Locale } from '../../i18n/strings';
+import { ECOSYSTEM } from '../../data/ecosystem';
 
-const locale = 'en' as const;
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'ru' } },
+    { params: { locale: 'pl' } },
+    { params: { locale: 'de' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
 const t = UI[locale];
 
 const totalProjects = ECOSYSTEM.reduce((acc, c) => acc + c.projects.length, 0);

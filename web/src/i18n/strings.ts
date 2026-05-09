@@ -132,6 +132,14 @@ interface UIStrings {
   culo_community_p_html: string;
   culo_disclaimer_h: string;
   culo_disclaimer_p: string;
+  ecosystem_title: string;
+  ecosystem_meta_description: string;
+  ecosystem_kicker: string;
+  ecosystem_h: string;
+  ecosystem_lede: (projects: number, categories: number) => string;
+  ecosystem_jump_label: string;
+  ecosystem_foot_h: string;
+  ecosystem_foot_p_html: string;
 }
 
 export const UI: Record<Locale, UIStrings> = {
@@ -237,6 +245,14 @@ export const UI: Record<Locale, UIStrings> = {
     culo_community_p_html: 'The fastest way to get involved is the official Telegram group: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. News, announcements and trade chatter all happen there.',
     culo_disclaimer_h: 'Disclaimer',
     culo_disclaimer_p: 'Nothing on this page is financial advice. $CULO is a memecoin; cryptocurrencies are highly volatile and you may lose your entire investment. Past performance on Polygon or SUI is no guarantee of future results on TON or any other chain. Always do your own research and only buy what you can afford to lose. CuloTon news coverage is editorially independent of token activity.',
+    ecosystem_title: 'TON Ecosystem Map — CuloTon',
+    ecosystem_meta_description: 'Curated map of the TON ecosystem — wallets, DEXes, NFT marketplaces, Mini-Apps, infrastructure and the Foundation. Verified projects only.',
+    ecosystem_kicker: 'CuloTon Desk · Ecosystem map',
+    ecosystem_h: 'The TON ecosystem at a glance',
+    ecosystem_lede: (projects, categories) => `A curated map of the projects that move the TON network — what they do, and where to find them. ${projects} projects across ${categories} categories. Editorial selection, not a paid directory.`,
+    ecosystem_jump_label: 'Jump to category',
+    ecosystem_foot_h: 'Missing or wrong?',
+    ecosystem_foot_p_html: 'This map is curated — we only list projects we can independently verify. If your project belongs here, or a listing is outdated, ping the editorial desk on <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. No paid placements.',
   },
   ru: {
     site_title: 'CuloTon — Новости блокчейна TON',
@@ -340,6 +356,14 @@ export const UI: Record<Locale, UIStrings> = {
     culo_community_p_html: 'Быстрее всего подключиться — через официальную Telegram-группу: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. Новости, анонсы и трейдерский чат — всё там.',
     culo_disclaimer_h: 'Дисклеймер',
     culo_disclaimer_p: 'Ничто на этой странице не является финансовой рекомендацией. $CULO — мем-токен; криптовалюты крайне волатильны, и вы можете потерять весь вклад. Прошлые результаты на Polygon или SUI не гарантируют будущих результатов на TON или любом другом блокчейне. Всегда проводите собственное исследование и покупайте только то, что можете позволить себе потерять. Новостное освещение CuloTon редакционно независимо от деятельности токена.',
+    ecosystem_title: 'Карта экосистемы TON — CuloTon',
+    ecosystem_meta_description: 'Курируемая карта экосистемы TON — кошельки, DEX, NFT-маркетплейсы, Mini Apps, инфраструктура и Foundation. Только проверенные проекты.',
+    ecosystem_kicker: 'CuloTon Desk · Карта экосистемы',
+    ecosystem_h: 'Экосистема TON одним взглядом',
+    ecosystem_lede: (projects, categories) => `Курируемая карта проектов, которые двигают сеть TON — что они делают и где их найти. ${projects} проектов в ${categories} категориях. Редакционный выбор, не платный каталог.`,
+    ecosystem_jump_label: 'Перейти к категории',
+    ecosystem_foot_h: 'Не нашли проект или нужна правка?',
+    ecosystem_foot_p_html: 'Это курируемая карта — мы перечисляем только проекты, которые можем независимо подтвердить. Если ваш проект должен быть здесь или запись устарела — напишите редакции в <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Платных размещений нет.',
   },
   pl: {
     site_title: 'CuloTon — Wiadomości z blockchaina TON',
@@ -443,6 +467,14 @@ export const UI: Record<Locale, UIStrings> = {
     culo_community_p_html: 'Najszybszy sposób, by się włączyć, to oficjalna grupa Telegram: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. Wiadomości, ogłoszenia i rozmowy traderów — wszystko tam.',
     culo_disclaimer_h: 'Zastrzeżenie',
     culo_disclaimer_p: 'Nic na tej stronie nie stanowi porady finansowej. $CULO to memecoin; kryptowaluty są wysoce zmienne i możesz stracić całą inwestycję. Wyniki z przeszłości na Polygonie lub SUI nie gwarantują przyszłych rezultatów na TON ani na żadnym innym blockchainie. Zawsze rób własny research i kupuj wyłącznie tyle, ile możesz stracić. Newsy na CuloTon są redakcyjnie niezależne od aktywności tokena.',
+    ecosystem_title: 'Mapa ekosystemu TON — CuloTon',
+    ecosystem_meta_description: 'Curated mapa ekosystemu TON — portfele, DEX-y, marketplace’y NFT, Mini-Appy, infrastruktura i Foundation. Tylko zweryfikowane projekty.',
+    ecosystem_kicker: 'CuloTon Desk · Mapa ekosystemu',
+    ecosystem_h: 'Ekosystem TON na jeden rzut oka',
+    ecosystem_lede: (projects, categories) => `Curated mapa projektów, które realnie napędzają sieć TON — co robią i gdzie ich znaleźć. ${projects} projektów w ${categories} kategoriach. Selekcja redakcyjna, nie płatny katalog.`,
+    ecosystem_jump_label: 'Przejdź do kategorii',
+    ecosystem_foot_h: 'Brakuje czegoś albo coś nie tak?',
+    ecosystem_foot_p_html: 'Ta mapa jest curated — wymieniamy tylko projekty, które potrafimy niezależnie zweryfikować. Jeśli twój projekt powinien tu być albo wpis jest nieaktualny — pisz do redakcji na <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegramie</a>. Bez płatnych umieszczeń.',
   },
   de: {
     site_title: 'CuloTon — Nachrichten zur TON-Blockchain',
@@ -546,6 +578,14 @@ export const UI: Record<Locale, UIStrings> = {
     culo_community_p_html: 'Am schnellsten beteiligen Sie sich über die offizielle Telegram-Gruppe: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. Nachrichten, Ankündigungen und Trade-Gespräche finden dort statt.',
     culo_disclaimer_h: 'Disclaimer',
     culo_disclaimer_p: 'Nichts auf dieser Seite stellt eine Finanzberatung dar. $CULO ist ein Memecoin; Kryptowährungen sind hochvolatil und Sie können Ihre gesamte Investition verlieren. Vergangene Performance auf Polygon oder SUI ist keine Garantie für zukünftige Ergebnisse auf TON oder einer anderen Chain. Recherchieren Sie stets selbst und kaufen Sie nur, was Sie sich zu verlieren leisten können. Die CuloTon-Berichterstattung ist redaktionell unabhängig von Token-Aktivitäten.',
+    ecosystem_title: 'TON-Ökosystem-Karte — CuloTon',
+    ecosystem_meta_description: 'Kuratierte Karte des TON-Ökosystems — Wallets, DEXes, NFT-Marktplätze, Mini-Apps, Infrastruktur und Foundation. Nur verifizierte Projekte.',
+    ecosystem_kicker: 'CuloTon Desk · Ökosystem-Karte',
+    ecosystem_h: 'Das TON-Ökosystem auf einen Blick',
+    ecosystem_lede: (projects, categories) => `Eine kuratierte Karte der Projekte, die das TON-Netzwerk antreiben — was sie tun und wo man sie findet. ${projects} Projekte in ${categories} Kategorien. Redaktionelle Auswahl, kein bezahltes Verzeichnis.`,
+    ecosystem_jump_label: 'Zur Kategorie springen',
+    ecosystem_foot_h: 'Fehlt etwas oder ist etwas falsch?',
+    ecosystem_foot_p_html: 'Diese Karte wird kuratiert — wir listen nur Projekte, die wir unabhängig prüfen können. Wenn Ihr Projekt hierhergehört oder ein Eintrag veraltet ist, melden Sie sich bei der Redaktion auf <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Keine bezahlten Platzierungen.',
   },
 };
 
