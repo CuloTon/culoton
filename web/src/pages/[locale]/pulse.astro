@@ -1,0 +1,193 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { DATE_LOCALE, localizedPath, type Locale } from '../../i18n/strings';
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'ru' } },
+    { params: { locale: 'pl' } },
+    { params: { locale: 'de' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+
+async function loadPulse(loc: Locale) {
+  if (loc === 'ru') return getCollection('pulse_ru');
+  if (loc === 'pl') return getCollection('pulse_pl');
+  if (loc === 'de') return getCollection('pulse_de');
+  return getCollection('pulse_en');
+}
+
+const all = await loadPulse(locale);
+const sorted = all.sort((a: any, b: any) => b.data.date.valueOf() - a.data.date.valueOf());
+
+function stripLocaleFromId(id: string): string {
+  return id.replace(/^[a-z]{2}\//, '').replace(/\.md$/, '');
+}
+
+const COPY: Record<Locale, { kicker: string; h: string; blurb_html: string; messages: string; empty: string; }> = {
+  en: {} as any,
+  ru: {
+    kicker: 'Пульс комьюнити',
+    h: 'sTONks Pulse',
+    blurb_html: 'Три раза в день CuloScribe читает публичный <a href="https://t.me/stonksonton" target="_blank" rel="noopener noreferrer">чат sTONks</a> и пишет сводку — о чём говорили, кто что сказал, где был спор. С атрибуцией, сухо, без хайпа.',
+    messages: 'сообщений',
+    empty: 'Сводок пока нет — первая выйдет в ближайший слот.',
+  },
+  pl: {
+    kicker: 'Puls społeczności',
+    h: 'sTONks Pulse',
+    blurb_html: 'Trzy razy dziennie CuloScribe czyta publiczny <a href="https://t.me/stonksonton" target="_blank" rel="noopener noreferrer">czat sTONks</a> i pisze podsumowanie — o czym rozmawiano, kto co powiedział, gdzie był spór. Z atrybucją, na sucho, bez hype.',
+    messages: 'wiadomości',
+    empty: 'Brak jeszcze podsumowań — pierwsze pojawi się przy najbliższym slocie.',
+  },
+  de: {
+    kicker: 'Community-Puls',
+    h: 'sTONks Pulse',
+    blurb_html: 'Dreimal täglich liest CuloScribe den öffentlichen <a href="https://t.me/stonksonton" target="_blank" rel="noopener noreferrer">sTONks-Chat</a> und schreibt eine Zusammenfassung — worüber gesprochen wurde, wer was sagte, wo es Streit gab. Quellenangaben, trocken, kein Hype.',
+    messages: 'Nachrichten',
+    empty: 'Noch keine Zusammenfassungen — die erste kommt mit dem nächsten Slot.',
+  },
+};
+
+const SLOT_LABEL: Record<Locale, Record<string, string>> = {
+  en: { morning: 'Morning Pulse', afternoon: 'Afternoon Pulse', overnight: 'Overnight Pulse' } as any,
+  ru: { morning: 'Утренний пульс', afternoon: 'Дневной пульс', overnight: 'Ночной пульс' },
+  pl: { morning: 'Poranny puls', afternoon: 'Popołudniowy puls', overnight: 'Nocny puls' },
+  de: { morning: 'Morgenpuls', afternoon: 'Nachmittagspuls', overnight: 'Nachtpuls' },
+};
+
+const c = COPY[locale];
+const labels = SLOT_LABEL[locale];
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/pulse"
+  title="sTONks Pulse"
+  description="Community chat summary — three times daily."
+>
+  <div class="container">
+    <section class="hero-banner">
+      <div>
+        <span class="badge">{c.kicker}</span>
+        <h1>{c.h}</h1>
+        <p set:html={c.blurb_html} />
+      </div>
+    </section>
+
+    {sorted.length === 0 ? (
+      <div class="empty"><p>{c.empty}</p></div>
+    ) : (
+      <div class="pulse-list">
+        {sorted.map((entry: any) => {
+          const slug = stripLocaleFromId(entry.id);
+          const formatted = entry.data.date.toLocaleDateString(DATE_LOCALE[locale], {
+            year: 'numeric', month: 'long', day: 'numeric',
+            hour: '2-digit', minute: '2-digit',
+          });
+          return (
+            <a class="pulse-list-card" href={localizedPath(locale, `/pulse/${slug}`)}>
+              <div class="pulse-list-meta">
+                <span class={`slot-pill slot-${entry.data.slot}`}>{labels[entry.data.slot]}</span>
+                <span class="pulse-list-date">{formatted} UTC</span>
+                <span class="pulse-list-count">{entry.data.message_count} {c.messages}</span>
+              </div>
+              <h2>{entry.data.title}</h2>
+              <p>{entry.data.summary}</p>
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .pulse-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 2px solid var(--rule);
+  }
+  .pulse-list-card {
+    display: block;
+    padding: 28px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--rule-soft);
+    border-radius: 0;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.12s, padding-left 0.12s;
+    position: relative;
+  }
+  .pulse-list-card:hover {
+    background: var(--bg-section);
+    padding-left: 18px;
+  }
+  .pulse-list-card::after {
+    content: "→";
+    position: absolute;
+    right: 8px;
+    top: 28px;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    color: var(--accent-hot);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .pulse-list-card:hover::after { opacity: 1; transform: translateX(0); }
+  .pulse-list-meta {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .slot-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 0;
+    text-transform: uppercase;
+  }
+  .slot-morning { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+  .slot-afternoon { background: #dbeafe; color: #075985; border: 1px solid #0ea5e9; }
+  .slot-overnight { background: #ede9fe; color: #5b21b6; border: 1px solid #8b5cf6; }
+  .pulse-list-date,
+  .pulse-list-count {
+    font-size: 12px;
+    color: var(--text-mute);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .pulse-list-card h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    margin: 0 0 10px;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--text);
+    padding-right: 40px;
+  }
+  .pulse-list-card p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 17px;
+    line-height: 1.5;
+    max-width: 760px;
+  }
+  @media (max-width: 720px) {
+    .pulse-list-card { padding: 22px 0; }
+    .pulse-list-card:hover { padding-left: 12px; }
+    .pulse-list-card h2 { font-size: 22px; }
+    .pulse-list-card p { font-size: 15px; }
+  }
+</style>
