@@ -50,6 +50,8 @@ ROOT = Path(__file__).resolve().parent.parent
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 BLOG_DIR = ROOT / "web" / "src" / "content" / "blog"
 SITE = "https://culoton.fun"
+QUIZZES_PATH = ROOT / "data" / "quizzes.json"
+QUIZ_REWARD = 20  # one daily cap — quiz is the highest-value daily action
 
 TG_API_TIMEOUT = 35  # > long-poll timeout below, with margin
 LONG_POLL_TIMEOUT = 25  # seconds; getUpdates returns immediately on new msg
@@ -80,6 +82,9 @@ COMMANDS_HELP = (
     "🤖 <b>Ask me anything</b>\n"
     "/ask &lt;question&gt; — anything about TON, CuloTon, $CULO or sTONks; "
     f"light small-talk welcome too. <b>Limit: 1 per {ASK_COOLDOWN_MIN} min per user.</b>\n\n"
+    "🧩 <b>Daily quiz</b>\n"
+    "/quiz &lt;A/B/C/D&gt; — answer the daily TON quiz (drops 15:00 UTC). "
+    f"Correct = +{QUIZ_REWARD} pts (subject to daily cap), one shot per user.\n\n"
     "🏆 <b>Activity & rewards</b>\n"
     "/points — your activity score\n"
     "/leaderboard — top 10 most active members this week\n"
@@ -499,6 +504,80 @@ def cmd_ask(question: str) -> str:
     )
 
 
+def cmd_quiz(user_id: str, arg: str) -> tuple[str, bool]:
+    """Handle /quiz <answer>. Returns (reply_html, was_correct).
+
+    Reads today's quiz from data/quizzes.json (posted earlier by
+    daily_quiz.py via cron). Stores per-user answer to prevent retries.
+    The actual points award happens in the dispatcher only when correct.
+    """
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    if not QUIZZES_PATH.exists():
+        return ("🧩 No quiz live yet. The first daily quiz drops at 15:00 UTC.", False)
+
+    try:
+        all_quizzes = json.loads(QUIZZES_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return ("🧩 Quiz state unavailable, try again in a moment.", False)
+
+    quiz = all_quizzes.get(today)
+    if not quiz:
+        return ("🧩 No quiz for today yet. Daily quiz drops at 15:00 UTC.", False)
+
+    answer = arg.strip().upper()[:1]
+    if answer not in ("A", "B", "C", "D"):
+        return (
+            "🧩 Send your answer letter — <code>/quiz A</code> (or B / C / D).\n\n"
+            f"<b>{html.escape(quiz['question'])}</b>\n"
+            f"🅰  {html.escape(quiz['options']['A'])}\n"
+            f"🅱  {html.escape(quiz['options']['B'])}\n"
+            f"🅲  {html.escape(quiz['options']['C'])}\n"
+            f"🅳  {html.escape(quiz['options']['D'])}",
+            False,
+        )
+
+    answered = quiz.setdefault("answered", {})
+    if user_id and user_id in answered:
+        prev = answered[user_id]
+        verdict = "✅ correct" if prev["correct"] else "❌ wrong"
+        return (
+            f"🧩 You already played today — picked <b>{prev['answer']}</b> ({verdict}). "
+            "Next quiz drops tomorrow at 15:00 UTC.",
+            False,
+        )
+
+    correct = (answer == quiz["correct"])
+    if user_id:
+        answered[user_id] = {
+            "answer": answer,
+            "correct": correct,
+            "answered_at": datetime.now(timezone.utc).isoformat(),
+        }
+        try:
+            QUIZZES_PATH.parent.mkdir(parents=True, exist_ok=True)
+            QUIZZES_PATH.write_text(
+                json.dumps(all_quizzes, indent=2, ensure_ascii=False, sort_keys=True),
+                encoding="utf-8",
+            )
+        except Exception as e:
+            print(f"quiz state save failed: {e}", file=sys.stderr)
+
+    if correct:
+        explain = quiz.get("explanation", "")
+        return (
+            f"🧩 ✅ <b>Correct!</b> The answer was <b>{quiz['correct']}</b>.\n\n"
+            f"<i>{html.escape(explain)}</i>\n\n"
+            f"+{QUIZ_REWARD} pts (subject to daily cap of 20). See /points / /leaderboard.",
+            True,
+        )
+    return (
+        f"🧩 ❌ Not quite — your answer <b>{answer}</b> was wrong. "
+        f"The correct answer was <b>{quiz['correct']}</b>. Try again tomorrow.",
+        False,
+    )
+
+
 def cmd_points(rec: dict) -> str:
     name = html.escape(rec.get("username") or "you")
     return (
@@ -615,6 +694,13 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
             else:
                 reply = cmd_ask(arg)
                 mark_ask(rec)
+        elif cmd == "quiz":
+            reply, was_correct = cmd_quiz(str(from_user["id"]), arg)
+            if was_correct:
+                # award the full quiz reward (subject to daily cap inside award_points)
+                granted_quiz = award_points(rec, QUIZ_REWARD)
+                if granted_quiz < QUIZ_REWARD:
+                    reply = reply + f"\n\n<i>(daily cap reached — only +{granted_quiz} pts credited)</i>"
         else:
             # Unknown command — keep silent in groups to avoid noise,
             # respond with a hint in private chats.

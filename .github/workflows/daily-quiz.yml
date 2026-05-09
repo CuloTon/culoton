@@ -1,19 +1,21 @@
-name: TG weekly leaderboard recap
+name: Daily TON quiz
 
 on:
   schedule:
-    - cron: '0 20 * * 0'   # Sunday 20:00 UTC
+    # 15:00 UTC = 17:00 CEST (PL) — afternoon engagement window,
+    # well clear of update-and-deploy crons.
+    - cron: '0 15 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: tg-weekly-recap
+  group: daily-quiz
   cancel-in-progress: false
 
 jobs:
-  run:
+  ping:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -28,17 +30,15 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: Post weekly leaderboard + reset
+      - name: Generate and post the daily quiz
         env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          # Optional: admin DM with full top-10 (incl. user_ids) for prize distribution.
-          # Set to your personal Telegram user_id (numeric). Find via /start to bot — your id is in the run logs.
-          ADMIN_CHAT_ID: ${{ secrets.ADMIN_CHAT_ID }}
-        run: python scripts/tg_weekly_recap.py
+        run: python scripts/daily_quiz.py
 
-      - name: Commit weekly_points reset
+      - name: Persist quizzes.json
         run: |
           bash scripts/git_commit_push.sh \
-            "auto: tg weekly recap reset $(date -u +%Y-%m-%dT%H:%MZ)" \
-            data/points.json
+            "auto: daily quiz $(date -u +%Y-%m-%d)" \
+            data/quizzes.json
