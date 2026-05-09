@@ -1,15 +1,1 @@
-{
-  "2026-05-09": {
-    "answered": {},
-    "correct": "A",
-    "explanation": "Jetton is TON's standard term for a custom token or fungible token issued on the blockchain, similar to ERC-20 tokens on Ethereum.",
-    "options": {
-      "A": "A custom token built on the TON blockchain",
-      "B": "A type of smart contract validator",
-      "C": "A decentralized exchange protocol",
-      "D": "A hardware wallet compatible with TON"
-    },
-    "posted_at": "2026-05-09T16:18:13.680959+00:00",
-    "question": "In TON ecosystem terminology, what is a 'jetton'?"
-  }
-}
+{}
