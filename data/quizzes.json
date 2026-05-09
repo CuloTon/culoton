@@ -1,15 +1,1 @@
-{
-  "2026-05-09": {
-    "answered": {},
-    "correct": "B",
-    "explanation": "Telegram Mini-Apps are lightweight decentralized applications integrated into Telegram that leverage TON blockchain capabilities, allowing users to interact with dApps without leaving the messenger.",
-    "options": {
-      "A": "To replace Telegram's native messaging protocol with blockchain transactions",
-      "B": "To enable decentralized applications that run directly within Telegram clients",
-      "C": "To serve as the exclusive payment processor for Telegram Premium subscriptions",
-      "D": "To archive all Telegram user data on TON smart contracts"
-    },
-    "posted_at": "2026-05-09T15:57:55.054590+00:00",
-    "question": "What is the primary function of Telegram Mini-Apps within the TON ecosystem?"
-  }
-}
+{}

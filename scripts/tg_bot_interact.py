@@ -224,12 +224,22 @@ def tg_get_updates(token: str, offset: int, timeout: int = 0) -> list[dict]:
         "offset": offset,
         "limit": GET_UPDATES_LIMIT,
         "timeout": timeout,
-        "allowed_updates": json.dumps(["message"]),
+        "allowed_updates": json.dumps(["message", "callback_query"]),
     }
     resp = tg_api(token, "getUpdates", payload)
     if not resp or not resp.get("ok"):
         return []
     return resp.get("result", [])
+
+
+def tg_answer_callback(token: str, callback_query_id: str, text: str, show_alert: bool = True) -> dict | None:
+    """Reply privately to a button click — only the clicker sees the popup."""
+    payload = {
+        "callback_query_id": callback_query_id,
+        "text": text[:200],  # Telegram caps callback alerts at 200 chars
+        "show_alert": "true" if show_alert else "false",
+    }
+    return tg_api(token, "answerCallbackQuery", payload)
 
 
 # ---------- Content helpers -------------------------------------------------
@@ -643,11 +653,106 @@ def display_name(user: dict) -> str:
     return " ".join(parts) or "anon"
 
 
+def handle_quiz_callback(cb: dict, state: dict, token: str) -> None:
+    """Handle a callback_query from a quiz inline-keyboard click.
+    Replies privately via answerCallbackQuery (popup visible only to the clicker).
+    Awards points on correct answer, enforces one-shot per user per quiz.
+    """
+    cbid = cb.get("id", "")
+    data = (cb.get("data") or "").strip()
+    from_user = cb.get("from") or {}
+
+    # callback_data format: "quiz:<YYYY-MM-DD>:<A|B|C|D>"
+    if not data.startswith("quiz:"):
+        tg_answer_callback(token, cbid, "Unknown action.", show_alert=False)
+        return
+
+    parts = data.split(":")
+    if len(parts) != 3 or parts[2] not in ("A", "B", "C", "D"):
+        tg_answer_callback(token, cbid, "Invalid quiz button.", show_alert=False)
+        return
+    quiz_date = parts[1]
+    answer = parts[2]
+
+    if not from_user or from_user.get("is_bot"):
+        tg_answer_callback(token, cbid, "?", show_alert=False)
+        return
+
+    user_id = str(from_user["id"])
+
+    # Read quiz state
+    if not QUIZZES_PATH.exists():
+        tg_answer_callback(token, cbid, "🧩 Quiz state not available, try again later.", show_alert=True)
+        return
+    try:
+        all_quizzes = json.loads(QUIZZES_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        tg_answer_callback(token, cbid, "🧩 Quiz state unavailable.", show_alert=True)
+        return
+
+    quiz = all_quizzes.get(quiz_date)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    if not quiz:
+        tg_answer_callback(token, cbid, "🧩 This quiz is no longer available.", show_alert=True)
+        return
+    if quiz_date != today:
+        tg_answer_callback(token, cbid, "🧩 This quiz is closed — only today's counts.", show_alert=True)
+        return
+
+    answered = quiz.setdefault("answered", {})
+    if user_id in answered:
+        prev = answered[user_id]
+        verdict = "✅ correct" if prev["correct"] else "❌ wrong"
+        tg_answer_callback(
+            token, cbid,
+            f"🧩 You already answered: {prev['answer']} ({verdict}). Next quiz tomorrow 15:00 UTC.",
+            show_alert=True,
+        )
+        return
+
+    correct = (answer == quiz["correct"])
+    answered[user_id] = {
+        "answer": answer,
+        "correct": correct,
+        "answered_at": datetime.now(timezone.utc).isoformat(),
+    }
+    try:
+        QUIZZES_PATH.parent.mkdir(parents=True, exist_ok=True)
+        QUIZZES_PATH.write_text(
+            json.dumps(all_quizzes, indent=2, ensure_ascii=False, sort_keys=True),
+            encoding="utf-8",
+        )
+    except Exception as e:
+        print(f"quiz state save failed: {e}", file=sys.stderr)
+
+    # Award points if correct
+    granted = 0
+    if correct:
+        rec = get_user(state, from_user["id"], display_name(from_user))
+        granted = award_points(rec, QUIZ_REWARD)
+
+    if correct:
+        explain = quiz.get("explanation", "")
+        # Truncate to fit 200-char alert limit
+        msg = f"✅ Correct! +{granted} pts. {explain}"[:195]
+        tg_answer_callback(token, cbid, msg, show_alert=True)
+    else:
+        msg = f"❌ Wrong — correct answer was {quiz['correct']}. Better luck tomorrow!"[:195]
+        tg_answer_callback(token, cbid, msg, show_alert=True)
+
+
 def process_updates(updates: list[dict], state: dict, token: str, start_offset: int) -> int:
     """Process a batch of updates. Returns new offset (max update_id + 1)."""
     new_offset = start_offset
     for upd in updates:
         new_offset = max(new_offset, upd.get("update_id", 0) + 1)
+
+        # Inline-keyboard click on a quiz button
+        cb = upd.get("callback_query")
+        if cb:
+            handle_quiz_callback(cb, state, token)
+            continue
+
         msg = upd.get("message")
         if not msg:
             print(f"  upd {upd.get('update_id')}: not a message (keys={list(upd.keys())}) — skip")

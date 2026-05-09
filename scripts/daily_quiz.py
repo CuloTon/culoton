@@ -30,7 +30,10 @@ SCRIPTS_DIR = Path(__file__).resolve().parent
 QUIZZES_PATH = ROOT / "data" / "quizzes.json"
 
 sys.path.insert(0, str(SCRIPTS_DIR))
-from telegram_notify import tg_send, SITE  # noqa: E402
+from telegram_notify import tg_send, SITE  # noqa: E402  -- still imported for fallback
+import urllib.error
+import urllib.parse
+import urllib.request
 
 CLAUDE_MODEL = "claude-haiku-4-5-20251001"
 RETRY_LIMIT = 2
@@ -149,11 +152,39 @@ def render_quiz_message(quiz: dict) -> str:
         f"🅱  {html.escape(opts['B'])}\n"
         f"🅲  {html.escape(opts['C'])}\n"
         f"🅳  {html.escape(opts['D'])}\n\n"
-        f"💬 DM <b>@cscriber_bot</b> with <code>/quiz A</code> (or B / C / D)\n"
-        f"🏆 Correct answer = +{QUIZ_REWARD} points (daily cap), one shot per user, deadline midnight UTC.\n"
+        f"👇 Tap your answer below — <b>+{QUIZ_REWARD} pts</b> for correct (one shot per user, midnight UTC deadline).\n"
         "Top of the weekly leaderboard wins prizes — see /leaderboard."
     )
     return body
+
+
+def build_inline_keyboard(date_key: str) -> dict:
+    """4 buttons in a 2x2 grid. callback_data parsed by tg_bot_interact."""
+    def btn(letter: str) -> dict:
+        return {"text": letter, "callback_data": f"quiz:{date_key}:{letter}"}
+    return {
+        "inline_keyboard": [
+            [btn("A"), btn("B")],
+            [btn("C"), btn("D")],
+        ],
+    }
+
+
+def tg_send_with_keyboard(token: str, chat_id: str, text: str, keyboard: dict) -> tuple[int, str]:
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    data = urllib.parse.urlencode({
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML",
+        "disable_web_page_preview": "true",
+        "reply_markup": json.dumps(keyboard, ensure_ascii=False),
+    }).encode("utf-8")
+    req = urllib.request.Request(url, data=data, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            return resp.status, resp.read().decode("utf-8")
+    except urllib.error.HTTPError as e:
+        return e.code, e.read().decode("utf-8", errors="replace")
 
 
 def main() -> int:
@@ -198,14 +229,15 @@ def main() -> int:
         return 0
 
     body = render_quiz_message(quiz)
-    status, resp = tg_send(token, chat_id, body, disable_preview=True)
+    keyboard = build_inline_keyboard(today)
+    status, resp = tg_send_with_keyboard(token, chat_id, body, keyboard)
     if status != 200:
         print(f"quiz tg post failed: status={status} body={resp}", file=sys.stderr)
         return 1
 
     quizzes[today] = quiz
     save_quizzes(quizzes)
-    print(f"Quiz posted for {today} and persisted.")
+    print(f"Quiz posted for {today} and persisted (with inline-keyboard buttons).")
     return 0
 
 
