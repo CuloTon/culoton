@@ -127,7 +127,10 @@ def call_haiku_for_meme(news_block: str, seed: str) -> dict:
         from anthropic import Anthropic
     except ImportError:
         raise RuntimeError("anthropic SDK not installed — pip install anthropic")
-    client = Anthropic()
+    # Strip BOM/whitespace from secret — GH Actions secrets sometimes carry
+    # a UTF-8 BOM that the Anthropic SDK can't encode into the auth header.
+    api_key = (os.getenv("ANTHROPIC_API_KEY") or "").lstrip("﻿").strip()
+    client = Anthropic(api_key=api_key)
 
     format_menu = "\n".join(f"- {f}" for f in FORMATS)
     user = USER_TEMPLATE.format(news_block=news_block, format_menu=format_menu, seed=seed)
