@@ -85,7 +85,7 @@ COMMANDS_HELP = (
     "🧩 <b>Daily quiz</b>\n"
     "Tap A/B/C/D under the daily quiz post — drops every day at 15:00 UTC. "
     f"Correct = +{QUIZ_REWARD} pts (subject to daily cap), one shot per user.\n"
-    "🏆 <b>Weekly winner gets 5 TON</b> — top of the leaderboard every Sunday 20:00 UTC.\n\n"
+    "🏆 <b>Weekly winner gets 5 TON</b> — first payout <b>Sunday 17 May 20:00 UTC</b>, every Sunday after that.\n\n"
     "🏆 <b>Activity & rewards</b>\n"
     "/points — your activity score\n"
     "/leaderboard — top 10 most active members this week\n"
@@ -616,7 +616,7 @@ def cmd_leaderboard(state: dict) -> str:
         pts = rec.get("weekly_points", 0)
         lines.append(f"{pos} <b>{name}</b> — {pts} pts")
     lines.append(
-        "\n🎁 <b>#1 each week wins 5 TON</b> — winner announced every Sunday at 20:00 UTC."
+        "\n🎁 <b>#1 each week wins 5 TON</b> — first payout Sunday 17 May 20:00 UTC, every Sunday after that."
     )
     return "\n".join(lines)
 

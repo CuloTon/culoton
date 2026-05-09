@@ -38,7 +38,7 @@ def build_announcement(state: dict) -> str:
         return (
             "🏆 <b>Weekly leaderboard</b> " + range_label + "\n\n"
             "No active members this week — no winner, no payout. The board resets now.\n\n"
-            "🎁 <b>#1 next week wins 5 TON.</b> Tap the daily quiz, use /ask, /news — earn pts. "
+            "🎁 <b>#1 next Sunday wins 5 TON.</b> Tap the daily quiz, use /ask, /news — earn pts. "
             "/help for commands."
         )
 

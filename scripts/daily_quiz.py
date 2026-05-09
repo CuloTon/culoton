@@ -155,7 +155,7 @@ def render_quiz_message(quiz: dict) -> str:
         f"🅲  {html.escape(opts['C'])}\n"
         f"🅳  {html.escape(opts['D'])}\n\n"
         f"👇 Tap your answer — <b>+{QUIZ_REWARD} pts</b> for correct, one shot per user, midnight UTC deadline.\n"
-        "🏆 <b>Weekly winner gets 5 TON</b> — top of the leaderboard every Sunday 20:00 UTC. /leaderboard"
+        "🏆 <b>Weekly winner gets 5 TON</b> — first payout <b>Sunday 17 May 20:00 UTC</b>, every Sunday after that. /leaderboard"
     )
     return body
 
