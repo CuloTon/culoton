@@ -1,15 +1,1 @@
-{
-  "2026-05-09": {
-    "answered": {},
-    "correct": "A",
-    "explanation": "DeDust pioneered concentrated liquidity pools on TON, while STON.fi launched earlier but initially with simpler constant-product AMM mechanics.",
-    "options": {
-      "A": "DeDust",
-      "B": "STON.fi",
-      "C": "Tonkeeper Swap",
-      "D": "Getgems"
-    },
-    "posted_at": "2026-05-09T16:05:49.836095+00:00",
-    "question": "Which DEX was the first to launch on TON mainnet with concentrated liquidity (Uniswap V3-style)?"
-  }
-}
+{}
