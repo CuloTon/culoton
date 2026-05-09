@@ -27,5 +27,5 @@ npm run dev
 
 ## Secrets (GitHub Actions)
 
-- `ANTHROPIC_API_KEY` — Claude Haiku 4.5 for rewriting
-- `FTP_PASSWORD` — FTPS deploy to `culoton@culoton.fun` on `h66.seohost.pl`
+- `ANTHROPIC_API_KEY` — used by the rewriter
+- `FTP_USER`, `FTP_HOST`, `FTP_PASSWORD` — deploy credentials
