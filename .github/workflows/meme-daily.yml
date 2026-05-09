@@ -1,0 +1,46 @@
+name: Meme of the day
+
+on:
+  schedule:
+    # 12:00 UTC = 14:00 CEST (PL) — middle of the European trading day,
+    # also overlaps with US morning, hits the highest TG/X engagement window.
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: meme-daily
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Generate and post meme of the day
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          # Optional — when set, also fires an X draft to your private TG chat.
+          X_DRAFTS_CHAT_ID: ${{ secrets.X_DRAFTS_CHAT_ID }}
+        run: python scripts/meme_daily.py
+
+      - name: Persist announced.db
+        run: |
+          bash scripts/git_commit_push.sh \
+            "auto: meme of the day $(date -u +%Y-%m-%d)" \
+            scripts/announced.db

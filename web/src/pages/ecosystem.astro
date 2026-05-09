@@ -1,0 +1,178 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { UI } from '../i18n/strings';
+import { ECOSYSTEM } from '../data/ecosystem';
+
+const locale = 'en' as const;
+const t = UI[locale];
+
+const totalProjects = ECOSYSTEM.reduce((acc, c) => acc + c.projects.length, 0);
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/ecosystem"
+  title="TON Ecosystem Map — CuloTon"
+  description="Curated map of the TON ecosystem — wallets, DEXes, NFT marketplaces, Mini-Apps, infrastructure and the Foundation. Verified projects only."
+>
+  <article class="news-article ecosystem">
+    <header class="ecosystem-hero">
+      <span class="kicker">CuloTon Desk · Ecosystem map</span>
+      <h1>The TON ecosystem at a glance</h1>
+      <p class="lede">A curated map of the projects that move the TON network — what they do, and where to find them. {totalProjects} projects across {ECOSYSTEM.length} categories. Editorial selection, not a paid directory.</p>
+    </header>
+
+    <nav class="cat-jump" aria-label="Jump to category">
+      {ECOSYSTEM.map((cat) => (
+        <a href={`#${cat.id}`}>{cat.title}</a>
+      ))}
+    </nav>
+
+    {ECOSYSTEM.map((cat) => (
+      <section class="cat" id={cat.id}>
+        <h2>{cat.title}</h2>
+        <p class="cat-blurb">{cat.blurb}</p>
+        <ul class="proj-list">
+          {cat.projects.map((p) => (
+            <li class="proj">
+              <a class="proj-link" href={p.url} target="_blank" rel="noopener noreferrer">
+                <span class="proj-name">{p.name}</span>
+                <span class="proj-host">{new URL(p.url).host}</span>
+              </a>
+              <p class="proj-desc">{p.description}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <section class="ecosystem-foot">
+      <h2>Missing or wrong?</h2>
+      <p>This map is curated — we only list projects we can independently verify. If your project belongs here, or a listing is outdated, ping the editorial desk on <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. No paid placements.</p>
+    </section>
+  </article>
+</Layout>
+
+<style>
+  .ecosystem-hero {
+    margin: 0 0 28px;
+    padding-bottom: 22px;
+    border-bottom: 2px solid var(--rule);
+  }
+  .kicker {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .ecosystem-hero h1 {
+    margin: 0 0 14px;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.15;
+  }
+  .ecosystem-hero .lede {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    max-width: 720px;
+    margin: 0;
+  }
+
+  .cat-jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin: 0 0 36px;
+    padding: 14px 16px;
+    background: var(--bg-section);
+    border-left: 3px solid var(--accent);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .cat-jump a {
+    color: var(--text);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .cat-jump a:hover { color: var(--accent-hot); border-bottom-color: var(--accent); }
+
+  .cat {
+    margin: 0 0 44px;
+    padding: 0;
+    scroll-margin-top: 80px;
+  }
+  .cat h2 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 8px;
+  }
+  .cat-blurb {
+    margin: 0 0 18px;
+    font-style: italic;
+    color: var(--text-dim);
+    max-width: 720px;
+  }
+
+  .proj-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .proj {
+    padding: 14px 16px;
+    background: var(--bg-card, var(--bg-section));
+    border: 1px solid var(--rule-soft);
+    border-left: 3px solid transparent;
+    transition: border-color 120ms ease;
+  }
+  .proj:hover { border-left-color: var(--accent); }
+
+  .proj-link {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+    border: none;
+  }
+  .proj-name {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 16px;
+  }
+  .proj-link:hover .proj-name { color: var(--accent-hot); }
+  .proj-host {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-mute);
+    flex-shrink: 0;
+  }
+  .proj-desc {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+
+  .ecosystem-foot {
+    margin-top: 30px;
+    padding: 18px 20px;
+    background: var(--bg-section);
+    border-left: 4px solid var(--accent);
+  }
+  .ecosystem-foot h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    border: none;
+    padding: 0;
+  }
+  .ecosystem-foot p { margin: 0; color: var(--text-dim); }
+</style>

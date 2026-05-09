@@ -45,6 +45,7 @@ interface UIStrings {
   nav_about: string;
   nav_stonks: string;
   nav_token: string;
+  nav_ecosystem: string;
   archive_title: string;
   archive_meta_description: string;
   archive_h: string;
@@ -149,6 +150,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_about: 'About',
     nav_stonks: 'sTONks',
     nav_token: '$CULO',
+    nav_ecosystem: 'Ecosystem',
     archive_title: 'News archive — CuloTon',
     archive_meta_description: 'Every TON ecosystem story published on CuloTon, grouped by month. The full back-catalogue of independent TON news.',
     archive_h: 'News archive',
@@ -251,6 +253,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_about: 'О проекте',
     nav_stonks: 'sTONks',
     nav_token: '$CULO',
+    nav_ecosystem: 'Экосистема',
     archive_title: 'Архив новостей — CuloTon',
     archive_meta_description: 'Каждая публикация об экосистеме TON на CuloTon, сгруппированная по месяцам. Полный архив независимых новостей TON.',
     archive_h: 'Архив новостей',
@@ -353,6 +356,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_about: 'O nas',
     nav_stonks: 'sTONks',
     nav_token: '$CULO',
+    nav_ecosystem: 'Ekosystem',
     archive_title: 'Archiwum wiadomości — CuloTon',
     archive_meta_description: 'Każda historia z ekosystemu TON opublikowana na CuloTon, pogrupowana po miesiącach. Pełne archiwum niezależnych newsów TON.',
     archive_h: 'Archiwum wiadomości',
@@ -455,6 +459,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_about: 'Über uns',
     nav_stonks: 'sTONks',
     nav_token: '$CULO',
+    nav_ecosystem: 'Ökosystem',
     archive_title: 'Nachrichtenarchiv — CuloTon',
     archive_meta_description: 'Jede Geschichte aus dem TON-Ökosystem, die auf CuloTon veröffentlicht wurde, nach Monaten gruppiert. Das vollständige Archiv unabhängiger TON-Nachrichten.',
     archive_h: 'Nachrichtenarchiv',

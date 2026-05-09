@@ -16,6 +16,12 @@ Three modes:
       24h change, 24h volume), builds a multilingual market-pulse
       message and posts it.
 
+  --mode digest
+      Picks the freshest evening blog roundup (across all locales),
+      builds a multilingual TG digest with title + summary in EN/RU/PL/DE
+      and a link to the full roundup. Idempotent via announced.db
+      (kind='digest').
+
 All modes are graceful no-ops when TELEGRAM_BOT_TOKEN or
 TELEGRAM_CHAT_ID environment variables are missing — so the
 workflow can be merged before secrets are configured.
@@ -38,6 +44,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
+BLOG_DIR = ROOT / "web" / "src" / "content" / "blog"
 DB_PATH = Path(__file__).resolve().parent / "announced.db"
 
 LOCALES = ("en", "ru", "pl", "de")
@@ -299,9 +306,95 @@ def mcap_notify(token: str, chat_id: str) -> int:
     return 0
 
 
+def find_latest_evening_roundup() -> tuple[str, dict[str, dict]] | None:
+    """Return (slug, {locale: frontmatter}) for the freshest evening roundup
+    that has all four locales on disk. Slug = filename stem (e.g. 2026-05-09-evening).
+    """
+    en_dir = BLOG_DIR / "en"
+    if not en_dir.exists():
+        return None
+    cands: list[tuple[str, str]] = []  # (slug, date_str)
+    for path in en_dir.glob("*-evening.md"):
+        try:
+            fm, _ = parse_frontmatter(path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if str(fm.get("kind")) != "evening":
+            continue
+        cands.append((path.stem, str(fm.get("date") or "")))
+    cands.sort(key=lambda x: x[1], reverse=True)
+    for slug, _ in cands:
+        metas: dict[str, dict] = {}
+        for loc in LOCALES:
+            p = BLOG_DIR / loc / f"{slug}.md"
+            if not p.exists():
+                continue
+            try:
+                fm, _ = parse_frontmatter(p.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            metas[loc] = fm
+        if "en" in metas:
+            return slug, metas
+    return None
+
+
+def digest_notify(token: str, chat_id: str) -> int:
+    """Posts the latest evening roundup as a multilingual digest to the
+    public TG channel. Uses the existing announced.db with kind='digest'
+    so it doesn't double-fire if the workflow runs twice in a day.
+    """
+    found = find_latest_evening_roundup()
+    if not found:
+        print("No evening roundup available — skipping.")
+        return 0
+    slug, metas = found
+
+    conn = db_init()
+    if already_announced(conn, slug, "digest"):
+        print(f"Digest already announced for {slug} — skipping.")
+        return 0
+
+    blog_url = f"{SITE}/blog/{slug}"
+    if not url_is_live(blog_url):
+        print(f"Roundup URL not live yet: {blog_url} — skipping; will retry next cron.")
+        return 0
+
+    parts: list[str] = ["🌆 <b>EVENING DIGEST — TON ECOSYSTEM</b>", ""]
+    for loc in LOCALES:
+        fm = metas.get(loc)
+        if not fm:
+            continue
+        title = (fm.get("title") or "").strip()
+        summary = (fm.get("summary") or "").strip()
+        if not title:
+            continue
+        parts.append(f"{FLAGS[loc]} <b>{html.escape(title)}</b>")
+        if summary:
+            parts.append(f"<i>{html.escape(summary)}</i>")
+        parts.append("")
+    parts.append(f"→ <a href=\"{blog_url}\">Read full roundup on CuloTon</a>")
+    text = "\n".join(parts)
+    if len(text) > TG_MAX_LEN:
+        text = text[: TG_MAX_LEN - 3] + "..."
+
+    status, body = tg_send(token, chat_id, text)
+    try:
+        ok = json.loads(body).get("ok", False) if status == 200 else False
+    except Exception:
+        ok = False
+    if not ok:
+        print(f"digest notify failed: status={status} body={body}", file=sys.stderr)
+        return 1
+
+    mark_announced(conn, slug, "digest")
+    print(f"Digest announced: {slug}")
+    return 0
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--mode", required=True, choices=("deploy", "news", "mcap"))
+    p.add_argument("--mode", required=True, choices=("deploy", "news", "mcap", "digest"))
     p.add_argument("--sha", default="")
     p.add_argument("--message", default="")
     p.add_argument("--author", default="")
@@ -320,6 +413,8 @@ def main() -> int:
         return deploy_notify(token, chat_id, sha=args.sha, message=args.message, author=args.author)
     if args.mode == "mcap":
         return mcap_notify(token, chat_id)
+    if args.mode == "digest":
+        return digest_notify(token, chat_id)
     return news_notify(token, chat_id)
 
 

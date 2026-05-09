@@ -1,0 +1,45 @@
+name: Telegram evening digest
+
+on:
+  schedule:
+    # 17:30 UTC = 30 min after evening roundup workflow starts at 17:00 UTC.
+    # update-and-deploy typically finishes (incl. FTP) in 8-15 min, so by
+    # 17:30 the roundup page is live on culoton.fun. The digest_notify
+    # function HEAD-checks the URL anyway as a belt-and-braces guard.
+    - cron: '30 17 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: telegram-digest
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - run: pip install PyYAML
+
+      - name: Send evening digest to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/telegram_notify.py --mode digest
+
+      - name: Persist announced.db
+        run: |
+          bash scripts/git_commit_push.sh \
+            "auto: telegram digest $(date -u +%Y-%m-%dT%H:%MZ)" \
+            scripts/announced.db
