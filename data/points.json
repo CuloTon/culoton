@@ -1,13 +1,13 @@
 {
   "users": {
     "519120279": {
-      "daily_day": "2026-05-08",
-      "daily_points": 13,
+      "daily_day": "2026-05-09",
+      "daily_points": 1,
       "last_ask_at": "2026-05-08T08:25:22.849349+00:00",
-      "last_command_at": "2026-05-08T08:25:22.849384+00:00",
-      "total_points": 19,
+      "last_command_at": "2026-05-09T16:53:27.859910+00:00",
+      "total_points": 20,
       "username": "@qpdqpdqpd",
-      "weekly_points": 0
+      "weekly_points": 1
     },
     "8354207388": {
       "daily_day": "2026-05-09",
