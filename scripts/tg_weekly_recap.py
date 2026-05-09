@@ -31,10 +31,9 @@ def build_announcement(state: dict) -> str:
     if not top:
         return (
             "🏆 <b>Weekly leaderboard</b> " + range_label + "\n\n"
-            "No active members this week. The board resets now — "
-            "be first next week. Try /news, /price ton, or /ask "
-            "&lt;your question&gt;.\n\n"
-            "🎁 Top 3 each week receive prizes."
+            "No active members this week — no winner, no payout. The board resets now.\n\n"
+            "🎁 <b>#1 next week wins 5 TON.</b> Tap the daily quiz, use /ask, /news — earn pts. "
+            "/help for commands."
         )
 
     medals = ["🥇", "🥈", "🥉"]
@@ -44,9 +43,11 @@ def build_announcement(state: dict) -> str:
         name = html.escape(rec.get("username") or "anon")
         pts = rec.get("weekly_points", 0)
         lines.append(f"{medal} <b>{name}</b> — {pts} pts")
+
+    winner_name = html.escape(top[0][1].get("username") or "anon")
     lines.append(
-        "\n🎁 Congrats! The CuloTon team will reach out about your prize.\n"
-        "Board resets now — new week, new shot. /help for commands."
+        f"\n🏆 <b>{winner_name} wins 5 TON this week.</b> The CuloTon team will reach out for your wallet address.\n"
+        "Board resets now — new week, new shot. Daily quiz at 15:00 UTC, /help for commands."
     )
     return "\n".join(lines)
 
