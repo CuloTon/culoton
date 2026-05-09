@@ -224,7 +224,7 @@ export const ECOSYSTEM: EcosystemCategory[] = [
     projects: [
       {
         name: 'Notcoin',
-        url: 'https://notco.in',
+        url: 'https://notcoin.org',
         description: {
           en: 'The viral tap-to-earn that put TON on every crypto Twitter feed and listed on major CEXes.',
           ru: 'Вирусная tap-to-earn-игра, благодаря которой TON попал в ленту каждого крипто-Twitter и на крупные CEX.',
@@ -243,13 +243,13 @@ export const ECOSYSTEM: EcosystemCategory[] = [
         },
       },
       {
-        name: 'Hamster Kombat',
-        url: 'https://hamsterkombatgame.io',
+        name: 'Blum',
+        url: 'https://blum.io',
         description: {
-          en: 'Tap-to-earn that crossed 300M players at peak — one of the largest TON consumer phenomena.',
-          ru: 'Tap-to-earn, на пике перешедшая отметку в 300 млн игроков — один из крупнейших потребительских феноменов TON.',
-          pl: 'Tap-to-earn, który w szczycie przekroczył 300M graczy — jeden z największych konsumenckich fenomenów TON.',
-          de: 'Tap-to-Earn, das auf seinem Höhepunkt 300 Millionen Spieler überschritt — eines der größten Consumer-Phänomene auf TON.',
+          en: 'Telegram-native mini-app exchange — swap jettons, claim daily drops, one of the largest active TON retail audiences.',
+          ru: 'Биржа в формате Telegram mini-app — свопы джеттонов, ежедневные дропы, одна из крупнейших активных розничных аудиторий TON.',
+          pl: 'Giełda w formacie Telegram mini-app — swapy jettonów, dzienne dropy, jedna z największych aktywnych baz retail TON.',
+          de: 'Telegram-native Mini-App-Börse — Jetton-Swaps, tägliche Drops, eine der größten aktiven Retail-Audienzen auf TON.',
         },
       },
     ],
