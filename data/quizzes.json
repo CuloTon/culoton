@@ -1,15 +1,1 @@
-{
-  "2026-05-09": {
-    "answered": {},
-    "correct": "A",
-    "explanation": "The TVM is TON's execution layer that runs compiled smart contract code (bytecode) on validators; the other options describe different blockchain components.",
-    "options": {
-      "A": "Execute smart contract bytecode on validator nodes",
-      "B": "Generate cryptographic signatures for transactions",
-      "C": "Manage the consensus mechanism between shards",
-      "D": "Compress and archive historical blockchain data"
-    },
-    "posted_at": "2026-05-09T16:13:08.326836+00:00",
-    "question": "What is the primary purpose of the TVM (Ton Virtual Machine) in the TON blockchain?"
-  }
-}
+{}
