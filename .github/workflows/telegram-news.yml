@@ -2,7 +2,7 @@ name: Telegram news ping
 
 on:
   schedule:
-    - cron: '0 * * * *'  # every hour, on the hour
+    - cron: '25 * * * *'  # every hour, minute 25 — after update-and-deploy (minute 0, ~8-15min) has finished FTP upload, so links don't 404
   workflow_dispatch:
 
 permissions:

@@ -28,6 +28,7 @@ import re
 import sqlite3
 import sys
 import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -183,6 +184,20 @@ def send_draft_to_telegram(*, kind_label: str, tweet_text: str, char_total: int)
     return 0
 
 
+def url_is_live(url: str, timeout: float = 5.0) -> bool:
+    """HEAD-check the article URL before announcing. Guards against the
+    race where update-and-deploy committed the file but FTP upload
+    hasn't finished — without this we'd post a draft pointing to a 404.
+    """
+    try:
+        req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "culoton-bot/1.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return 200 <= resp.status < 300
+    except Exception as e:
+        print(f"url_is_live({url!r}) failed: {type(e).__name__}: {e}", file=sys.stderr)
+        return False
+
+
 def parse_frontmatter(md_text: str) -> tuple[dict, str]:
     if not md_text.startswith("---"):
         return {}, md_text
@@ -321,6 +336,9 @@ def post_news(client, delivery: str) -> int:
     summary = (fm.get("summary") or "").strip()
     tags = fm.get("tags") or []
     url = f"{SITE}/news/{slug}"
+    if not url_is_live(url):
+        print(f"Article URL not live yet: {url} — skipping; will retry next cron.")
+        return 0
     text = build_news_tweet(title, summary, tags, url)
     return deliver(kind_label="News", dedup_slug=slug, tweet_text=text, delivery=delivery, client=client)
 

@@ -57,6 +57,20 @@ TG_API_TIMEOUT = 20
 TG_MAX_LEN = 4000  # Telegram limit is 4096 — keep margin for safety.
 
 
+def url_is_live(url: str, timeout: float = 5.0) -> bool:
+    """HEAD-check the article URL before announcing. Guards against the
+    race where update-and-deploy committed the file but FTP upload
+    hasn't finished — without this we'd announce a 404 to the channel.
+    """
+    try:
+        req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "culoton-bot/1.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return 200 <= resp.status < 300
+    except Exception as e:
+        print(f"url_is_live({url!r}) failed: {type(e).__name__}: {e}", file=sys.stderr)
+        return False
+
+
 def tg_send(token: str, chat_id: str, text: str, *, disable_preview: bool = False) -> tuple[int, str]:
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     data = urllib.parse.urlencode({
@@ -177,6 +191,11 @@ def news_notify(token: str, chat_id: str) -> int:
         print(f"Article {slug} missing EN metadata; skipping.")
         return 0
 
+    article_url = f"{SITE}/news/{slug}"
+    if not url_is_live(article_url):
+        print(f"Article URL not live yet: {article_url} — skipping; will retry next cron.")
+        return 0
+
     parts: list[str] = ["🔥 <b>NEW ON CULOTON</b>", ""]
     for loc in LOCALES:
         if loc not in metas:
@@ -185,7 +204,7 @@ def news_notify(token: str, chat_id: str) -> int:
         parts.append(f"{FLAGS[loc]} <b>{html.escape(title)}</b>")
         parts.append(f"<i>{html.escape(summary)}</i>")
         parts.append("")
-    parts.append(f"→ <a href=\"{SITE}/news/{slug}\">Read on CuloTon</a>")
+    parts.append(f"→ <a href=\"{article_url}\">Read on CuloTon</a>")
     text = "\n".join(parts)
     if len(text) > TG_MAX_LEN:
         text = text[: TG_MAX_LEN - 3] + "..."

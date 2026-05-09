@@ -3,9 +3,10 @@ name: X news ping
 on:
   schedule:
     # Every 3h (UTC) — ~8 tweets/day, well within Free tier (~500/month).
-    # Offset by 5 minutes so we don't fire at the exact same instant as
-    # the hourly Telegram news ping.
-    - cron: '5 */3 * * *'
+    # Offset by 25 minutes so update-and-deploy (every 2h on minute 0,
+    # ~8-15 min runtime) has finished its FTP upload before we link to
+    # the article — otherwise the draft URL 404s for the holder who taps it.
+    - cron: '25 */3 * * *'
   workflow_dispatch:
 
 permissions:
