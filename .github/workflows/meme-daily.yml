@@ -1,4 +1,4 @@
-name: Meme of the day
+name: Daily take
 
 on:
   schedule:
@@ -30,7 +30,7 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: Generate and post meme of the day
+      - name: Generate and post the daily take
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -42,5 +42,5 @@ jobs:
       - name: Persist announced.db
         run: |
           bash scripts/git_commit_push.sh \
-            "auto: meme of the day $(date -u +%Y-%m-%d)" \
+            "auto: daily take $(date -u +%Y-%m-%d)" \
             scripts/announced.db
