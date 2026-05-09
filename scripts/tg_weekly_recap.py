@@ -15,6 +15,12 @@ from datetime import datetime, timezone
 from _tg_points import load_state, reset_weekly, save_state, top_weekly
 from tg_bot_interact import tg_send
 
+# Don't declare a winner unless the contest week has actually run for
+# this long. Cron fires every Sunday 20:00 UTC, but we must skip when
+# week_started_at is too recent (e.g. the very first cron after the
+# contest launched mid-week).
+MIN_WEEK_DAYS = 6.0
+
 
 def build_announcement(state: dict) -> str:
     top = top_weekly(state, n=3)
@@ -99,6 +105,25 @@ def main() -> int:
         return 0
 
     state = load_state()
+
+    # Guard: don't crown a winner when the contest week has not actually
+    # run for a full week. The cron fires every Sunday 20:00 UTC, but
+    # the FIRST cron after launch (or after a manual reset) might be
+    # only 1-2 days in. Skip it cleanly — week_started_at carries over,
+    # so the next Sunday will see a real week-long competition.
+    week_started = state.get("week_started_at", "")
+    if week_started:
+        try:
+            wdt = datetime.fromisoformat(week_started)
+            elapsed_days = (datetime.now(timezone.utc) - wdt).total_seconds() / 86400.0
+            if elapsed_days < MIN_WEEK_DAYS:
+                print(
+                    f"Week only {elapsed_days:.1f} days old (< {MIN_WEEK_DAYS}) — "
+                    "skipping recap so the contest gets a full week."
+                )
+                return 0
+        except Exception as e:
+            print(f"week_started_at parse failed ({e}); proceeding anyway.", file=sys.stderr)
 
     # 1) Public channel announcement (top 3, no user IDs — privacy)
     text = build_announcement(state)

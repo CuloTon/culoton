@@ -40,12 +40,12 @@ RETRY_LIMIT = 2
 QUIZ_REWARD = 20  # one full daily cap — quiz is the highest-value daily action
 
 TOPIC_POOL = [
-    "TON protocol fundamentals (block time, finality, sharding, validators)",
-    "TON ecosystem projects (STON.fi, DeDust, Tonkeeper, Getgems, Notcoin, Catizen, Blum, etc.)",
-    "Telegram <-> TON integration (Mini-Apps, Wallet, Fragment, ads economy)",
-    "TON-native concepts (jettons, NFTs, smart contracts, TVM, FunC/Tact)",
-    "TON history and milestones (Telegram Open Network, ICO, SEC case, TON Foundation reboot, Durov's involvement)",
-    "TON DeFi mechanics (staking, validators, liquid staking with tsTON / stTON, lending on EVAA)",
+    "Telegram and TON basics — what Telegram is, what TON stands for, what Toncoin is, why they're connected",
+    "Big-name TON ecosystem projects at a glance — what Notcoin / Hamster Kombat / Getgems / STON.fi / Tonkeeper / Blum each do in one sentence",
+    "TON brand history at a high level — who started Telegram, where TON came from, what 'TON Foundation' does",
+    "Everyday crypto terms used in TON in plain English — wallet, jetton (= TON's word for 'token'), NFT, memcoin, staking",
+    "Telegram Mini-Apps as a concept — what they are, why they grew so fast, examples people have heard of",
+    "Common-sense facts about TON the user would pick up by hanging in the community for a week",
 ]
 
 SYSTEM = """You are a quiz master writing one multiple-choice question for a knowledgeable TON-blockchain audience.
@@ -53,11 +53,13 @@ SYSTEM = """You are a quiz master writing one multiple-choice question for a kno
 # Hard rules
 - ONE question. Four options (A, B, C, D). Exactly one correct.
 - Topic must be FACTUAL and verifiable. Avoid speculation, opinions, or trick questions.
-- Difficulty: medium. Not too easy (1+1=2 type) and not so obscure that nobody knows. A regular TON enthusiast should have a fair shot.
+- Difficulty: EASY. Anyone who follows TON casually or has used Telegram should be able to answer. Aim for the kind of question someone playing on the bus during their commute can solve in 5 seconds.
+- AVOID: specific dates, exact percentages, internal protocol details (Catchain version, sharding parameters, FunC syntax, validator counts), niche project trivia, "first to launch X" gotchas. Those are out.
+- PREFER: basic ecosystem knowledge — what Telegram is, what TON is, what Toncoin is, big-name projects (Notcoin, Getgems, STON.fi, Tonkeeper) and what they do at the highest level, "which company is behind X", "what does this acronym mean".
 - All four options must be plausible distractors of similar plausibility. No throwaway joke options.
-- Question stem and options stay short — under 100 chars each.
+- Question stem and options stay short — under 80 chars each.
 - The correct answer must NOT always be option B. Distribute randomly.
-- DO NOT invent facts. If unsure about a specific number/date, ask about a fundamental concept instead.
+- DO NOT invent facts. If unsure about a specific number/date, pick a more fundamental angle.
 
 # Output
 Strict JSON, no prose outside JSON, no code fences:
