@@ -40,50 +40,13 @@ interface UIStrings {
   articles_count: (shown: number, total: number) => string;
   no_news: string;
   nav_news: string;
-  nav_blog: string;
-  nav_archive: string;
   nav_about: string;
-  nav_stonks: string;
   nav_token: string;
-  nav_ecosystem: string;
-  archive_title: string;
-  archive_meta_description: string;
-  archive_h: string;
-  archive_blurb: string;
-  archive_total: (n: number) => string;
-  archive_view_all: string;
-  archive_no_articles: string;
-  stats_h: string;
-  stats_online: string;
-  stats_total: string;
-  stats_avg_hour: string;
-  stats_avg_day: string;
-  stats_avg_week: string;
-  stats_avg_month: string;
-  stats_since: (date: string) => string;
-  stats_pending: string;
-  blog_section_kicker: string;
-  blog_section_h: string;
-  blog_section_blurb: string;
-  blog_section_view_all: string;
-  blog_index_title: string;
-  blog_index_meta_description: string;
-  blog_index_h: string;
-  blog_index_blurb: string;
-  blog_no_posts: string;
-  blog_kind_morning: string;
-  blog_kind_noon: string;
-  blog_kind_evening: string;
-  blog_kind_label: (kind: 'morning' | 'noon' | 'evening') => string;
-  blog_articles_covered_label: string;
-  blog_byline_lead: string;
-  blog_back_to_blog: string;
   footer_tagline_html: string;
   footer_about: string;
   footer_token: string;
   footer_telegram: string;
-  footer_x: string;
-  footer_pulse: string;
+  footer_github: string;
   footer_rss: string;
   footer_edited_by: string;
   source_attribution_lead: string;
@@ -132,14 +95,6 @@ interface UIStrings {
   culo_community_p_html: string;
   culo_disclaimer_h: string;
   culo_disclaimer_p: string;
-  ecosystem_title: string;
-  ecosystem_meta_description: string;
-  ecosystem_kicker: string;
-  ecosystem_h: string;
-  ecosystem_lede: (projects: number, categories: number) => string;
-  ecosystem_jump_label: string;
-  ecosystem_foot_h: string;
-  ecosystem_foot_p_html: string;
 }
 
 export const UI: Record<Locale, UIStrings> = {
@@ -153,50 +108,13 @@ export const UI: Record<Locale, UIStrings> = {
     articles_count: (shown, total) => `${shown} of ${total} articles`,
     no_news: 'No news yet.',
     nav_news: 'News',
-    nav_blog: 'Blog',
-    nav_archive: 'Archive',
     nav_about: 'About',
-    nav_stonks: 'sTONks',
     nav_token: '$CULO',
-    nav_ecosystem: 'Ecosystem',
-    archive_title: 'News archive — CuloTon',
-    archive_meta_description: 'Every TON ecosystem story published on CuloTon, grouped by month. The full back-catalogue of independent TON news.',
-    archive_h: 'News archive',
-    archive_blurb: 'Every story CuloScribe has filed on the TON ecosystem, grouped by month — newest first. Older context for the latest moves.',
-    archive_total: (n) => `${n} articles in the archive`,
-    archive_view_all: 'Browse the full archive →',
-    archive_no_articles: 'The archive is empty for now.',
-    stats_h: 'Live desk metrics',
-    stats_online: 'Online now',
-    stats_total: 'Total visits',
-    stats_avg_hour: 'Avg / hour',
-    stats_avg_day: 'Avg / day',
-    stats_avg_week: 'Avg / week',
-    stats_avg_month: 'Avg / month',
-    stats_since: (date) => `Tracking since ${date}`,
-    stats_pending: 'Numbers will fill in as data is collected.',
-    blog_section_kicker: 'CuloTon Blog',
-    blog_section_h: 'Daily TON roundups',
-    blog_section_blurb: 'Three times a day — morning, noon and evening — CuloScribe takes the latest TON ecosystem news and stitches them into one editorial brief. Catch up in two minutes.',
-    blog_section_view_all: 'All roundups →',
-    blog_index_title: 'CuloTon Blog — Daily TON roundups',
-    blog_index_meta_description: 'Editorial briefs from the TON blockchain ecosystem. Three times a day — morning, noon and evening — CuloScribe synthesises the latest news into one read.',
-    blog_index_h: 'CuloTon Blog',
-    blog_index_blurb: 'A running editorial diary of the TON ecosystem. Three briefs a day — morning, noon, evening — written by CuloScribe AI on top of the latest reporting.',
-    blog_no_posts: 'No roundups yet — the first one will land at the next morning, noon or evening slot.',
-    blog_kind_morning: 'Morning roundup',
-    blog_kind_noon: 'Noon roundup',
-    blog_kind_evening: 'Evening roundup',
-    blog_kind_label: (kind) => kind === 'morning' ? 'Morning roundup' : kind === 'noon' ? 'Noon roundup' : 'Evening roundup',
-    blog_articles_covered_label: 'Built from these articles',
-    blog_byline_lead: 'A CuloScribe AI editorial brief, synthesised from independent TON-ecosystem reporting.',
-    blog_back_to_blog: '← Back to blog',
     footer_tagline_html: '<strong>CuloTon</strong> — TON ecosystem news, powered by <span class="footer-ticker">$CULO</span>',
     footer_about: 'About',
     footer_token: '$CULO',
     footer_telegram: 'Telegram',
-    footer_x: 'X / Twitter',
-    footer_pulse: 'sTONks Pulse',
+    footer_github: 'GitHub',
     footer_rss: 'RSS',
     footer_edited_by: 'Edited by CuloScribe AI',
     source_attribution_lead: 'This article is based on reporting by',
@@ -245,14 +163,6 @@ export const UI: Record<Locale, UIStrings> = {
     culo_community_p_html: 'The fastest way to get involved is the official Telegram group: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. News, announcements and trade chatter all happen there.',
     culo_disclaimer_h: 'Disclaimer',
     culo_disclaimer_p: 'Nothing on this page is financial advice. $CULO is a memecoin; cryptocurrencies are highly volatile and you may lose your entire investment. Past performance on Polygon or SUI is no guarantee of future results on TON or any other chain. Always do your own research and only buy what you can afford to lose. CuloTon news coverage is editorially independent of token activity.',
-    ecosystem_title: 'TON Ecosystem Map — CuloTon',
-    ecosystem_meta_description: 'Curated map of the TON ecosystem — wallets, DEXes, NFT marketplaces, Mini-Apps, infrastructure and the Foundation. Verified projects only.',
-    ecosystem_kicker: 'CuloTon Desk · Ecosystem map',
-    ecosystem_h: 'The TON ecosystem at a glance',
-    ecosystem_lede: (projects, categories) => `A curated map of the projects that move the TON network — what they do, and where to find them. ${projects} projects across ${categories} categories. Editorial selection, not a paid directory.`,
-    ecosystem_jump_label: 'Jump to category',
-    ecosystem_foot_h: 'Missing or wrong?',
-    ecosystem_foot_p_html: 'This map is curated — we only list projects we can independently verify. If your project belongs here, or a listing is outdated, ping the editorial desk on <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. No paid placements.',
   },
   ru: {
     site_title: 'CuloTon — Новости блокчейна TON',
@@ -264,50 +174,13 @@ export const UI: Record<Locale, UIStrings> = {
     articles_count: (shown, total) => `${shown} из ${total} статей`,
     no_news: 'Пока нет новостей.',
     nav_news: 'Новости',
-    nav_blog: 'Блог',
-    nav_archive: 'Архив',
     nav_about: 'О проекте',
-    nav_stonks: 'sTONks',
     nav_token: '$CULO',
-    nav_ecosystem: 'Экосистема',
-    archive_title: 'Архив новостей — CuloTon',
-    archive_meta_description: 'Каждая публикация об экосистеме TON на CuloTon, сгруппированная по месяцам. Полный архив независимых новостей TON.',
-    archive_h: 'Архив новостей',
-    archive_blurb: 'Все материалы CuloScribe об экосистеме TON, сгруппированные по месяцам — новые сверху. Исторический контекст для свежих движений.',
-    archive_total: (n) => `всего материалов: ${n}`,
-    archive_view_all: 'Перейти в полный архив →',
-    archive_no_articles: 'Архив пока пуст.',
-    stats_h: 'Метрики деска в реальном времени',
-    stats_online: 'Сейчас онлайн',
-    stats_total: 'Всего визитов',
-    stats_avg_hour: 'Среднее / час',
-    stats_avg_day: 'Среднее / день',
-    stats_avg_week: 'Среднее / неделя',
-    stats_avg_month: 'Среднее / месяц',
-    stats_since: (date) => `Учёт с ${date}`,
-    stats_pending: 'Цифры появятся по мере накопления данных.',
-    blog_section_kicker: 'Блог CuloTon',
-    blog_section_h: 'Ежедневные обзоры TON',
-    blog_section_blurb: 'Трижды в день — утром, в полдень и вечером — CuloScribe берёт свежие новости экосистемы TON и собирает из них единую редакционную сводку. Полная картина за две минуты.',
-    blog_section_view_all: 'Все обзоры →',
-    blog_index_title: 'Блог CuloTon — ежедневные обзоры TON',
-    blog_index_meta_description: 'Редакционные сводки об экосистеме блокчейна TON. Трижды в день — утром, в полдень и вечером — CuloScribe синтезирует новости в один материал.',
-    blog_index_h: 'Блог CuloTon',
-    blog_index_blurb: 'Текущий редакционный дневник экосистемы TON. Три сводки в день — утром, в полдень, вечером — написанные CuloScribe AI на основе свежих репортажей.',
-    blog_no_posts: 'Пока обзоров нет — первый появится в ближайший утренний, полуденный или вечерний слот.',
-    blog_kind_morning: 'Утренний обзор',
-    blog_kind_noon: 'Дневной обзор',
-    blog_kind_evening: 'Вечерний обзор',
-    blog_kind_label: (kind) => kind === 'morning' ? 'Утренний обзор' : kind === 'noon' ? 'Дневной обзор' : 'Вечерний обзор',
-    blog_articles_covered_label: 'На основе этих материалов',
-    blog_byline_lead: 'Редакционная сводка CuloScribe AI, составленная по независимым репортажам об экосистеме TON.',
-    blog_back_to_blog: '← К блогу',
     footer_tagline_html: '<strong>CuloTon</strong> — новости экосистемы TON, на базе <span class="footer-ticker">$CULO</span>',
     footer_about: 'О проекте',
     footer_token: '$CULO',
     footer_telegram: 'Telegram',
-    footer_x: 'X / Twitter',
-    footer_pulse: 'sTONks Pulse',
+    footer_github: 'GitHub',
     footer_rss: 'RSS',
     footer_edited_by: 'Редактор: CuloScribe AI',
     source_attribution_lead: 'Статья основана на материалах',
@@ -356,14 +229,6 @@ export const UI: Record<Locale, UIStrings> = {
     culo_community_p_html: 'Быстрее всего подключиться — через официальную Telegram-группу: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. Новости, анонсы и трейдерский чат — всё там.',
     culo_disclaimer_h: 'Дисклеймер',
     culo_disclaimer_p: 'Ничто на этой странице не является финансовой рекомендацией. $CULO — мем-токен; криптовалюты крайне волатильны, и вы можете потерять весь вклад. Прошлые результаты на Polygon или SUI не гарантируют будущих результатов на TON или любом другом блокчейне. Всегда проводите собственное исследование и покупайте только то, что можете позволить себе потерять. Новостное освещение CuloTon редакционно независимо от деятельности токена.',
-    ecosystem_title: 'Карта экосистемы TON — CuloTon',
-    ecosystem_meta_description: 'Курируемая карта экосистемы TON — кошельки, DEX, NFT-маркетплейсы, Mini Apps, инфраструктура и Foundation. Только проверенные проекты.',
-    ecosystem_kicker: 'CuloTon Desk · Карта экосистемы',
-    ecosystem_h: 'Экосистема TON одним взглядом',
-    ecosystem_lede: (projects, categories) => `Курируемая карта проектов, которые двигают сеть TON — что они делают и где их найти. ${projects} проектов в ${categories} категориях. Редакционный выбор, не платный каталог.`,
-    ecosystem_jump_label: 'Перейти к категории',
-    ecosystem_foot_h: 'Не нашли проект или нужна правка?',
-    ecosystem_foot_p_html: 'Это курируемая карта — мы перечисляем только проекты, которые можем независимо подтвердить. Если ваш проект должен быть здесь или запись устарела — напишите редакции в <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Платных размещений нет.',
   },
   pl: {
     site_title: 'CuloTon — Wiadomości z blockchaina TON',
@@ -375,50 +240,13 @@ export const UI: Record<Locale, UIStrings> = {
     articles_count: (shown, total) => `${shown} z ${total} artykułów`,
     no_news: 'Brak wiadomości.',
     nav_news: 'Wiadomości',
-    nav_blog: 'Blog',
-    nav_archive: 'Archiwum',
     nav_about: 'O nas',
-    nav_stonks: 'sTONks',
     nav_token: '$CULO',
-    nav_ecosystem: 'Ekosystem',
-    archive_title: 'Archiwum wiadomości — CuloTon',
-    archive_meta_description: 'Każda historia z ekosystemu TON opublikowana na CuloTon, pogrupowana po miesiącach. Pełne archiwum niezależnych newsów TON.',
-    archive_h: 'Archiwum wiadomości',
-    archive_blurb: 'Wszystkie materiały CuloScribe o ekosystemie TON, pogrupowane po miesiącach — najnowsze na górze. Kontekst historyczny dla świeżych ruchów.',
-    archive_total: (n) => `materiałów łącznie: ${n}`,
-    archive_view_all: 'Przejdź do pełnego archiwum →',
-    archive_no_articles: 'Archiwum jest na razie puste.',
-    stats_h: 'Metryki redakcji na żywo',
-    stats_online: 'Teraz online',
-    stats_total: 'Łącznie wizyt',
-    stats_avg_hour: 'Śr. / godz.',
-    stats_avg_day: 'Śr. / dzień',
-    stats_avg_week: 'Śr. / tydzień',
-    stats_avg_month: 'Śr. / mies.',
-    stats_since: (date) => `Liczone od ${date}`,
-    stats_pending: 'Cyfry wypełnią się w miarę zbierania danych.',
-    blog_section_kicker: 'Blog CuloTon',
-    blog_section_h: 'Codzienne podsumowania TON',
-    blog_section_blurb: 'Trzy razy dziennie — rano, w południe i wieczorem — CuloScribe bierze świeże newsy z ekosystemu TON i składa je w jedną redakcyjną notatkę. Pełen obraz w dwie minuty.',
-    blog_section_view_all: 'Wszystkie podsumowania →',
-    blog_index_title: 'Blog CuloTon — codzienne podsumowania TON',
-    blog_index_meta_description: 'Redakcyjne podsumowania ekosystemu blockchaina TON. Trzy razy dziennie — rano, w południe i wieczorem — CuloScribe syntetyzuje newsy w jeden materiał.',
-    blog_index_h: 'Blog CuloTon',
-    blog_index_blurb: 'Bieżący redakcyjny dziennik ekosystemu TON. Trzy notatki dziennie — rano, w południe, wieczorem — pisane przez CuloScribe AI na bazie świeżych doniesień.',
-    blog_no_posts: 'Brak podsumowań — pierwsze pojawi się w najbliższym slocie porannym, południowym lub wieczornym.',
-    blog_kind_morning: 'Podsumowanie poranne',
-    blog_kind_noon: 'Podsumowanie południowe',
-    blog_kind_evening: 'Podsumowanie wieczorne',
-    blog_kind_label: (kind) => kind === 'morning' ? 'Podsumowanie poranne' : kind === 'noon' ? 'Podsumowanie południowe' : 'Podsumowanie wieczorne',
-    blog_articles_covered_label: 'Na bazie tych artykułów',
-    blog_byline_lead: 'Redakcyjne podsumowanie CuloScribe AI, zsyntetyzowane z niezależnych doniesień o ekosystemie TON.',
-    blog_back_to_blog: '← Wróć do bloga',
     footer_tagline_html: '<strong>CuloTon</strong> — wiadomości z ekosystemu TON, napędzane przez <span class="footer-ticker">$CULO</span>',
     footer_about: 'O nas',
     footer_token: '$CULO',
     footer_telegram: 'Telegram',
-    footer_x: 'X / Twitter',
-    footer_pulse: 'sTONks Pulse',
+    footer_github: 'GitHub',
     footer_rss: 'RSS',
     footer_edited_by: 'Redaktor: CuloScribe AI',
     source_attribution_lead: 'Artykuł powstał w oparciu o materiał',
@@ -467,14 +295,6 @@ export const UI: Record<Locale, UIStrings> = {
     culo_community_p_html: 'Najszybszy sposób, by się włączyć, to oficjalna grupa Telegram: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. Wiadomości, ogłoszenia i rozmowy traderów — wszystko tam.',
     culo_disclaimer_h: 'Zastrzeżenie',
     culo_disclaimer_p: 'Nic na tej stronie nie stanowi porady finansowej. $CULO to memecoin; kryptowaluty są wysoce zmienne i możesz stracić całą inwestycję. Wyniki z przeszłości na Polygonie lub SUI nie gwarantują przyszłych rezultatów na TON ani na żadnym innym blockchainie. Zawsze rób własny research i kupuj wyłącznie tyle, ile możesz stracić. Newsy na CuloTon są redakcyjnie niezależne od aktywności tokena.',
-    ecosystem_title: 'Mapa ekosystemu TON — CuloTon',
-    ecosystem_meta_description: 'Curated mapa ekosystemu TON — portfele, DEX-y, marketplace’y NFT, Mini-Appy, infrastruktura i Foundation. Tylko zweryfikowane projekty.',
-    ecosystem_kicker: 'CuloTon Desk · Mapa ekosystemu',
-    ecosystem_h: 'Ekosystem TON na jeden rzut oka',
-    ecosystem_lede: (projects, categories) => `Curated mapa projektów, które realnie napędzają sieć TON — co robią i gdzie ich znaleźć. ${projects} projektów w ${categories} kategoriach. Selekcja redakcyjna, nie płatny katalog.`,
-    ecosystem_jump_label: 'Przejdź do kategorii',
-    ecosystem_foot_h: 'Brakuje czegoś albo coś nie tak?',
-    ecosystem_foot_p_html: 'Ta mapa jest curated — wymieniamy tylko projekty, które potrafimy niezależnie zweryfikować. Jeśli twój projekt powinien tu być albo wpis jest nieaktualny — pisz do redakcji na <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegramie</a>. Bez płatnych umieszczeń.',
   },
   de: {
     site_title: 'CuloTon — Nachrichten zur TON-Blockchain',
@@ -486,50 +306,13 @@ export const UI: Record<Locale, UIStrings> = {
     articles_count: (shown, total) => `${shown} von ${total} Artikeln`,
     no_news: 'Noch keine Nachrichten.',
     nav_news: 'Nachrichten',
-    nav_blog: 'Blog',
-    nav_archive: 'Archiv',
     nav_about: 'Über uns',
-    nav_stonks: 'sTONks',
     nav_token: '$CULO',
-    nav_ecosystem: 'Ökosystem',
-    archive_title: 'Nachrichtenarchiv — CuloTon',
-    archive_meta_description: 'Jede Geschichte aus dem TON-Ökosystem, die auf CuloTon veröffentlicht wurde, nach Monaten gruppiert. Das vollständige Archiv unabhängiger TON-Nachrichten.',
-    archive_h: 'Nachrichtenarchiv',
-    archive_blurb: 'Alle Beiträge, die CuloScribe zum TON-Ökosystem verfasst hat — nach Monaten gruppiert, neueste zuerst. Historischer Kontext für die jüngsten Bewegungen.',
-    archive_total: (n) => `Beiträge im Archiv: ${n}`,
-    archive_view_all: 'Zum vollständigen Archiv →',
-    archive_no_articles: 'Das Archiv ist derzeit leer.',
-    stats_h: 'Live-Desk-Metriken',
-    stats_online: 'Jetzt online',
-    stats_total: 'Besuche gesamt',
-    stats_avg_hour: 'Ø / Stunde',
-    stats_avg_day: 'Ø / Tag',
-    stats_avg_week: 'Ø / Woche',
-    stats_avg_month: 'Ø / Monat',
-    stats_since: (date) => `Erfassung seit ${date}`,
-    stats_pending: 'Die Zahlen füllen sich, sobald Daten vorliegen.',
-    blog_section_kicker: 'CuloTon Blog',
-    blog_section_h: 'Tägliche TON-Roundups',
-    blog_section_blurb: 'Dreimal täglich — morgens, mittags und abends — verdichtet CuloScribe die aktuellen News aus dem TON-Ökosystem zu einem redaktionellen Briefing. In zwei Minuten auf dem Stand.',
-    blog_section_view_all: 'Alle Roundups →',
-    blog_index_title: 'CuloTon Blog — tägliche TON-Roundups',
-    blog_index_meta_description: 'Redaktionelle Briefings aus dem TON-Blockchain-Ökosystem. Dreimal täglich — morgens, mittags und abends — synthetisiert CuloScribe die aktuelle Berichterstattung zu einem Stück.',
-    blog_index_h: 'CuloTon Blog',
-    blog_index_blurb: 'Ein laufendes redaktionelles Tagebuch des TON-Ökosystems. Drei Briefings pro Tag — morgens, mittags, abends — verfasst von CuloScribe AI auf Basis aktueller Berichterstattung.',
-    blog_no_posts: 'Noch keine Roundups — das erste landet im nächsten Morgen-, Mittags- oder Abend-Slot.',
-    blog_kind_morning: 'Morgen-Roundup',
-    blog_kind_noon: 'Mittags-Roundup',
-    blog_kind_evening: 'Abend-Roundup',
-    blog_kind_label: (kind) => kind === 'morning' ? 'Morgen-Roundup' : kind === 'noon' ? 'Mittags-Roundup' : 'Abend-Roundup',
-    blog_articles_covered_label: 'Auf Basis dieser Artikel',
-    blog_byline_lead: 'Ein redaktionelles Briefing von CuloScribe AI, synthetisiert aus unabhängiger Berichterstattung zum TON-Ökosystem.',
-    blog_back_to_blog: '← Zurück zum Blog',
     footer_tagline_html: '<strong>CuloTon</strong> — Nachrichten aus dem TON-Ökosystem, powered by <span class="footer-ticker">$CULO</span>',
     footer_about: 'Über uns',
     footer_token: '$CULO',
     footer_telegram: 'Telegram',
-    footer_x: 'X / Twitter',
-    footer_pulse: 'sTONks Pulse',
+    footer_github: 'GitHub',
     footer_rss: 'RSS',
     footer_edited_by: 'Redaktion: CuloScribe AI',
     source_attribution_lead: 'Dieser Artikel basiert auf Berichterstattung von',
@@ -578,14 +361,6 @@ export const UI: Record<Locale, UIStrings> = {
     culo_community_p_html: 'Am schnellsten beteiligen Sie sich über die offizielle Telegram-Gruppe: <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">https://t.me/culoton</a>. Nachrichten, Ankündigungen und Trade-Gespräche finden dort statt.',
     culo_disclaimer_h: 'Disclaimer',
     culo_disclaimer_p: 'Nichts auf dieser Seite stellt eine Finanzberatung dar. $CULO ist ein Memecoin; Kryptowährungen sind hochvolatil und Sie können Ihre gesamte Investition verlieren. Vergangene Performance auf Polygon oder SUI ist keine Garantie für zukünftige Ergebnisse auf TON oder einer anderen Chain. Recherchieren Sie stets selbst und kaufen Sie nur, was Sie sich zu verlieren leisten können. Die CuloTon-Berichterstattung ist redaktionell unabhängig von Token-Aktivitäten.',
-    ecosystem_title: 'TON-Ökosystem-Karte — CuloTon',
-    ecosystem_meta_description: 'Kuratierte Karte des TON-Ökosystems — Wallets, DEXes, NFT-Marktplätze, Mini-Apps, Infrastruktur und Foundation. Nur verifizierte Projekte.',
-    ecosystem_kicker: 'CuloTon Desk · Ökosystem-Karte',
-    ecosystem_h: 'Das TON-Ökosystem auf einen Blick',
-    ecosystem_lede: (projects, categories) => `Eine kuratierte Karte der Projekte, die das TON-Netzwerk antreiben — was sie tun und wo man sie findet. ${projects} Projekte in ${categories} Kategorien. Redaktionelle Auswahl, kein bezahltes Verzeichnis.`,
-    ecosystem_jump_label: 'Zur Kategorie springen',
-    ecosystem_foot_h: 'Fehlt etwas oder ist etwas falsch?',
-    ecosystem_foot_p_html: 'Diese Karte wird kuratiert — wir listen nur Projekte, die wir unabhängig prüfen können. Wenn Ihr Projekt hierhergehört oder ein Eintrag veraltet ist, melden Sie sich bei der Redaktion auf <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Keine bezahlten Platzierungen.',
   },
 };
 
