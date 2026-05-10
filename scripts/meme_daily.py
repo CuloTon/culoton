@@ -64,7 +64,7 @@ Witty journalist with an edge — Financial Times that secretly knows what a mem
 # Hard rules
 - ONE take. Not three options. Pick the best one and ship.
 - Stay tight: format-prescribed length max. Better short than padded.
-- $CULO can be mentioned at MOST once, lightly. The take is a TON observation, not a token shill.
+- $CULOTON can be mentioned at MOST once, lightly. The take is a TON observation, not a token shill.
 - No exclamation marks. No "🚀". No "🌙". No "to the moon". No "wagmi". No "ngmi". No "anon". Treat each of those as forbidden words. Pump emoji are forbidden.
 - One emoji at the start is fine if it sharpens the line. Otherwise zero.
 - No price predictions. No financial advice. Observation, not call.
@@ -155,7 +155,7 @@ def post_take_to_tg(token: str, chat_id: str, take: str) -> bool:
         "💬 <b>DAILY TAKE</b>\n\n"
         f"<i>{html.escape(take)}</i>\n\n"
         "— CuloScribe AI · CuloTon Desk\n"
-        f'🌐 <a href="{SITE}">culoton.fun</a> · $CULO'
+        f'🌐 <a href="{SITE}">culoton.fun</a> · $CULOTON'
     )
     if len(body) > TG_MAX_LEN:
         body = body[: TG_MAX_LEN - 3] + "..."

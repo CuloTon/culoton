@@ -59,7 +59,7 @@ For market moves, security incidents, regulatory news and technical detail — s
 - Then 3-5 short sections separated by blank lines. Each section is one paragraph. Use **bold lead phrases** (NOT markdown headings) to mark each subtopic — e.g. "**On the validator front,** ..." or "**In DeFi,** ...". No "##" headings inside the body.
 - Close with one neutral sentence framing what to watch next. No calls to action, no investment advice.
 
-Do NOT mention $CULO inside the roundup body. The roundup is about TON, not the token. The site as a whole signals the brand; the editorial stays clean.
+Do NOT mention $CULOTON inside the roundup body. The roundup is about TON, not the token. The site as a whole signals the brand; the editorial stays clean.
 
 # Sourcing
 You will be given the full text of recent CuloTon news articles. Synthesise across them — show connections, group related events, distinguish what is confirmed from what is reported/speculative. You may quote a specific source name in passing (e.g. "according to BeInCrypto") but do not bullet-list every source. The roundup is a synthesis, not a digest.
@@ -86,7 +86,7 @@ Output JSON with exactly these keys:
   "en": {{
     "title": "Editorial title for the {kind} roundup, max 80 chars, no clickbait",
     "summary": "1-2 sentence dek that captures the dominant theme, max 200 chars",
-    "body_markdown": "350-550 words, paragraphs separated by blank lines, bold lead phrases NOT headings, no $CULO references"
+    "body_markdown": "350-550 words, paragraphs separated by blank lines, bold lead phrases NOT headings, no $CULOTON references"
   }},
   "ru": {{
     "title": "Редакционный заголовок для {kind_label_ru} обзора, max 80 chars",

@@ -1,7 +1,7 @@
 # CuloTon
 
 English-language news platform covering the TON blockchain ecosystem.
-Native token: **$CULO**.
+Native token: **$CULOTON** (TON contract `EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc`).
 
 Live: https://culoton.fun
 

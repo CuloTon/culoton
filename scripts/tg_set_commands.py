@@ -22,7 +22,7 @@ COMMANDS = [
     {"command": "help", "description": "Show all commands"},
     {"command": "news", "description": "Top 5 stories from the last 6h"},
     {"command": "blog", "description": "Latest CuloScribe roundup"},
-    {"command": "price", "description": "Live $TON or $CULO market data"},
+    {"command": "price", "description": "Live $TON or $CULOTON market data"},
     {"command": "ask", "description": "Ask CuloScribe anything (AI Q&A)"},
     {"command": "points", "description": "Your activity score"},
     {"command": "leaderboard", "description": "Top 10 active members this week"},

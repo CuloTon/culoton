@@ -98,13 +98,13 @@ COMMANDS_HELP = (
 # ---------- Knowledge baked into /ask ---------------------------------------
 
 CULOTON_FACTS = """\
-CULOTON / $CULO — ground truth (always reply in English).
+CULO TON / $CULOTON — ground truth (always reply in English).
 
 PLATFORM
 - CuloTon (https://culoton.fun) is an English-language news desk covering the
-  TON Blockchain ecosystem. It is the editorial layer built around the $CULO
-  memecoin: legitimate TON content first, $CULO surfaced as the platform's
-  native token (banner, /culo page, branding).
+  TON Blockchain ecosystem. It is the editorial layer built around the
+  $CULOTON memecoin: legitimate TON content first, $CULOTON surfaced as the
+  platform's native token (banner, /culo page, branding).
 - Multilingual: every story exists in EN, RU, PL and DE — same slug, native
   re-reporting (not translation) by CuloScribe.
 - Cadence: ~24 news items/day, plus 3 editorial roundups every day
@@ -117,12 +117,14 @@ PERSONA
 - You are CuloScribe — the AI editor. Witty, dry, professional. Never break
   character to mention you are Claude.
 
-$CULO TOKEN
-- Memecoin on TON. Contract: EQD5dCm196cT60OTcCz_MI_f_QtpZYGU5mazX-4rjAOHiKrJ
+$CULOTON TOKEN
+- Memecoin on TON. Contract: EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc
 - Track record: ~10,000X market-cap move on Polygon (2024), follow-through on
-  SUI, now launched on TON in 2026 with this dedicated platform.
-- Launched via the stonks.pump Deploy-with-TAX tokenomic (fixed supply + small
-  buy/sell tax) — NOT a bonding curve.
+  SUI, then launched on TON in 2026 with this dedicated platform.
+- Relaunched in May 2026 as a tax-free token under the new ticker $CULOTON,
+  retiring the original $CULO contract. The relaunch was triggered by
+  consultations with senior figures in the TON ecosystem who endorsed the
+  project as developmental but required a token without TAX.
 - Brand: born from a long-running cross-chain meme; community-driven.
 
 CHANNELS
@@ -182,10 +184,12 @@ stonks.pump — THE LAUNCHPAD
 - Launch via @stonks_sniper_bot or stonkslabs.com/launch/ton
 - Manual: stonks-bot.gitbook.io/stonks-bot-manual/stonks.pump-launchpad
 
-$CULO RELATION
-- $CULO was deployed on stonks.pump using Deploy-with-TAX (fixed supply, small
-  buy/sell tax). The CuloTon news desk was built afterwards as the editorial
-  layer around the token.
+$CULOTON RELATION
+- $CULOTON is the live token of the project (TON contract
+  EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc, tax-free). It is the
+  relaunched successor to the original $CULO contract, which was deployed via
+  stonks.pump and has since been retired. The CuloTon news desk is the
+  editorial layer that the token sits inside.
 """
 
 
@@ -452,7 +456,7 @@ def cmd_ask(question: str) -> str:
         "WHAT YOU CAN ANSWER\n"
         "- Anything about the TON blockchain ecosystem (apps, protocols, news, "
         "trends, the chain itself).\n"
-        "- Anything about CuloTon, the $CULO token, this Telegram bot, the news "
+        "- Anything about CuloTon, the $CULOTON token, this Telegram bot, the news "
         "platform, the brand and our channels — see CULOTON FACTS below.\n"
         "- Anything about sTONks and the stonks.pump launchpad — see STONKS "
         "FACTS below.\n"

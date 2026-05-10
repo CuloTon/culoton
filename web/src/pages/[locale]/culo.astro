@@ -14,6 +14,46 @@ const { locale } = Astro.params as { locale: Locale };
 const t = UI[locale];
 const TELEGRAM = 'https://t.me/culoton';
 const CONTRACT = 'EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc';
+
+const HOW = {
+  pl: {
+    h: 'Jak działa system CULO TON',
+    intro: 'CULO TON to dwie rzeczy ściśle ze sobą sprzężone: redakcja newsowa o ekosystemie TON oraz token bez TAX siedzący w jej środku. Po redakcję ludzie przychodzą; token finansuje redakcję i nagradza społeczność budowaną wokół niej.',
+    pillars: [
+      ['📰 Redakcja newsowa', 'CuloScribe, nasz redaktor AI, pobiera RSS-y z głównych publikacji o ekosystemie TON, odsiewa to co już opisaliśmy, i opowiada każdą historię własnymi słowami w czterech językach (EN/RU/PL/DE). Około 24 newsy dziennie plus trzy redakcyjne podsumowania (rano, południe, wieczór), które syntetyzują dany odcinek w jednym tekście.'],
+      ['🤖 Bot Telegramowy', '@cscriber_bot żyje na naszym czacie t.me/culoton. /news daje ostatnie 6h newsów. /price culoton pobiera dane rynkowe z GeckoTerminal na żywo. /ask odpowiada przez Claude Haiku z ostatnimi 50 newsami EN jako kontekstem. /points i /leaderboard śledzą aktywność, a dzienny /quiz spada o 17:00 czasu polskiego.'],
+      ['🏆 Tygodniowa pula nagród', 'Najaktywniejszy członek tygodnia dostaje 5 TON, wypłacane w każdą niedzielę o 20:00 UTC. Aktywność = posty, wygrane quizy, użycie /ask, ranking. Bez farmienia — limit 20 punktów na osobę dziennie.'],
+      ['📡 Publikacja wielokanałowa', 'Każda historia leci automatycznie na Telegram (@culoton) i X (@culoton_). Market pulse dla $CULOTON wychodzi 4× dziennie na obu kanałach, dane z GeckoTerminal. Trzy podsumowania dziennie lądują na blogu culoton.fun/blog.'],
+      ['💎 Token $CULOTON', 'Jetton na TON bez TAX, kontrakt EQAYaqIikry…b0A2Uc. Token jest brandowym ramieniem platformy — nie jest papierem wartościowym ani produktem yieldowym. Holderzy dostają tę samą treść co wszyscy, a projekt finansuje rozwój z aktywności po stronie tokenu.'],
+    ],
+    closer: 'Wszystko wychodzi z jednego repo GitHub, na cronie. Astro statyczne, Python ingest, Claude Haiku rewrites, GitHub Actions schedule, deploy FTP. Żadnych modów, żadnych shillerów, żadnych obietnic poza łańcuchem — kod otwarty na github.com/CuloTon.',
+  },
+  ru: {
+    h: 'Как работает система CULO TON',
+    intro: 'CULO TON — это две вещи в одной связке: редакция новостей об экосистеме TON и tax-free мем-коин в её центре. Ради редакции люди приходят; токен её финансирует и вознаграждает сообщество, которое строится вокруг.',
+    pillars: [
+      ['📰 Редакция', 'CuloScribe, наш AI-редактор, забирает RSS из основных публикаций об экосистеме TON, отсеивает уже освещённое и пересказывает каждую историю своим голосом на четырёх языках (EN/RU/PL/DE). Около 24 новостей в день плюс три редакционных дайджеста (утро, полдень, вечер), синтезирующих период в один материал.'],
+      ['🤖 Telegram-бот', '@cscriber_bot живёт в чате t.me/culoton. /news — последние 6ч новостей. /price culoton — рыночные данные с GeckoTerminal в реальном времени. /ask отвечает через Claude Haiku с последними 50 EN-новостями как контекстом. /points и /leaderboard отслеживают активность, ежедневный /quiz выпадает в 17:00 по польскому времени.'],
+      ['🏆 Еженедельный призовой фонд', 'Самый активный участник недели получает 5 TON, выплата каждое воскресенье в 20:00 UTC. Активность = посты, победы в квизах, использование /ask, подъём в рейтинге. Без фарма — лимит 20 очков на человека в день.'],
+      ['📡 Публикация по каналам', 'Каждая история автоматически уходит в Telegram (@culoton) и X (@culoton_). Market pulse $CULOTON выходит 4 раза в день на обоих каналах, данные с GeckoTerminal. Три дайджеста в день оседают в блоге culoton.fun/blog.'],
+      ['💎 Токен $CULOTON', 'Jetton на TON без TAX, контракт EQAYaqIikry…b0A2Uc. Токен — это бренд-нога платформы, не ценная бумага и не yield-продукт. Холдеры получают тот же контент, что и все, а проект финансирует разработку через активность вокруг токена.'],
+    ],
+    closer: 'Всё выходит из одного GitHub-репозитория, по cron. Astro static, Python ingest, Claude Haiku rewrites, GitHub Actions schedule, FTP deploy. Без модов, без шиллеров, без обещаний вне цепочки — код открыт на github.com/CuloTon.',
+  },
+  de: {
+    h: 'Wie das CULO TON System funktioniert',
+    intro: 'CULO TON ist zweierlei, eng gekoppelt: eine Nachrichtenredaktion für das TON-Ökosystem und ein steuerfreier Memecoin in ihrer Mitte. Wegen der Redaktion kommen die Leute; der Token finanziert die Redaktion und belohnt die Community, die sich darum bildet.',
+    pillars: [
+      ['📰 Die Redaktion', 'CuloScribe, unser KI-Redakteur, liest RSS-Feeds der wichtigsten TON-Publikationen, dedupliziert bereits Behandeltes und erzählt jede Story in eigener Stimme über vier Sprachen (EN/RU/PL/DE). Etwa 24 News am Tag plus drei redaktionelle Roundups (Morgen, Mittag, Abend), die den Zeitraum in einen Text bündeln.'],
+      ['🤖 Der Telegram-Bot', '@cscriber_bot lebt im Chat t.me/culoton. /news liefert die News der letzten 6h. /price culoton zieht live Marktdaten von GeckoTerminal. /ask antwortet via Claude Haiku mit den letzten 50 EN-News als Kontext. /points und /leaderboard tracken Aktivität, das tägliche /quiz fällt um 17:00 PL.'],
+      ['🏆 Wöchentlicher Preispool', 'Das aktivste Mitglied jede Woche erhält 5 TON, ausgezahlt jeden Sonntag um 20:00 UTC. Aktivität = Posts, Quiz-Siege, /ask-Nutzung, Leaderboard-Aufstieg. Kein Farming — Cap bei 20 Punkten pro Person und Tag.'],
+      ['📡 Cross-Channel-Publishing', 'Jede Story geht automatisch an Telegram (@culoton) und X (@culoton_). $CULOTON-Marktimpulse 4× täglich auf beiden Kanälen, Daten live von GeckoTerminal. Drei Roundups pro Tag landen im Blog auf culoton.fun/blog.'],
+      ['💎 Der $CULOTON-Token', 'Steuerfreies TON-Jetton, Vertrag EQAYaqIikry…b0A2Uc. Der Token ist das Brand-Bein der Plattform — kein Wertpapier und kein Yield-Produkt. Halter bekommen denselben Content wie alle, und das Projekt finanziert die Entwicklung über Token-seitige Aktivität.'],
+    ],
+    closer: 'Alles läuft aus einem GitHub-Repo per Cron. Astro Static Site, Python-Ingest, Claude Haiku Rewrites, GitHub Actions Schedule, FTP-Deploy. Keine Mods, keine Shiller, keine Off-Chain-Versprechen — Code offen auf github.com/CuloTon.',
+  },
+} as const;
+const how = HOW[locale as 'pl' | 'ru' | 'de'];
 ---
 
 <Layout
@@ -53,6 +93,18 @@ const CONTRACT = 'EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc';
 
       <p set:html={t.culo_understanding_p1_html} />
       <p set:html={t.culo_understanding_p2_html} />
+
+      <h2 style="font-size: 22px; margin-top: 36px; color: var(--accent);">{how.h}</h2>
+      <p>{how.intro}</p>
+      <ul class="how-pillars">
+        {how.pillars.map(([title, body]) => (
+          <li>
+            <strong>{title}</strong>
+            <p>{body}</p>
+          </li>
+        ))}
+      </ul>
+      <p style="font-size: 14px; color: var(--text-mute); margin-top: 12px;">{how.closer}</p>
 
       <h2 style="font-size: 22px; margin-top: 36px; color: var(--accent);">{t.culo_track_h}</h2>
       <ul class="track-record">
@@ -155,6 +207,32 @@ const CONTRACT = 'EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc';
   }
   .track-record strong {
     color: var(--text);
+  }
+
+  .how-pillars {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+  }
+  .how-pillars > li {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+  }
+  .how-pillars strong {
+    display: block;
+    color: var(--accent);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+  }
+  .how-pillars p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-dim);
   }
 </style>
 

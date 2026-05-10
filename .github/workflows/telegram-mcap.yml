@@ -1,4 +1,4 @@
-name: Telegram $CULO market pulse
+name: Telegram $CULOTON market pulse
 
 on:
   schedule:
@@ -27,7 +27,7 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: pip install PyYAML
-      - name: Post $CULO market pulse
+      - name: Post $CULOTON market pulse
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
