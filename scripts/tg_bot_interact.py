@@ -10,7 +10,7 @@ Commands:
   /start, /help        — welcome + command list
   /news                — top 5 EN stories from the last 6h
   /blog                — link to the latest CuloScribe roundup
-  /price ton|culo      — live market data
+  /price ton|culoton   — live market data
   /ask <question>      — Haiku Q&A grounded in the latest 50 EN news
   /points              — caller's score
   /leaderboard         — top 10 active members this week + prize info
@@ -78,9 +78,9 @@ COMMANDS_HELP = (
     "/blog — latest CuloScribe roundup\n\n"
     "💰 <b>Market</b>\n"
     "/price ton — live $TON price\n"
-    "/price culo — $CULO market data\n\n"
+    "/price culoton — $CULOTON market data\n\n"
     "🤖 <b>Ask me anything</b>\n"
-    "/ask &lt;question&gt; — anything about TON, CuloTon, $CULO or sTONks; "
+    "/ask &lt;question&gt; — anything about TON, CuloTon, $CULOTON or sTONks; "
     f"light small-talk welcome too. <b>Limit: 1 per {ASK_COOLDOWN_MIN} min per user.</b>\n\n"
     "🧩 <b>Daily quiz</b>\n"
     "Tap A/B/C/D under the daily quiz post — drops every day at 15:00 UTC. "
@@ -405,22 +405,22 @@ def cmd_price(arg: str) -> str:
             f"24h volume: {vol}\n\n"
             "Source: CoinGecko"
         )
-    if asset in ("culo", "$culo"):
+    if asset in ("culo", "$culo", "culoton", "$culoton"):
         d = fetch_culo_data()
         if not d or d.get("price") is None:
-            return "💰 $CULO market data unavailable right now. Try again in a minute."
+            return "💰 $CULOTON market data unavailable right now. Try again in a minute."
         price = fmt_money(d["price"])
         change = fmt_change(d.get("change_h24"))
         vol = fmt_money(d.get("vol_h24"))
         valuation = fmt_money(d.get("valuation"))
         return (
-            "💰 <b>$CULO — live</b>\n\n"
+            "💰 <b>$CULOTON — live</b>\n\n"
             f"Price: <b>{price}</b> ({change} 24h)\n"
             f"FDV: {valuation}\n"
             f"24h volume: {vol}\n\n"
             "Source: GeckoTerminal"
         )
-    return "Usage: /price ton  or  /price culo"
+    return "Usage: /price ton  or  /price culoton"
 
 
 def cmd_ask(question: str) -> str:

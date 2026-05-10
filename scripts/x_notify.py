@@ -78,25 +78,25 @@ NICHE_POOL = [
 ]
 
 FOMO_LINES = [
-    "TON is quietly eating 2026. CuloTon publishes the receipts. $CULO is along for the ride.",
-    "Three previous chains, one narrative. $CULO came home — and home is on TON.",
-    "We don't shill TON. We publish three roundups a day about it. Coincidence? No. $CULO",
-    "Telegram is the chat. TON is the chain. $CULO is the meme that ties them.",
-    "Sub-second blocks on TON. Sub-280-character takes from CuloTon. $CULO is the punchline.",
-    "Most projects shill. CuloTon publishes. Then we mention $CULO — lightly.",
-    "If TON wins, $CULO wins. Track record: 10,000X on Polygon, then SUI, now TON.",
-    "Small cap. Big chain. Attentive crew. $CULO on TON — and we're just clearing our throat.",
-    "Don't bet on TON. Be on it. $CULO is one of many ways.",
-    "Build the media voice first, the bag follows. CuloTon → $CULO → TON. In that order.",
-    "While altcoins fight for relevance, TON ships and CuloTon writes it down. $CULO funds the desk.",
-    "The fastest chain in crypto runs the most-used messenger on Earth. $CULO is the meme leg.",
+    "TON is quietly eating 2026. CuloTon publishes the receipts. $CULOTON is along for the ride.",
+    "Three previous chains, one narrative. $CULOTON came home — and home is on TON.",
+    "We don't shill TON. We publish three roundups a day about it. Coincidence? No. $CULOTON",
+    "Telegram is the chat. TON is the chain. $CULOTON is the meme that ties them.",
+    "Sub-second blocks on TON. Sub-280-character takes from CuloTon. $CULOTON is the punchline.",
+    "Most projects shill. CuloTon publishes. Then we mention $CULOTON — lightly.",
+    "If TON wins, $CULOTON wins. Track record: 10,000X on Polygon, then SUI, now TON.",
+    "Small cap. Big chain. Attentive crew. $CULOTON on TON — and we're just clearing our throat.",
+    "Don't bet on TON. Be on it. $CULOTON is one of many ways.",
+    "Build the media voice first, the bag follows. CuloTon → $CULOTON → TON. In that order.",
+    "While altcoins fight for relevance, TON ships and CuloTon writes it down. $CULOTON funds the desk.",
+    "The fastest chain in crypto runs the most-used messenger on Earth. $CULOTON is the meme leg.",
 ]
 
 # Short tags appended to the live mcap pulse — bullish, brief.
 MCAP_TAGLINES = [
     "Don't sleep on this one.",
     "Memecoins on the fastest chain in crypto.",
-    "The TON ecosystem leg of $CULO.",
+    "The TON ecosystem leg of $CULOTON.",
     "Native to TON. Loud about it.",
     "Built different. Priced like a meme. For now.",
     "We're early. You're not too late.",
@@ -356,14 +356,14 @@ def post_fomo(client, delivery: str) -> int:
 def post_mcap(client, delivery: str) -> int:
     data = fetch_culo_data()
     if not data or data.get("price") is None:
-        print("Could not fetch $CULO data from GeckoTerminal — skipping (no-op).", file=sys.stderr)
+        print("Could not fetch $CULOTON data from GeckoTerminal — skipping (no-op).", file=sys.stderr)
         return 0
     pulse = "📈" if (data.get("change_h24") or 0) >= 0 else "📉"
     tagline = random.choice(MCAP_TAGLINES)
     hashtags = pick_hashtags(niche_count=2)
     url = f"{SITE}/culo"
     body = (
-        f"$CULO market pulse\n"
+        f"$CULOTON market pulse\n"
         f"{pulse} {fmt_money(data['price'])} ({fmt_change(data['change_h24'])} 24h)\n"
         f"FDV {fmt_money(data['valuation'])} · Vol {fmt_money(data['vol_h24'])}\n\n"
         f"{tagline}\n\n"
@@ -372,7 +372,7 @@ def post_mcap(client, delivery: str) -> int:
     )
     if char_count(body) > TWEET_MAX:
         body = (
-            f"$CULO market pulse\n"
+            f"$CULOTON market pulse\n"
             f"{pulse} {fmt_money(data['price'])} ({fmt_change(data['change_h24'])} 24h)\n"
             f"FDV {fmt_money(data['valuation'])} · Vol {fmt_money(data['vol_h24'])}\n\n"
             f"{hashtags}\n\n"

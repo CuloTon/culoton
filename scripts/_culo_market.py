@@ -1,4 +1,4 @@
-"""Shared $CULO market data helpers.
+"""Shared $CULOTON market data helpers.
 
 Used by both telegram_notify.py and x_notify.py so price/FDV/volume
 formatting and GeckoTerminal access stay in one place.
@@ -10,7 +10,7 @@ import json
 import sys
 import urllib.request
 
-CULO_CONTRACT = "EQD5dCm196cT60OTcCz_MI_f_QtpZYGU5mazX-4rjAOHiKrJ"
+CULO_CONTRACT = "EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc"
 GECKO_NET = "ton"
 GECKO_API = "https://api.geckoterminal.com/api/v2"
 HTTP_TIMEOUT = 20
@@ -61,7 +61,7 @@ def fmt_change(pct) -> str:
 
 
 def fetch_culo_data() -> dict | None:
-    """Fetch live $CULO market data from GeckoTerminal.
+    """Fetch live $CULOTON market data from GeckoTerminal.
 
     Returns dict with: price, valuation (FDV/MCap), change_h24, vol_h24,
     pool_addr, dex. Returns None on hard failure. Numeric fields may

@@ -12,7 +12,7 @@ Three modes:
       article as announced in scripts/announced.db.
 
   --mode mcap
-      Fetches $CULO market data from GeckoTerminal (price, FDV,
+      Fetches $CULOTON market data from GeckoTerminal (price, FDV,
       24h change, 24h volume), builds a multilingual market-pulse
       message and posts it.
 
@@ -235,31 +235,31 @@ def news_notify(token: str, chat_id: str) -> int:
 # bullish but not cringe — confident, not begging.
 FOMO_LINES = {
     "en": [
-        "TON's quietly building, $CULO is along for the ride.",
+        "TON's quietly building, $CULOTON is along for the ride.",
         "Early-stage memecoin on the fastest chain in crypto. You know the drill.",
         "Small cap, big chain, attentive crew. Don't sleep on this one.",
-        "While others chase noise, $CULO compounds on TON.",
+        "While others chase noise, $CULOTON compounds on TON.",
         "The native token of CuloTon — and we're just getting started.",
     ],
     "ru": [
-        "TON тихо строится, $CULO едет вместе с ним.",
+        "TON тихо строится, $CULOTON едет вместе с ним.",
         "Ранний мем-токен на одной из самых быстрых сетей. Сами понимаете.",
         "Малая капа, большая сеть, внимательная команда. Не упустите.",
-        "Пока другие гоняются за шумом, $CULO копится на TON.",
+        "Пока другие гоняются за шумом, $CULOTON копится на TON.",
         "Нативный токен CuloTon — и мы только разогреваемся.",
     ],
     "pl": [
-        "TON cicho buduje, $CULO jedzie razem z nim.",
+        "TON cicho buduje, $CULOTON jedzie razem z nim.",
         "Wczesny memecoin na jednej z najszybszych sieci. Wiecie, o co chodzi.",
         "Mała kapa, duża sieć, czujna ekipa. Nie przegapcie.",
-        "Inni gonią szum, $CULO składa się na TON.",
+        "Inni gonią szum, $CULOTON składa się na TON.",
         "Natywny token CuloTon — to dopiero rozgrzewka.",
     ],
     "de": [
-        "TON baut still weiter, $CULO fährt mit.",
+        "TON baut still weiter, $CULOTON fährt mit.",
         "Früher Memecoin auf einer der schnellsten Chains. Ihr wisst Bescheid.",
         "Small cap, großer Chain, aufmerksame Crew. Nicht verschlafen.",
-        "Andere jagen Lärm — $CULO baut auf TON.",
+        "Andere jagen Lärm — $CULOTON baut auf TON.",
         "Der native Token von CuloTon — und wir fangen gerade erst an.",
     ],
 }
@@ -269,12 +269,12 @@ def mcap_notify(token: str, chat_id: str) -> int:
     import random
     data = fetch_culo_data()
     if not data or data["price"] is None:
-        print("Could not fetch $CULO data from GeckoTerminal — skipping.", file=sys.stderr)
+        print("Could not fetch $CULOTON data from GeckoTerminal — skipping.", file=sys.stderr)
         return 0  # soft skip — don't fail the workflow
 
     pulse_emoji = "📈" if (data["change_h24"] or 0) >= 0 else "📉"
     parts = [
-        f"📊 <b>$CULO MARKET PULSE</b>",
+        f"📊 <b>$CULOTON MARKET PULSE</b>",
         "",
         f"💵 <b>Price:</b> {fmt_money(data['price'])}",
         f"{pulse_emoji} <b>24h:</b> {fmt_change(data['change_h24'])}",
