@@ -141,6 +141,17 @@ interface UIStrings {
   ecosystem_jump_label: string;
   ecosystem_foot_h: string;
   ecosystem_foot_p_html: string;
+  nav_apps: string;
+  apps_title: string;
+  apps_meta_description: string;
+  apps_kicker: string;
+  apps_h: string;
+  apps_lede: (apps: number, categories: number) => string;
+  apps_jump_label: string;
+  apps_open_in_telegram: string;
+  apps_open_web: string;
+  apps_foot_h: string;
+  apps_foot_p_html: string;
 }
 
 export const UI: Record<Locale, UIStrings> = {
@@ -255,6 +266,17 @@ export const UI: Record<Locale, UIStrings> = {
     ecosystem_jump_label: 'Jump to category',
     ecosystem_foot_h: 'Missing or wrong?',
     ecosystem_foot_p_html: 'This map is curated — we only list projects we can independently verify. If your project belongs here, or a listing is outdated, ping the editorial desk on <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. No paid placements.',
+    nav_apps: 'Mini-Apps',
+    apps_title: 'TON Mini-Apps Hub — CuloTon',
+    apps_meta_description: 'Curated hub of Telegram Mini Apps in the TON orbit — clickers, P2E games, drop campaigns, sniper bots, NFT marketplaces. Verified Telegram entry points only.',
+    apps_kicker: 'CuloTon Desk · Mini-Apps hub',
+    apps_h: 'Telegram Mini Apps on TON',
+    apps_lede: (apps, categories) => `A hand-picked map of the mini apps that live inside Telegram and settle on TON — games, drops, snipers, NFTs. ${apps} apps across ${categories} categories. Editorial selection, no paid slots.`,
+    apps_jump_label: 'Jump to category',
+    apps_open_in_telegram: 'Open in Telegram',
+    apps_open_web: 'Website',
+    apps_foot_h: 'Got an app worth listing?',
+    apps_foot_p_html: 'We only add mini apps with a verifiable Telegram entry point and real usage. If your project belongs here — or a listing is outdated — ping the desk on <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. No paid placements.',
   },
   ru: {
     site_title: 'CuloTon — Новости блокчейна TON',
@@ -367,6 +389,17 @@ export const UI: Record<Locale, UIStrings> = {
     ecosystem_jump_label: 'Перейти к категории',
     ecosystem_foot_h: 'Не нашли проект или нужна правка?',
     ecosystem_foot_p_html: 'Это курируемая карта — мы перечисляем только проекты, которые можем независимо подтвердить. Если ваш проект должен быть здесь или запись устарела — напишите редакции в <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Платных размещений нет.',
+    nav_apps: 'Mini-Apps',
+    apps_title: 'TON Mini-Apps Hub — CuloTon',
+    apps_meta_description: 'Курируемый хаб Telegram Mini Apps в орбите TON — кликеры, P2E-игры, дроп-кампании, снайпер-боты, NFT-маркетплейсы. Только подтверждённые точки входа в Telegram.',
+    apps_kicker: 'CuloTon Desk · Хаб мини-приложений',
+    apps_h: 'Telegram Mini Apps на TON',
+    apps_lede: (apps, categories) => `Подобранная карта мини-приложений, которые живут внутри Telegram и расчёт ведут на TON — игры, дропы, снайперы, NFT. ${apps} приложений в ${categories} категориях. Редакционный выбор, без платных мест.`,
+    apps_jump_label: 'Перейти к категории',
+    apps_open_in_telegram: 'Открыть в Telegram',
+    apps_open_web: 'Сайт',
+    apps_foot_h: 'Есть приложение, которое стоит добавить?',
+    apps_foot_p_html: 'Мы добавляем только мини-приложения с подтверждаемой точкой входа в Telegram и реальной аудиторией. Если ваш проект должен быть здесь — или запись устарела — напишите редакции в <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Платных размещений нет.',
   },
   pl: {
     site_title: 'CuloTon — Wiadomości z blockchaina TON',
@@ -479,6 +512,17 @@ export const UI: Record<Locale, UIStrings> = {
     ecosystem_jump_label: 'Przejdź do kategorii',
     ecosystem_foot_h: 'Brakuje czegoś albo coś nie tak?',
     ecosystem_foot_p_html: 'Ta mapa jest curated — wymieniamy tylko projekty, które potrafimy niezależnie zweryfikować. Jeśli twój projekt powinien tu być albo wpis jest nieaktualny — pisz do redakcji na <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegramie</a>. Bez płatnych umieszczeń.',
+    nav_apps: 'Mini-Appy',
+    apps_title: 'TON Mini-Apps Hub — CuloTon',
+    apps_meta_description: 'Curated hub Telegram Mini Apps w orbicie TON — klikery, gry P2E, kampanie dropowe, sniper-boty, marketplace’y NFT. Tylko zweryfikowane wejścia w Telegramie.',
+    apps_kicker: 'CuloTon Desk · Hub mini-aplikacji',
+    apps_h: 'Telegram Mini Apps na TON',
+    apps_lede: (apps, categories) => `Ręcznie dobrana mapa mini-aplikacji, które żyją w samym Telegramie, a rozliczają się na TON — gry, dropy, snipery, NFT. ${apps} aplikacji w ${categories} kategoriach. Selekcja redakcyjna, bez płatnych miejsc.`,
+    apps_jump_label: 'Przejdź do kategorii',
+    apps_open_in_telegram: 'Otwórz w Telegramie',
+    apps_open_web: 'Strona',
+    apps_foot_h: 'Masz appkę, która powinna tu być?',
+    apps_foot_p_html: 'Dorzucamy tylko mini-aplikacje z weryfikowalnym wejściem w Telegramie i realną aktywnością. Jeśli twój projekt powinien tu być — albo wpis jest nieaktualny — napisz do redakcji na <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegramie</a>. Bez płatnych umieszczeń.',
   },
   de: {
     site_title: 'CuloTon — Nachrichten zur TON-Blockchain',
@@ -591,6 +635,17 @@ export const UI: Record<Locale, UIStrings> = {
     ecosystem_jump_label: 'Zur Kategorie springen',
     ecosystem_foot_h: 'Fehlt etwas oder ist etwas falsch?',
     ecosystem_foot_p_html: 'Diese Karte wird kuratiert — wir listen nur Projekte, die wir unabhängig prüfen können. Wenn Ihr Projekt hierhergehört oder ein Eintrag veraltet ist, melden Sie sich bei der Redaktion auf <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Keine bezahlten Platzierungen.',
+    nav_apps: 'Mini-Apps',
+    apps_title: 'TON Mini-Apps Hub — CuloTon',
+    apps_meta_description: 'Kuratierter Hub für Telegram Mini Apps im TON-Orbit — Clicker, P2E-Spiele, Drop-Kampagnen, Sniper-Bots, NFT-Marktplätze. Nur verifizierte Telegram-Einstiegspunkte.',
+    apps_kicker: 'CuloTon Desk · Mini-Apps-Hub',
+    apps_h: 'Telegram Mini Apps auf TON',
+    apps_lede: (apps, categories) => `Eine handverlesene Karte der Mini-Apps, die direkt in Telegram leben und auf TON abrechnen — Spiele, Drops, Sniper, NFTs. ${apps} Apps in ${categories} Kategorien. Redaktionelle Auswahl, keine bezahlten Plätze.`,
+    apps_jump_label: 'Zur Kategorie springen',
+    apps_open_in_telegram: 'In Telegram öffnen',
+    apps_open_web: 'Website',
+    apps_foot_h: 'Haben Sie eine App, die hier stehen sollte?',
+    apps_foot_p_html: 'Wir nehmen nur Mini-Apps mit verifizierbarem Telegram-Einstiegspunkt und echter Nutzung. Wenn Ihr Projekt hierhergehört — oder ein Eintrag veraltet ist — melden Sie sich bei der Redaktion auf <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Keine bezahlten Platzierungen.',
   },
 };
 

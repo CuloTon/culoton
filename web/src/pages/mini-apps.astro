@@ -1,0 +1,241 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { UI } from '../i18n/strings';
+import { MINI_APPS } from '../data/miniapps';
+
+const locale = 'en' as const;
+const t = UI[locale];
+
+const totalApps = MINI_APPS.reduce((acc, c) => acc + c.apps.length, 0);
+
+function tgHandle(url: string): string {
+  try {
+    const u = new URL(url);
+    if (u.hostname === 't.me') {
+      const seg = u.pathname.replace(/^\/+/, '').split('/')[0];
+      return seg ? '@' + seg : 't.me';
+    }
+    return u.hostname;
+  } catch {
+    return url;
+  }
+}
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/mini-apps"
+  title={t.apps_title}
+  description={t.apps_meta_description}
+>
+  <article class="news-article ecosystem">
+    <header class="ecosystem-hero">
+      <span class="kicker">{t.apps_kicker}</span>
+      <h1>{t.apps_h}</h1>
+      <p class="lede">{t.apps_lede(totalApps, MINI_APPS.length)}</p>
+    </header>
+
+    <nav class="cat-jump" aria-label={t.apps_jump_label}>
+      {MINI_APPS.map((cat) => (
+        <a href={`#${cat.id}`}>{cat.title[locale]}</a>
+      ))}
+    </nav>
+
+    {MINI_APPS.map((cat) => (
+      <section class="cat" id={cat.id}>
+        <h2>{cat.title[locale]}</h2>
+        <p class="cat-blurb">{cat.blurb[locale]}</p>
+        <ul class="proj-list">
+          {cat.apps.map((a) => (
+            <li class="proj">
+              <div class="proj-head">
+                <span class="proj-name">{a.name}</span>
+                {a.token && <span class="proj-token">${a.token}</span>}
+              </div>
+              <p class="proj-desc">{a.description[locale]}</p>
+              <div class="proj-links">
+                <a class="proj-link tg" href={a.telegramUrl} target="_blank" rel="noopener noreferrer">
+                  <span>{t.apps_open_in_telegram}</span>
+                  <span class="proj-host">{tgHandle(a.telegramUrl)}</span>
+                </a>
+                {a.webUrl && (
+                  <a class="proj-link web" href={a.webUrl} target="_blank" rel="noopener noreferrer">
+                    <span>{t.apps_open_web}</span>
+                    <span class="proj-host">{new URL(a.webUrl).host}</span>
+                  </a>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <section class="ecosystem-foot">
+      <h2>{t.apps_foot_h}</h2>
+      <p set:html={t.apps_foot_p_html} />
+    </section>
+  </article>
+</Layout>
+
+<style>
+  .ecosystem-hero {
+    margin: 0 0 28px;
+    padding-bottom: 22px;
+    border-bottom: 2px solid var(--rule);
+  }
+  .kicker {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .ecosystem-hero h1 {
+    margin: 0 0 14px;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.15;
+  }
+  .ecosystem-hero .lede {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    max-width: 720px;
+    margin: 0;
+  }
+
+  .cat-jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin: 0 0 36px;
+    padding: 14px 16px;
+    background: var(--bg-section);
+    border-left: 3px solid var(--accent);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .cat-jump a {
+    color: var(--text);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .cat-jump a:hover { color: var(--accent-hot); border-bottom-color: var(--accent); }
+
+  .cat {
+    margin: 0 0 44px;
+    padding: 0;
+    scroll-margin-top: 80px;
+  }
+  .cat h2 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 8px;
+  }
+  .cat-blurb {
+    margin: 0 0 18px;
+    font-style: italic;
+    color: var(--text-dim);
+    max-width: 720px;
+  }
+
+  .proj-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+  }
+  .proj {
+    padding: 14px 16px;
+    background: var(--bg-card, var(--bg-section));
+    border: 1px solid var(--rule-soft);
+    border-left: 3px solid transparent;
+    transition: border-color 120ms ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .proj:hover { border-left-color: var(--accent); }
+
+  .proj-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .proj-name {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 16px;
+  }
+  .proj-token {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #1a1408;
+    background: var(--accent);
+    padding: 2px 6px;
+    border-radius: 0;
+    flex-shrink: 0;
+  }
+
+  .proj-desc {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+
+  .proj-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 4px;
+  }
+  .proj-link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--rule-soft);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 120ms ease, color 120ms ease;
+  }
+  .proj-link.tg { border-color: var(--accent); color: var(--accent); }
+  .proj-link:hover { border-color: var(--accent-hot); color: var(--accent-hot); }
+  .proj-link .proj-host {
+    font-size: 10px;
+    color: var(--text-mute);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .proj-link.tg:hover .proj-host,
+  .proj-link.web:hover .proj-host { color: var(--text); }
+
+  .ecosystem-foot {
+    margin-top: 30px;
+    padding: 18px 20px;
+    background: var(--bg-section);
+    border-left: 4px solid var(--accent);
+  }
+  .ecosystem-foot h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    border: none;
+    padding: 0;
+  }
+  .ecosystem-foot p { margin: 0; color: var(--text-dim); }
+</style>
