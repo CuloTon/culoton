@@ -2,8 +2,25 @@ name: Update news and deploy
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
+    # Routine fetch every 2h, but skip the three roundup hours so we don't
+    # double-run with the dedicated roundup crons below.
+    - cron: '0 0,2,4,8,10,14,16,20,22 * * *'
+    # Three roundup slots (UTC) — morning ~08:00 PL (CEST), noon ~13:00, evening ~19:00.
+    - cron: '0 6 * * *'   # morning
+    - cron: '0 11 * * *'  # noon
+    - cron: '0 17 * * *'  # evening
   workflow_dispatch:
+    inputs:
+      roundup_kind:
+        description: 'Force a blog roundup of this kind (leave blank to skip)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - morning
+          - noon
+          - evening
 
 permissions:
   contents: write
@@ -33,11 +50,31 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python scripts/fetch_news.py
 
+      - name: Determine blog roundup kind
+        id: roundup
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.roundup_kind }}" ]; then
+            echo "kind=${{ github.event.inputs.roundup_kind }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          case "${{ github.event.schedule }}" in
+            "0 6 * * *")  echo "kind=morning" >> "$GITHUB_OUTPUT" ;;
+            "0 11 * * *") echo "kind=noon" >> "$GITHUB_OUTPUT" ;;
+            "0 17 * * *") echo "kind=evening" >> "$GITHUB_OUTPUT" ;;
+            *) echo "kind=" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Generate blog roundup (${{ steps.roundup.outputs.kind }})
+        if: steps.roundup.outputs.kind != ''
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/blog_roundup.py --kind "${{ steps.roundup.outputs.kind }}"
+
       - name: Commit new content + dedup state
         run: |
           bash scripts/git_commit_push.sh \
             "auto: update news $(date -u +%Y-%m-%dT%H:%MZ)" \
-            web/src/content/news scripts/seen.db
+            web/src/content/news web/src/content/blog scripts/seen.db
 
       - uses: actions/setup-node@v4
         with:
@@ -61,3 +98,22 @@ jobs:
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: python scripts/deploy_ftp.py web/dist public_html
+
+      - name: Telegram deploy notification (skip bot commits)
+        if: success()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          set -e
+          SHA=$(git rev-parse HEAD)
+          AUTHOR=$(git log -1 --format='%an' HEAD)
+          MSG=$(git log -1 --format='%s' HEAD)
+          if [ "$AUTHOR" = "culoton-bot" ]; then
+            echo "Skipping notification for bot commit: $MSG"
+            exit 0
+          fi
+          python scripts/telegram_notify.py --mode deploy \
+            --sha "$SHA" \
+            --author "$AUTHOR" \
+            --message "$MSG"
