@@ -399,7 +399,8 @@ const alternates = LOCALES.map((loc) => ({
       transition: max-height 0.22s ease, opacity 0.18s ease, padding 0.22s ease;
     }
     .site-header.menu-open .header-menu {
-      max-height: 360px;
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
       opacity: 1;
       pointer-events: auto;
       padding: 12px 20px 18px;

@@ -35,15 +35,9 @@ jobs:
 
       - name: Commit new content + dedup state
         run: |
-          git config user.name "culoton-bot"
-          git config user.email "bot@culoton.fun"
-          git add web/src/content/news scripts/seen.db
-          if git diff --cached --quiet; then
-            echo "No new content to commit."
-          else
-            git commit -m "auto: update news $(date -u +%Y-%m-%dT%H:%MZ)"
-            git push
-          fi
+          bash scripts/git_commit_push.sh \
+            "auto: update news $(date -u +%Y-%m-%dT%H:%MZ)" \
+            web/src/content/news scripts/seen.db
 
       - uses: actions/setup-node@v4
         with:
