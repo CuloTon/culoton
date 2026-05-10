@@ -13,26 +13,7 @@ export async function getStaticPaths() {
 const { locale } = Astro.params as { locale: Locale };
 const t = UI[locale];
 const TELEGRAM = 'https://t.me/culoton';
-const CONTRACT = '';
-const RELAUNCH = {
-  en: {
-    title: 'CULO TON relaunch in progress',
-    body: 'Following consultations with senior figures in the TON ecosystem who endorsed the project as developmental, we are relaunching with a new contract and a tax-free token. The new ticker is $CULOTON. <strong>Holders of the previous $CULO contract are asked to sell their holdings.</strong> The new contract address (CA) will be published here as soon as it is live.',
-  },
-  pl: {
-    title: 'Trwa relaunch CULO TON',
-    body: 'Po konsultacjach z osobami istotnymi w świecie TON, które zaakceptowały projekt jako rozwojowy, robimy relaunch z nowym kontraktem i tokenem bez TAX. Nowy ticker to $CULOTON. <strong>Posiadacze poprzedniego kontraktu $CULO proszeni są o sprzedaż swoich zasobów.</strong> Nowy adres kontraktu (CA) opublikujemy tutaj zaraz po jego uruchomieniu.',
-  },
-  ru: {
-    title: 'Идёт релонч CULO TON',
-    body: 'После консультаций со значимыми людьми в экосистеме TON, которые одобрили проект как развивающийся, мы делаем релонч с новым контрактом и токеном без TAX. Новый тикер — $CULOTON. <strong>Держателей старого контракта $CULO просим продать свои позиции.</strong> Новый адрес контракта (CA) будет опубликован здесь сразу после запуска.',
-  },
-  de: {
-    title: 'CULO TON Relaunch läuft',
-    body: 'Nach Beratungen mit wichtigen Persönlichkeiten im TON-Ökosystem, die das Projekt als entwicklungsfähig anerkannt haben, führen wir einen Relaunch mit neuem Vertrag und steuerfreiem Token durch. Der neue Ticker ist $CULOTON. <strong>Halter des alten $CULO-Vertrags werden gebeten, ihre Bestände zu verkaufen.</strong> Die neue Vertragsadresse (CA) wird hier veröffentlicht, sobald sie live ist.',
-  },
-} as const;
-const r = RELAUNCH[locale as 'en' | 'pl' | 'ru' | 'de'];
+const CONTRACT = 'EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc';
 ---
 
 <Layout
@@ -42,11 +23,6 @@ const r = RELAUNCH[locale as 'en' | 'pl' | 'ru' | 'de'];
   description={t.culo_meta_description}
 >
   <article class="news-article">
-    <div class="relaunch-banner">
-      <strong>⚠️ {r.title}</strong>
-      <p set:html={r.body} />
-    </div>
-
     <div style="text-align: center; margin-bottom: 28px;">
       <img src="/culo.png" alt="$CULOTON token" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--accent); margin: 0 auto;" />
     </div>
@@ -61,19 +37,15 @@ const r = RELAUNCH[locale as 'en' | 'pl' | 'ru' | 'de'];
       <a class="cta-btn cta-primary" href={TELEGRAM} target="_blank" rel="noopener noreferrer">
         {t.culo_cta_join}
       </a>
-      {CONTRACT && (
-        <a class="cta-btn cta-secondary" href={`https://tonviewer.com/${CONTRACT}`} target="_blank" rel="noopener noreferrer">
-          {t.culo_cta_view}
-        </a>
-      )}
+      <a class="cta-btn cta-secondary" href={`https://tonviewer.com/${CONTRACT}`} target="_blank" rel="noopener noreferrer">
+        {t.culo_cta_view}
+      </a>
     </div>
 
     <div class="contract-box">
       <span class="contract-label">{t.culo_contract_label}</span>
-      <code class="contract-value" id="contract-value">{CONTRACT || 'TBA'}</code>
-      {CONTRACT && (
-        <button class="copy-btn" type="button" id="copy-btn" data-value={CONTRACT} data-label-copy={t.culo_copy} data-label-copied={t.culo_copied} data-label-failed={t.culo_copy_failed}>{t.culo_copy}</button>
-      )}
+      <code class="contract-value" id="contract-value">{CONTRACT}</code>
+      <button class="copy-btn" type="button" id="copy-btn" data-value={CONTRACT} data-label-copy={t.culo_copy} data-label-copied={t.culo_copied} data-label-failed={t.culo_copy_failed}>{t.culo_copy}</button>
     </div>
 
     <div class="body">
@@ -172,32 +144,6 @@ const r = RELAUNCH[locale as 'en' | 'pl' | 'ru' | 'de'];
   }
   .copy-btn:hover { opacity: 0.9; }
   .copy-btn.copied { background: #4ade80; }
-
-  .relaunch-banner {
-    background: rgba(220, 38, 38, 0.08);
-    border: 1px solid #dc2626;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 28px;
-    color: var(--text);
-  }
-  .relaunch-banner strong {
-    display: block;
-    color: #f87171;
-    font-size: 15px;
-    margin-bottom: 8px;
-    letter-spacing: 0.02em;
-  }
-  .relaunch-banner p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.55;
-    color: var(--text-dim);
-  }
-  .relaunch-banner p strong {
-    color: var(--text);
-    font-weight: 700;
-  }
 
   .track-record {
     padding-left: 20px;

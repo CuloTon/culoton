@@ -20,17 +20,16 @@ import urllib.request
 
 
 MESSAGE = """\
-⚠️ <b>CULO TON RELAUNCH</b>
+✅ <b>$CULOTON IS LIVE</b>
 
-We are <b>relaunching</b>. Following consultations with senior figures in
-the TON ecosystem who endorsed the project as developmental, a new version
-of the token is rolling out. The requirement from those talks: a
-<b>tax-free token</b>. The previous contract is being retired.
+The new tax-free <b>$CULOTON</b> contract is deployed on TON.
 
-➡️ New ticker: <code>$CULOTON</code>
-➡️ New CA: <i>will be announced here after deployment</i>
-➡️ Current investors: please <b>sell your existing $CULO holdings</b>
-   ahead of the migration.
+➡️ Ticker: <code>$CULOTON</code>
+➡️ Contract: <code>EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc</code>
+➡️ Tonviewer: https://tonviewer.com/EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc
+
+This is the <b>new</b> contract — the previous $CULO is retired. From here
+on, $CULOTON is the live token of the project.
 
 🌐 culoton.fun/culo
 """
