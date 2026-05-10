@@ -11,5 +11,18 @@
     },
     "posted_at": "2026-05-09T16:24:53.984612+00:00",
     "question": "What is the primary use of Toncoin (TON) in the TON ecosystem?"
+  },
+  "2026-05-10": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Jetton is TON's standard for custom tokens, similar to ERC-20 on Ethereum; the other options describe different blockchain concepts.",
+    "options": {
+      "A": "A custom token built on the TON blockchain",
+      "B": "A staking pool that locks Toncoin",
+      "C": "A type of TON wallet with advanced features",
+      "D": "A decentralized exchange protocol"
+    },
+    "posted_at": "2026-05-10T17:40:24.437547+00:00",
+    "question": "In TON terminology, what is a 'Jetton'?"
   }
 }
