@@ -8,7 +8,7 @@ export async function GET(context: APIContext) {
 
   return rss({
     title: 'CuloTon — TON Blockchain News',
-    description: 'Daily news, analysis and updates from the TON blockchain ecosystem. Powered by $CULO.',
+    description: 'Daily news, analysis and updates from the TON blockchain ecosystem. Powered by $CULOTON.',
     site: context.site!,
     items: sorted.map((entry) => ({
       title: entry.data.title,
