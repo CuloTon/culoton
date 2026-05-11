@@ -2,9 +2,11 @@ name: Daily TON quiz
 
 on:
   schedule:
-    # 15:00 UTC = 17:00 CEST (PL) — afternoon engagement window,
-    # well clear of update-and-deploy crons.
+    # Primary at 15:00 UTC; backup at 18:00 UTC in case GitHub's free-tier
+    # scheduler silently drops the first run (it has happened). daily_quiz.py
+    # is idempotent per UTC day, so the backup is a no-op once a quiz is posted.
     - cron: '0 15 * * *'
+    - cron: '0 18 * * *'
   workflow_dispatch:
 
 permissions:

@@ -31,6 +31,7 @@ QUIZZES_PATH = ROOT / "data" / "quizzes.json"
 
 sys.path.insert(0, str(SCRIPTS_DIR))
 from telegram_notify import tg_send, SITE  # noqa: E402  -- still imported for fallback
+import _tg_points  # noqa: E402  -- weekly leaderboard, posted alongside the quiz
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -145,6 +146,37 @@ def call_haiku_for_quiz(topic: str, seed: str) -> dict:
     raise RuntimeError(f"Quiz generation failed after {RETRY_LIMIT + 1} attempts: {last_err}")
 
 
+_MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
+
+
+def render_leaderboard_block() -> str:
+    """Top-10 of the current week's standings, formatted for the quiz message.
+
+    Read-only: pulls from data/points.json (maintained by the interactive bot).
+    Returns an empty string if there are no scores yet this week.
+    """
+    try:
+        state = _tg_points.load_state()
+        top = _tg_points.top_weekly(state, 10)
+    except Exception:
+        return ""
+    if not top:
+        return (
+            "\n\n━━━━━━━━━━━━━\n"
+            "🏆 <b>THIS WEEK'S TOP 10</b> — no scores yet. Be first: answer the quiz, post, use /ask.\n"
+            "<i>Weekly winner takes 5 TON — payout every Sunday 20:00 UTC.</i>"
+        )
+    lines = ["\n\n━━━━━━━━━━━━━", "🏆 <b>THIS WEEK'S TOP 10</b> (resets Sun 20:00 UTC)"]
+    for i, (_uid, rec) in enumerate(top, 1):
+        name = (rec.get("username") or "anon").strip()
+        if name and not name.startswith("@") and " " not in name:
+            name = "@" + name
+        rank = _MEDALS.get(i, f"{i}.")
+        lines.append(f"{rank} {html.escape(name)} — <b>{rec.get('weekly_points', 0)}</b>")
+    lines.append("<i>Top spot wins 5 TON — payout every Sunday 20:00 UTC. /leaderboard</i>")
+    return "\n".join(lines)
+
+
 def render_quiz_message(quiz: dict) -> str:
     opts = quiz["options"]
     body = (
@@ -155,9 +187,9 @@ def render_quiz_message(quiz: dict) -> str:
         f"🅲  {html.escape(opts['C'])}\n"
         f"🅳  {html.escape(opts['D'])}\n\n"
         f"👇 Tap your answer — <b>+{QUIZ_REWARD} pts</b> for correct, one shot per user, midnight UTC deadline.\n"
-        "🏆 <b>Weekly winner gets 5 TON</b> — first payout <b>Sunday 17 May 20:00 UTC</b>, every Sunday after that. /leaderboard"
+        "🏆 <b>Weekly winner gets 5 TON</b> — first payout <b>Sunday 17 May 20:00 UTC</b>, every Sunday after that."
     )
-    return body
+    return body + render_leaderboard_block()
 
 
 def build_inline_keyboard(date_key: str) -> dict:
