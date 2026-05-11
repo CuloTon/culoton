@@ -29,12 +29,12 @@
     },
     "8354207388": {
       "daily_day": "2026-05-11",
-      "daily_points": 5,
+      "daily_points": 7,
       "last_ask_at": "2026-05-10T17:28:10.468385+00:00",
-      "last_command_at": "2026-05-11T03:42:52.571035+00:00",
-      "total_points": 67,
+      "last_command_at": "2026-05-11T06:10:11.755503+00:00",
+      "total_points": 69,
       "username": "@culodaddy_ton",
-      "weekly_points": 24
+      "weekly_points": 26
     }
   },
   "week_started_at": "2026-05-09T16:15:45.103717+00:00"
