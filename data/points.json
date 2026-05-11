@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 26,
+  "group_msg_count": 27,
   "users": {
     "453599792": {
       "daily_day": "2026-05-10",
@@ -50,13 +50,13 @@
     },
     "8660294407": {
       "daily_day": "2026-05-11",
-      "daily_points": 1,
+      "daily_points": 2,
       "last_ask_at": "",
-      "last_command_at": "2026-05-11T19:10:03.857944+00:00",
-      "last_msg_point_at": "2026-05-11T19:10:03.857956+00:00",
-      "total_points": 1,
+      "last_command_at": "2026-05-11T22:19:32.319569+00:00",
+      "last_msg_point_at": "2026-05-11T22:19:32.319579+00:00",
+      "total_points": 2,
       "username": "@squrwij",
-      "weekly_points": 1
+      "weekly_points": 2
     }
   },
   "week_started_at": "2026-05-09T16:15:45.103717+00:00"
