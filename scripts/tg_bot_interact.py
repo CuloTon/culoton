@@ -95,7 +95,8 @@ COMMANDS_HELP = (
     f"Correct = +{QUIZ_REWARD} pts (subject to the 20/day cap), one shot per quiz.\n"
     "🏆 <b>Weekly top scorer gets 5 TON</b> — payout every Sunday 20:00 UTC.\n\n"
     "🏆 <b>Activity & rewards</b>\n"
-    "💬 Chatting in the group = +1 pt (max once per 90s). Daily quiz = +20. Cap 20 pts/day.\n"
+    "💬 Every message in the group = +1 pt (max once per 90s). Quiz = +20. /ask = +3. Cap 20 pts/day.\n"
+    "⚠️ Spamming to farm points = ban — post something worth reading.\n"
     "/points — your activity score\n"
     "/leaderboard — top 10 most active members this week\n"
     "🏆 The week's top scorer wins <b>5 TON</b> — payout every Sunday 20:00 UTC.\n\n"
@@ -648,8 +649,8 @@ def cmd_leaderboard(state: dict) -> str:
 
 
 _RULES_FOOTER = (
-    "🎯 <b>How to score:</b> chatting here = +1 pt (rate-limited) · daily quiz right answer = +20 pts. "
-    "Cap 20 pts/day per person.\n"
+    "🎯 <b>How to score:</b> every message in this group = +1 pt (rate-limited) · correct quiz answer = +20 pts · "
+    "/ask = +3. Cap 20 pts/day per person. Spamming to farm points = ban — post something worth reading.\n"
     "🏆 <b>Top scorer each week wins 5 TON</b> — payout every Sunday 20:00 UTC. /leaderboard · /points"
 )
 

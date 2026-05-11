@@ -195,6 +195,8 @@ def render_quiz_message(quiz: dict, slot: str = "") -> str:
         f"🅳  {html.escape(opts['D'])}\n\n"
         f"👇 Tap your answer — <b>+{QUIZ_REWARD} pts</b> for a correct one (subject to the 20 pts/day cap), "
         "one shot per quiz, deadline midnight UTC. New quiz a few times a day — different question each time.\n"
+        "💬 <b>Activity counts too</b> — every message in the group is scored. But spamming to farm points = ban — "
+        "post something worth reading.\n"
         "🏆 <b>Weekly top scorer gets 5 TON</b> — payout every Sunday 20:00 UTC."
     )
     return body + render_leaderboard_block()
