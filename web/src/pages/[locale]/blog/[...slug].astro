@@ -10,8 +10,10 @@ export async function getStaticPaths() {
     ru: await getCollection('blog_ru'),
     pl: await getCollection('blog_pl'),
     de: await getCollection('blog_de'),
+    es: await getCollection('blog_es'),
+    uk: await getCollection('blog_uk'),
   };
-  for (const loc of ['ru', 'pl', 'de'] as const) {
+  for (const loc of ['ru', 'pl', 'de', 'es', 'uk'] as const) {
     for (const entry of localeColl[loc]) {
       const slug = entry.id.replace(new RegExp(`^${loc}/`), '').replace(/\.md$/, '');
       paths.push({
@@ -46,6 +48,8 @@ for (const loc of LOCALES) {
   if (loc === 'ru') coll = await getCollection('blog_ru');
   else if (loc === 'pl') coll = await getCollection('blog_pl');
   else if (loc === 'de') coll = await getCollection('blog_de');
+  else if (loc === 'es') coll = await getCollection('blog_es');
+  else if (loc === 'uk') coll = await getCollection('blog_uk');
   else coll = await getCollection('blog_en');
   if (coll.some((e: any) => e.id === `${loc}/${slug}.md`)) {
     otherLocales.push(loc);
@@ -57,6 +61,8 @@ async function loadNewsCollection(loc: Locale) {
   if (loc === 'ru') return getCollection('news_ru');
   if (loc === 'pl') return getCollection('news_pl');
   if (loc === 'de') return getCollection('news_de');
+  if (loc === 'es') return getCollection('news_es');
+  if (loc === 'uk') return getCollection('news_uk');
   return getCollection('news_en');
 }
 
@@ -64,7 +70,7 @@ const coveredEntries: Array<{ slug: string; title: string }> = [];
 const newsColl = await loadNewsCollection(locale);
 for (const ref of entry.data.articles_covered) {
   // ref looks like "en/2026-05-06-foo.md" — translate to current locale.
-  const baseSlug = ref.replace(/^(en|ru|pl|de)\//, '').replace(/\.md$/, '');
+  const baseSlug = ref.replace(/^(en|ru|pl|de|es|uk)\//, '').replace(/\.md$/, '');
   const localizedRef = `${locale}/${baseSlug}.md`;
   const found = newsColl.find((e: any) => e.id === localizedRef);
   if (found) {

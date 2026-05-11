@@ -8,6 +8,8 @@ export async function getStaticPaths() {
     { params: { locale: 'ru' } },
     { params: { locale: 'pl' } },
     { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
   ];
 }
 
@@ -18,6 +20,8 @@ async function loadBlog(loc: Locale) {
   if (loc === 'ru') return getCollection('blog_ru');
   if (loc === 'pl') return getCollection('blog_pl');
   if (loc === 'de') return getCollection('blog_de');
+  if (loc === 'es') return getCollection('blog_es');
+  if (loc === 'uk') return getCollection('blog_uk');
   return getCollection('blog_en');
 }
 
@@ -25,7 +29,7 @@ const all = await loadBlog(locale);
 const sorted = all.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 function stripLocaleFromId(id: string): string {
-  return id.replace(/^(en|ru|pl|de)\//, '').replace(/\.md$/, '');
+  return id.replace(/^(en|ru|pl|de|es|uk)\//, '').replace(/\.md$/, '');
 }
 ---
 

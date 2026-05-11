@@ -8,11 +8,14 @@ export async function getStaticPaths() {
     { params: { locale: 'ru' } },
     { params: { locale: 'pl' } },
     { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
   ];
 }
 
 const { locale } = Astro.params as { locale: Locale };
 const t = UI[locale];
+const L = (m: Record<Locale, string>): string => (m[locale] ?? m.en);
 
 const totalProjects = ECOSYSTEM.reduce((acc, c) => acc + c.projects.length, 0);
 ---
@@ -32,14 +35,14 @@ const totalProjects = ECOSYSTEM.reduce((acc, c) => acc + c.projects.length, 0);
 
     <nav class="cat-jump" aria-label={t.ecosystem_jump_label}>
       {ECOSYSTEM.map((cat) => (
-        <a href={`#${cat.id}`}>{cat.title[locale]}</a>
+        <a href={`#${cat.id}`}>{L(cat.title)}</a>
       ))}
     </nav>
 
     {ECOSYSTEM.map((cat) => (
       <section class="cat" id={cat.id}>
-        <h2>{cat.title[locale]}</h2>
-        <p class="cat-blurb">{cat.blurb[locale]}</p>
+        <h2>{L(cat.title)}</h2>
+        <p class="cat-blurb">{L(cat.blurb)}</p>
         <ul class="proj-list">
           {cat.projects.map((p) => (
             <li class="proj">
@@ -47,7 +50,7 @@ const totalProjects = ECOSYSTEM.reduce((acc, c) => acc + c.projects.length, 0);
                 <span class="proj-name">{p.name}</span>
                 <span class="proj-host">{new URL(p.url).host}</span>
               </a>
-              <p class="proj-desc">{p.description[locale]}</p>
+              <p class="proj-desc">{L(p.description)}</p>
             </li>
           ))}
         </ul>

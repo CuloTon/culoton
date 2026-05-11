@@ -1,8 +1,23 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+const LOCALE_ENUM = z.enum(['en', 'ru', 'pl', 'de', 'es', 'uk']);
+const LOCALE_CODES = ['en', 'ru', 'pl', 'de', 'es', 'uk'] as const;
+
+/** Build one defineCollection per locale for a content folder, keyed `${name}_${loc}`. */
+function perLocale(folder: string, schema: z.ZodTypeAny) {
+  const out: Record<string, ReturnType<typeof defineCollection>> = {};
+  for (const loc of LOCALE_CODES) {
+    out[`${folder}_${loc}`] = defineCollection({
+      loader: glob({ pattern: `${loc}/**/*.md`, base: `./src/content/${folder}` }),
+      schema,
+    });
+  }
+  return out;
+}
+
 const newsSchema = z.object({
-  locale: z.enum(['en', 'ru', 'pl', 'de']),
+  locale: LOCALE_ENUM,
   title: z.string(),
   summary: z.string(),
   date: z.coerce.date(),
@@ -12,28 +27,8 @@ const newsSchema = z.object({
   tags: z.array(z.string()).default([]),
 });
 
-const news_en = defineCollection({
-  loader: glob({ pattern: 'en/**/*.md', base: './src/content/news' }),
-  schema: newsSchema,
-});
-
-const news_ru = defineCollection({
-  loader: glob({ pattern: 'ru/**/*.md', base: './src/content/news' }),
-  schema: newsSchema,
-});
-
-const news_pl = defineCollection({
-  loader: glob({ pattern: 'pl/**/*.md', base: './src/content/news' }),
-  schema: newsSchema,
-});
-
-const news_de = defineCollection({
-  loader: glob({ pattern: 'de/**/*.md', base: './src/content/news' }),
-  schema: newsSchema,
-});
-
 const blogSchema = z.object({
-  locale: z.enum(['en', 'ru', 'pl', 'de']),
+  locale: LOCALE_ENUM,
   kind: z.enum(['morning', 'noon', 'evening']),
   title: z.string(),
   summary: z.string(),
@@ -42,28 +37,8 @@ const blogSchema = z.object({
   tags: z.array(z.string()).default([]),
 });
 
-const blog_en = defineCollection({
-  loader: glob({ pattern: 'en/**/*.md', base: './src/content/blog' }),
-  schema: blogSchema,
-});
-
-const blog_ru = defineCollection({
-  loader: glob({ pattern: 'ru/**/*.md', base: './src/content/blog' }),
-  schema: blogSchema,
-});
-
-const blog_pl = defineCollection({
-  loader: glob({ pattern: 'pl/**/*.md', base: './src/content/blog' }),
-  schema: blogSchema,
-});
-
-const blog_de = defineCollection({
-  loader: glob({ pattern: 'de/**/*.md', base: './src/content/blog' }),
-  schema: blogSchema,
-});
-
 const pulseSchema = z.object({
-  locale: z.enum(['en', 'ru', 'pl', 'de']),
+  locale: LOCALE_ENUM,
   slot: z.enum(['morning', 'afternoon', 'overnight']),
   title: z.string(),
   summary: z.string(),
@@ -74,37 +49,18 @@ const pulseSchema = z.object({
   tags: z.array(z.string()).default([]),
 });
 
-const pulse_en = defineCollection({
-  loader: glob({ pattern: 'en/**/*.md', base: './src/content/pulse' }),
-  schema: pulseSchema,
-});
-
-const pulse_ru = defineCollection({
-  loader: glob({ pattern: 'ru/**/*.md', base: './src/content/pulse' }),
-  schema: pulseSchema,
-});
-
-const pulse_pl = defineCollection({
-  loader: glob({ pattern: 'pl/**/*.md', base: './src/content/pulse' }),
-  schema: pulseSchema,
-});
-
-const pulse_de = defineCollection({
-  loader: glob({ pattern: 'de/**/*.md', base: './src/content/pulse' }),
-  schema: pulseSchema,
+const taleSchema = z.object({
+  locale: LOCALE_ENUM,
+  title: z.string(),
+  summary: z.string(),
+  date: z.coerce.date(),
+  articles_covered: z.array(z.string()).default([]),
+  tags: z.array(z.string()).default([]),
 });
 
 export const collections = {
-  news_en,
-  news_ru,
-  news_pl,
-  news_de,
-  blog_en,
-  blog_ru,
-  blog_pl,
-  blog_de,
-  pulse_en,
-  pulse_ru,
-  pulse_pl,
-  pulse_de,
+  ...perLocale('news', newsSchema),
+  ...perLocale('blog', blogSchema),
+  ...perLocale('pulse', pulseSchema),
+  ...perLocale('tale', taleSchema),
 };

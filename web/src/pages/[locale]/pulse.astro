@@ -8,6 +8,8 @@ export async function getStaticPaths() {
     { params: { locale: 'ru' } },
     { params: { locale: 'pl' } },
     { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
   ];
 }
 
@@ -17,6 +19,8 @@ async function loadPulse(loc: Locale) {
   if (loc === 'ru') return getCollection('pulse_ru');
   if (loc === 'pl') return getCollection('pulse_pl');
   if (loc === 'de') return getCollection('pulse_de');
+  if (loc === 'es') return getCollection('pulse_es');
+  if (loc === 'uk') return getCollection('pulse_uk');
   return getCollection('pulse_en');
 }
 
@@ -59,8 +63,9 @@ const SLOT_LABEL: Record<Locale, Record<string, string>> = {
   de: { morning: 'Morgenpuls', afternoon: 'Nachmittagspuls', overnight: 'Nachtpuls' },
 };
 
-const c = COPY[locale];
-const labels = SLOT_LABEL[locale];
+// es/uk have no dedicated pulse copy yet — fall back so the (empty) index still renders.
+const c = COPY[locale] ?? COPY.de;
+const labels = SLOT_LABEL[locale] ?? SLOT_LABEL.en;
 ---
 
 <Layout

@@ -1,0 +1,93 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { UI, DATE_LOCALE, localizedPath } from '../i18n/strings';
+
+const locale = 'en' as const;
+const t = UI[locale];
+
+const all = await getCollection('tale_en');
+const sorted = all.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+function stripLocaleFromId(id: string): string {
+  return id.replace(/^en\//, '').replace(/\.md$/, '');
+}
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/tales"
+  title={t.tales_index_title}
+  description={t.tales_index_meta_description}
+>
+  <div class="container">
+    <section class="hero-banner blog-hero">
+      <div>
+        <span class="badge">{t.nav_tales}</span>
+        <h1>{t.tales_index_h}</h1>
+        <p>{t.tales_index_blurb}</p>
+      </div>
+    </section>
+
+    {sorted.length === 0 ? (
+      <div class="empty"><p>{t.tales_no_posts}</p></div>
+    ) : (
+      <div class="blog-list">
+        {sorted.map((entry) => {
+          const slug = stripLocaleFromId(entry.id);
+          const formatted = entry.data.date.toLocaleDateString(DATE_LOCALE[locale], {
+            year: 'numeric', month: 'long', day: 'numeric',
+          });
+          return (
+            <a class="blog-list-card" href={localizedPath(locale, `/tales/${slug}`)}>
+              <div class="blog-list-meta">
+                <span class="kind-pill kind-tale">{t.nav_tales}</span>
+                <span class="blog-list-date">{formatted}</span>
+              </div>
+              <h2>{entry.data.title}</h2>
+              <p>{entry.data.summary}</p>
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .blog-hero { margin-bottom: 36px; }
+  .blog-list { display: flex; flex-direction: column; gap: 0; border-top: 2px solid var(--rule); }
+  .blog-list-card {
+    display: block; padding: 28px 0; background: transparent; border: none;
+    border-bottom: 1px solid var(--rule-soft); border-radius: 0; text-decoration: none;
+    color: inherit; transition: background 0.12s, padding-left 0.12s; position: relative;
+  }
+  .blog-list-card:hover { background: var(--bg-section); padding-left: 18px; }
+  .blog-list-card::after {
+    content: "→"; position: absolute; right: 8px; top: 28px; font-family: var(--font-mono);
+    font-size: 22px; color: var(--accent-hot); opacity: 0; transform: translateX(-6px);
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .blog-list-card:hover::after { opacity: 1; transform: translateX(0); }
+  .blog-list-meta { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  .kind-pill {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    padding: 4px 10px; border-radius: 0; text-transform: uppercase;
+  }
+  .kind-tale { background: #fce7f3; color: #9d174d; border: 1px solid #ec4899; }
+  .blog-list-date {
+    font-size: 12px; color: var(--text-mute); font-family: var(--font-mono);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .blog-list-card h2 {
+    font-family: var(--font-display); font-size: 30px; margin: 0 0 10px; line-height: 1.15;
+    letter-spacing: -0.015em; color: var(--text); padding-right: 40px;
+  }
+  .blog-list-card p { margin: 0; color: var(--text-dim); font-size: 17px; line-height: 1.5; max-width: 760px; }
+  @media (max-width: 720px) {
+    .blog-list-card { padding: 22px 0; }
+    .blog-list-card:hover { padding-left: 12px; }
+    .blog-list-card h2 { font-size: 22px; }
+    .blog-list-card p { font-size: 15px; }
+  }
+</style>

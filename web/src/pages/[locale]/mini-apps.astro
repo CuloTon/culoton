@@ -8,11 +8,14 @@ export async function getStaticPaths() {
     { params: { locale: 'ru' } },
     { params: { locale: 'pl' } },
     { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
   ];
 }
 
 const { locale } = Astro.params as { locale: Locale };
 const t = UI[locale];
+const L = (m: Record<Locale, string>): string => (m[locale] ?? m.en);
 
 const totalApps = MINI_APPS.reduce((acc, c) => acc + c.apps.length, 0);
 
@@ -45,14 +48,14 @@ function tgHandle(url: string): string {
 
     <nav class="cat-jump" aria-label={t.apps_jump_label}>
       {MINI_APPS.map((cat) => (
-        <a href={`#${cat.id}`}>{cat.title[locale]}</a>
+        <a href={`#${cat.id}`}>{L(cat.title)}</a>
       ))}
     </nav>
 
     {MINI_APPS.map((cat) => (
       <section class="cat" id={cat.id}>
-        <h2>{cat.title[locale]}</h2>
-        <p class="cat-blurb">{cat.blurb[locale]}</p>
+        <h2>{L(cat.title)}</h2>
+        <p class="cat-blurb">{L(cat.blurb)}</p>
         <ul class="proj-list">
           {cat.apps.map((a) => (
             <li class="proj">
@@ -60,7 +63,7 @@ function tgHandle(url: string): string {
                 <span class="proj-name">{a.name}</span>
                 {a.token && <span class="proj-token">${a.token}</span>}
               </div>
-              <p class="proj-desc">{a.description[locale]}</p>
+              <p class="proj-desc">{L(a.description)}</p>
               <div class="proj-links">
                 <a class="proj-link tg" href={a.telegramUrl} target="_blank" rel="noopener noreferrer">
                   <span>{t.apps_open_in_telegram}</span>

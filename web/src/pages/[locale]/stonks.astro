@@ -7,6 +7,8 @@ export async function getStaticPaths() {
     { params: { locale: 'ru' } },
     { params: { locale: 'pl' } },
     { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
   ];
 }
 
@@ -305,7 +307,7 @@ const COPY: Record<Locale, Copy> = {
   },
 };
 
-const c = COPY[locale];
+const c = COPY[locale] ?? COPY.ru;  // es/uk: no dedicated copy yet -> ru stopgap
 ---
 
 <Layout

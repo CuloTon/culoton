@@ -8,6 +8,8 @@ export async function getStaticPaths() {
     { params: { locale: 'ru' } },
     { params: { locale: 'pl' } },
     { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
   ];
 }
 
@@ -18,6 +20,8 @@ async function loadNews(loc: Locale) {
   if (loc === 'ru') return getCollection('news_ru');
   if (loc === 'pl') return getCollection('news_pl');
   if (loc === 'de') return getCollection('news_de');
+  if (loc === 'es') return getCollection('news_es');
+  if (loc === 'uk') return getCollection('news_uk');
   return getCollection('news_en');
 }
 

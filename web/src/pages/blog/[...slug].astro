@@ -34,6 +34,8 @@ for (const loc of LOCALES) {
   if (loc === 'ru') coll = await getCollection('blog_ru');
   else if (loc === 'pl') coll = await getCollection('blog_pl');
   else if (loc === 'de') coll = await getCollection('blog_de');
+  else if (loc === 'es') coll = await getCollection('blog_es');
+  else if (loc === 'uk') coll = await getCollection('blog_uk');
   else coll = await getCollection('blog_en');
   if (coll.some((e: any) => e.id === `${loc}/${slug}.md`)) {
     otherLocales.push(loc);

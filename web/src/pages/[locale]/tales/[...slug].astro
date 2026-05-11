@@ -1,0 +1,181 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import { UI, DATE_LOCALE, localizedPath, LOCALES, LOCALE_FULL, type Locale } from '../../../i18n/strings';
+
+export async function getStaticPaths() {
+  const paths: Array<{ params: { locale: string; slug: string }; props: { entry: any; locale: Locale } }> = [];
+  const localeColl: Record<Locale, any[]> = {
+    en: [],
+    ru: await getCollection('tale_ru'),
+    pl: await getCollection('tale_pl'),
+    de: await getCollection('tale_de'),
+    es: await getCollection('tale_es'),
+    uk: await getCollection('tale_uk'),
+  };
+  for (const loc of ['ru', 'pl', 'de', 'es', 'uk'] as const) {
+    for (const entry of localeColl[loc]) {
+      const slug = entry.id.replace(new RegExp(`^${loc}/`), '').replace(/\.md$/, '');
+      paths.push({ params: { locale: loc, slug }, props: { entry, locale: loc } });
+    }
+  }
+  return paths;
+}
+
+const { entry, locale } = Astro.props as { entry: any; locale: Locale };
+const t = UI[locale];
+const { Content } = await render(entry);
+const slug = entry.id.replace(new RegExp(`^${locale}/`), '').replace(/\.md$/, '');
+
+const formattedDate = entry.data.date.toLocaleDateString(DATE_LOCALE[locale], {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+
+const otherLocales: Locale[] = [];
+for (const loc of LOCALES) {
+  if (loc === locale) continue;
+  let coll;
+  if (loc === 'ru') coll = await getCollection('tale_ru');
+  else if (loc === 'pl') coll = await getCollection('tale_pl');
+  else if (loc === 'de') coll = await getCollection('tale_de');
+  else if (loc === 'es') coll = await getCollection('tale_es');
+  else if (loc === 'uk') coll = await getCollection('tale_uk');
+  else coll = await getCollection('tale_en');
+  if (coll.some((e: any) => e.id === `${loc}/${slug}.md`)) otherLocales.push(loc);
+}
+
+// Resolve the news the tale was woven from, in the current locale (best-effort).
+async function loadNewsColl(loc: Locale) {
+  if (loc === 'ru') return getCollection('news_ru');
+  if (loc === 'pl') return getCollection('news_pl');
+  if (loc === 'de') return getCollection('news_de');
+  if (loc === 'es') return getCollection('news_es');
+  if (loc === 'uk') return getCollection('news_uk');
+  return getCollection('news_en');
+}
+const coveredEntries: Array<{ slug: string; title: string }> = [];
+const newsColl = await loadNewsColl(locale);
+const newsEn = locale === 'en' ? newsColl : await getCollection('news_en');
+for (const ref of (entry.data.articles_covered ?? []) as string[]) {
+  const baseSlug = ref.replace(/^(en|ru|pl|de|es|uk)\//, '').replace(/\.md$/, '');
+  const found =
+    newsColl.find((e: any) => e.id === `${locale}/${baseSlug}.md`) ??
+    newsEn.find((e: any) => e.id === `en/${baseSlug}.md`);
+  if (found) coveredEntries.push({ slug: baseSlug, title: found.data.title });
+}
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale={`/tales/${slug}`}
+  title={`${entry.data.title} — CuloTon`}
+  description={entry.data.summary}
+>
+  <article class="news-article">
+    <div class="breadcrumb">
+      <a href={localizedPath(locale, '/tales')}>{t.nav_tales}</a> &nbsp;/&nbsp; <span>{entry.data.title}</span>
+    </div>
+
+    <div class="blog-hero-card">
+      <span class="kind-pill kind-tale">{t.nav_tales}</span>
+      <h1>{entry.data.title}</h1>
+      <div class="article-meta">
+        <span class="meta-date">{t.date_label} {formattedDate}</span>
+        {entry.data.tags.length > 0 && (
+          <span class="meta-tags">
+            {entry.data.tags.map((tag: string) => <span class="tag">{tag}</span>)}
+          </span>
+        )}
+      </div>
+      <p class="article-summary">{entry.data.summary}</p>
+    </div>
+
+    <div class="body">
+      <Content />
+    </div>
+
+    <div class="culoscribe-byline">
+      <img src="/culoscribe.png" alt="CuloScribe AI" />
+      <div>
+        <strong>CuloScribe AI</strong>
+        <span>{t.tales_byline_lead}</span>
+      </div>
+    </div>
+
+    {coveredEntries.length > 0 && (
+      <div class="articles-covered">
+        <h3>{t.tales_built_from}</h3>
+        <ul>
+          {coveredEntries.map((c) => (
+            <li><a href={localizedPath(locale, `/news/${c.slug}`)}>{c.title}</a></li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <div class="back-row">
+      <a href={localizedPath(locale, '/tales')}>{t.tales_back}</a>
+    </div>
+
+    {otherLocales.length > 0 && (
+      <div class="other-langs">
+        <span class="other-langs-label">Also in:</span>
+        {otherLocales.map((loc) => (
+          <a href={localizedPath(loc, `/tales/${slug}`)}>{LOCALE_FULL[loc]}</a>
+        ))}
+      </div>
+    )}
+  </article>
+</Layout>
+
+<style>
+  .blog-hero-card { margin: 0 0 28px; padding: 0 0 26px; background: transparent; border: none; border-bottom: 2px solid var(--rule); border-radius: 0; }
+  .blog-hero-card h1 { margin: 14px 0 16px; line-height: 1.05; font-size: 56px; letter-spacing: -0.025em; }
+  .blog-hero-card .article-summary {
+    border-left: 4px solid var(--accent); padding: 8px 0 8px 22px; margin-top: 18px;
+    font-family: var(--font-display); font-style: italic; font-size: 22px; line-height: 1.4; color: var(--text);
+  }
+  @media (max-width: 720px) {
+    .blog-hero-card h1 { font-size: 32px; }
+    .blog-hero-card .article-summary { font-size: 18px; padding-left: 16px; }
+  }
+  .kind-pill {
+    display: inline-block; font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; padding: 4px 10px; border-radius: 0; text-transform: uppercase;
+  }
+  .kind-tale { background: #fce7f3; color: #9d174d; border: 1px solid #ec4899; }
+  .meta-date { flex-shrink: 0; }
+  .meta-tags { display: inline-flex; flex-wrap: wrap; gap: 4px; min-width: 0; max-width: 100%; }
+  .culoscribe-byline {
+    display: flex; align-items: center; gap: 14px; margin: 36px 0 22px; padding: 18px 20px;
+    background: var(--bg-section); border-left: 4px solid var(--accent); border-radius: 0;
+  }
+  .culoscribe-byline img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--text); }
+  .culoscribe-byline strong {
+    display: block; color: var(--text); font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .culoscribe-byline span { font-size: 14px; color: var(--text-dim); font-family: var(--font-display); font-style: italic; }
+  .articles-covered {
+    margin-top: 28px; padding: 20px 22px; background: var(--bg-section); border: none;
+    border-top: 2px solid var(--rule); border-radius: 0;
+  }
+  .articles-covered h3 {
+    margin: 0 0 12px; font-size: 12px; color: var(--text); font-family: var(--font-mono);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .articles-covered ul { margin: 0; padding-left: 20px; list-style: square; }
+  .articles-covered li { margin-bottom: 8px; font-family: var(--font-display); font-size: 17px; line-height: 1.4; }
+  .articles-covered a { color: var(--text); border-bottom: 1px solid var(--rule-soft); }
+  .articles-covered a:hover { color: var(--accent-hot); border-bottom-color: var(--accent); }
+  .back-row { margin: 30px 0 10px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .back-row a { color: var(--text); border-bottom: 1px solid var(--rule); }
+  .back-row a:hover { color: var(--accent-hot); border-bottom-color: var(--accent); }
+  .other-langs {
+    margin-top: 18px; font-family: var(--font-mono); font-size: 12px; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-mute); display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .other-langs-label { font-weight: 700; color: var(--text); }
+  .other-langs a { color: var(--text); border-bottom: 1px solid var(--rule-soft); }
+  .other-langs a:hover { color: var(--accent-hot); border-bottom-color: var(--accent); }
+</style>

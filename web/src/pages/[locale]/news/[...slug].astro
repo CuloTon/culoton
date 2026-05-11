@@ -6,10 +6,12 @@ import { UI, DATE_LOCALE, localizedPath, LOCALES, LOCALE_FULL, type Locale } fro
 export async function getStaticPaths() {
   const out: any[] = [];
 
-  for (const loc of ['ru', 'pl', 'de'] as Locale[]) {
+  for (const loc of ['ru', 'pl', 'de', 'es', 'uk'] as Locale[]) {
     let entries;
     if (loc === 'ru') entries = await getCollection('news_ru');
     else if (loc === 'pl') entries = await getCollection('news_pl');
+    else if (loc === 'es') entries = await getCollection('news_es');
+    else if (loc === 'uk') entries = await getCollection('news_uk');
     else entries = await getCollection('news_de');
 
     for (const entry of entries) {
@@ -45,6 +47,8 @@ for (const loc of LOCALES) {
   if (loc === 'en') coll = await getCollection('news_en');
   else if (loc === 'ru') coll = await getCollection('news_ru');
   else if (loc === 'pl') coll = await getCollection('news_pl');
+  else if (loc === 'es') coll = await getCollection('news_es');
+  else if (loc === 'uk') coll = await getCollection('news_uk');
   else coll = await getCollection('news_de');
   if (coll.some((e: any) => e.id === `${loc}/${slug}.md`)) {
     otherLocales.push(loc);

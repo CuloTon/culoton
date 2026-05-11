@@ -7,6 +7,8 @@ export async function getStaticPaths() {
     { params: { locale: 'ru' } },
     { params: { locale: 'pl' } },
     { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
   ];
 }
 
@@ -53,7 +55,7 @@ const HOW = {
     closer: 'Alles läuft aus einem GitHub-Repo per Cron. Astro Static Site, Python-Ingest, Claude Haiku Rewrites, GitHub Actions Schedule, FTP-Deploy. Keine Mods, keine Shiller, keine Off-Chain-Versprechen — Code offen auf github.com/CuloTon.',
   },
 } as const;
-const how = HOW[locale as 'pl' | 'ru' | 'de'];
+const how = HOW[(locale as 'pl' | 'ru' | 'de')] ?? HOW.ru;  // es/uk fall back to ru
 ---
 
 <Layout
