@@ -24,5 +24,18 @@
     },
     "posted_at": "2026-05-10T17:40:24.437547+00:00",
     "question": "In TON terminology, what is a 'Jetton'?"
+  },
+  "2026-05-11": {
+    "answered": {},
+    "correct": "B",
+    "explanation": "STON.fi is TON's main DEX for token swaps; Tonkeeper is a wallet, Getgems is an NFT marketplace, and Hamster Kombat is a clicker game.",
+    "options": {
+      "A": "Tonkeeper",
+      "B": "STON.fi",
+      "C": "Getgems",
+      "D": "Hamster Kombat"
+    },
+    "posted_at": "2026-05-11T18:29:37.112332+00:00",
+    "question": "Which TON project is primarily a decentralized exchange for swapping tokens?"
   }
 }
