@@ -34,6 +34,18 @@ OFFSET_PATH = ROOT / "data" / "tg_offset.txt"
 DAILY_POINT_CAP = 20
 ASK_COOLDOWN_SEC = 180  # 3 minutes between /ask uses per user
 
+# Accounts hidden from public leaderboards AND from the weekly-prize standings
+# (the dev / team accounts, the bot, etc.). Matched case-insensitively against
+# the stored display name with a leading "@" stripped. Their points are still
+# tracked — they just don't appear in /leaderboard, the daily-quiz top-10, or
+# win the weekly 5 TON.
+LEADERBOARD_EXCLUDE = {"culodaddy_ton"}
+
+
+def is_excluded_from_leaderboard(rec: dict) -> bool:
+    name = (rec.get("username") or "").strip().lstrip("@").lower()
+    return name in LEADERBOARD_EXCLUDE
+
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -139,7 +151,7 @@ def top_weekly(state: dict, n: int = 10) -> list[tuple[str, dict]]:
     users = state.get("users", {})
     items = [
         (uid, rec) for uid, rec in users.items()
-        if rec.get("weekly_points", 0) > 0
+        if rec.get("weekly_points", 0) > 0 and not is_excluded_from_leaderboard(rec)
     ]
     items.sort(key=lambda x: x[1].get("weekly_points", 0), reverse=True)
     return items[:n]
