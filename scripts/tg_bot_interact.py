@@ -15,7 +15,10 @@ Commands:
   /points              — caller's score
   /leaderboard         — top 10 active members this week + prize info
 
-A daily cap (20 points / user / day) prevents farming.
+Points: chatting in the group earns +1 (rate-limited to once per 90s), a
+correct daily-quiz answer earns +20, /ask earns +3, other commands +1 —
+all capped at 20 points / user / UTC day to prevent farming. Every 10 group
+messages the bot posts a short standings + contest-rules recap.
 /ask is rate-limited to once every 3 minutes per user (paid API).
 """
 
@@ -35,12 +38,16 @@ import yaml
 
 from _culo_market import fetch_culo_data, fmt_change, fmt_money
 from _tg_points import (
+    MSG_POINT_REWARD,
+    QUIZ_SLOTS,
     award_points,
+    can_earn_msg_point,
     can_use_ask,
     get_user,
     load_offset,
     load_state,
     mark_ask,
+    mark_msg_point,
     save_offset,
     save_state,
     top_weekly,
@@ -52,6 +59,7 @@ BLOG_DIR = ROOT / "web" / "src" / "content" / "blog"
 SITE = "https://culoton.fun"
 QUIZZES_PATH = ROOT / "data" / "quizzes.json"
 QUIZ_REWARD = 20  # one daily cap — quiz is the highest-value daily action
+RECAP_EVERY_N_MSGS = 10  # post a standings + rules recap every N group messages
 
 TG_API_TIMEOUT = 35  # > long-poll timeout below, with margin
 LONG_POLL_TIMEOUT = 25  # seconds; getUpdates returns immediately on new msg
@@ -82,15 +90,15 @@ COMMANDS_HELP = (
     "🤖 <b>Ask me anything</b>\n"
     "/ask &lt;question&gt; — anything about TON, CuloTon, $CULOTON or sTONks; "
     f"light small-talk welcome too. <b>Limit: 1 per {ASK_COOLDOWN_MIN} min per user.</b>\n\n"
-    "🧩 <b>Daily quiz</b>\n"
-    "Tap A/B/C/D under the daily quiz post — drops every day at 15:00 UTC. "
-    f"Correct = +{QUIZ_REWARD} pts (subject to daily cap), one shot per user.\n"
-    "🏆 <b>Weekly winner gets 5 TON</b> — first payout <b>Sunday 17 May 20:00 UTC</b>, every Sunday after that.\n\n"
+    "🧩 <b>Quiz</b>\n"
+    "Tap A/B/C/D under each quiz post — a fresh question drops a few times a day. "
+    f"Correct = +{QUIZ_REWARD} pts (subject to the 20/day cap), one shot per quiz.\n"
+    "🏆 <b>Weekly top scorer gets 5 TON</b> — payout every Sunday 20:00 UTC.\n\n"
     "🏆 <b>Activity & rewards</b>\n"
+    "💬 Chatting in the group = +1 pt (max once per 90s). Daily quiz = +20. Cap 20 pts/day.\n"
     "/points — your activity score\n"
     "/leaderboard — top 10 most active members this week\n"
-    "ℹ The top 3 active members each week get rewards "
-    "(announced every Sunday).\n\n"
+    "🏆 The week's top scorer wins <b>5 TON</b> — payout every Sunday 20:00 UTC.\n\n"
     "🌐 <a href=\"https://culoton.fun\">culoton.fun</a>"
 )
 
@@ -519,26 +527,40 @@ def cmd_ask(question: str) -> str:
     )
 
 
+def _latest_today_quiz(all_quizzes: dict) -> tuple[str, dict] | tuple[None, None]:
+    """Return (key, quiz) for the most recent quiz still open today, or (None, None).
+
+    Quizzes auto-post a few times a day under keys 'YYYY-MM-DD-<slot>'; later
+    slots win. Falls back to the legacy flat 'YYYY-MM-DD' key.
+    """
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    for slot in reversed(QUIZ_SLOTS):
+        key = f"{today}-{slot}"
+        if key in all_quizzes:
+            return key, all_quizzes[key]
+    if today in all_quizzes:
+        return today, all_quizzes[today]
+    return None, None
+
+
 def cmd_quiz(user_id: str, arg: str) -> tuple[str, bool]:
     """Handle /quiz <answer>. Returns (reply_html, was_correct).
 
-    Reads today's quiz from data/quizzes.json (posted earlier by
-    daily_quiz.py via cron). Stores per-user answer to prevent retries.
-    The actual points award happens in the dispatcher only when correct.
+    Text fallback for the inline A/B/C/D buttons. Answers today's most recent
+    open quiz (a few drop each day). Points are awarded by the dispatcher when
+    the answer is correct.
     """
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-
     if not QUIZZES_PATH.exists():
-        return ("🧩 No quiz live yet. The first daily quiz drops at 15:00 UTC.", False)
+        return ("🧩 No quiz live yet — a fresh one drops a few times a day.", False)
 
     try:
         all_quizzes = json.loads(QUIZZES_PATH.read_text(encoding="utf-8"))
     except Exception:
         return ("🧩 Quiz state unavailable, try again in a moment.", False)
 
-    quiz = all_quizzes.get(today)
+    quiz_key, quiz = _latest_today_quiz(all_quizzes)
     if not quiz:
-        return ("🧩 No quiz for today yet. Daily quiz drops at 15:00 UTC.", False)
+        return ("🧩 No quiz for today yet — they drop a few times a day. Hang tight.", False)
 
     answer = arg.strip().upper()[:1]
     if answer not in ("A", "B", "C", "D"):
@@ -557,8 +579,8 @@ def cmd_quiz(user_id: str, arg: str) -> tuple[str, bool]:
         prev = answered[user_id]
         verdict = "✅ correct" if prev["correct"] else "❌ wrong"
         return (
-            f"🧩 You already played today — picked <b>{prev['answer']}</b> ({verdict}). "
-            "Next quiz drops tomorrow at 15:00 UTC.",
+            f"🧩 You already answered this one — picked <b>{prev['answer']}</b> ({verdict}). "
+            "Another quiz drops later.",
             False,
         )
 
@@ -583,12 +605,12 @@ def cmd_quiz(user_id: str, arg: str) -> tuple[str, bool]:
         return (
             f"🧩 ✅ <b>Correct!</b> The answer was <b>{quiz['correct']}</b>.\n\n"
             f"<i>{html.escape(explain)}</i>\n\n"
-            f"+{QUIZ_REWARD} pts (subject to daily cap of 20). See /points / /leaderboard.",
+            f"+{QUIZ_REWARD} pts (subject to the 20 pts/day cap). See /points / /leaderboard.",
             True,
         )
     return (
         f"🧩 ❌ Not quite — your answer <b>{answer}</b> was wrong. "
-        f"The correct answer was <b>{quiz['correct']}</b>. Try again tomorrow.",
+        f"The correct answer was <b>{quiz['correct']}</b>. Catch the next one.",
         False,
     )
 
@@ -623,6 +645,30 @@ def cmd_leaderboard(state: dict) -> str:
         "\n🎁 <b>#1 each week wins 5 TON</b> — first payout Sunday 17 May 20:00 UTC, every Sunday after that."
     )
     return "\n".join(lines)
+
+
+_RULES_FOOTER = (
+    "🎯 <b>How to score:</b> chatting here = +1 pt (rate-limited) · daily quiz right answer = +20 pts. "
+    "Cap 20 pts/day per person.\n"
+    "🏆 <b>Top scorer each week wins 5 TON</b> — payout every Sunday 20:00 UTC. /leaderboard · /points"
+)
+
+
+def build_standings_recap(state: dict) -> str:
+    """Short standings + contest rules — posted every RECAP_EVERY_N_MSGS group messages."""
+    top = top_weekly(state, n=5)
+    if not top:
+        head = "📊 <b>CULO COMMUNITY — this week's standings</b>\n\nNo scores yet — be first. Just chat here or answer the daily quiz."
+    else:
+        medals = {1: "🥇", 2: "🥈", 3: "🥉"}
+        rows = ["📊 <b>CULO COMMUNITY — this week's standings</b>", ""]
+        for i, (_uid, rec) in enumerate(top, 1):
+            name = (rec.get("username") or "anon").strip()
+            if name and not name.startswith("@") and " " not in name:
+                name = "@" + name
+            rows.append(f"{medals.get(i, f'{i}.')} {html.escape(name)} — <b>{rec.get('weekly_points', 0)}</b> pts")
+        head = "\n".join(rows)
+    return head + "\n\n" + _RULES_FOOTER
 
 
 # ---------- Dispatch -------------------------------------------------------
@@ -667,7 +713,8 @@ def handle_quiz_callback(cb: dict, state: dict, token: str) -> None:
     data = (cb.get("data") or "").strip()
     from_user = cb.get("from") or {}
 
-    # callback_data format: "quiz:<YYYY-MM-DD>:<A|B|C|D>"
+    # callback_data format: "quiz:<key>:<A|B|C|D>" where <key> is
+    # "YYYY-MM-DD-<slot>" (or a legacy flat "YYYY-MM-DD" for old buttons).
     if not data.startswith("quiz:"):
         tg_answer_callback(token, cbid, "Unknown action.", show_alert=False)
         return
@@ -676,7 +723,8 @@ def handle_quiz_callback(cb: dict, state: dict, token: str) -> None:
     if len(parts) != 3 or parts[2] not in ("A", "B", "C", "D"):
         tg_answer_callback(token, cbid, "Invalid quiz button.", show_alert=False)
         return
-    quiz_date = parts[1]
+    quiz_key = parts[1]
+    quiz_date = quiz_key[:10]  # YYYY-MM-DD prefix
     answer = parts[2]
 
     if not from_user or from_user.get("is_bot"):
@@ -695,7 +743,7 @@ def handle_quiz_callback(cb: dict, state: dict, token: str) -> None:
         tg_answer_callback(token, cbid, "🧩 Quiz state unavailable.", show_alert=True)
         return
 
-    quiz = all_quizzes.get(quiz_date)
+    quiz = all_quizzes.get(quiz_key)
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     if not quiz:
         tg_answer_callback(token, cbid, "🧩 This quiz is no longer available.", show_alert=True)
@@ -710,7 +758,7 @@ def handle_quiz_callback(cb: dict, state: dict, token: str) -> None:
         verdict = "✅ correct" if prev["correct"] else "❌ wrong"
         tg_answer_callback(
             token, cbid,
-            f"🧩 You already answered: {prev['answer']} ({verdict}). Next quiz tomorrow 15:00 UTC.",
+            f"🧩 You already answered: {prev['answer']} ({verdict}). Another quiz drops later.",
             show_alert=True,
         )
         return
@@ -742,13 +790,16 @@ def handle_quiz_callback(cb: dict, state: dict, token: str) -> None:
         msg = f"✅ Correct! +{granted} pts. {explain}"[:195]
         tg_answer_callback(token, cbid, msg, show_alert=True)
     else:
-        msg = f"❌ Wrong — correct answer was {quiz['correct']}. Better luck tomorrow!"[:195]
+        msg = f"❌ Wrong — correct answer was {quiz['correct']}. Catch the next quiz!"[:195]
         tg_answer_callback(token, cbid, msg, show_alert=True)
 
 
 def process_updates(updates: list[dict], state: dict, token: str, start_offset: int) -> int:
     """Process a batch of updates. Returns new offset (max update_id + 1)."""
     new_offset = start_offset
+    state.setdefault("group_msg_count", 0)
+    msg_count_before = state["group_msg_count"]
+    last_group_chat_id = None
     for upd in updates:
         new_offset = max(new_offset, upd.get("update_id", 0) + 1)
 
@@ -765,15 +816,29 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
         text = (msg.get("text") or "").strip()
         chat = msg.get("chat") or {}
         from_user = msg.get("from") or {}
-        chat_summary = f"chat_id={chat.get('id')} type={chat.get('type')} from=@{from_user.get('username')}/{from_user.get('first_name')}"
+        chat_type = chat.get("type")
+        chat_summary = f"chat_id={chat.get('id')} type={chat_type} from=@{from_user.get('username')}/{from_user.get('first_name')}"
+
+        if not from_user or from_user.get("is_bot") or not chat:
+            print(f"  upd {upd.get('update_id')}: bot/empty sender or no chat ({chat_summary}) — skip")
+            continue
+
+        # Plain (non-command) message in a group → small activity point, rate-limited,
+        # and counts toward the periodic standings recap. No reply.
         if not text.startswith("/"):
-            print(f"  upd {upd.get('update_id')}: non-command text {text[:40]!r} ({chat_summary}) — skip")
-            continue
-        if not from_user or from_user.get("is_bot"):
-            print(f"  upd {upd.get('update_id')}: bot/empty sender ({chat_summary}) — skip")
-            continue
-        if not chat:
-            print(f"  upd {upd.get('update_id')}: no chat — skip")
+            if chat_type in ("group", "supergroup"):
+                state["group_msg_count"] = state.get("group_msg_count", 0) + 1
+                last_group_chat_id = chat.get("id")
+                rec = get_user(state, from_user["id"], display_name(from_user))
+                ok_msg, _wait = can_earn_msg_point(rec)
+                if ok_msg:
+                    g = award_points(rec, MSG_POINT_REWARD)
+                    mark_msg_point(rec)
+                    print(f"  upd {upd.get('update_id')}: chat msg ({chat_summary}) -> +{g} pt (week={rec.get('weekly_points', 0)})")
+                else:
+                    print(f"  upd {upd.get('update_id')}: chat msg ({chat_summary}) -> cooldown, no pt")
+            else:
+                print(f"  upd {upd.get('update_id')}: non-command text in {chat_type} ({chat_summary}) — skip")
             continue
 
         cmd, arg = route_command(text)
@@ -829,6 +894,16 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
         print(f"    -> sent={ok} ({len(reply)} chars, +{granted} pts)")
         if send_resp and not send_resp.get("ok"):
             print(f"    TG error: {send_resp}")
+
+    # Every RECAP_EVERY_N_MSGS group messages, post a short standings + rules
+    # recap. At most once per batch even if a burst crossed several thresholds.
+    after = state.get("group_msg_count", 0)
+    if after > msg_count_before and (after // RECAP_EVERY_N_MSGS) > (msg_count_before // RECAP_EVERY_N_MSGS):
+        recap_chat = last_group_chat_id or (os.environ.get("TELEGRAM_CHAT_ID") or "").strip() or None
+        if recap_chat:
+            recap = build_standings_recap(state)
+            r = tg_send(token, recap_chat, recap)
+            print(f"  standings recap posted to {recap_chat} at msg #{after}: ok={bool(r and r.get('ok'))}")
 
     return new_offset
 

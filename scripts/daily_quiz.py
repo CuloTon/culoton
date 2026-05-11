@@ -1,14 +1,19 @@
-"""CuloTon daily TON quiz — generates one multiple-choice question
-about the TON ecosystem and posts it to the public TG channel.
+"""CuloTon TON quiz — generates one multiple-choice question about the TON
+ecosystem and posts it (with A/B/C/D inline buttons) to the public TG group.
+
+Auto-posted several times a day via .github/workflows/daily-quiz.yml — one
+quiz per (UTC day, slot), where slot ∈ {morning, midday, afternoon, evening}
+is derived from the current UTC hour (override with --slot).
 
 Pipeline:
-  1. Asks Claude Haiku for a single TON-themed quiz question with 4 options
-     (A/B/C/D) and the correct letter. Strict JSON output.
-  2. Stores the quiz state in data/quizzes.json keyed by UTC date — the
-     bot reads this when handling /quiz <answer> from users.
-  3. Posts the question to the public TG channel with instructions to
-     DM @cscriber_bot with /quiz <letter> to win 20 points (daily cap).
-  4. Idempotent — second invocation on the same UTC day is a no-op.
+  1. Asks Claude Haiku for a single easy TON-themed question, 4 options,
+     correct letter, explanation. Strict JSON.
+  2. Stores it in data/quizzes.json under key "YYYY-MM-DD-<slot>" — the
+     interactive bot reads this for /quiz <letter> and for the inline-button
+     callbacks ("quiz:<YYYY-MM-DD-slot>:<letter>"). Old flat "YYYY-MM-DD"
+     keys from the single-daily era still resolve for stale callbacks.
+  3. Posts the question + a top-10 weekly leaderboard to the group.
+  4. Idempotent — a second invocation for the same (day, slot) is a no-op.
 
 Graceful no-op when ANTHROPIC_API_KEY or TELEGRAM_BOT_TOKEN is missing.
 """
@@ -32,6 +37,7 @@ QUIZZES_PATH = ROOT / "data" / "quizzes.json"
 sys.path.insert(0, str(SCRIPTS_DIR))
 from telegram_notify import tg_send, SITE  # noqa: E402  -- still imported for fallback
 import _tg_points  # noqa: E402  -- weekly leaderboard, posted alongside the quiz
+from _tg_points import QUIZ_SLOTS, quiz_slot_for_now  # noqa: E402
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -177,17 +183,19 @@ def render_leaderboard_block() -> str:
     return "\n".join(lines)
 
 
-def render_quiz_message(quiz: dict) -> str:
+def render_quiz_message(quiz: dict, slot: str = "") -> str:
     opts = quiz["options"]
+    title = f"🧩 <b>TON QUIZ — {slot.upper()}</b>" if slot else "🧩 <b>TON QUIZ</b>"
     body = (
-        "🧩 <b>DAILY TON QUIZ</b>\n\n"
+        f"{title}\n\n"
         f"<b>{html.escape(quiz['question'])}</b>\n\n"
         f"🅰  {html.escape(opts['A'])}\n"
         f"🅱  {html.escape(opts['B'])}\n"
         f"🅲  {html.escape(opts['C'])}\n"
         f"🅳  {html.escape(opts['D'])}\n\n"
-        f"👇 Tap your answer — <b>+{QUIZ_REWARD} pts</b> for correct, one shot per user, midnight UTC deadline.\n"
-        "🏆 <b>Weekly winner gets 5 TON</b> — first payout <b>Sunday 17 May 20:00 UTC</b>, every Sunday after that."
+        f"👇 Tap your answer — <b>+{QUIZ_REWARD} pts</b> for a correct one (subject to the 20 pts/day cap), "
+        "one shot per quiz, deadline midnight UTC. New quiz a few times a day — different question each time.\n"
+        "🏆 <b>Weekly top scorer gets 5 TON</b> — payout every Sunday 20:00 UTC."
     )
     return body + render_leaderboard_block()
 
@@ -224,6 +232,7 @@ def tg_send_with_keyboard(token: str, chat_id: str, text: str, keyboard: dict) -
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--dry-run", action="store_true", help="Generate and print, do not post or persist")
+    p.add_argument("--slot", choices=QUIZ_SLOTS, help="Override the slot (default: derived from current UTC hour)")
     args = p.parse_args()
 
     if not _strip_bom(os.getenv("ANTHROPIC_API_KEY")):
@@ -231,16 +240,19 @@ def main() -> int:
         return 0
 
     today = _today_key()
+    slot = args.slot or quiz_slot_for_now()
+    quiz_key = f"{today}-{slot}"
     quizzes = load_quizzes()
-    if not args.dry_run and today in quizzes:
-        print(f"Quiz already posted for {today} — skipping.")
+    if not args.dry_run and quiz_key in quizzes:
+        print(f"Quiz already posted for {quiz_key} — skipping.")
         return 0
 
     topic = random.choice(TOPIC_POOL)
-    seed = f"{today}-{random.randint(1000, 9999)}"
-    print(f"Generating quiz (topic={topic!r}, seed={seed})...")
+    seed = f"{quiz_key}-{random.randint(1000, 9999)}"
+    print(f"Generating quiz (slot={slot}, topic={topic!r}, seed={seed})...")
 
     quiz = call_haiku_for_quiz(topic, seed)
+    quiz["slot"] = slot
     quiz["posted_at"] = datetime.now(timezone.utc).isoformat()
     quiz["answered"] = {}
 
@@ -262,16 +274,16 @@ def main() -> int:
         print("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID missing — skipping (no-op).")
         return 0
 
-    body = render_quiz_message(quiz)
-    keyboard = build_inline_keyboard(today)
+    body = render_quiz_message(quiz, slot)
+    keyboard = build_inline_keyboard(quiz_key)
     status, resp = tg_send_with_keyboard(token, chat_id, body, keyboard)
     if status != 200:
         print(f"quiz tg post failed: status={status} body={resp}", file=sys.stderr)
         return 1
 
-    quizzes[today] = quiz
+    quizzes[quiz_key] = quiz
     save_quizzes(quizzes)
-    print(f"Quiz posted for {today} and persisted (with inline-keyboard buttons).")
+    print(f"Quiz posted for {quiz_key} and persisted (with inline-keyboard buttons).")
     return 0
 
 

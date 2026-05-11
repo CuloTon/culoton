@@ -13,7 +13,8 @@ Schema:
       "last_command_at": "<iso timestamp>",
       "daily_points": int,
       "daily_day": "<YYYY-MM-DD>",
-      "last_ask_at": "<iso timestamp>"
+      "last_ask_at": "<iso timestamp>",
+      "last_msg_point_at": "<iso timestamp>"
     }
   },
   "week_started_at": "<iso timestamp>"
@@ -33,6 +34,31 @@ OFFSET_PATH = ROOT / "data" / "tg_offset.txt"
 
 DAILY_POINT_CAP = 20
 ASK_COOLDOWN_SEC = 180  # 3 minutes between /ask uses per user
+
+# Plain chat messages in the group earn a small activity point, rate-limited
+# so chatting normally pays but burst-spamming does not. The daily cap (20)
+# still bounds the total either way.
+MSG_POINT_REWARD = 1
+MSG_POINT_COOLDOWN_SEC = 90  # at most one message-point per 90s per user
+
+# Quizzes auto-post several times a day; one quiz per (UTC day, slot).
+# data/quizzes.json keys are "YYYY-MM-DD-<slot>" (old flat "YYYY-MM-DD" keys
+# from the single-daily era still work for callbacks already in the wild).
+QUIZ_SLOTS = ("morning", "midday", "afternoon", "evening")
+
+
+def quiz_slot_for_now() -> str:
+    """Map the current UTC hour to a quiz slot. Crons run ~08/12/16/20 UTC."""
+    h = datetime.now(timezone.utc).hour
+    if 6 <= h < 12:
+        return "morning"
+    if 12 <= h < 16:
+        return "midday"
+    if 16 <= h < 20:
+        return "afternoon"
+    if 20 <= h <= 23:
+        return "evening"
+    return "morning"  # 00:00-05:59 UTC (manual-run edge): fold into morning
 
 # Accounts hidden from public leaderboards AND from the weekly-prize standings
 # (the dev / team accounts, the bot, etc.). Matched case-insensitively against
@@ -145,6 +171,25 @@ def can_use_ask(rec: dict) -> tuple[bool, int]:
 
 def mark_ask(rec: dict) -> None:
     rec["last_ask_at"] = _now_iso()
+
+
+def can_earn_msg_point(rec: dict) -> tuple[bool, int]:
+    """Returns (allowed, seconds_remaining) for awarding a plain-message point."""
+    last = rec.get("last_msg_point_at") or ""
+    if not last:
+        return True, 0
+    try:
+        last_dt = datetime.fromisoformat(last)
+    except Exception:
+        return True, 0
+    elapsed = (datetime.now(timezone.utc) - last_dt).total_seconds()
+    if elapsed >= MSG_POINT_COOLDOWN_SEC:
+        return True, 0
+    return False, int(MSG_POINT_COOLDOWN_SEC - elapsed)
+
+
+def mark_msg_point(rec: dict) -> None:
+    rec["last_msg_point_at"] = _now_iso()
 
 
 def top_weekly(state: dict, n: int = 10) -> list[tuple[str, dict]]:

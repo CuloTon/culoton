@@ -1,13 +1,24 @@
-name: Daily TON quiz
+name: TON quiz (auto, 4×/day)
 
 on:
   schedule:
-    # Primary at 15:00 UTC; backup at 18:00 UTC in case GitHub's free-tier
-    # scheduler silently drops the first run (it has happened). daily_quiz.py
-    # is idempotent per UTC day, so the backup is a no-op once a quiz is posted.
-    - cron: '0 15 * * *'
-    - cron: '0 18 * * *'
+    # Four quizzes a day — different question each time. The script derives the
+    # slot (morning/midday/afternoon/evening) from the UTC hour and is idempotent
+    # per (day, slot), so a late or duplicate run is a no-op. If GitHub's
+    # free-tier scheduler drops one, that slot just stays empty (3 quizzes that
+    # day) — the others still fire.
+    - cron: '0 8 * * *'    # morning
+    - cron: '0 12 * * *'   # midday
+    - cron: '0 16 * * *'   # afternoon
+    - cron: '0 20 * * *'   # evening
   workflow_dispatch:
+    inputs:
+      slot:
+        description: 'Force a specific slot (blank = derive from current UTC hour)'
+        required: false
+        default: ''
+        type: choice
+        options: ['', 'morning', 'midday', 'afternoon', 'evening']
 
 permissions:
   contents: write
@@ -32,15 +43,15 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: Generate and post the daily quiz
+      - name: Generate and post the quiz
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python scripts/daily_quiz.py
+        run: python scripts/daily_quiz.py ${{ github.event.inputs.slot != '' && format('--slot {0}', github.event.inputs.slot) || '' }}
 
       - name: Persist quizzes.json
         run: |
           bash scripts/git_commit_push.sh \
-            "auto: daily quiz $(date -u +%Y-%m-%d)" \
+            "auto: quiz $(date -u +%Y-%m-%dT%H:%MZ)" \
             data/quizzes.json
