@@ -18,13 +18,34 @@ TON_KEYWORDS = [
     r"\bton network\b",
     r"\bton ecosystem\b",
     r"\bton foundation\b",
+    r"\bton society\b",
     r"\btelegram open network\b",
     r"\$ton\b",
     r"\bthe open network\b",
     r"\btonkeeper\b",
+    r"\btonhub\b",
     r"\bjetton\b",
     r"\btact lang\b",
     r"\bton dns\b",
+    r"\btoncenter\b",
+    r"\bton space\b",
+    r"\bton wallet\b",
+    r"\btelegram wallet\b",
+    r"\btelegram mini app",
+    r"\btelegram mini-app",
+    # TON-native protocols, DEXs, marketplaces
+    r"\bston\.fi\b",
+    r"\bdedust\b",
+    r"\bgetgems\b",
+    r"\btonstakers\b",
+    r"\bevaa protocol\b",
+    r"\bstorm trade\b",
+    # TON-ecosystem flagship apps / tokens (each unambiguous enough on its own)
+    r"\bnotcoin\b",
+    r"\bhamster kombat\b",
+    r"\bcatizen\b",
+    r"\bopen league\b",
+    r"\bton accelerator\b",
 ]
 
 SOURCES = [
@@ -69,8 +90,35 @@ SOURCES = [
         "feed": "https://medium.com/feed/tag/ton-blockchain",
         "keywords": None,
     },
+    {
+        "name": "Medium tag: Telegram",
+        "url": "https://medium.com/tag/telegram",
+        "feed": "https://medium.com/feed/tag/telegram",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "Reddit r/ton_blockchain",
+        "url": "https://www.reddit.com/r/ton_blockchain/",
+        "feed": "https://www.reddit.com/r/ton_blockchain/.rss",
+        "keywords": None,
+    },
+    {
+        "name": "Bing News: TON",
+        "url": "https://www.bing.com/news",
+        "feed": (
+            "https://www.bing.com/news/search?"
+            "q=%22Toncoin%22+OR+%22TON+blockchain%22+OR+%22TON+Foundation%22&format=rss"
+        ),
+        "keywords": TON_KEYWORDS,
+    },
 
     # --- Generic crypto feeds (filter to TON-relevant entries only) ---
+    {
+        "name": "Cointelegraph (all)",
+        "url": "https://cointelegraph.com",
+        "feed": "https://cointelegraph.com/rss",
+        "keywords": TON_KEYWORDS,
+    },
     {
         "name": "CryptoSlate",
         "url": "https://cryptoslate.com",
@@ -129,6 +177,78 @@ SOURCES = [
         "name": "DLNews",
         "url": "https://www.dlnews.com",
         "feed": "https://www.dlnews.com/arc/outboundfeeds/rss/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "The Block",
+        "url": "https://www.theblock.co",
+        "feed": "https://www.theblock.co/rss.xml",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "Blockworks",
+        "url": "https://blockworks.co",
+        "feed": "https://blockworks.co/feed",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "CoinGape",
+        "url": "https://coingape.com",
+        "feed": "https://coingape.com/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "Cryptopolitan",
+        "url": "https://www.cryptopolitan.com",
+        "feed": "https://www.cryptopolitan.com/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "Cryptonews.com",
+        "url": "https://cryptonews.com",
+        "feed": "https://cryptonews.com/news/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "Bitcoin.com News",
+        "url": "https://news.bitcoin.com",
+        "feed": "https://news.bitcoin.com/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "ZyCrypto",
+        "url": "https://zycrypto.com",
+        "feed": "https://zycrypto.com/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "Bitcoinist",
+        "url": "https://bitcoinist.com",
+        "feed": "https://bitcoinist.com/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "CoinJournal",
+        "url": "https://coinjournal.net",
+        "feed": "https://coinjournal.net/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "Invezz Crypto",
+        "url": "https://invezz.com",
+        "feed": "https://invezz.com/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "CCN",
+        "url": "https://www.ccn.com",
+        "feed": "https://www.ccn.com/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "The Defiant",
+        "url": "https://thedefiant.io",
+        "feed": "https://thedefiant.io/api/feed",
         "keywords": TON_KEYWORDS,
     },
 ]
