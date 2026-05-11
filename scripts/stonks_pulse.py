@@ -44,7 +44,7 @@ LOOKBACK_HOURS = 8
 MAX_MESSAGES = 800
 MAX_TRANSCRIPT_CHARS = 30000  # safety cap on input to Haiku
 MODEL = "claude-haiku-4-5-20251001"
-LOCALES = ("en", "ru", "pl", "de")
+LOCALES = ("en", "ru", "pl", "de", "es", "uk")
 
 SLOTS = ("morning", "afternoon", "overnight")
 SLOT_LABEL = {
@@ -71,14 +71,17 @@ OUTPUT FORMAT — JSON ONLY, no prose around it:
   "en": { "title": "...", "summary": "...", "body_md": "...", "key_topics": ["..."], "participants": ["@h1", "@h2", ...] },
   "ru": { "title": "...", "summary": "...", "body_md": "...", "key_topics": ["..."], "participants": ["@h1", "@h2", ...] },
   "pl": { "title": "...", "summary": "...", "body_md": "...", "key_topics": ["..."], "participants": ["@h1", "@h2", ...] },
-  "de": { "title": "...", "summary": "...", "body_md": "...", "key_topics": ["..."], "participants": ["@h1", "@h2", ...] }
+  "de": { "title": "...", "summary": "...", "body_md": "...", "key_topics": ["..."], "participants": ["@h1", "@h2", ...] },
+  "es": { "title": "...", "summary": "...", "body_md": "...", "key_topics": ["..."], "participants": ["@h1", "@h2", ...] },
+  "uk": { "title": "...", "summary": "...", "body_md": "...", "key_topics": ["..."], "participants": ["@h1", "@h2", ...] }
 }
 
 - title: punchy, max 80 chars, no clickbait
 - summary: one sentence, max 200 chars
 - body_md: 3-5 paragraphs, plain markdown, no top-level # heading (the page renders its own h1)
 - key_topics: 2-5 short topic strings
-- participants: handles that meaningfully contributed (max 12), reused across all four locales
+- participants: handles that meaningfully contributed (max 12), reused across all six locales
+- es = Spanish, uk = Ukrainian — each a native rewrite, not a translation
 """
 
 

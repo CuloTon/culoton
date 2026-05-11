@@ -33,7 +33,7 @@ NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 BLOG_DIR = ROOT / "web" / "src" / "content" / "blog"
 MODEL = "claude-haiku-4-5-20251001"
 RETRY_LIMIT = 2
-LOCALES = ("en", "ru", "pl", "de")
+LOCALES = ("en", "ru", "pl", "de", "es", "uk")
 
 # How many recent EN news entries to feed into each roundup.
 ROUNDUP_INPUT_COUNT = 10
@@ -67,7 +67,7 @@ You will be given the full text of recent CuloTon news articles. Synthesise acro
 If two articles disagree, briefly acknowledge the disagreement. If the period was quiet, the roundup is shorter and says so.
 
 # Multilingual output
-Produce the roundup in four languages: English (en), Russian (ru), Polish (pl), German (de). Each version is a NATIVE rewrite, not a translation — natural idioms, natural rhythm. Facts must match across all four versions; phrasing must be independent.
+Produce the roundup in six languages: English (en), Russian (ru), Polish (pl), German (de), Spanish (es), Ukrainian (uk). Each version is a NATIVE rewrite, not a translation — natural idioms, natural rhythm. Facts must match across all six versions; phrasing must be independent.
 
 # Output format
 Strict JSON only. No prose outside JSON. No code fences."""
@@ -102,6 +102,16 @@ Output JSON with exactly these keys:
     "title": "Redaktioneller Titel des {kind_label_de} Roundups, max 80 chars",
     "summary": "Kurze Beschreibung des Hauptthemas, max 200 Zeichen",
     "body_markdown": "350-550 Worter auf Deutsch, Absatze durch Leerzeile getrennt, fette Leitphrasen statt Uberschriften"
+  }},
+  "es": {{
+    "title": "Titulo editorial del resumen {kind_label_es}, max 80 chars",
+    "summary": "Breve descripcion del tema dominante, max 200 caracteres",
+    "body_markdown": "350-550 palabras en espanol, parrafos separados por linea en blanco, frases guia en negrita en lugar de titulos"
+  }},
+  "uk": {{
+    "title": "Редакційний заголовок {kind_label_uk} огляду, max 80 chars",
+    "summary": "Короткий опис головної теми, max 200 символів",
+    "body_markdown": "350-550 слів українською, абзаци через порожній рядок, жирні провідні фрази замість заголовків"
   }}
 }}"""
 
@@ -109,6 +119,8 @@ KIND_LABELS = {
     "ru": {"morning": "утреннего", "noon": "дневного", "evening": "вечернего"},
     "pl": {"morning": "porannego", "noon": "poludniowego", "evening": "wieczornego"},
     "de": {"morning": "Morgen-", "noon": "Mittags-", "evening": "Abend-"},
+    "es": {"morning": "matutino", "noon": "del mediodia", "evening": "vespertino"},
+    "uk": {"morning": "ранкового", "noon": "денного", "evening": "вечірнього"},
 }
 
 
@@ -170,6 +182,8 @@ def call_haiku(client: Anthropic, *, kind: str, date_label: str, articles_block:
         kind_label_ru=KIND_LABELS["ru"][kind],
         kind_label_pl=KIND_LABELS["pl"][kind],
         kind_label_de=KIND_LABELS["de"][kind],
+        kind_label_es=KIND_LABELS["es"][kind],
+        kind_label_uk=KIND_LABELS["uk"][kind],
         date_label=date_label,
         articles_block=articles_block,
         n=n,

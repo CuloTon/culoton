@@ -1,4 +1,4 @@
-"""CuloTon news fetcher — multilingual edition (EN/RU/PL/DE).
+"""CuloTon news fetcher — multilingual edition (EN/RU/PL/DE/ES/UK).
 
 Pipeline:
 1. Pull RSS feeds from sources.py
@@ -44,7 +44,7 @@ MAX_PER_SOURCE = 5
 RETRY_LIMIT = 2
 USER_AGENT = "CuloTon-NewsBot/1.0 (+https://culoton.fun)"
 
-LOCALES = ("en", "ru", "pl", "de")
+LOCALES = ("en", "ru", "pl", "de", "es", "uk")
 
 CULOSCRIBE_SYSTEM = """You are CuloScribe — the editorial AI for CuloTon, an independent news desk covering the TON blockchain ecosystem.
 
@@ -69,7 +69,7 @@ You are NOT translating or copying. You are RE-REPORTING. You read the source, u
 - Always close on a neutral, factual note. No editorial calls to action.
 
 # Multilingual output
-You produce the article in four languages: English (en), Russian (ru), Polish (pl), German (de). Each version is a NATIVE rewrite, not a translation — natural idioms, natural rhythm for that language. The facts must match across all four versions, but the phrasing must be independent.
+You produce the article in six languages: English (en), Russian (ru), Polish (pl), German (de), Spanish (es), Ukrainian (uk). Each version is a NATIVE rewrite, not a translation — natural idioms, natural rhythm for that language. The facts must match across all six versions, but the phrasing must be independent.
 
 # Length
 Each language version: 200-400 words in body_markdown. Paragraphs separated by blank lines. No headings inside body.
@@ -108,6 +108,16 @@ Output JSON with exactly these keys:
     "title": "Deutsche Schlagzeile, max 80 chars",
     "summary": "Kurze Beschreibung, max 180 Zeichen",
     "body_markdown": "Deutscher Artikel, 200-400 Worter"
+  }},
+  "es": {{
+    "title": "Titular en espanol, max 80 chars",
+    "summary": "Resumen breve, max 180 caracteres",
+    "body_markdown": "Articulo en espanol, 200-400 palabras"
+  }},
+  "uk": {{
+    "title": "Заголовок українською, max 80 chars",
+    "summary": "Короткий опис, max 180 символів",
+    "body_markdown": "Стаття українською, 200-400 слів"
   }}
 }}"""
 

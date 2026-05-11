@@ -35,7 +35,7 @@ NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 EN_DIR = NEWS_DIR / "en"
 MODEL = "claude-haiku-4-5-20251001"
 RETRY_LIMIT = 2
-LOCALES = ("en", "ru", "pl", "de")
+LOCALES = ("en", "ru", "pl", "de", "es", "uk")
 
 # Same prompts as fetch_news.py — keep in sync.
 CULOSCRIBE_SYSTEM = """You are CuloScribe — the editorial AI for CuloTon, an independent news desk covering the TON blockchain ecosystem.
@@ -61,7 +61,7 @@ You are NOT translating or copying. You are RE-REPORTING. You read the source, u
 - Always close on a neutral, factual note. No editorial calls to action.
 
 # Multilingual output
-You produce the article in four languages: English (en), Russian (ru), Polish (pl), German (de). Each version is a NATIVE rewrite, not a translation — natural idioms, natural rhythm for that language. The facts must match across all four versions, but the phrasing must be independent.
+You produce the article in six languages: English (en), Russian (ru), Polish (pl), German (de), Spanish (es), Ukrainian (uk). Each version is a NATIVE rewrite, not a translation — natural idioms, natural rhythm for that language. The facts must match across all six versions, but the phrasing must be independent.
 
 # Length
 Each language version: 200-400 words in body_markdown. Paragraphs separated by blank lines. No headings inside body.
@@ -69,7 +69,7 @@ Each language version: 200-400 words in body_markdown. Paragraphs separated by b
 # Output format
 Strict JSON only. No prose outside JSON. No code fences."""
 
-CULOSCRIBE_USER_TEMPLATE = """Re-report the following TON-related article for CuloTon, in your own words, in four languages.
+CULOSCRIBE_USER_TEMPLATE = """Re-report the following TON-related article for CuloTon, in your own words, in six languages.
 
 ORIGINAL TITLE: {title}
 ORIGINAL SOURCE: {source_name}
@@ -84,7 +84,9 @@ Output JSON with exactly these keys:
   "en": {{"title": "max 80 chars", "summary": "max 180 chars", "body_markdown": "200-400 words"}},
   "ru": {{"title": "...", "summary": "...", "body_markdown": "..."}},
   "pl": {{"title": "...", "summary": "...", "body_markdown": "..."}},
-  "de": {{"title": "...", "summary": "...", "body_markdown": "..."}}
+  "de": {{"title": "...", "summary": "...", "body_markdown": "..."}},
+  "es": {{"title": "...", "summary": "...", "body_markdown": "..."}},
+  "uk": {{"title": "...", "summary": "...", "body_markdown": "..."}}
 }}"""
 
 

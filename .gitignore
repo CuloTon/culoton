@@ -27,3 +27,20 @@ Thumbs.db
 
 # windows-corrupted dirs (cannot rm; renamed and ignored)
 **/de_corrupt/
+
+# local working notes / reports / session artifacts — kept on disk, NOT in the public repo.
+# (INSTRUKCJA.txt / telegram_bot_setup.txt contain hosting details — deliberately not committed.)
+/.claude/
+/INSTRUKCJA.txt
+/telegram_bot_setup.txt
+/REPORT-*.md
+/SESSION_LOG_*.md
+/AUTONOMOUS_REPORT_*.md
+/ANNOUNCEMENT*.txt
+/TG-POST*.txt
+/community_announcement_*.txt
+/culoton_blog_announcement.txt
+# loose scratch images at repo root (site assets live in web/public/)
+/*.png
+/*.jpg
+/*.jpeg
