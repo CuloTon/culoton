@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 5,
+  "group_msg_count": 14,
   "users": {
     "453599792": {
       "daily_day": "2026-05-10",
@@ -27,6 +27,16 @@
       "total_points": 1,
       "username": "@sexdrugsrock",
       "weekly_points": 1
+    },
+    "7832882781": {
+      "daily_day": "2026-05-11",
+      "daily_points": 2,
+      "last_ask_at": "",
+      "last_command_at": "2026-05-11T21:04:39.582429+00:00",
+      "last_msg_point_at": "2026-05-11T21:04:39.582442+00:00",
+      "total_points": 2,
+      "username": "@eddychrl",
+      "weekly_points": 2
     },
     "8354207388": {
       "daily_day": "2026-05-11",
