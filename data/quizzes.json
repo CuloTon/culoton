@@ -37,5 +37,19 @@
     },
     "posted_at": "2026-05-11T18:29:37.112332+00:00",
     "question": "Which TON project is primarily a decentralized exchange for swapping tokens?"
+  },
+  "2026-05-11-afternoon": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "TON stands for The Open Network, the blockchain originally developed by Telegram and later open-sourced; Toncoin is its native cryptocurrency.",
+    "options": {
+      "A": "The Open Network",
+      "B": "Telegram Operating Node",
+      "C": "Token On Network",
+      "D": "Total Outbound Network"
+    },
+    "posted_at": "2026-05-11T19:00:37.037244+00:00",
+    "question": "What does TON stand for in the context of the blockchain?",
+    "slot": "afternoon"
   }
 }
