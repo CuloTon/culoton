@@ -8,7 +8,7 @@ Reads pending updates via getUpdates with persistent offset
 
 Commands:
   /start, /help        — welcome + command list
-  /news                — top 5 EN stories from the last 6h
+  /news                — latest 7 EN stories (near-dupe headlines collapsed)
   /blog                — link to the latest CuloScribe roundup
   /price ton|culoton   — live market data
   /ask <question>      — Haiku Q&A grounded in the latest 50 EN news
@@ -27,6 +27,7 @@ from __future__ import annotations
 import html
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -65,8 +66,8 @@ TG_API_TIMEOUT = 35  # > long-poll timeout below, with margin
 LONG_POLL_TIMEOUT = 25  # seconds; getUpdates returns immediately on new msg
 GET_UPDATES_LIMIT = 100
 LOOP_BUDGET_SEC = 270  # 4.5 minutes — leaves margin under workflow's 6-min cap
-NEWS_FOR_LIST_HOURS = 6
-NEWS_FOR_LIST_MAX = 5
+NEWS_FOR_LIST_MAX = 7        # /news always shows this many — newest first, no age cutoff
+NEWS_RECENT_HOURS = 6        # only used for the "(N from the last Nh)" note in /news
 ASK_CONTEXT_NEWS_COUNT = 50
 ASK_MAX_QUESTION_CHARS = 400
 
@@ -82,7 +83,7 @@ COMMANDS_HELP = (
     "I'm <b>@cscriber_bot</b> — the editorial AI for CuloTon, "
     "covering the TON ecosystem 24/7.\n\n"
     "📰 <b>News</b>\n"
-    "/news — top 5 stories from the last 6h\n"
+    "/news — the 7 latest TON stories\n"
     "/blog — latest CuloScribe roundup\n\n"
     "💰 <b>Market</b>\n"
     "/price ton — live $TON price\n"
@@ -270,13 +271,56 @@ def parse_frontmatter(md_text: str) -> dict:
         return {}
 
 
-def latest_news(n: int, hours: int | None = None) -> list[dict]:
+# Words too generic to count toward "two headlines are the same story".
+_TITLE_STOPWORDS = frozenset({
+    "a", "an", "the", "on", "in", "of", "to", "for", "and", "as", "at",
+    "with", "by", "amid", "this", "that", "from", "is", "are", "be", "its",
+    "it", "after", "over", "into", "than", "but", "or", "up", "down", "out",
+})
+
+
+def _title_tokens(title: str) -> frozenset[str]:
+    """Normalised content words of a headline (lowercased, depluralised,
+    stopwords dropped) — the basis for near-duplicate detection."""
+    out: set[str] = set()
+    for tok in re.split(r"[^0-9a-z]+", (title or "").lower()):
+        if not tok or tok in _TITLE_STOPWORDS:
+            continue
+        if len(tok) > 3 and tok.endswith("s"):
+            tok = tok[:-1]
+        out.add(tok)
+    return frozenset(out)
+
+
+def _near_duplicate_titles(a: frozenset[str], b: frozenset[str], threshold: float = 0.6) -> bool:
+    if not a or not b:
+        return False
+    return len(a & b) / min(len(a), len(b)) >= threshold
+
+
+def dedup_news(items: list[dict], limit: int | None = None) -> list[dict]:
+    """Collapse near-identical headlines (the same story re-reported by several
+    outlets) — keeps the first occurrence, so pass items newest-first.
+    Stops early once `limit` survivors have been collected."""
+    kept: list[dict] = []
+    seen: list[frozenset[str]] = []
+    for it in items:
+        toks = _title_tokens(it.get("title", ""))
+        if any(_near_duplicate_titles(toks, prev) for prev in seen):
+            continue
+        kept.append(it)
+        seen.append(toks)
+        if limit is not None and len(kept) >= limit:
+            break
+    return kept
+
+
+def latest_news(n: int) -> list[dict]:
+    """Up to `n` most recent EN stories, newest first, near-duplicate
+    headlines collapsed. No age cutoff — always returns what exists."""
     en = NEWS_DIR / "en"
     if not en.exists():
         return []
-    cutoff = None
-    if hours is not None:
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
     items: list[tuple[datetime, dict]] = []
     for path in en.glob("*.md"):
         try:
@@ -292,8 +336,6 @@ def latest_news(n: int, hours: int | None = None) -> list[dict]:
                 dt = dt.replace(tzinfo=timezone.utc)
         except Exception:
             continue
-        if cutoff and dt < cutoff:
-            continue
         items.append((dt, {
             "slug": path.stem,
             "title": (fm.get("title") or "").strip(),
@@ -303,7 +345,7 @@ def latest_news(n: int, hours: int | None = None) -> list[dict]:
             "date": dt,
         }))
     items.sort(key=lambda x: x[0], reverse=True)
-    return [it[1] for it in items[:n]]
+    return dedup_news([it[1] for it in items], limit=n)
 
 
 def latest_blog() -> dict | None:
@@ -368,13 +410,15 @@ def cmd_help() -> str:
 
 
 def cmd_news() -> str:
-    items = latest_news(NEWS_FOR_LIST_MAX, hours=NEWS_FOR_LIST_HOURS)
+    items = latest_news(NEWS_FOR_LIST_MAX)
     if not items:
-        # Fallback to the most recent overall, regardless of cutoff.
-        items = latest_news(NEWS_FOR_LIST_MAX)
-        if not items:
-            return "📰 No news yet. Check back soon — new stories drop every 2 hours."
-    lines = [f"📰 <b>Top {len(items)} stories — last {NEWS_FOR_LIST_HOURS}h</b>\n"]
+        return "📰 No news yet. Check back soon — new stories drop through the day."
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=NEWS_RECENT_HOURS)
+    recent = sum(1 for it in items if it.get("date") and it["date"] >= cutoff)
+    header = f"📰 <b>Latest {len(items)} stories</b>"
+    if recent:
+        header += f" — <i>{recent} from the last {NEWS_RECENT_HOURS}h</i>"
+    lines = [header + "\n"]
     for it in items:
         url = f"{SITE}/news/{it['slug']}/"
         title = html.escape(it["title"])

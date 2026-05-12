@@ -5,13 +5,15 @@ import NewsCard from '../components/NewsCard.astro';
 import FeaturedToken from '../components/FeaturedToken.astro';
 import StatsBadge from '../components/StatsBadge.astro';
 import { UI, DATE_LOCALE, localizedPath } from '../i18n/strings';
+import { dedupeByTitle } from '../lib/dedupeNews';
 
 const locale = 'en' as const;
 const t = UI[locale];
 
 const allNews = await getCollection('news_en');
 const sorted = allNews.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const latest = sorted.slice(0, 24);
+const deduped = dedupeByTitle(sorted);
+const latest = deduped.slice(0, 24);
 
 const allBlog = await getCollection('blog_en');
 const sortedBlog = allBlog.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());

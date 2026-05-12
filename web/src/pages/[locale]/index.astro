@@ -5,6 +5,7 @@ import NewsCard from '../../components/NewsCard.astro';
 import FeaturedToken from '../../components/FeaturedToken.astro';
 import StatsBadge from '../../components/StatsBadge.astro';
 import { UI, DATE_LOCALE, localizedPath, stripLocaleSlugFromId, type Locale } from '../../i18n/strings';
+import { dedupeByTitle } from '../../lib/dedupeNews';
 
 export async function getStaticPaths() {
   return [
@@ -39,7 +40,8 @@ async function loadBlog(loc: Locale) {
 
 const allNews = await loadNews(locale);
 const sorted = allNews.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const latest = sorted.slice(0, 24);
+const deduped = dedupeByTitle(sorted);
+const latest = deduped.slice(0, 24);
 
 const allBlog = await loadBlog(locale);
 const sortedBlog = allBlog.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
