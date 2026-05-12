@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 30,
+  "group_msg_count": 31,
   "users": {
     "453599792": {
       "daily_day": "2026-05-10",
@@ -37,6 +37,16 @@
       "total_points": 20,
       "username": "@wooQueenee",
       "weekly_points": 20
+    },
+    "7697608385": {
+      "daily_day": "2026-05-12",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-05-12T10:39:30.196021+00:00",
+      "last_msg_point_at": "2026-05-12T10:39:30.196033+00:00",
+      "total_points": 1,
+      "username": "@sofiaxpromo",
+      "weekly_points": 1
     },
     "7832882781": {
       "daily_day": "2026-05-11",
