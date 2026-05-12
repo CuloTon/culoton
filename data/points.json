@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 41,
+  "group_msg_count": 42,
   "users": {
     "453599792": {
       "daily_day": "2026-05-10",
@@ -42,8 +42,8 @@
       "daily_day": "2026-05-12",
       "daily_points": 20,
       "last_ask_at": "",
-      "last_command_at": "2026-05-12T16:37:57.206864+00:00",
-      "last_msg_point_at": "2026-05-12T15:03:49.891023+00:00",
+      "last_command_at": "2026-05-12T21:08:45.855185+00:00",
+      "last_msg_point_at": "2026-05-12T21:08:45.855198+00:00",
       "total_points": 40,
       "username": "@wooQueenee",
       "weekly_points": 40
