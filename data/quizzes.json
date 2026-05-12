@@ -91,5 +91,19 @@
     "posted_at": "2026-05-12T16:33:49.316527+00:00",
     "question": "What does TON stand for in the context of the blockchain?",
     "slot": "afternoon"
+  },
+  "2026-05-12-evening": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Pavel and Nikolai Durov founded Telegram and launched the TON (The Open Network) blockchain project as an extension of Telegram's ecosystem.",
+    "options": {
+      "A": "Pavel Durov and his brother Nikolai",
+      "B": "Vitalik Buterin and the Ethereum Foundation",
+      "C": "Brian Armstrong and Coinbase Ventures",
+      "D": "Sam Bankman-Fried and Alameda Research"
+    },
+    "posted_at": "2026-05-12T21:07:24.993408+00:00",
+    "question": "Who originally created Telegram and initiated the TON blockchain project?",
+    "slot": "evening"
   }
 }
