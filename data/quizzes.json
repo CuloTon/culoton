@@ -71,5 +71,19 @@
     "posted_at": "2026-05-11T23:15:32.286106+00:00",
     "question": "What is the native cryptocurrency of the TON blockchain?",
     "slot": "evening"
+  },
+  "2026-05-12-afternoon": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "TON stands for The Open Network, a blockchain project originally developed by Telegram that later became community-driven.",
+    "options": {
+      "A": "The Open Network",
+      "B": "Telegram Operations Node",
+      "C": "Total Omni Network",
+      "D": "Token Ownership Network"
+    },
+    "posted_at": "2026-05-12T16:33:49.316527+00:00",
+    "question": "What does TON stand for in the context of the blockchain?",
+    "slot": "afternoon"
   }
 }
