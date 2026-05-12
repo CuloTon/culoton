@@ -16,11 +16,12 @@ Three modes:
       24h change, 24h volume), builds a multilingual market-pulse
       message and posts it.
 
-  --mode digest
-      Picks the freshest evening blog roundup (across all locales),
+  --mode digest --kind {morning|noon|evening}
+      Picks the freshest blog roundup of that kind (across all locales),
       builds a multilingual TG digest with title + summary in EN/RU/PL/DE
       and a link to the full roundup. Idempotent via announced.db
-      (kind='digest').
+      (kind='digest' for evening, 'digest-<kind>' otherwise). Defaults to
+      evening when --kind is omitted (backward compat).
 
 All modes are graceful no-ops when TELEGRAM_BOT_TOKEN or
 TELEGRAM_CHAT_ID environment variables are missing — so the
@@ -306,20 +307,33 @@ def mcap_notify(token: str, chat_id: str) -> int:
     return 0
 
 
-def find_latest_evening_roundup() -> tuple[str, dict[str, dict]] | None:
-    """Return (slug, {locale: frontmatter}) for the freshest evening roundup
-    that has all four locales on disk. Slug = filename stem (e.g. 2026-05-09-evening).
+DIGEST_HEADERS = {
+    "morning": "🌅 <b>MORNING DIGEST — TON ECOSYSTEM</b>",
+    "noon": "☀️ <b>MIDDAY DIGEST — TON ECOSYSTEM</b>",
+    "evening": "🌆 <b>EVENING DIGEST — TON ECOSYSTEM</b>",
+}
+
+
+def digest_db_kind(kind: str) -> str:
+    """announced.db kind column. Evening keeps the legacy 'digest' value so
+    we don't re-post roundups announced before per-kind digests existed."""
+    return "digest" if kind == "evening" else f"digest-{kind}"
+
+
+def find_latest_roundup(kind: str) -> tuple[str, dict[str, dict]] | None:
+    """Return (slug, {locale: frontmatter}) for the freshest roundup of the
+    given kind that has an EN file on disk. Slug = stem, e.g. 2026-05-09-evening.
     """
     en_dir = BLOG_DIR / "en"
     if not en_dir.exists():
         return None
     cands: list[tuple[str, str]] = []  # (slug, date_str)
-    for path in en_dir.glob("*-evening.md"):
+    for path in en_dir.glob(f"*-{kind}.md"):
         try:
             fm, _ = parse_frontmatter(path.read_text(encoding="utf-8"))
         except Exception:
             continue
-        if str(fm.get("kind")) != "evening":
+        if str(fm.get("kind")) != kind:
             continue
         cands.append((path.stem, str(fm.get("date") or "")))
     cands.sort(key=lambda x: x[1], reverse=True)
@@ -339,20 +353,22 @@ def find_latest_evening_roundup() -> tuple[str, dict[str, dict]] | None:
     return None
 
 
-def digest_notify(token: str, chat_id: str) -> int:
-    """Posts the latest evening roundup as a multilingual digest to the
-    public TG channel. Uses the existing announced.db with kind='digest'
-    so it doesn't double-fire if the workflow runs twice in a day.
+def digest_notify(token: str, chat_id: str, kind: str = "evening") -> int:
+    """Posts the latest <kind> roundup as a multilingual digest to the
+    public TG channel. Idempotent via announced.db so it doesn't double-fire
+    if the workflow runs twice (or the inline post in update-and-deploy and
+    the backup telegram-digest workflow both fire).
     """
-    found = find_latest_evening_roundup()
+    db_kind = digest_db_kind(kind)
+    found = find_latest_roundup(kind)
     if not found:
-        print("No evening roundup available — skipping.")
+        print(f"No {kind} roundup available — skipping.")
         return 0
     slug, metas = found
 
     conn = db_init()
-    if already_announced(conn, slug, "digest"):
-        print(f"Digest already announced for {slug} — skipping.")
+    if already_announced(conn, slug, db_kind):
+        print(f"{kind.capitalize()} digest already announced for {slug} — skipping.")
         return 0
 
     blog_url = f"{SITE}/blog/{slug}"
@@ -360,7 +376,7 @@ def digest_notify(token: str, chat_id: str) -> int:
         print(f"Roundup URL not live yet: {blog_url} — skipping; will retry next cron.")
         return 0
 
-    parts: list[str] = ["🌆 <b>EVENING DIGEST — TON ECOSYSTEM</b>", ""]
+    parts: list[str] = [DIGEST_HEADERS.get(kind, DIGEST_HEADERS["evening"]), ""]
     for loc in LOCALES:
         fm = metas.get(loc)
         if not fm:
@@ -387,14 +403,16 @@ def digest_notify(token: str, chat_id: str) -> int:
         print(f"digest notify failed: status={status} body={body}", file=sys.stderr)
         return 1
 
-    mark_announced(conn, slug, "digest")
-    print(f"Digest announced: {slug}")
+    mark_announced(conn, slug, db_kind)
+    print(f"{kind.capitalize()} digest announced: {slug}")
     return 0
 
 
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--mode", required=True, choices=("deploy", "news", "mcap", "digest"))
+    p.add_argument("--kind", default="", choices=("", "morning", "noon", "evening"),
+                   help="digest mode: which roundup to post; '' means all three")
     p.add_argument("--sha", default="")
     p.add_argument("--message", default="")
     p.add_argument("--author", default="")
@@ -414,7 +432,14 @@ def main() -> int:
     if args.mode == "mcap":
         return mcap_notify(token, chat_id)
     if args.mode == "digest":
-        return digest_notify(token, chat_id)
+        if args.kind:
+            return digest_notify(token, chat_id, args.kind)
+        # No kind given — try all three (idempotent), so a single backup run
+        # catches whichever roundup hasn't been posted yet.
+        rc = 0
+        for k in ("morning", "noon", "evening"):
+            rc = digest_notify(token, chat_id, k) or rc
+        return rc
     return news_notify(token, chat_id)
 
 

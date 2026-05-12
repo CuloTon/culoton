@@ -2,13 +2,15 @@ name: Update news and deploy
 
 on:
   schedule:
-    # Routine fetch every 2h, but skip the three roundup hours so we don't
-    # double-run with the dedicated roundup crons below.
-    - cron: '0 0,2,4,8,10,14,16,20,22 * * *'
-    # Three roundup slots (UTC) — morning ~08:00 PL (CEST), noon ~13:00, evening ~19:00.
+    # Routine fetch every 2h, but skip the roundup hours (6, 20) so we don't
+    # double-fire with the dedicated roundup crons below.
+    - cron: '0 0,2,4,8,10,12,14,16,18,22 * * *'
+    # Three roundup slots (UTC): morning 06:00, midday 15:00, evening 20:00.
+    # Each also runs the routine fetch first, then generates + deploys the
+    # roundup, and a follow-up workflow (telegram-digest) posts it to the chat.
     - cron: '0 6 * * *'   # morning
-    - cron: '0 11 * * *'  # noon
-    - cron: '0 17 * * *'  # evening
+    - cron: '0 15 * * *'  # noon (midday)
+    - cron: '0 20 * * *'  # evening
   workflow_dispatch:
     inputs:
       roundup_kind:
@@ -59,8 +61,8 @@ jobs:
           fi
           case "${{ github.event.schedule }}" in
             "0 6 * * *")  echo "kind=morning" >> "$GITHUB_OUTPUT" ;;
-            "0 11 * * *") echo "kind=noon" >> "$GITHUB_OUTPUT" ;;
-            "0 17 * * *") echo "kind=evening" >> "$GITHUB_OUTPUT" ;;
+            "0 15 * * *") echo "kind=noon" >> "$GITHUB_OUTPUT" ;;
+            "0 20 * * *") echo "kind=evening" >> "$GITHUB_OUTPUT" ;;
             *) echo "kind=" >> "$GITHUB_OUTPUT" ;;
           esac
 
@@ -98,6 +100,20 @@ jobs:
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: python scripts/deploy_ftp.py web/dist public_html
+
+      - name: Post roundup digest to Telegram (${{ steps.roundup.outputs.kind }})
+        if: success() && steps.roundup.outputs.kind != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scripts/telegram_notify.py --mode digest --kind "${{ steps.roundup.outputs.kind }}"
+
+      - name: Persist digest dedup state
+        if: success() && steps.roundup.outputs.kind != ''
+        run: |
+          bash scripts/git_commit_push.sh \
+            "auto: telegram ${{ steps.roundup.outputs.kind }} digest $(date -u +%Y-%m-%dT%H:%MZ)" \
+            scripts/announced.db
 
       - name: Telegram deploy notification (skip bot commits)
         if: success()

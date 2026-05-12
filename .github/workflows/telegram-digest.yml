@@ -1,12 +1,17 @@
-name: Telegram evening digest
+name: Telegram roundup digest (backup)
 
 on:
   schedule:
-    # 17:30 UTC = 30 min after evening roundup workflow starts at 17:00 UTC.
-    # update-and-deploy typically finishes (incl. FTP) in 8-15 min, so by
-    # 17:30 the roundup page is live on culoton.fun. The digest_notify
-    # function HEAD-checks the URL anyway as a belt-and-braces guard.
-    - cron: '30 17 * * *'
+    # Backup poster for the three roundup digests. update-and-deploy posts
+    # each roundup to the chat inline right after it deploys (06:00 / 15:00 /
+    # 20:00 UTC); this workflow runs ~30 min later and re-tries any roundup
+    # that didn't make it out (transient TG error, slow generation, URL not
+    # propagated yet). It calls --mode digest with no --kind, which walks all
+    # three kinds and is idempotent via announced.db, so it never double-posts.
+    - cron: '30 6 * * *'    # after the morning roundup
+    - cron: '30 15 * * *'   # after the midday roundup
+    - cron: '30 20 * * *'   # after the evening roundup
+    - cron: '30 22 * * *'   # late catch-all for anything still unposted
   workflow_dispatch:
 
 permissions:
@@ -32,7 +37,7 @@ jobs:
 
       - run: pip install PyYAML
 
-      - name: Send evening digest to Telegram
+      - name: Post any unposted roundup digests to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
