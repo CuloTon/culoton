@@ -107,7 +107,13 @@
     "slot": "evening"
   },
   "2026-05-13-afternoon": {
-    "answered": {},
+    "answered": {
+      "7653126333": {
+        "answer": "A",
+        "answered_at": "2026-05-13T20:04:42.686931+00:00",
+        "correct": true
+      }
+    },
     "correct": "A",
     "explanation": "Jetton is TON's standard term for any custom token or cryptocurrency created on the TON blockchain, analogous to ERC-20 tokens on Ethereum.",
     "options": {
