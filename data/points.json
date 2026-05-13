@@ -1,6 +1,16 @@
 {
-  "group_msg_count": 48,
+  "group_msg_count": 49,
   "users": {
+    "1415897955": {
+      "daily_day": "2026-05-13",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-05-13T10:40:58.310788+00:00",
+      "last_msg_point_at": "2026-05-13T10:40:58.310800+00:00",
+      "total_points": 1,
+      "username": "@mr_fishss",
+      "weekly_points": 1
+    },
     "453599792": {
       "daily_day": "2026-05-10",
       "daily_points": 1,
