@@ -125,5 +125,19 @@
     "posted_at": "2026-05-13T16:35:07.852125+00:00",
     "question": "In TON ecosystem terminology, what is a 'jetton'?",
     "slot": "afternoon"
+  },
+  "2026-05-13-evening": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Telegram's Pavel Durov initiated TON development; while the blockchain is now community-governed, Telegram was the original creator.",
+    "options": {
+      "A": "Telegram",
+      "B": "Toncoin Foundation",
+      "C": "FTX",
+      "D": "The Open Network DAO"
+    },
+    "posted_at": "2026-05-13T21:12:45.346742+00:00",
+    "question": "Which company originally created the TON blockchain?",
+    "slot": "evening"
   }
 }
