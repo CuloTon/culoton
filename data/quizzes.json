@@ -127,7 +127,13 @@
     "slot": "afternoon"
   },
   "2026-05-13-evening": {
-    "answered": {},
+    "answered": {
+      "7653126333": {
+        "answer": "A",
+        "answered_at": "2026-05-13T21:16:59.120118+00:00",
+        "correct": true
+      }
+    },
     "correct": "A",
     "explanation": "Telegram's Pavel Durov initiated TON development; while the blockchain is now community-governed, Telegram was the original creator.",
     "options": {
