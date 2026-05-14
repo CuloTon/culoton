@@ -146,6 +146,20 @@
     "question": "Which company originally created the TON blockchain?",
     "slot": "evening"
   },
+  "2026-05-14-afternoon": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Telegram Mini-Apps are lightweight web applications that run natively within Telegram's interface, allowing users to interact with services like games and finance tools without leaving the app or downloading separate software.",
+    "options": {
+      "A": "Run lightweight applications inside Telegram without downloading a separate app",
+      "B": "Replace Telegram's built-in messaging features with third-party alternatives",
+      "C": "Encrypt messages using blockchain technology",
+      "D": "Convert Telegram groups into decentralized autonomous organizations"
+    },
+    "posted_at": "2026-05-14T18:23:08.944081+00:00",
+    "question": "What are Telegram Mini-Apps primarily designed to do?",
+    "slot": "afternoon"
+  },
   "2026-05-14-midday": {
     "answered": {
       "5571300169": {
