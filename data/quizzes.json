@@ -147,7 +147,13 @@
     "slot": "evening"
   },
   "2026-05-14-midday": {
-    "answered": {},
+    "answered": {
+      "5571300169": {
+        "answer": "A",
+        "answered_at": "2026-05-14T14:14:56.470346+00:00",
+        "correct": true
+      }
+    },
     "correct": "A",
     "explanation": "TON stands for The Open Network, the blockchain originally developed by Telegram and now community-governed.",
     "options": {
