@@ -145,5 +145,19 @@
     "posted_at": "2026-05-13T21:12:45.346742+00:00",
     "question": "Which company originally created the TON blockchain?",
     "slot": "evening"
+  },
+  "2026-05-14-midday": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "TON stands for The Open Network, the blockchain originally developed by Telegram and now community-governed.",
+    "options": {
+      "A": "The Open Network",
+      "B": "Telegram Operating Node",
+      "C": "Token Operations Network",
+      "D": "Telegram's Original Network"
+    },
+    "posted_at": "2026-05-14T13:20:44.920017+00:00",
+    "question": "What does TON stand for?",
+    "slot": "midday"
   }
 }
