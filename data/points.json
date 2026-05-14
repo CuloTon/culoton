@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 78,
+  "group_msg_count": 79,
   "users": {
     "1415897955": {
       "daily_day": "2026-05-13",
@@ -27,6 +27,16 @@
       "last_command_at": "2026-05-09T16:53:27.859910+00:00",
       "total_points": 20,
       "username": "@qpdqpdqpd",
+      "weekly_points": 1
+    },
+    "5284743901": {
+      "daily_day": "2026-05-14",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-05-14T10:18:50.631409+00:00",
+      "last_msg_point_at": "2026-05-14T10:18:50.631422+00:00",
+      "total_points": 1,
+      "username": "@mtkmeme",
       "weekly_points": 1
     },
     "5513086057": {
