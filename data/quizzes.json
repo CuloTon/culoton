@@ -147,7 +147,13 @@
     "slot": "evening"
   },
   "2026-05-14-afternoon": {
-    "answered": {},
+    "answered": {
+      "7653126333": {
+        "answer": "A",
+        "answered_at": "2026-05-14T20:36:07.204621+00:00",
+        "correct": true
+      }
+    },
     "correct": "A",
     "explanation": "Telegram Mini-Apps are lightweight web applications that run natively within Telegram's interface, allowing users to interact with services like games and finance tools without leaving the app or downloading separate software.",
     "options": {
