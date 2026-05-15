@@ -1,0 +1,112 @@
+---
+import { UI, localizedPath, type Locale } from '../i18n/strings';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = UI[locale];
+const href = localizedPath(locale, '/launch');
+---
+
+<a class="launch-banner" href={href}>
+  <span class="lb-pill">{t.launch_banner_pill}</span>
+  <span class="lb-text">{t.launch_banner_text}</span>
+  <span class="lb-cta">{t.launch_banner_cta}</span>
+</a>
+
+<style>
+  .launch-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 12px 22px;
+    background: linear-gradient(
+      90deg,
+      var(--accent, #f0b400) 0%,
+      var(--accent-hot, #ff8a00) 100%
+    );
+    color: #1a1408 !important;
+    text-decoration: none !important;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.4;
+    border-bottom: 2px solid #1a1408;
+    border-top: 2px solid rgba(26, 20, 8, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: filter 0.15s ease;
+  }
+  .launch-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 50%,
+      transparent 100%
+    );
+    transform: translateX(-100%);
+    animation: shine 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes shine {
+    0%, 60% { transform: translateX(-100%); }
+    80%, 100% { transform: translateX(100%); }
+  }
+  .launch-banner:hover {
+    filter: brightness(1.06);
+  }
+  .lb-pill {
+    flex-shrink: 0;
+    background: #1a1408;
+    color: var(--accent, #f0b400);
+    padding: 4px 10px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+  .lb-text {
+    flex: 1;
+    min-width: 220px;
+    font-weight: 600;
+    font-family: var(--font-sans, var(--font-display));
+    font-size: 14px;
+    letter-spacing: 0.01em;
+  }
+  .lb-cta {
+    flex-shrink: 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 12px;
+    border-bottom: 1px solid #1a1408;
+    padding-bottom: 1px;
+  }
+  @media (max-width: 720px) {
+    .launch-banner {
+      padding: 10px 16px;
+      gap: 10px;
+      font-size: 12px;
+    }
+    .lb-text {
+      font-size: 13px;
+      min-width: 0;
+      flex-basis: 100%;
+      order: 3;
+    }
+    .lb-pill {
+      font-size: 10px;
+      padding: 3px 8px;
+    }
+    .lb-cta {
+      font-size: 11px;
+      margin-left: auto;
+    }
+  }
+</style>

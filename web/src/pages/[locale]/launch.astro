@@ -1,0 +1,585 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { LAUNCH } from '../../data/launch';
+import type { Locale } from '../../i18n/strings';
+
+export async function getStaticPaths() {
+  return [
+    { params: { locale: 'ru' } },
+    { params: { locale: 'pl' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const c = LAUNCH[locale];
+const TELEGRAM = 'https://t.me/culoton';
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/launch"
+  title={c.meta_title}
+  description={c.meta_description}
+>
+  <article class="launch-page">
+    <header class="launch-hero">
+      <div class="status-row">
+        <span class="kicker">{c.status_kicker}</span>
+        <span class="status-pill">{c.status_pill}</span>
+      </div>
+      <h1>{c.hero_h}</h1>
+      <p class="lede">{c.hero_lede}</p>
+      <p class="eta">{c.hero_eta}</p>
+      <div class="hero-cta">
+        <a class="cta-btn cta-primary" href={TELEGRAM} target="_blank" rel="noopener noreferrer">
+          {c.cta_telegram}
+        </a>
+        <span class="hero-cta-blurb">{c.cta_telegram_blurb}</span>
+      </div>
+    </header>
+
+    <section class="block">
+      <h2>{c.why_h}</h2>
+      <p class="block-lede">{c.why_lede}</p>
+      <ul class="why-list">
+        {c.why_points.map(([t, b]) => (
+          <li>
+            <strong>{t}</strong>
+            <p>{b}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>{c.features_h}</h2>
+      <div class="features-grid">
+        {c.features.map((f) => (
+          <div class="feat">
+            <div class="feat-icon" aria-hidden="true">{f.icon}</div>
+            <h3>{f.title}</h3>
+            <p>{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>{c.flow_h}</h2>
+      <p class="block-lede">{c.flow_intro}</p>
+      <ol class="flow-steps">
+        {c.flow_steps.map((s) => (
+          <li>
+            <div class="flow-n">{s.n}</div>
+            <div class="flow-body">
+              <h3>{s.title}</h3>
+              <p>{s.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="block preview-block">
+      <h2>{c.preview_h}</h2>
+      <p class="block-lede">{c.preview_intro}</p>
+      <div class="mock-window" aria-hidden="true">
+        <div class="mock-chrome">
+          <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+          <span class="mock-url">culoton.fun/launch</span>
+        </div>
+        <form class="mock-form" onsubmit="return false">
+          <div class="mock-grid">
+            <label class="mock-field">
+              <span>{c.preview_form_label_name}</span>
+              <input type="text" placeholder={c.preview_form_ph_name} disabled />
+            </label>
+            <label class="mock-field">
+              <span>{c.preview_form_label_symbol}</span>
+              <input type="text" placeholder={c.preview_form_ph_symbol} disabled />
+            </label>
+            <label class="mock-field">
+              <span>{c.preview_form_label_supply}</span>
+              <input type="text" placeholder={c.preview_form_ph_supply} disabled />
+            </label>
+            <label class="mock-field">
+              <span>{c.preview_form_label_decimals}</span>
+              <input type="text" value="9" disabled />
+            </label>
+          </div>
+          <label class="mock-field">
+            <span>{c.preview_form_label_desc}</span>
+            <textarea rows="2" placeholder={c.preview_form_ph_desc} disabled></textarea>
+          </label>
+          <label class="mock-field mock-file">
+            <span>{c.preview_form_label_logo}</span>
+            <div class="mock-file-drop">
+              <span class="mock-file-btn">{c.preview_form_logo_choose}</span>
+              <span class="mock-file-hint">{c.preview_form_logo_hint}</span>
+            </div>
+          </label>
+          <label class="mock-checkbox">
+            <input type="checkbox" disabled />
+            <span class="mock-cb-text">
+              <strong>{c.preview_form_label_revoke}</strong>
+              <em>{c.preview_form_revoke_hint}</em>
+            </span>
+          </label>
+          <button type="button" class="mock-submit" disabled>{c.preview_form_submit}</button>
+          <p class="mock-disabled-note">{c.preview_form_disabled_note}</p>
+        </form>
+      </div>
+      <p class="preview-caption">{c.preview_caption}</p>
+    </section>
+
+    <section class="block">
+      <h2>{c.pricing_h}</h2>
+      <table class="pricing-table">
+        <tbody>
+          {c.pricing_rows.map((r) => (
+            <tr>
+              <td class="p-label">{r.label}</td>
+              <td class="p-value">{r.value}</td>
+              <td class="p-note">{r.note}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="pricing-disclaimer">{c.pricing_disclaimer}</p>
+    </section>
+
+    <section class="block">
+      <h2>{c.wallets_h}</h2>
+      <p class="block-lede">{c.wallets_blurb}</p>
+      <ul class="wallets-list">
+        {c.wallets.map((w) => <li>{w}</li>)}
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>{c.faq_h}</h2>
+      <dl class="faq">
+        {c.faq.map((qa) => (
+          <>
+            <dt>{qa.q}</dt>
+            <dd>{qa.a}</dd>
+          </>
+        ))}
+      </dl>
+    </section>
+
+    <section class="block cta-final">
+      <h2>{c.cta_bottom_h}</h2>
+      <p>{c.cta_bottom_p}</p>
+      <a class="cta-btn cta-primary cta-big" href={TELEGRAM} target="_blank" rel="noopener noreferrer">
+        {c.cta_bottom_btn}
+      </a>
+    </section>
+
+    <p class="legal">{c.disclaimer}</p>
+  </article>
+</Layout>
+
+<style>
+  .launch-page { max-width: 920px; margin: 0 auto; padding: 0 4px; }
+
+  .launch-hero {
+    margin: 12px 0 36px;
+    padding: 28px 0 24px;
+    border-bottom: 2px solid var(--rule);
+  }
+  .status-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .status-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    background: var(--accent);
+    color: #1a1408;
+    border-radius: 0;
+  }
+  .launch-hero h1 {
+    margin: 0 0 14px;
+    font-size: clamp(34px, 5.5vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-family: var(--font-display);
+  }
+  .launch-hero .lede {
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    max-width: 760px;
+    margin: 0 0 12px;
+  }
+  .launch-hero .eta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-mute);
+    margin: 0 0 22px;
+    letter-spacing: 0.04em;
+  }
+  .hero-cta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .hero-cta-blurb {
+    color: var(--text-mute);
+    font-size: 13px;
+    max-width: 380px;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    padding: 12px 22px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: transform 0.12s, opacity 0.12s;
+    border-radius: 4px;
+  }
+  .cta-btn:hover { transform: translateY(-1px); opacity: 0.92; }
+  .cta-primary { background: var(--accent); color: #1a1408 !important; }
+  .cta-big { padding: 16px 28px; font-size: 15px; }
+
+  .block { margin: 0 0 52px; }
+  .block h2 {
+    margin: 0 0 12px;
+    font-size: clamp(22px, 3vw, 28px);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 8px;
+    color: var(--text);
+    font-family: var(--font-display);
+  }
+  .block-lede {
+    color: var(--text-dim);
+    font-size: 16px;
+    line-height: 1.55;
+    margin: 0 0 18px;
+    max-width: 760px;
+  }
+
+  .why-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .why-list li {
+    background: var(--bg-section);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+  }
+  .why-list strong {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .why-list p { margin: 0; color: var(--text-dim); font-size: 15px; line-height: 1.55; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .feat {
+    background: var(--bg-section);
+    border: 1px solid var(--rule-soft);
+    border-top: 3px solid var(--accent);
+    padding: 18px 18px 16px;
+  }
+  .feat-icon { font-size: 28px; line-height: 1; margin-bottom: 10px; }
+  .feat h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    color: var(--text);
+    font-family: var(--font-display);
+  }
+  .feat p { margin: 0; color: var(--text-dim); font-size: 14px; line-height: 1.55; }
+
+  .flow-steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+  .flow-steps li {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 1px dashed var(--rule-soft);
+  }
+  .flow-steps li:last-child { border-bottom: none; }
+  .flow-n {
+    font-family: var(--font-mono);
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .flow-body h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    color: var(--text);
+    font-family: var(--font-display);
+  }
+  .flow-body p { margin: 0; color: var(--text-dim); font-size: 15px; line-height: 1.55; }
+
+  .preview-block { }
+  .mock-window {
+    background: #faf7f0;
+    border: 1px solid var(--rule);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    border-radius: 6px;
+    overflow: hidden;
+    color: #1a1408;
+  }
+  .mock-chrome {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: #ede6d2;
+    border-bottom: 1px solid #d8cfb5;
+  }
+  .mock-chrome .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #d4ccae;
+  }
+  .mock-chrome .d1 { background: #ff605c; }
+  .mock-chrome .d2 { background: #ffbd44; }
+  .mock-chrome .d3 { background: #00ca4e; }
+  .mock-url {
+    margin-left: 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #5a4f30;
+    letter-spacing: 0.02em;
+  }
+  .mock-form { padding: 22px; display: grid; gap: 14px; }
+  .mock-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .mock-field { display: flex; flex-direction: column; gap: 4px; }
+  .mock-field > span {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #5a4f30;
+  }
+  .mock-field input,
+  .mock-field textarea {
+    background: #fffdf6;
+    border: 1px solid #d8cfb5;
+    border-radius: 3px;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: #1a1408;
+    font-family: var(--font-mono);
+    opacity: 0.7;
+  }
+  .mock-field input:disabled,
+  .mock-field textarea:disabled {
+    cursor: not-allowed;
+  }
+  .mock-file-drop {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1.5px dashed #b8a978;
+    background: #fdf9eb;
+    border-radius: 3px;
+  }
+  .mock-file-btn {
+    background: #1a1408;
+    color: #f0b400;
+    padding: 6px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 700;
+    border-radius: 2px;
+  }
+  .mock-file-hint {
+    font-size: 12px;
+    color: #5a4f30;
+    font-family: var(--font-mono);
+  }
+  .mock-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #fdf9eb;
+    border: 1px solid #e3d7ac;
+    border-radius: 3px;
+  }
+  .mock-checkbox input {
+    margin-top: 4px;
+    accent-color: #1a1408;
+  }
+  .mock-cb-text strong {
+    display: block;
+    color: #1a1408;
+    font-size: 13px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .mock-cb-text em {
+    display: block;
+    margin-top: 3px;
+    font-style: normal;
+    color: #5a4f30;
+    font-size: 12px;
+  }
+  .mock-submit {
+    background: #1a1408;
+    color: #f0b400;
+    border: none;
+    padding: 14px 22px;
+    font-family: var(--font-mono);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: not-allowed;
+    opacity: 0.85;
+    border-radius: 3px;
+  }
+  .mock-disabled-note {
+    margin: 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #5a4f30;
+    letter-spacing: 0.04em;
+  }
+  .preview-caption {
+    margin: 14px 0 0;
+    font-size: 13px;
+    color: var(--text-mute);
+    font-style: italic;
+    text-align: center;
+  }
+
+  .pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 1px solid var(--rule);
+  }
+  .pricing-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+    font-size: 14px;
+  }
+  .p-label { color: var(--text); }
+  .p-value {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .p-note { color: var(--text-mute); font-size: 13px; font-style: italic; }
+  .pricing-disclaimer {
+    margin: 16px 0 0;
+    color: var(--text-mute);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .wallets-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .wallets-list li {
+    padding: 8px 14px;
+    background: var(--bg-section);
+    border: 1px solid var(--rule-soft);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--text);
+  }
+
+  .faq dt {
+    margin-top: 16px;
+    font-weight: 700;
+    color: var(--text);
+    font-size: 16px;
+  }
+  .faq dt:first-child { margin-top: 0; }
+  .faq dd {
+    margin: 6px 0 0;
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.55;
+    padding-left: 0;
+  }
+
+  .cta-final {
+    text-align: center;
+    padding: 28px 22px;
+    background: var(--bg-section);
+    border: 1px solid var(--rule-soft);
+    border-top: 3px solid var(--accent);
+  }
+  .cta-final h2 {
+    border: none;
+    margin-bottom: 8px;
+    padding: 0;
+    text-align: center;
+  }
+  .cta-final p {
+    color: var(--text-dim);
+    margin: 0 auto 18px;
+    max-width: 560px;
+  }
+
+  .legal {
+    margin: 28px 0 24px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--rule);
+    color: var(--text-mute);
+    font-size: 12px;
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  @media (max-width: 720px) {
+    .flow-steps li { grid-template-columns: 48px 1fr; gap: 12px; }
+    .flow-n { font-size: 26px; }
+    .pricing-table td { font-size: 13px; padding: 10px 6px; }
+    .p-note { display: block; padding-top: 4px; }
+  }
+</style>

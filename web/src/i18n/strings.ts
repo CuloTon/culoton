@@ -151,6 +151,11 @@ interface UIStrings {
   ecosystem_foot_h: string;
   ecosystem_foot_p_html: string;
   nav_apps: string;
+  nav_launch: string;
+  nav_launch_badge: string;
+  launch_banner_pill: string;
+  launch_banner_text: string;
+  launch_banner_cta: string;
   apps_title: string;
   apps_meta_description: string;
   apps_kicker: string;
@@ -285,6 +290,11 @@ export const UI: Record<Locale, UIStrings> = {
     ecosystem_foot_h: 'Missing or wrong?',
     ecosystem_foot_p_html: 'This map is curated — we only list projects we can independently verify. If your project belongs here, or a listing is outdated, ping the editorial desk on <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. No paid placements.',
     nav_apps: 'Mini-Apps',
+    nav_launch: 'Launcher',
+    nav_launch_badge: 'NEW',
+    launch_banner_pill: '🚀 New · Building now',
+    launch_banner_text: 'CuloTon Launcher — deploy your own TON jetton in 60 seconds. Logo upload, edit, revoke.',
+    launch_banner_cta: 'See the preview →',
     apps_title: 'TON Mini-Apps Hub — CuloTon',
     apps_meta_description: 'Curated hub of Telegram Mini Apps in the TON orbit — clickers, P2E games, drop campaigns, sniper bots, NFT marketplaces. Verified Telegram entry points only.',
     apps_kicker: 'CuloTon Desk · Mini-Apps hub',
@@ -417,6 +427,11 @@ export const UI: Record<Locale, UIStrings> = {
     ecosystem_foot_h: 'Не нашли проект или нужна правка?',
     ecosystem_foot_p_html: 'Это курируемая карта — мы перечисляем только проекты, которые можем независимо подтвердить. Если ваш проект должен быть здесь или запись устарела — напишите редакции в <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Платных размещений нет.',
     nav_apps: 'Mini-Apps',
+    nav_launch: 'Launcher',
+    nav_launch_badge: 'NEW',
+    launch_banner_pill: '🚀 Новинка · Строим сейчас',
+    launch_banner_text: 'CuloTon Launcher — задеплой свой TON-jetton за 60 секунд. Загрузка лого, правка, revoke.',
+    launch_banner_cta: 'Смотреть превью →',
     apps_title: 'TON Mini-Apps Hub — CuloTon',
     apps_meta_description: 'Курируемый хаб Telegram Mini Apps в орбите TON — кликеры, P2E-игры, дроп-кампании, снайпер-боты, NFT-маркетплейсы. Только подтверждённые точки входа в Telegram.',
     apps_kicker: 'CuloTon Desk · Хаб мини-приложений',
@@ -549,6 +564,11 @@ export const UI: Record<Locale, UIStrings> = {
     ecosystem_foot_h: 'Brakuje czegoś albo coś nie tak?',
     ecosystem_foot_p_html: 'Ta mapa jest curated — wymieniamy tylko projekty, które potrafimy niezależnie zweryfikować. Jeśli twój projekt powinien tu być albo wpis jest nieaktualny — pisz do redakcji na <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegramie</a>. Bez płatnych umieszczeń.',
     nav_apps: 'Mini-Appy',
+    nav_launch: 'Launcher',
+    nav_launch_badge: 'NOWE',
+    launch_banner_pill: '🚀 Nowość · Budujemy właśnie',
+    launch_banner_text: 'CuloTon Launcher — wdróż własnego jettona TON w 60 sekund. Logo, edycja, revoke.',
+    launch_banner_cta: 'Zobacz podgląd →',
     apps_title: 'TON Mini-Apps Hub — CuloTon',
     apps_meta_description: 'Curated hub Telegram Mini Apps w orbicie TON — klikery, gry P2E, kampanie dropowe, sniper-boty, marketplace’y NFT. Tylko zweryfikowane wejścia w Telegramie.',
     apps_kicker: 'CuloTon Desk · Hub mini-aplikacji',
@@ -681,6 +701,11 @@ export const UI: Record<Locale, UIStrings> = {
     ecosystem_foot_h: 'Fehlt etwas oder ist etwas falsch?',
     ecosystem_foot_p_html: 'Diese Karte wird kuratiert — wir listen nur Projekte, die wir unabhängig prüfen können. Wenn Ihr Projekt hierhergehört oder ein Eintrag veraltet ist, melden Sie sich bei der Redaktion auf <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Keine bezahlten Platzierungen.',
     nav_apps: 'Mini-Apps',
+    nav_launch: 'Launcher',
+    nav_launch_badge: 'NEU',
+    launch_banner_pill: '🚀 Neu · Wir bauen jetzt',
+    launch_banner_text: 'CuloTon Launcher — deploye dein eigenes TON-Jetton in 60 Sekunden. Logo, Edit, Revoke.',
+    launch_banner_cta: 'Vorschau ansehen →',
     apps_title: 'TON Mini-Apps Hub — CuloTon',
     apps_meta_description: 'Kuratierter Hub für Telegram Mini Apps im TON-Orbit — Clicker, P2E-Spiele, Drop-Kampagnen, Sniper-Bots, NFT-Marktplätze. Nur verifizierte Telegram-Einstiegspunkte.',
     apps_kicker: 'CuloTon Desk · Mini-Apps-Hub',
@@ -813,6 +838,11 @@ export const UI: Record<Locale, UIStrings> = {
     ecosystem_foot_h: '¿Falta algo o hay un error?',
     ecosystem_foot_p_html: 'Este mapa es curado — solo listamos proyectos que podemos verificar de forma independiente. Si tu proyecto debería estar aquí, o una entrada está desactualizada, escribe a la redacción en <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Sin colocaciones de pago.',
     nav_apps: 'Mini-Apps',
+    nav_launch: 'Launcher',
+    nav_launch_badge: 'NUEVO',
+    launch_banner_pill: '🚀 Nuevo · Construyendo ahora',
+    launch_banner_text: 'CuloTon Launcher — despliega tu propio jetton de TON en 60 segundos. Logo, edición, revoke.',
+    launch_banner_cta: 'Ver la vista previa →',
     apps_title: 'Hub de TON Mini-Apps — CuloTon',
     apps_meta_description: 'Hub curado de Telegram Mini Apps en la órbita de TON — clickers, juegos P2E, campañas de drops, bots sniper, marketplaces NFT. Solo puntos de entrada verificados en Telegram.',
     apps_kicker: 'CuloTon Desk · Hub de Mini-Apps',
@@ -945,6 +975,11 @@ export const UI: Record<Locale, UIStrings> = {
     ecosystem_foot_h: 'Не знайшли проєкт або потрібне виправлення?',
     ecosystem_foot_p_html: 'Ця карта курована — ми перелічуємо лише проєкти, які можемо незалежно підтвердити. Якщо ваш проєкт має бути тут або запис застарів — напишіть редакції в <a href="https://t.me/culoton" target="_blank" rel="noopener noreferrer">Telegram</a>. Платних розміщень немає.',
     nav_apps: 'Mini-Apps',
+    nav_launch: 'Launcher',
+    nav_launch_badge: 'НОВЕ',
+    launch_banner_pill: '🚀 Новинка · Будуємо зараз',
+    launch_banner_text: 'CuloTon Launcher — задеплой свій TON-джетон за 60 секунд. Логотип, редагування, revoke.',
+    launch_banner_cta: 'Дивитись превʼю →',
     apps_title: 'Хаб TON Mini-Apps — CuloTon',
     apps_meta_description: 'Курований хаб Telegram Mini Apps на орбіті TON — клікери, P2E-ігри, дроп-кампанії, снайпер-боти, NFT-маркетплейси. Лише підтверджені точки входу в Telegram.',
     apps_kicker: 'CuloTon Desk · Хаб міні-застосунків',

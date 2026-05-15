@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { UI, LOCALES, LOCALE_LABELS, LOCALE_FULL, HTML_LANG, localizedPath, type Locale } from '../i18n/strings';
+import LaunchBanner from '../components/LaunchBanner.astro';
 
 interface Props {
   locale: Locale;
@@ -147,6 +148,10 @@ const alternates = LOCALES.map((loc) => ({
             <a href={localizedPath(locale, '/archive')}>{t.nav_archive}</a>
             <a href={localizedPath(locale, '/ecosystem')}>{t.nav_ecosystem}</a>
             <a href={localizedPath(locale, '/mini-apps')}>{t.nav_apps}</a>
+            <a href={localizedPath(locale, '/launch')} class="nav-launch">
+              {t.nav_launch}
+              <span class="nav-new-pill">{t.nav_launch_badge}</span>
+            </a>
             <a href={localizedPath(locale, '/about')}>{t.nav_about}</a>
             <a href={localizedPath(locale, '/stonks')}>{t.nav_stonks}</a>
             <a href={localizedPath(locale, '/culo')}>{t.nav_token}</a>
@@ -223,6 +228,8 @@ const alternates = LOCALES.map((loc) => ({
       </div>
     </div>
 
+    <LaunchBanner locale={locale} />
+
     <main>
       <slot />
     </main>
@@ -251,6 +258,29 @@ const alternates = LOCALES.map((loc) => ({
 </html>
 
 <style>
+  .nav-launch {
+    position: relative;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-new-pill {
+    display: inline-block;
+    background: var(--accent, #f0b400);
+    color: #1a1408;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding: 2px 5px;
+    border-radius: 2px;
+    line-height: 1;
+    animation: navpulse 1.8s ease-in-out infinite;
+  }
+  @keyframes navpulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(240, 180, 0, 0.55); }
+    50% { transform: scale(1.05); box-shadow: 0 0 0 4px rgba(240, 180, 0, 0); }
+  }
   .masthead-tag {
     font-family: var(--font-mono);
     font-size: 11px;
