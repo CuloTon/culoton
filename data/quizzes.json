@@ -219,6 +219,20 @@
     "question": "Who founded Telegram, the messaging app behind TON blockchain?",
     "slot": "afternoon"
   },
+  "2026-05-15-evening": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Telegram Mini-Apps are web-based applications that run directly within Telegram's interface, allowing users to play games, trade tokens, or use services without leaving the chat app.",
+    "options": {
+      "A": "Run lightweight applications inside Telegram without leaving the app",
+      "B": "Replace the official Telegram mobile app on iOS and Android",
+      "C": "Download and install native games from the Telegram App Store",
+      "D": "Convert Telegram messages into blockchain transactions automatically"
+    },
+    "posted_at": "2026-05-15T20:36:45.573827+00:00",
+    "question": "What are Telegram Mini-Apps primarily designed to do?",
+    "slot": "evening"
+  },
   "2026-05-15-midday": {
     "answered": {
       "5571300169": {
