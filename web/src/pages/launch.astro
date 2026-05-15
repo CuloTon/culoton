@@ -56,6 +56,23 @@ const TELEGRAM = 'https://t.me/culoton';
       </div>
     </section>
 
+    <section class="block audit-block">
+      <div class="audit-header">
+        <h2>{c.audit_h}</h2>
+        <span class="audit-pill">{c.audit_pill}</span>
+      </div>
+      <p class="audit-lede">{c.audit_lede}</p>
+      <ul class="audit-list">
+        {c.audit_points.map(([t, b]) => (
+          <li>
+            <strong>{t}</strong>
+            <p>{b}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="audit-foot">{c.audit_foot}</p>
+    </section>
+
     <section class="block">
       <h2>{c.flow_h}</h2>
       <p class="block-lede">{c.flow_intro}</p>
@@ -305,6 +322,74 @@ const TELEGRAM = 'https://t.me/culoton';
     font-family: var(--font-display);
   }
   .feat p { margin: 0; color: var(--text-dim); font-size: 14px; line-height: 1.55; }
+
+  .audit-block {
+    background: linear-gradient(180deg, rgba(74, 222, 128, 0.06) 0%, transparent 100%);
+    border-left: 4px solid #4ade80;
+    padding: 22px 22px 4px;
+    margin-left: -22px;
+    margin-right: -22px;
+  }
+  .audit-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .audit-header h2 {
+    margin: 0;
+    border: none;
+    padding: 0;
+  }
+  .audit-pill {
+    display: inline-block;
+    background: #4ade80;
+    color: #052e16;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 0;
+  }
+  .audit-lede {
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.55;
+    margin: 0 0 18px;
+    max-width: 760px;
+  }
+  .audit-list { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 10px; }
+  .audit-list li {
+    padding: 14px 16px;
+    background: var(--bg-section);
+    border-left: 3px solid #4ade80;
+  }
+  .audit-list strong {
+    display: block;
+    color: #4ade80;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .audit-list p { margin: 0; color: var(--text-dim); font-size: 14px; line-height: 1.55; }
+  .audit-foot {
+    margin: 16px 0 0;
+    padding: 12px 16px;
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    color: var(--text);
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  @media (max-width: 720px) {
+    .audit-block { margin-left: 0; margin-right: 0; padding: 16px 14px 4px; }
+  }
 
   .flow-steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
   .flow-steps li {
