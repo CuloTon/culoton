@@ -220,13 +220,13 @@
     },
     "7653126333": {
       "daily_day": "2026-05-15",
-      "daily_points": 1,
+      "daily_points": 20,
       "last_ask_at": "",
-      "last_command_at": "2026-05-15T11:35:16.506680+00:00",
+      "last_command_at": "2026-05-15T13:47:11.010338+00:00",
       "last_msg_point_at": "2026-05-15T10:02:26.486626+00:00",
-      "total_points": 81,
+      "total_points": 100,
       "username": "@wooQueenee",
-      "weekly_points": 81
+      "weekly_points": 100
     },
     "7666449690": {
       "daily_day": "2026-05-14",
