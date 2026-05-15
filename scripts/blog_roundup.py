@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parent.parent
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 BLOG_DIR = ROOT / "web" / "src" / "content" / "blog"
 MODEL = "claude-haiku-4-5-20251001"
-RETRY_LIMIT = 2
+RETRY_LIMIT = 4
 LOCALES = ("en", "ru", "pl", "de", "es", "uk")
 
 # How many recent EN news entries to feed into each roundup.
@@ -193,13 +193,15 @@ def call_haiku(client: Anthropic, *, kind: str, date_label: str, articles_block:
         try:
             msg = client.messages.create(
                 model=MODEL,
-                max_tokens=6000,
+                max_tokens=8192,
                 system=CULOSCRIBE_SYSTEM,
                 messages=[{"role": "user", "content": user}],
             )
             text = "".join(b.text for b in msg.content if b.type == "text").strip()
             if text.startswith("```"):
                 text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.MULTILINE).strip()
+            if msg.stop_reason == "max_tokens":
+                raise ValueError(f"hit max_tokens ({len(text)} chars); will retry")
             data = json.loads(text)
             for loc in LOCALES:
                 if loc not in data or not isinstance(data[loc], dict):
