@@ -206,7 +206,13 @@
     "slot": "midday"
   },
   "2026-05-15-midday": {
-    "answered": {},
+    "answered": {
+      "5571300169": {
+        "answer": "A",
+        "answered_at": "2026-05-15T13:23:04.953426+00:00",
+        "correct": true
+      }
+    },
     "correct": "A",
     "explanation": "Telegram Mini-Apps are lightweight applications that run directly within Telegram's interface, eliminating the need for separate app downloads—examples like Notcoin and STON.fi leverage this convenience for rapid user adoption.",
     "options": {
