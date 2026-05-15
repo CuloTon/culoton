@@ -204,5 +204,19 @@
     "posted_at": "2026-05-14T13:20:44.920017+00:00",
     "question": "What does TON stand for?",
     "slot": "midday"
+  },
+  "2026-05-15-midday": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Telegram Mini-Apps are lightweight applications that run directly within Telegram's interface, eliminating the need for separate app downloads—examples like Notcoin and STON.fi leverage this convenience for rapid user adoption.",
+    "options": {
+      "A": "Run lightweight applications directly inside Telegram without downloading a separate app",
+      "B": "Replace Telegram's core messaging features with blockchain alternatives",
+      "C": "Allow users to mine cryptocurrency on their phone",
+      "D": "Convert Telegram chats into decentralized social networks"
+    },
+    "posted_at": "2026-05-15T13:19:49.252781+00:00",
+    "question": "What are Telegram Mini-Apps primarily designed to do?",
+    "slot": "midday"
   }
 }
