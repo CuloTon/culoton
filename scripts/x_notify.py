@@ -39,7 +39,13 @@ try:
 except ImportError:
     tweepy = None  # graceful no-op when dep missing
 
-from _culo_market import fetch_culo_data, fmt_change, fmt_money  # noqa: E402
+from _culo_market import (  # noqa: E402
+    CTAX_TAX,
+    fetch_ctax_data,
+    fetch_culo_data,
+    fmt_change,
+    fmt_money,
+)
 
 # tg_send is reused from telegram_notify so we don't duplicate the
 # Telegram HTTP wiring. Imported lazily inside draft path so the X
@@ -362,10 +368,28 @@ def post_mcap(client, delivery: str) -> int:
     tagline = random.choice(MCAP_TAGLINES)
     hashtags = pick_hashtags(niche_count=2)
     url = f"{SITE}/culo"
+
+    # Companion $CTAX line — kept on a single row to fit X's 280-char
+    # budget. Shows live numbers when a pool exists, otherwise just the
+    # tax mechanic so the community knows about the token.
+    ctax = fetch_ctax_data()
+    if ctax and ctax.get("price") is not None:
+        ctax_pulse = "📈" if (ctax.get("change_h24") or 0) >= 0 else "📉"
+        ctax_line = (
+            f"$CTAX ({CTAX_TAX['buy']}b/{CTAX_TAX['sell']}s, {CTAX_TAX['holders_share']}%→holders): "
+            f"{ctax_pulse} {fmt_money(ctax['price'])} ({fmt_change(ctax['change_h24'])} 24h)"
+        )
+    else:
+        ctax_line = (
+            f"$CTAX companion: {CTAX_TAX['buy']}% buy / {CTAX_TAX['sell']}% sell tax, "
+            f"{CTAX_TAX['holders_share']}% → holders. Ownership renounced."
+        )
+
     body = (
         f"$CULOTON market pulse\n"
         f"{pulse} {fmt_money(data['price'])} ({fmt_change(data['change_h24'])} 24h)\n"
         f"FDV {fmt_money(data['valuation'])} · Vol {fmt_money(data['vol_h24'])}\n\n"
+        f"{ctax_line}\n\n"
         f"{tagline}\n\n"
         f"{hashtags}\n\n"
         f"{url}"
@@ -375,7 +399,17 @@ def post_mcap(client, delivery: str) -> int:
             f"$CULOTON market pulse\n"
             f"{pulse} {fmt_money(data['price'])} ({fmt_change(data['change_h24'])} 24h)\n"
             f"FDV {fmt_money(data['valuation'])} · Vol {fmt_money(data['vol_h24'])}\n\n"
+            f"{ctax_line}\n\n"
             f"{hashtags}\n\n"
+            f"{url}"
+        )
+    if char_count(body) > TWEET_MAX:
+        # Last-resort fallback: drop hashtags entirely, keep both tokens.
+        body = (
+            f"$CULOTON market pulse\n"
+            f"{pulse} {fmt_money(data['price'])} ({fmt_change(data['change_h24'])} 24h)\n"
+            f"FDV {fmt_money(data['valuation'])} · Vol {fmt_money(data['vol_h24'])}\n\n"
+            f"{ctax_line}\n\n"
             f"{url}"
         )
     return deliver(kind_label="Market pulse", dedup_slug=None, tweet_text=body, delivery=delivery, client=client)

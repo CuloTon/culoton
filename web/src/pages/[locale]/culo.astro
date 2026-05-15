@@ -16,6 +16,8 @@ const { locale } = Astro.params as { locale: Locale };
 const t = UI[locale];
 const TELEGRAM = 'https://t.me/culoton';
 const CONTRACT = 'EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc';
+const CTAX_CONTRACT = 'EQC4fCG7nZQiLSSoy7LUXj4EZhB092PC-pj1Upx5CJQUopY9';
+const CTAX_IMG = 'https://img.stonks.cash/3dd96acf-040d-459d-8fcc-04f09d51bb43.png';
 
 const HOW = {
   pl: {
@@ -56,6 +58,64 @@ const HOW = {
   },
 } as const;
 const how = HOW[(locale as 'pl' | 'ru' | 'de')] ?? HOW.ru;  // es/uk fall back to ru
+
+const CTAX_TXT = {
+  pl: {
+    kicker: 'Token towarzyszący',
+    h: '$CTAX — bliźniak z taksem',
+    intro: 'Obok $CULOTON projekt prowadzi też mały token towarzyszący — $CTAX (CuloTax). Jeśli $CULOTON to brandowy token bez TAX, który ma chodzić swobodnie, to $CTAX jest jego odpowiednikiem z TAX-em: każda transakcja płaci prowizję, a połowa każdej prowizji wraca prosto do dotychczasowych holderów.',
+    tax_h: 'Mechanika TAX',
+    tax_rows: [
+      ['25%', 'od każdego kupna', 'płaci kupujący do kontraktu'],
+      ['15%', 'od każdej sprzedaży', 'płaci sprzedający do kontraktu'],
+      ['50%', 'całego TAX-u', 'rozdzielane między aktualnych holderów — im dłużej trzymasz, tym bardziej twoja część się składa'],
+    ],
+    locked_h: 'Już zablokowany',
+    locked_p: 'Własność zrzeczona — admin to adres zerowy (0:0…0). Tokena nie można domintować, TAX-u nie da się zmienić, metadanych edytować. Supply jest hard-capowane on-chain na 100 000 000 000 $CTAX. Co widzisz, to zostaje.',
+    why_h: 'Po co dwa tokeny?',
+    why_p: '$CULOTON zostaje czysty do transferów, tippingu, listingów na trasach DEX bez TAX-u. $CTAX wyłapuje ruch traderski — każdy spekulacyjny zakup czy sprzedaż wzmacnia długoterminowych holderów. Dwa tokeny, dwie role, jeden ekosystem.',
+    cta_view: 'Zobacz na tonviewer',
+    cta_chart: 'Wykres na GeckoTerminal',
+    contract_label: 'Kontrakt CTAX',
+  },
+  ru: {
+    kicker: 'Токен-компаньон',
+    h: '$CTAX — близнец с налогом',
+    intro: 'Помимо $CULOTON у проекта есть небольшой токен-компаньон — $CTAX (CuloTax). Если $CULOTON — это бренд-токен без налога, который должен ходить свободно, то $CTAX — его налоговый двойник: каждая сделка платит комиссию, и половина каждой комиссии возвращается прямо к текущим холдерам.',
+    tax_h: 'Механика налога',
+    tax_rows: [
+      ['25%', 'с каждой покупки', 'платит покупатель в контракт'],
+      ['15%', 'с каждой продажи', 'платит продавец в контракт'],
+      ['50%', 'всего налога', 'раздаётся существующим холдерам — чем дольше держишь, тем больше твоя доля компаундится'],
+    ],
+    locked_h: 'Уже залочен',
+    locked_p: 'Владение отказано — admin это нулевой адрес (0:0…0). Токен нельзя домятить, налог нельзя изменить, метаданные нельзя редактировать. Supply жёстко зафиксирован on-chain на 100 000 000 000 $CTAX. Что видишь, то и остаётся.',
+    why_h: 'Зачем два токена?',
+    why_p: '$CULOTON остаётся чистым для трансферов, чаевых, листингов на маршрутах DEX без налога. $CTAX ловит трейдерский поток — каждая спекулятивная покупка или продажа усиливает долгосрочных холдеров. Два токена, две роли, одна экосистема.',
+    cta_view: 'Смотреть на tonviewer',
+    cta_chart: 'График на GeckoTerminal',
+    contract_label: 'Контракт CTAX',
+  },
+  de: {
+    kicker: 'Companion-Token',
+    h: '$CTAX — der besteuerte Zwilling',
+    intro: 'Neben $CULOTON betreibt das Projekt auch einen kleinen Companion-Token namens $CTAX (CuloTax). Während $CULOTON der steuerfreie Marken-Token ist, der frei laufen soll, ist $CTAX das besteuerte Gegenstück: jeder Trade zahlt eine Gebühr, und die Hälfte jeder Gebühr fließt direkt zurück an bestehende Halter.',
+    tax_h: 'Steuermechanik',
+    tax_rows: [
+      ['25%', 'auf jeden Kauf', 'vom Käufer an den Kontrakt'],
+      ['15%', 'auf jeden Verkauf', 'vom Verkäufer an den Kontrakt'],
+      ['50%', 'aller Steuern', 'an bestehende Halter umverteilt — je länger du hältst, desto stärker compoundet dein Anteil'],
+    ],
+    locked_h: 'Bereits gesperrt',
+    locked_p: 'Ownership ist abgegeben — Admin-Adresse ist die Null-Adresse (0:0…0). Der Token kann nicht nachgemintet, die Steuer nicht geändert, die Metadaten nicht bearbeitet werden. Supply ist on-chain hart auf 100.000.000.000 $CTAX gedeckelt. Was du siehst, bleibt.',
+    why_h: 'Warum zwei Token?',
+    why_p: '$CULOTON bleibt sauber für Transfers, Tipping, Listings auf steuerfreien DEX-Routen. $CTAX fängt den Trader-Flow ein — jeder spekulative Kauf oder Verkauf stärkt langfristige Halter. Zwei Token, zwei Rollen, ein Ökosystem.',
+    cta_view: 'Auf tonviewer ansehen',
+    cta_chart: 'Chart auf GeckoTerminal',
+    contract_label: 'CTAX-Kontrakt',
+  },
+} as const;
+const ctaxTxt = CTAX_TXT[(locale as 'pl' | 'ru' | 'de')] ?? CTAX_TXT.ru;
 ---
 
 <Layout
@@ -125,6 +185,51 @@ const how = HOW[(locale as 'pl' | 'ru' | 'de')] ?? HOW.ru;  // es/uk fall back t
       <p style="font-size: 14px; color: var(--text-mute);">
         {t.culo_disclaimer_p}
       </p>
+
+      <section class="ctax-block">
+        <header class="ctax-head">
+          <img src={CTAX_IMG} alt="$CTAX token" class="ctax-img" loading="lazy" />
+          <div>
+            <span class="ctax-kicker">{ctaxTxt.kicker}</span>
+            <h2 class="ctax-h">{ctaxTxt.h}</h2>
+          </div>
+        </header>
+        <p class="ctax-intro">{ctaxTxt.intro}</p>
+
+        <h3 class="ctax-sub">{ctaxTxt.tax_h}</h3>
+        <div class="ctax-tax-grid">
+          {ctaxTxt.tax_rows.map(([pct, when, note]) => (
+            <div class="tax-cell">
+              <span class="tax-pct">{pct}</span>
+              <span class="tax-when">{when}</span>
+              <span class="tax-note">{note}</span>
+            </div>
+          ))}
+        </div>
+
+        <div class="ctax-locked">
+          <span class="locked-pill">🔒 {ctaxTxt.locked_h}</span>
+          <p>{ctaxTxt.locked_p}</p>
+        </div>
+
+        <h3 class="ctax-sub">{ctaxTxt.why_h}</h3>
+        <p class="ctax-why">{ctaxTxt.why_p}</p>
+
+        <div class="contract-box ctax-contract-box">
+          <span class="contract-label">{ctaxTxt.contract_label}</span>
+          <code class="contract-value" id="ctax-contract-value">{CTAX_CONTRACT}</code>
+          <button class="copy-btn" type="button" id="ctax-copy-btn" data-value={CTAX_CONTRACT} data-label-copy={t.culo_copy} data-label-copied={t.culo_copied} data-label-failed={t.culo_copy_failed}>{t.culo_copy}</button>
+        </div>
+
+        <div class="ton-cta-row" style="margin-top: 14px;">
+          <a class="cta-btn cta-secondary" href={`https://tonviewer.com/${CTAX_CONTRACT}`} target="_blank" rel="noopener noreferrer">
+            {ctaxTxt.cta_view}
+          </a>
+          <a class="cta-btn cta-secondary" href={`https://www.geckoterminal.com/ton/tokens/${CTAX_CONTRACT}`} target="_blank" rel="noopener noreferrer">
+            {ctaxTxt.cta_chart}
+          </a>
+        </div>
+      </section>
     </div>
   </article>
 </Layout>
@@ -236,28 +341,149 @@ const how = HOW[(locale as 'pl' | 'ru' | 'de')] ?? HOW.ru;  // es/uk fall back t
     line-height: 1.55;
     color: var(--text-dim);
   }
+
+  .ctax-block {
+    margin-top: 48px;
+    padding: 26px 24px;
+    background: linear-gradient(180deg, rgba(255, 138, 0, 0.07) 0%, transparent 100%);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent-hot, #ff8a00);
+    border-radius: 6px;
+  }
+  .ctax-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .ctax-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-hot, #ff8a00);
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+  .ctax-kicker {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-hot, #ff8a00);
+    margin-bottom: 4px;
+  }
+  .ctax-h {
+    margin: 0;
+    color: var(--text) !important;
+    font-size: clamp(22px, 3vw, 28px) !important;
+  }
+  .ctax-intro {
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin: 0 0 22px;
+  }
+  .ctax-sub {
+    margin: 22px 0 12px;
+    font-size: 16px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-hot, #ff8a00);
+  }
+  .ctax-tax-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .tax-cell {
+    background: var(--bg-elev, var(--bg-section));
+    border: 1px solid var(--border, var(--rule-soft));
+    border-top: 3px solid var(--accent-hot, #ff8a00);
+    padding: 14px 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .tax-pct {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--accent-hot, #ff8a00);
+    letter-spacing: -0.02em;
+  }
+  .tax-when {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .tax-note {
+    font-size: 12px;
+    color: var(--text-mute);
+    line-height: 1.45;
+  }
+  .ctax-locked {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 4px;
+  }
+  .locked-pill {
+    display: inline-block;
+    background: #4ade80;
+    color: #052e16;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    margin-bottom: 8px;
+  }
+  .ctax-locked p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+  .ctax-why {
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin: 0 0 22px;
+  }
+  .ctax-contract-box { margin-top: 8px; }
 </style>
 
 <script is:inline>
   document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('copy-btn');
-    if (!btn) return;
-    btn.addEventListener('click', async () => {
-      const value = btn.getAttribute('data-value') || '';
-      const labelCopied = btn.getAttribute('data-label-copied') || 'Copied!';
-      const labelCopy = btn.getAttribute('data-label-copy') || 'Copy';
-      const labelFailed = btn.getAttribute('data-label-failed') || 'Copy failed';
-      try {
-        await navigator.clipboard.writeText(value);
-        btn.textContent = labelCopied;
-        btn.classList.add('copied');
-        setTimeout(() => {
-          btn.textContent = labelCopy;
-          btn.classList.remove('copied');
-        }, 1500);
-      } catch (e) {
-        btn.textContent = labelFailed;
-      }
-    });
+    const wire = (id) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.addEventListener('click', async () => {
+        const value = btn.getAttribute('data-value') || '';
+        const labelCopied = btn.getAttribute('data-label-copied') || 'Copied!';
+        const labelCopy = btn.getAttribute('data-label-copy') || 'Copy';
+        const labelFailed = btn.getAttribute('data-label-failed') || 'Copy failed';
+        try {
+          await navigator.clipboard.writeText(value);
+          btn.textContent = labelCopied;
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = labelCopy;
+            btn.classList.remove('copied');
+          }, 1500);
+        } catch (e) {
+          btn.textContent = labelFailed;
+        }
+      });
+    };
+    wire('copy-btn');
+    wire('ctax-copy-btn');
   });
 </script>

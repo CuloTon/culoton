@@ -11,9 +11,14 @@ import sys
 import urllib.request
 
 CULO_CONTRACT = "EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc"
+CTAX_CONTRACT = "EQC4fCG7nZQiLSSoy7LUXj4EZhB092PC-pj1Upx5CJQUopY9"
 GECKO_NET = "ton"
 GECKO_API = "https://api.geckoterminal.com/api/v2"
 HTTP_TIMEOUT = 20
+
+# $CTAX is a separate tax-bearing companion token to $CULOTON. Tax:
+# 25% on buys, 15% on sells, 50% of taxes distributed to holders.
+CTAX_TAX = {"buy": 25, "sell": 15, "holders_share": 50}
 
 
 def http_get_json(url: str) -> dict | None:
@@ -60,15 +65,16 @@ def fmt_change(pct) -> str:
     return f"{sign}{p:.2f}%"
 
 
-def fetch_culo_data() -> dict | None:
-    """Fetch live $CULOTON market data from GeckoTerminal.
+def fetch_token_data(contract: str) -> dict | None:
+    """Fetch live TON jetton market data from GeckoTerminal.
 
     Returns dict with: price, valuation (FDV/MCap), change_h24, vol_h24,
     pool_addr, dex. Returns None on hard failure. Numeric fields may
-    be None when GeckoTerminal returns no data.
+    be None when GeckoTerminal returns no data (typical for low-liquidity
+    jettons with no DEX pool yet).
     """
-    token_data = http_get_json(f"{GECKO_API}/networks/{GECKO_NET}/tokens/{CULO_CONTRACT}")
-    pool_data = http_get_json(f"{GECKO_API}/networks/{GECKO_NET}/tokens/{CULO_CONTRACT}/pools")
+    token_data = http_get_json(f"{GECKO_API}/networks/{GECKO_NET}/tokens/{contract}")
+    pool_data = http_get_json(f"{GECKO_API}/networks/{GECKO_NET}/tokens/{contract}/pools")
     if not token_data or not pool_data:
         return None
     attrs = (token_data.get("data") or {}).get("attributes") or {}
@@ -119,3 +125,13 @@ def fetch_culo_data() -> dict | None:
         "pool_addr": pool_addr,
         "dex": dex,
     }
+
+
+def fetch_culo_data() -> dict | None:
+    """$CULOTON-specific shim — kept for callers that import the old name."""
+    return fetch_token_data(CULO_CONTRACT)
+
+
+def fetch_ctax_data() -> dict | None:
+    """$CTAX-specific shim."""
+    return fetch_token_data(CTAX_CONTRACT)
