@@ -39,18 +39,27 @@ fi
 
 git commit -m "$MSG"
 
-# Resolve binary conflicts on the regenerable seen.db cache by keeping
-# the local pending-commit copy. In rebase semantics "theirs" = the
-# commit being applied (ours, in the colloquial sense), while "ours" =
-# the upstream branch.
-resolve_seen_db_conflict() {
-  if git diff --name-only --diff-filter=U | grep -qx 'scripts/seen.db'; then
-    echo "Auto-resolving scripts/seen.db conflict (keeping local copy)."
-    git checkout --theirs -- scripts/seen.db
-    git add scripts/seen.db
-    return 0
-  fi
-  return 1
+# Resolve binary conflicts on regenerable SQLite caches (scripts/*.db)
+# by keeping the local pending-commit copy. These dbs are dedup state
+# that can be rebuilt from .md files / sent messages, so a small loss
+# is acceptable — better than killing the whole pipeline. In rebase
+# semantics "theirs" = the commit being applied (ours, colloquially),
+# while "ours" = the upstream branch.
+resolve_db_conflicts() {
+  local conflicted resolved=0
+  conflicted=$(git diff --name-only --diff-filter=U)
+  if [ -z "$conflicted" ]; then return 1; fi
+  while IFS= read -r f; do
+    case "$f" in
+      scripts/*.db)
+        echo "Auto-resolving $f conflict (keeping local copy)."
+        git checkout --theirs -- "$f"
+        git add -- "$f"
+        resolved=1
+        ;;
+    esac
+  done <<< "$conflicted"
+  [ $resolved -eq 1 ]
 }
 
 for attempt in 1 2 3 4 5; do
@@ -62,14 +71,14 @@ for attempt in 1 2 3 4 5; do
   else
     # Rebase paused on conflict — try the seen.db auto-resolver, then
     # continue. If anything else conflicted, abort and retry the loop.
-    if resolve_seen_db_conflict; then
+    if resolve_db_conflicts; then
       if GIT_EDITOR=true git -c core.editor=true rebase --continue; then
         if git push; then
-          echo "Pushed on attempt $attempt after seen.db auto-resolve."
+          echo "Pushed on attempt $attempt after db auto-resolve."
           exit 0
         fi
       else
-        echo "rebase --continue failed after seen.db resolve."
+        echo "rebase --continue failed after db resolve."
         git rebase --abort 2>/dev/null || true
       fi
     else
