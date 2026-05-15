@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 146,
+  "group_msg_count": 147,
   "users": {
     "1415897955": {
       "daily_day": "2026-05-13",
@@ -300,13 +300,13 @@
     },
     "870293841": {
       "daily_day": "2026-05-15",
-      "daily_points": 1,
+      "daily_points": 2,
       "last_ask_at": "",
-      "last_command_at": "2026-05-15T10:02:26.959638+00:00",
-      "last_msg_point_at": "2026-05-15T10:02:26.959639+00:00",
-      "total_points": 1,
+      "last_command_at": "2026-05-15T11:07:36.575144+00:00",
+      "last_msg_point_at": "2026-05-15T11:07:36.575268+00:00",
+      "total_points": 2,
       "username": "@makar78rus",
-      "weekly_points": 1
+      "weekly_points": 2
     }
   },
   "week_started_at": "2026-05-09T16:15:45.103717+00:00"
