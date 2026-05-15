@@ -205,6 +205,20 @@
     "question": "What does TON stand for?",
     "slot": "midday"
   },
+  "2026-05-15-afternoon": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Pavel and Nikolai Durov are Russian brothers who founded Telegram in 2013; they later initiated the TON blockchain project.",
+    "options": {
+      "A": "Pavel and Nikolai Durov",
+      "B": "Vitalik Buterin and Gavin Wood",
+      "C": "Brian Armstrong and Fred Ehrsam",
+      "D": "Steve Jobs and Bill Gates"
+    },
+    "posted_at": "2026-05-15T17:16:49.477024+00:00",
+    "question": "Who founded Telegram, the messaging app behind TON blockchain?",
+    "slot": "afternoon"
+  },
   "2026-05-15-midday": {
     "answered": {
       "5571300169": {
