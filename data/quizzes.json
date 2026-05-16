@@ -258,6 +258,20 @@
     "question": "What are Telegram Mini-Apps primarily designed to do?",
     "slot": "midday"
   },
+  "2026-05-16-midday": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Pavel and Nikolai Durov are the Russian brothers who created Telegram; Telegram later developed TON blockchain to enable high-speed transactions for its users.",
+    "options": {
+      "A": "Pavel and Nikolai Durov",
+      "B": "Vitalik Buterin and Gavin Wood",
+      "C": "Brian Armstrong and Fred Ehrsam",
+      "D": "Sam Bankman-Fried and Gary Wang"
+    },
+    "posted_at": "2026-05-16T15:38:49.459499+00:00",
+    "question": "Who founded Telegram, the messaging app that led to TON's creation?",
+    "slot": "midday"
+  },
   "2026-05-16-morning": {
     "answered": {
       "5571300169": {
