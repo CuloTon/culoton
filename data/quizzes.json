@@ -284,7 +284,13 @@
     "slot": "afternoon"
   },
   "2026-05-16-evening": {
-    "answered": {},
+    "answered": {
+      "5571300169": {
+        "answer": "A",
+        "answered_at": "2026-05-16T23:25:34.995007+00:00",
+        "correct": true
+      }
+    },
     "correct": "A",
     "explanation": "Pavel Durov founded Telegram in 2013 and later initiated the TON blockchain project as an extension of Telegram's infrastructure.",
     "options": {
