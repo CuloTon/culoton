@@ -259,7 +259,13 @@
     "slot": "midday"
   },
   "2026-05-16-afternoon": {
-    "answered": {},
+    "answered": {
+      "5571300169": {
+        "answer": "A",
+        "answered_at": "2026-05-16T19:56:50.146739+00:00",
+        "correct": true
+      }
+    },
     "correct": "A",
     "explanation": "Toncoin is the official native cryptocurrency of the TON blockchain; Gram was its original planned name before rebranding.",
     "options": {
