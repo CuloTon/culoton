@@ -283,6 +283,20 @@
     "question": "What is the native cryptocurrency of the TON blockchain called?",
     "slot": "afternoon"
   },
+  "2026-05-16-evening": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Pavel Durov founded Telegram in 2013 and later initiated the TON blockchain project as an extension of Telegram's infrastructure.",
+    "options": {
+      "A": "Pavel Durov",
+      "B": "Vitalik Buterin",
+      "C": "Brian Armstrong",
+      "D": "Sam Bankman-Fried"
+    },
+    "posted_at": "2026-05-16T22:31:42.056692+00:00",
+    "question": "Which tech entrepreneur originally created Telegram?",
+    "slot": "evening"
+  },
   "2026-05-16-midday": {
     "answered": {},
     "correct": "A",
