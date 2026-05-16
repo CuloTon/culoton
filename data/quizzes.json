@@ -257,5 +257,19 @@
     "posted_at": "2026-05-15T13:19:49.252781+00:00",
     "question": "What are Telegram Mini-Apps primarily designed to do?",
     "slot": "midday"
+  },
+  "2026-05-16-morning": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "TON stands for 'The Open Network,' the blockchain initially developed by Telegram but designed as a decentralized, open-source project independent of any single company.",
+    "options": {
+      "A": "The Open Network",
+      "B": "Telegram Operations Network",
+      "C": "Token Object Node",
+      "D": "Transfer-Oriented Nucleus"
+    },
+    "posted_at": "2026-05-16T11:33:07.949027+00:00",
+    "question": "What does TON stand for in the TON blockchain?",
+    "slot": "morning"
   }
 }
