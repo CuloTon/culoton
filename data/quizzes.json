@@ -258,6 +258,20 @@
     "question": "What are Telegram Mini-Apps primarily designed to do?",
     "slot": "midday"
   },
+  "2026-05-16-afternoon": {
+    "answered": {},
+    "correct": "A",
+    "explanation": "Toncoin is the official native cryptocurrency of the TON blockchain; Gram was its original planned name before rebranding.",
+    "options": {
+      "A": "Toncoin",
+      "B": "Gram",
+      "C": "TON Token",
+      "D": "Telegram Coin"
+    },
+    "posted_at": "2026-05-16T19:50:00.091102+00:00",
+    "question": "What is the native cryptocurrency of the TON blockchain called?",
+    "slot": "afternoon"
+  },
   "2026-05-16-midday": {
     "answered": {},
     "correct": "A",
