@@ -1,8 +1,11 @@
-"""Weekly leaderboard announcement + reset.
+"""Top-active-members shout-out (manual, discretionary).
 
-Cron-fired Sunday 20:00 UTC by .github/workflows/tg-weekly-recap.yml.
-Posts the top-3 active members to TELEGRAM_CHAT_ID, then zeroes
-weekly_points and stamps a fresh week_started_at.
+Was a cron-fired weekly recap; the cron was retired 2026-05-17 — rewards
+are now fully discretionary and points accumulate continuously (no auto
+reset). Run only on manual workflow_dispatch when the dev wants to post a
+"most active members" shout-out. Posts the public top-3 (no payout promise)
+and, if ADMIN_CHAT_ID is set, a private full top-10 to the dev. It does NOT
+reset points.
 """
 
 from __future__ import annotations
@@ -12,14 +15,8 @@ import os
 import sys
 from datetime import datetime, timezone
 
-from _tg_points import load_state, reset_weekly, save_state, top_weekly
+from _tg_points import load_state, top_weekly
 from tg_bot_interact import tg_send
-
-# Don't declare a winner unless the contest week has actually run for
-# this long. Cron fires every Sunday 20:00 UTC, but we must skip when
-# week_started_at is too recent (e.g. the very first cron after the
-# contest launched mid-week).
-MIN_WEEK_DAYS = 6.0
 
 
 def build_announcement(state: dict) -> str:
@@ -36,14 +33,14 @@ def build_announcement(state: dict) -> str:
 
     if not top:
         return (
-            "🏆 <b>Weekly leaderboard</b> " + range_label + "\n\n"
-            "No active members this week — no winner, no payout. The board resets now.\n\n"
-            "🎁 <b>#1 next Sunday wins 5 TON.</b> Chat in the group, use /ask, /news — earn pts. "
+            "🏆 <b>Most active members</b> " + range_label + "\n\n"
+            "No activity tracked yet. Jump in — chatting, /ask and /news all earn activity points.\n\n"
+            "🎁 Rewards are discretionary — the dev may reward standout members from time to time. "
             "/help for commands."
         )
 
     medals = ["🥇", "🥈", "🥉"]
-    lines = [f"🏆 <b>WEEKLY LEADERBOARD</b> {range_label}\n"]
+    lines = [f"🏆 <b>TOP ACTIVE MEMBERS</b> {range_label}\n"]
     for i, (_uid, rec) in enumerate(top):
         medal = medals[i] if i < len(medals) else f"{i+1}."
         name = html.escape(rec.get("username") or "anon")
@@ -52,8 +49,9 @@ def build_announcement(state: dict) -> str:
 
     winner_name = html.escape(top[0][1].get("username") or "anon")
     lines.append(
-        f"\n🏆 <b>{winner_name} wins 5 TON this week.</b> The CuloTon team will reach out for your wallet address.\n"
-        "Board resets now — new week, new shot. Stay active in the group — /help for commands."
+        f"\n🥇 <b>{winner_name}</b> is our most active member — nice work! "
+        "Rewards are discretionary: the dev may reward standout members at their own "
+        "discretion, no fixed payout. Points keep accumulating — stay active. /help for commands."
     )
     return "\n".join(lines)
 
@@ -92,7 +90,7 @@ def build_admin_dm(state: dict) -> str:
         prefix = "🥇" if i == 0 else "🥈" if i == 1 else "🥉" if i == 2 else f"{i+1}."
         lines.append(f"{prefix} <b>{name}</b> — {pts} pts (all-time {total}) · uid <code>{uid}</code>")
     lines.append("")
-    lines.append("After this DM the weekly board is reset.")
+    lines.append("Punkty NIE są resetowane — kumulują się dalej. Nagrody uznaniowe, wg decyzji deva.")
     return "\n".join(lines)
 
 
@@ -105,25 +103,6 @@ def main() -> int:
         return 0
 
     state = load_state()
-
-    # Guard: don't crown a winner when the contest week has not actually
-    # run for a full week. The cron fires every Sunday 20:00 UTC, but
-    # the FIRST cron after launch (or after a manual reset) might be
-    # only 1-2 days in. Skip it cleanly — week_started_at carries over,
-    # so the next Sunday will see a real week-long competition.
-    week_started = state.get("week_started_at", "")
-    if week_started:
-        try:
-            wdt = datetime.fromisoformat(week_started)
-            elapsed_days = (datetime.now(timezone.utc) - wdt).total_seconds() / 86400.0
-            if elapsed_days < MIN_WEEK_DAYS:
-                print(
-                    f"Week only {elapsed_days:.1f} days old (< {MIN_WEEK_DAYS}) — "
-                    "skipping recap so the contest gets a full week."
-                )
-                return 0
-        except Exception as e:
-            print(f"week_started_at parse failed ({e}); proceeding anyway.", file=sys.stderr)
 
     # 1) Public channel announcement (top 3, no user IDs — privacy)
     text = build_announcement(state)
@@ -139,10 +118,8 @@ def main() -> int:
     else:
         print("ADMIN_CHAT_ID not set — skipping private winners DM.")
 
-    # 3) Reset weekly counter
-    reset_weekly(state)
-    save_state(state)
-    print("Weekly_points reset for all users.")
+    # No reset — rewards are discretionary and points accumulate continuously.
+    print("Shout-out posted. Points are NOT reset — they keep accumulating.")
     return 0
 
 

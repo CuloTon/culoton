@@ -169,17 +169,17 @@ def render_leaderboard_block() -> str:
     if not top:
         return (
             "\n\n━━━━━━━━━━━━━\n"
-            "🏆 <b>THIS WEEK'S TOP 10</b> — no scores yet. Be first: answer the quiz, post, use /ask.\n"
-            "<i>Weekly winner takes 5 TON — payout every Sunday 20:00 UTC.</i>"
+            "🏆 <b>TOP 10 MOST ACTIVE</b> — no scores yet. Be first: post, use /ask.\n"
+            "<i>Rewards are discretionary — the dev may reward standout members from time to time.</i>"
         )
-    lines = ["\n\n━━━━━━━━━━━━━", "🏆 <b>THIS WEEK'S TOP 10</b> (resets Sun 20:00 UTC)"]
+    lines = ["\n\n━━━━━━━━━━━━━", "🏆 <b>TOP 10 MOST ACTIVE</b>"]
     for i, (_uid, rec) in enumerate(top, 1):
         name = (rec.get("username") or "anon").strip()
         if name and not name.startswith("@") and " " not in name:
             name = "@" + name
         rank = _MEDALS.get(i, f"{i}.")
         lines.append(f"{rank} {html.escape(name)} — <b>{rec.get('weekly_points', 0)}</b>")
-    lines.append("<i>Top spot wins 5 TON — payout every Sunday 20:00 UTC. /leaderboard</i>")
+    lines.append("<i>Rewards are discretionary — the dev may reward standout members. /leaderboard</i>")
     return "\n".join(lines)
 
 
@@ -197,7 +197,7 @@ def render_quiz_message(quiz: dict, slot: str = "") -> str:
         "one shot per quiz, deadline midnight UTC. New quiz a few times a day — different question each time.\n"
         "💬 <b>Activity counts too</b> — every message in the group is scored. But spamming to farm points = ban — "
         "post something worth reading.\n"
-        "🏆 <b>Weekly top scorer gets 5 TON</b> — payout every Sunday 20:00 UTC."
+        "🎁 <b>Rewards are discretionary</b> — the dev may reward standout active members from time to time. No fixed payout."
     )
     return body + render_leaderboard_block()
 

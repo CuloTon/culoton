@@ -13,12 +13,13 @@ Commands:
   /price ton|culoton   — live market data
   /ask <question>      — Haiku Q&A grounded in the latest 50 EN news
   /points              — caller's score
-  /leaderboard         — top 10 active members this week + prize info
+  /leaderboard         — top 10 most active members (running total)
 
-Points: chatting in the group earns +1 (rate-limited to once per 90s), a
-correct daily-quiz answer earns +20, /ask earns +3, other commands +1 —
-all capped at 20 points / user / UTC day to prevent farming. Every 10 group
-messages the bot posts a short standings + contest-rules recap.
+Points: chatting in the group earns +1 (rate-limited to once per 90s),
+/ask earns +3, other commands +1 — all capped at 20 points / user / UTC
+day to prevent farming. Points accumulate continuously (no weekly reset);
+rewards are discretionary. Every 10 group messages the bot posts a short
+standings recap.
 /ask is rate-limited to once every 3 minutes per user (paid API).
 """
 
@@ -102,8 +103,9 @@ COMMANDS_HELP = (
     "💬 Every message in the group = +1 pt (max once per 90s). /ask = +3. Cap 20 pts/day.\n"
     "⚠️ Spamming to farm points = ban — post something worth reading.\n"
     "/points — your activity score\n"
-    "/leaderboard — top 10 most active members this week\n"
-    "🏆 The week's top scorer wins <b>5 TON</b> — payout every Sunday 20:00 UTC.\n\n"
+    "/leaderboard — top 10 most active members (running total)\n"
+    "🎁 Rewards are discretionary — the dev may reward standout active members "
+    "from time to time. No fixed or guaranteed payout.\n\n"
     "🌐 <a href=\"https://culoton.fun\">culoton.fun</a>"
 )
 
@@ -693,8 +695,7 @@ def cmd_points(rec: dict) -> str:
     name = html.escape(rec.get("username") or "you")
     return (
         f"🏆 <b>{name}</b>\n\n"
-        f"This week: <b>{rec.get('weekly_points', 0)}</b> pts\n"
-        f"All-time: <b>{rec.get('total_points', 0)}</b> pts\n"
+        f"Activity points: <b>{rec.get('total_points', 0)}</b>\n"
         f"Today (cap 20): {rec.get('daily_points', 0)} pts\n\n"
         f"Use /leaderboard to see how you stack up."
     )
@@ -704,11 +705,11 @@ def cmd_leaderboard(state: dict) -> str:
     top = top_weekly(state, n=10)
     if not top:
         return (
-            "🏆 <b>Weekly leaderboard</b>\n\n"
-            "Nobody has earned points yet this week — "
+            "🏆 <b>Leaderboard — most active members</b>\n\n"
+            "Nobody has earned points yet — "
             "be first. Try /news, /price ton, or /ask &lt;question&gt;."
         )
-    lines = ["🏆 <b>Weekly leaderboard — top 10</b>\n"]
+    lines = ["🏆 <b>Leaderboard — top 10 most active</b>\n"]
     medals = ["🥇", "🥈", "🥉"]
     for i, (_uid, rec) in enumerate(top):
         pos = medals[i] if i < 3 else f"{i+1}."
@@ -716,15 +717,17 @@ def cmd_leaderboard(state: dict) -> str:
         pts = rec.get("weekly_points", 0)
         lines.append(f"{pos} <b>{name}</b> — {pts} pts")
     lines.append(
-        "\n🎁 <b>#1 each week wins 5 TON</b> — first payout Sunday 17 May 20:00 UTC, every Sunday after that."
+        "\n🎁 Rewards are discretionary — the dev may reward standout active members "
+        "from time to time. No fixed or guaranteed payout."
     )
     return "\n".join(lines)
 
 
 _RULES_FOOTER = (
-    "🎯 <b>How to score:</b> every message in this group = +1 pt (rate-limited) · correct quiz answer = +20 pts · "
+    "🎯 <b>How to score:</b> every message in this group = +1 pt (rate-limited) · "
     "/ask = +3. Cap 20 pts/day per person. Spamming to farm points = ban — post something worth reading.\n"
-    "🏆 <b>Top scorer each week wins 5 TON</b> — payout every Sunday 20:00 UTC. /leaderboard · /points"
+    "🎁 Rewards are discretionary — the dev may reward standout active members from time to time. "
+    "No fixed payout. /leaderboard · /points"
 )
 
 
@@ -732,10 +735,10 @@ def build_standings_recap(state: dict) -> str:
     """Short standings + contest rules — posted every RECAP_EVERY_N_MSGS group messages."""
     top = top_weekly(state, n=5)
     if not top:
-        head = "📊 <b>CULO COMMUNITY — this week's standings</b>\n\nNo scores yet — be first. Just chat here or answer the daily quiz."
+        head = "📊 <b>CULO COMMUNITY — activity standings</b>\n\nNo scores yet — be first. Just chat here, use /ask or /news."
     else:
         medals = {1: "🥇", 2: "🥈", 3: "🥉"}
-        rows = ["📊 <b>CULO COMMUNITY — this week's standings</b>", ""]
+        rows = ["📊 <b>CULO COMMUNITY — activity standings</b>", ""]
         for i, (_uid, rec) in enumerate(top, 1):
             name = (rec.get("username") or "anon").strip()
             if name and not name.startswith("@") and " " not in name:

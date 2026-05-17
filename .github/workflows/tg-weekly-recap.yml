@@ -1,8 +1,12 @@
 name: TG weekly leaderboard recap
 
 on:
-  schedule:
-    - cron: '0 20 * * 0'   # Sunday 20:00 UTC
+  # Automated weekly recap retired 2026-05-17 — rewards are now fully
+  # discretionary (dev pays out only when they choose). The cron is removed
+  # so no winner is auto-declared and weekly points are NOT auto-reset:
+  # points now accumulate as a continuous activity score. workflow_dispatch
+  # is kept so the dev can post a manual "top active members" shout-out
+  # (no payout promise, no reset) whenever they want.
   workflow_dispatch:
 
 permissions:
