@@ -38,7 +38,7 @@ def build_announcement(state: dict) -> str:
         return (
             "🏆 <b>Weekly leaderboard</b> " + range_label + "\n\n"
             "No active members this week — no winner, no payout. The board resets now.\n\n"
-            "🎁 <b>#1 next Sunday wins 5 TON.</b> Tap the daily quiz, use /ask, /news — earn pts. "
+            "🎁 <b>#1 next Sunday wins 5 TON.</b> Chat in the group, use /ask, /news — earn pts. "
             "/help for commands."
         )
 
@@ -53,7 +53,7 @@ def build_announcement(state: dict) -> str:
     winner_name = html.escape(top[0][1].get("username") or "anon")
     lines.append(
         f"\n🏆 <b>{winner_name} wins 5 TON this week.</b> The CuloTon team will reach out for your wallet address.\n"
-        "Board resets now — new week, new shot. Daily quiz at 15:00 UTC, /help for commands."
+        "Board resets now — new week, new shot. Stay active in the group — /help for commands."
     )
     return "\n".join(lines)
 

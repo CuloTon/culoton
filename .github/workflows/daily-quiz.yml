@@ -1,16 +1,10 @@
 name: TON quiz (auto, 4×/day)
 
 on:
-  schedule:
-    # Four quizzes a day — different question each time. The script derives the
-    # slot (morning/midday/afternoon/evening) from the UTC hour and is idempotent
-    # per (day, slot), so a late or duplicate run is a no-op. If GitHub's
-    # free-tier scheduler drops one, that slot just stays empty (3 quizzes that
-    # day) — the others still fire.
-    - cron: '0 8 * * *'    # morning
-    - cron: '0 12 * * *'   # midday
-    - cron: '0 16 * * *'   # afternoon
-    - cron: '0 20 * * *'   # evening
+  # Auto-quiz retired 2026-05-17 — the recurring quiz contest ended (winners
+  # announced, points reset to a clean slate). The cron schedule is removed so
+  # no more quiz questions are posted. workflow_dispatch is kept so the quiz
+  # can still be fired manually if it's ever brought back.
   workflow_dispatch:
     inputs:
       slot:
