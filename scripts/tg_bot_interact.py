@@ -47,7 +47,6 @@ from _culo_market import (
 )
 from _tg_points import (
     MSG_POINT_REWARD,
-    QUIZ_SLOTS,
     award_points,
     can_earn_msg_point,
     can_use_ask,
@@ -65,8 +64,6 @@ ROOT = Path(__file__).resolve().parent.parent
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 BLOG_DIR = ROOT / "web" / "src" / "content" / "blog"
 SITE = "https://culoton.fun"
-QUIZZES_PATH = ROOT / "data" / "quizzes.json"
-QUIZ_REWARD = 20  # one daily cap — quiz is the highest-value daily action
 RECAP_EVERY_N_MSGS = 10  # post a standings + rules recap every N group messages
 
 TG_API_TIMEOUT = 35  # > long-poll timeout below, with margin
@@ -250,16 +247,6 @@ def tg_get_updates(token: str, offset: int, timeout: int = 0) -> list[dict]:
     if not resp or not resp.get("ok"):
         return []
     return resp.get("result", [])
-
-
-def tg_answer_callback(token: str, callback_query_id: str, text: str, show_alert: bool = True) -> dict | None:
-    """Reply privately to a button click — only the clicker sees the popup."""
-    payload = {
-        "callback_query_id": callback_query_id,
-        "text": text[:200],  # Telegram caps callback alerts at 200 chars
-        "show_alert": "true" if show_alert else "false",
-    }
-    return tg_api(token, "answerCallbackQuery", payload)
 
 
 # ---------- Content helpers -------------------------------------------------
@@ -603,94 +590,6 @@ def cmd_ask(question: str) -> str:
     )
 
 
-def _latest_today_quiz(all_quizzes: dict) -> tuple[str, dict] | tuple[None, None]:
-    """Return (key, quiz) for the most recent quiz still open today, or (None, None).
-
-    Quizzes auto-post a few times a day under keys 'YYYY-MM-DD-<slot>'; later
-    slots win. Falls back to the legacy flat 'YYYY-MM-DD' key.
-    """
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    for slot in reversed(QUIZ_SLOTS):
-        key = f"{today}-{slot}"
-        if key in all_quizzes:
-            return key, all_quizzes[key]
-    if today in all_quizzes:
-        return today, all_quizzes[today]
-    return None, None
-
-
-def cmd_quiz(user_id: str, arg: str) -> tuple[str, bool]:
-    """Handle /quiz <answer>. Returns (reply_html, was_correct).
-
-    Text fallback for the inline A/B/C/D buttons. Answers today's most recent
-    open quiz (a few drop each day). Points are awarded by the dispatcher when
-    the answer is correct.
-    """
-    if not QUIZZES_PATH.exists():
-        return ("🧩 No quiz live yet — a fresh one drops a few times a day.", False)
-
-    try:
-        all_quizzes = json.loads(QUIZZES_PATH.read_text(encoding="utf-8"))
-    except Exception:
-        return ("🧩 Quiz state unavailable, try again in a moment.", False)
-
-    quiz_key, quiz = _latest_today_quiz(all_quizzes)
-    if not quiz:
-        return ("🧩 No quiz for today yet — they drop a few times a day. Hang tight.", False)
-
-    answer = arg.strip().upper()[:1]
-    if answer not in ("A", "B", "C", "D"):
-        return (
-            "🧩 Send your answer letter — <code>/quiz A</code> (or B / C / D).\n\n"
-            f"<b>{html.escape(quiz['question'])}</b>\n"
-            f"🅰  {html.escape(quiz['options']['A'])}\n"
-            f"🅱  {html.escape(quiz['options']['B'])}\n"
-            f"🅲  {html.escape(quiz['options']['C'])}\n"
-            f"🅳  {html.escape(quiz['options']['D'])}",
-            False,
-        )
-
-    answered = quiz.setdefault("answered", {})
-    if user_id and user_id in answered:
-        prev = answered[user_id]
-        verdict = "✅ correct" if prev["correct"] else "❌ wrong"
-        return (
-            f"🧩 You already answered this one — picked <b>{prev['answer']}</b> ({verdict}). "
-            "Another quiz drops later.",
-            False,
-        )
-
-    correct = (answer == quiz["correct"])
-    if user_id:
-        answered[user_id] = {
-            "answer": answer,
-            "correct": correct,
-            "answered_at": datetime.now(timezone.utc).isoformat(),
-        }
-        try:
-            QUIZZES_PATH.parent.mkdir(parents=True, exist_ok=True)
-            QUIZZES_PATH.write_text(
-                json.dumps(all_quizzes, indent=2, ensure_ascii=False, sort_keys=True),
-                encoding="utf-8",
-            )
-        except Exception as e:
-            print(f"quiz state save failed: {e}", file=sys.stderr)
-
-    if correct:
-        explain = quiz.get("explanation", "")
-        return (
-            f"🧩 ✅ <b>Correct!</b> The answer was <b>{quiz['correct']}</b>.\n\n"
-            f"<i>{html.escape(explain)}</i>\n\n"
-            f"+{QUIZ_REWARD} pts (subject to the 20 pts/day cap). See /points / /leaderboard.",
-            True,
-        )
-    return (
-        f"🧩 ❌ Not quite — your answer <b>{answer}</b> was wrong. "
-        f"The correct answer was <b>{quiz['correct']}</b>. Catch the next one.",
-        False,
-    )
-
-
 def cmd_points(rec: dict) -> str:
     name = html.escape(rec.get("username") or "you")
     return (
@@ -781,96 +680,6 @@ def display_name(user: dict) -> str:
     return " ".join(parts) or "anon"
 
 
-def handle_quiz_callback(cb: dict, state: dict, token: str) -> None:
-    """Handle a callback_query from a quiz inline-keyboard click.
-    Replies privately via answerCallbackQuery (popup visible only to the clicker).
-    Awards points on correct answer, enforces one-shot per user per quiz.
-    """
-    cbid = cb.get("id", "")
-    data = (cb.get("data") or "").strip()
-    from_user = cb.get("from") or {}
-
-    # callback_data format: "quiz:<key>:<A|B|C|D>" where <key> is
-    # "YYYY-MM-DD-<slot>" (or a legacy flat "YYYY-MM-DD" for old buttons).
-    if not data.startswith("quiz:"):
-        tg_answer_callback(token, cbid, "Unknown action.", show_alert=False)
-        return
-
-    parts = data.split(":")
-    if len(parts) != 3 or parts[2] not in ("A", "B", "C", "D"):
-        tg_answer_callback(token, cbid, "Invalid quiz button.", show_alert=False)
-        return
-    quiz_key = parts[1]
-    quiz_date = quiz_key[:10]  # YYYY-MM-DD prefix
-    answer = parts[2]
-
-    if not from_user or from_user.get("is_bot"):
-        tg_answer_callback(token, cbid, "?", show_alert=False)
-        return
-
-    user_id = str(from_user["id"])
-
-    # Read quiz state
-    if not QUIZZES_PATH.exists():
-        tg_answer_callback(token, cbid, "🧩 Quiz state not available, try again later.", show_alert=True)
-        return
-    try:
-        all_quizzes = json.loads(QUIZZES_PATH.read_text(encoding="utf-8"))
-    except Exception:
-        tg_answer_callback(token, cbid, "🧩 Quiz state unavailable.", show_alert=True)
-        return
-
-    quiz = all_quizzes.get(quiz_key)
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    if not quiz:
-        tg_answer_callback(token, cbid, "🧩 This quiz is no longer available.", show_alert=True)
-        return
-    if quiz_date != today:
-        tg_answer_callback(token, cbid, "🧩 This quiz is closed — only today's counts.", show_alert=True)
-        return
-
-    answered = quiz.setdefault("answered", {})
-    if user_id in answered:
-        prev = answered[user_id]
-        verdict = "✅ correct" if prev["correct"] else "❌ wrong"
-        tg_answer_callback(
-            token, cbid,
-            f"🧩 You already answered: {prev['answer']} ({verdict}). Another quiz drops later.",
-            show_alert=True,
-        )
-        return
-
-    correct = (answer == quiz["correct"])
-    answered[user_id] = {
-        "answer": answer,
-        "correct": correct,
-        "answered_at": datetime.now(timezone.utc).isoformat(),
-    }
-    try:
-        QUIZZES_PATH.parent.mkdir(parents=True, exist_ok=True)
-        QUIZZES_PATH.write_text(
-            json.dumps(all_quizzes, indent=2, ensure_ascii=False, sort_keys=True),
-            encoding="utf-8",
-        )
-    except Exception as e:
-        print(f"quiz state save failed: {e}", file=sys.stderr)
-
-    # Award points if correct
-    granted = 0
-    if correct:
-        rec = get_user(state, from_user["id"], display_name(from_user))
-        granted = award_points(rec, QUIZ_REWARD)
-
-    if correct:
-        explain = quiz.get("explanation", "")
-        # Truncate to fit 200-char alert limit
-        msg = f"✅ Correct! +{granted} pts. {explain}"[:195]
-        tg_answer_callback(token, cbid, msg, show_alert=True)
-    else:
-        msg = f"❌ Wrong — correct answer was {quiz['correct']}. Catch the next quiz!"[:195]
-        tg_answer_callback(token, cbid, msg, show_alert=True)
-
-
 def process_updates(updates: list[dict], state: dict, token: str, start_offset: int) -> int:
     """Process a batch of updates. Returns new offset (max update_id + 1)."""
     new_offset = start_offset
@@ -880,10 +689,8 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
     for upd in updates:
         new_offset = max(new_offset, upd.get("update_id", 0) + 1)
 
-        # Inline-keyboard click on a quiz button
-        cb = upd.get("callback_query")
-        if cb:
-            handle_quiz_callback(cb, state, token)
+        # Quiz retired — ignore any stray inline-keyboard callbacks.
+        if upd.get("callback_query"):
             continue
 
         msg = upd.get("message")
@@ -946,13 +753,6 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
             else:
                 reply = cmd_ask(arg)
                 mark_ask(rec)
-        elif cmd == "quiz":
-            reply, was_correct = cmd_quiz(str(from_user["id"]), arg)
-            if was_correct:
-                # award the full quiz reward (subject to daily cap inside award_points)
-                granted_quiz = award_points(rec, QUIZ_REWARD)
-                if granted_quiz < QUIZ_REWARD:
-                    reply = reply + f"\n\n<i>(daily cap reached — only +{granted_quiz} pts credited)</i>"
         else:
             # Unknown command — keep silent in groups to avoid noise,
             # respond with a hint in private chats.

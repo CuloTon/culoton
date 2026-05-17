@@ -41,30 +41,10 @@ ASK_COOLDOWN_SEC = 180  # 3 minutes between /ask uses per user
 MSG_POINT_REWARD = 1
 MSG_POINT_COOLDOWN_SEC = 90  # at most one message-point per 90s per user
 
-# Quizzes auto-post several times a day; one quiz per (UTC day, slot).
-# data/quizzes.json keys are "YYYY-MM-DD-<slot>" (old flat "YYYY-MM-DD" keys
-# from the single-daily era still work for callbacks already in the wild).
-QUIZ_SLOTS = ("morning", "midday", "afternoon", "evening")
-
-
-def quiz_slot_for_now() -> str:
-    """Map the current UTC hour to a quiz slot. Crons run ~08/12/16/20 UTC."""
-    h = datetime.now(timezone.utc).hour
-    if 6 <= h < 12:
-        return "morning"
-    if 12 <= h < 16:
-        return "midday"
-    if 16 <= h < 20:
-        return "afternoon"
-    if 20 <= h <= 23:
-        return "evening"
-    return "morning"  # 00:00-05:59 UTC (manual-run edge): fold into morning
-
-# Accounts hidden from public leaderboards AND from the weekly-prize standings
-# (the dev / team accounts, the bot, etc.). Matched case-insensitively against
-# the stored display name with a leading "@" stripped. Their points are still
-# tracked — they just don't appear in /leaderboard, the daily-quiz top-10, or
-# win the weekly 5 TON.
+# Accounts hidden from the public activity leaderboard (the dev / team
+# accounts, the bot, etc.). Matched case-insensitively against the stored
+# display name with a leading "@" stripped. Their points are still tracked
+# — they just don't appear in /leaderboard or the standings recap.
 LEADERBOARD_EXCLUDE = {"culodaddy_ton"}
 
 

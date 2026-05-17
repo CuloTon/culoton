@@ -35,11 +35,11 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python scripts/tg_bot_interact.py
 
-      - name: Commit points + offset + quiz answers
+      - name: Commit points + offset
         run: |
           bash scripts/git_commit_push.sh \
             "auto: tg bot interact $(date -u +%Y-%m-%dT%H:%MZ)" \
-            data/points.json data/tg_offset.txt data/quizzes.json
+            data/points.json data/tg_offset.txt
 
       - name: Re-arm next iteration (self-dispatch)
         if: always()
