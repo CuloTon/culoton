@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 12,
+  "group_msg_count": 13,
   "users": {
     "1415897955": {
       "daily_day": "",
@@ -242,14 +242,14 @@
       "weekly_points": 0
     },
     "7653126333": {
-      "daily_day": "2026-05-17",
-      "daily_points": 5,
+      "daily_day": "2026-05-18",
+      "daily_points": 1,
       "last_ask_at": "",
-      "last_command_at": "2026-05-17T12:01:47.126956+00:00",
-      "last_msg_point_at": "2026-05-17T12:01:47.126970+00:00",
-      "total_points": 5,
+      "last_command_at": "2026-05-18T17:24:12.950677+00:00",
+      "last_msg_point_at": "2026-05-18T17:24:12.950690+00:00",
+      "total_points": 6,
       "username": "@wooQueenee",
-      "weekly_points": 5
+      "weekly_points": 6
     },
     "7666449690": {
       "daily_day": "",
