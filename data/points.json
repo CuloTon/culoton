@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 13,
+  "group_msg_count": 16,
   "users": {
     "1415897955": {
       "daily_day": "",
@@ -243,13 +243,13 @@
     },
     "7653126333": {
       "daily_day": "2026-05-18",
-      "daily_points": 1,
+      "daily_points": 2,
       "last_ask_at": "",
-      "last_command_at": "2026-05-18T17:24:12.950677+00:00",
-      "last_msg_point_at": "2026-05-18T17:24:12.950690+00:00",
-      "total_points": 6,
+      "last_command_at": "2026-05-18T17:26:35.598042+00:00",
+      "last_msg_point_at": "2026-05-18T17:26:35.598054+00:00",
+      "total_points": 7,
       "username": "@wooQueenee",
-      "weekly_points": 6
+      "weekly_points": 7
     },
     "7666449690": {
       "daily_day": "",
@@ -332,14 +332,14 @@
       "weekly_points": 0
     },
     "8354207388": {
-      "daily_day": "2026-05-17",
-      "daily_points": 4,
+      "daily_day": "2026-05-18",
+      "daily_points": 1,
       "last_ask_at": "",
-      "last_command_at": "2026-05-17T12:27:07.071573+00:00",
-      "last_msg_point_at": "2026-05-17T12:27:07.071586+00:00",
-      "total_points": 4,
+      "last_command_at": "2026-05-18T17:25:02.950557+00:00",
+      "last_msg_point_at": "2026-05-18T17:25:02.950569+00:00",
+      "total_points": 5,
       "username": "@culodaddy_ton",
-      "weekly_points": 4
+      "weekly_points": 5
     },
     "8660294407": {
       "daily_day": "",
