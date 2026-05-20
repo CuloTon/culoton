@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 18,
+  "group_msg_count": 19,
   "users": {
     "1415897955": {
       "daily_day": "",
@@ -72,14 +72,14 @@
       "weekly_points": 0
     },
     "5014284422": {
-      "daily_day": "",
-      "daily_points": 0,
+      "daily_day": "2026-05-20",
+      "daily_points": 1,
       "last_ask_at": "",
-      "last_command_at": "",
-      "last_msg_point_at": "",
-      "total_points": 0,
+      "last_command_at": "2026-05-20T17:57:36.258580+00:00",
+      "last_msg_point_at": "2026-05-20T17:57:36.258591+00:00",
+      "total_points": 1,
       "username": "@Oksayd321wd",
-      "weekly_points": 0
+      "weekly_points": 1
     },
     "5095765369": {
       "daily_day": "",
