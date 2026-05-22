@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 21,
+  "group_msg_count": 22,
   "users": {
     "1415897955": {
       "daily_day": "",
@@ -70,6 +70,16 @@
       "total_points": 0,
       "username": "@Mediatr_krsk",
       "weekly_points": 0
+    },
+    "5007958724": {
+      "daily_day": "2026-05-22",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-05-22T18:42:37.622197+00:00",
+      "last_msg_point_at": "2026-05-22T18:42:37.622206+00:00",
+      "total_points": 1,
+      "username": "@morgan8074",
+      "weekly_points": 1
     },
     "5014284422": {
       "daily_day": "2026-05-20",
