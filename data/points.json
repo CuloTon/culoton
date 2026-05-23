@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 25,
+  "group_msg_count": 26,
   "users": {
     "1415897955": {
       "daily_day": "",
@@ -152,14 +152,14 @@
       "weekly_points": 0
     },
     "6170025212": {
-      "daily_day": "",
-      "daily_points": 0,
+      "daily_day": "2026-05-23",
+      "daily_points": 1,
       "last_ask_at": "",
-      "last_command_at": "",
-      "last_msg_point_at": "",
-      "total_points": 0,
+      "last_command_at": "2026-05-23T12:47:27.398310+00:00",
+      "last_msg_point_at": "2026-05-23T12:47:27.398322+00:00",
+      "total_points": 1,
       "username": "@Crypto1000XOwner",
-      "weekly_points": 0
+      "weekly_points": 1
     },
     "638838224": {
       "daily_day": "",
