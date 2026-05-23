@@ -4,11 +4,20 @@
 interface Env {
   STATS_KV: KVNamespace;
   ALLOWED_ORIGIN?: string;
+  POLL_IP_SALT?: string;
 }
 
 const HEARTBEAT_TTL = 45;
 const STATS_CACHE_TTL = 90;
 const SID_RE = /^[a-zA-Z0-9_-]{8,64}$/;
+
+const POLL_VERSION = 'v1';
+const POLL_CACHE_TTL = 30;
+const POLL_Q1 = new Set(['keep', 'new']);
+const POLL_Q2 = new Set(['tax', 'notax']);
+const POLL_TAX_PCT = new Set([0, 3, 5, 8, 10, 15]);
+const POLL_SPLIT = new Set(['100-0', '80-20', '60-40', '50-50', '40-60']);
+const TICKER_RE = /^[A-Z0-9$_-]{2,12}$/;
 
 function corsHeaders(req: Request, allowed: string): HeadersInit {
   const reqOrigin = req.headers.get('Origin') ?? '';
@@ -111,6 +120,169 @@ async function storeCached(env: Env, data: StatsCore) {
   );
 }
 
+type PollVote = {
+  q1: 'keep' | 'new';
+  q2: 'tax' | 'notax' | null;
+  buy: number | null;
+  sell: number | null;
+  split: string | null;
+  ticker: string | null;
+  at: string;
+};
+
+type PollResults = {
+  total: number;
+  q1: Record<string, number>;
+  q2: Record<string, number>;
+  buy: Record<string, number>;
+  sell: Record<string, number>;
+  split: Record<string, number>;
+  tickers: { ticker: string; count: number }[];
+  generated_at: string;
+};
+
+async function hashIp(ip: string, salt: string): Promise<string> {
+  const data = new TextEncoder().encode(`${salt}|${ip}`);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest))
+    .slice(0, 16)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+async function getPollSalt(env: Env): Promise<string> {
+  if (env.POLL_IP_SALT) return env.POLL_IP_SALT;
+  const stored = await env.STATS_KV.get(`poll:${POLL_VERSION}:salt`);
+  if (stored) return stored;
+  const buf = new Uint8Array(32);
+  crypto.getRandomValues(buf);
+  const fresh = Array.from(buf).map((b) => b.toString(16).padStart(2, '0')).join('');
+  await env.STATS_KV.put(`poll:${POLL_VERSION}:salt`, fresh);
+  return fresh;
+}
+
+function normalizeTicker(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null;
+  let t = raw.trim().toUpperCase().replace(/^\$+/, '');
+  if (!t) return null;
+  if (t.length > 12) t = t.slice(0, 12);
+  return TICKER_RE.test(t) ? t : null;
+}
+
+function validateVote(body: any): PollVote | { error: string } {
+  if (!body || typeof body !== 'object') return { error: 'invalid body' };
+  const q1 = String(body.q1 ?? '');
+  if (!POLL_Q1.has(q1)) return { error: 'invalid q1' };
+
+  let q2: 'tax' | 'notax' | null = null;
+  let buy: number | null = null;
+  let sell: number | null = null;
+  let split: string | null = null;
+
+  if (q1 === 'new') {
+    const q2raw = String(body.q2 ?? '');
+    if (!POLL_Q2.has(q2raw)) return { error: 'invalid q2' };
+    q2 = q2raw as 'tax' | 'notax';
+    if (q2 === 'tax') {
+      const buyN = Number(body.buy);
+      const sellN = Number(body.sell);
+      if (!POLL_TAX_PCT.has(buyN)) return { error: 'invalid buy' };
+      if (!POLL_TAX_PCT.has(sellN)) return { error: 'invalid sell' };
+      const splitRaw = String(body.split ?? '');
+      if (!POLL_SPLIT.has(splitRaw)) return { error: 'invalid split' };
+      buy = buyN;
+      sell = sellN;
+      split = splitRaw;
+    }
+  }
+
+  return {
+    q1: q1 as 'keep' | 'new',
+    q2,
+    buy,
+    sell,
+    split,
+    ticker: normalizeTicker(body.ticker),
+    at: new Date().toISOString(),
+  };
+}
+
+async function aggregatePoll(env: Env): Promise<PollResults> {
+  const prefix = `poll:${POLL_VERSION}:vote:`;
+  const keys = await listAll(env.STATS_KV, prefix);
+  const q1: Record<string, number> = { keep: 0, new: 0 };
+  const q2: Record<string, number> = { tax: 0, notax: 0 };
+  const buy: Record<string, number> = {};
+  const sell: Record<string, number> = {};
+  const split: Record<string, number> = {};
+  const tickers: Record<string, number> = {};
+
+  const BATCH = 50;
+  for (let i = 0; i < keys.length; i += BATCH) {
+    const slice = keys.slice(i, i + BATCH);
+    const vals = await Promise.all(slice.map((k) => env.STATS_KV.get(k.name)));
+    for (const raw of vals) {
+      if (!raw) continue;
+      let v: PollVote;
+      try {
+        v = JSON.parse(raw) as PollVote;
+      } catch {
+        continue;
+      }
+      if (v.q1 && q1[v.q1] !== undefined) q1[v.q1]++;
+      if (v.q2 && q2[v.q2] !== undefined) q2[v.q2]++;
+      if (v.buy !== null && v.buy !== undefined) {
+        const k = String(v.buy);
+        buy[k] = (buy[k] ?? 0) + 1;
+      }
+      if (v.sell !== null && v.sell !== undefined) {
+        const k = String(v.sell);
+        sell[k] = (sell[k] ?? 0) + 1;
+      }
+      if (v.split) split[v.split] = (split[v.split] ?? 0) + 1;
+      if (v.ticker) tickers[v.ticker] = (tickers[v.ticker] ?? 0) + 1;
+    }
+  }
+
+  const tickerList = Object.entries(tickers)
+    .map(([ticker, count]) => ({ ticker, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 30);
+
+  return {
+    total: keys.length,
+    q1,
+    q2,
+    buy,
+    sell,
+    split,
+    tickers: tickerList,
+    generated_at: new Date().toISOString(),
+  };
+}
+
+async function readPollCache(env: Env): Promise<{ gen: number; data: PollResults } | null> {
+  const raw = await env.STATS_KV.get(`poll:${POLL_VERSION}:cache:results`);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as { gen: number; data: PollResults };
+  } catch {
+    return null;
+  }
+}
+
+async function storePollCache(env: Env, data: PollResults) {
+  await env.STATS_KV.put(
+    `poll:${POLL_VERSION}:cache:results`,
+    JSON.stringify({ gen: Date.now(), data }),
+    { expirationTtl: POLL_CACHE_TTL * 2 },
+  );
+}
+
+async function invalidatePollCache(env: Env) {
+  await env.STATS_KV.delete(`poll:${POLL_VERSION}:cache:results`);
+}
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
@@ -165,6 +337,80 @@ export default {
             'Content-Type': 'application/json; charset=utf-8',
             'Cache-Control': 'public, max-age=30',
           },
+        });
+      }
+
+      if (url.pathname === '/poll/vote' && req.method === 'POST') {
+        const ip = req.headers.get('CF-Connecting-IP') ?? '0.0.0.0';
+        const salt = await getPollSalt(env);
+        const ipHash = await hashIp(ip, salt);
+        const voteKey = `poll:${POLL_VERSION}:vote:${ipHash}`;
+
+        let body: any;
+        try {
+          body = await req.json();
+        } catch {
+          return new Response(JSON.stringify({ error: 'invalid json' }), {
+            status: 400,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const parsed = validateVote(body);
+        if ('error' in parsed) {
+          return new Response(JSON.stringify(parsed), {
+            status: 400,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const existing = await env.STATS_KV.get(voteKey);
+        if (existing) {
+          const results = await aggregatePoll(env);
+          await storePollCache(env, results);
+          return new Response(JSON.stringify({ duplicate: true, results }), {
+            status: 409,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+
+        await env.STATS_KV.put(voteKey, JSON.stringify(parsed));
+        await invalidatePollCache(env);
+        const results = await aggregatePoll(env);
+        await storePollCache(env, results);
+        return new Response(JSON.stringify({ ok: true, results }), {
+          status: 200,
+          headers: { ...headers, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (url.pathname === '/poll/results' && req.method === 'GET') {
+        const cached = await readPollCache(env);
+        const ageSec = cached ? (Date.now() - cached.gen) / 1000 : Infinity;
+        let data: PollResults;
+        if (cached && ageSec < POLL_CACHE_TTL) {
+          data = cached.data;
+        } else {
+          data = await aggregatePoll(env);
+          await storePollCache(env, data);
+        }
+        return new Response(JSON.stringify(data), {
+          status: 200,
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'public, max-age=15',
+          },
+        });
+      }
+
+      if (url.pathname === '/poll/check' && req.method === 'GET') {
+        const ip = req.headers.get('CF-Connecting-IP') ?? '0.0.0.0';
+        const salt = await getPollSalt(env);
+        const ipHash = await hashIp(ip, salt);
+        const existing = await env.STATS_KV.get(`poll:${POLL_VERSION}:vote:${ipHash}`);
+        return new Response(JSON.stringify({ voted: !!existing }), {
+          status: 200,
+          headers: { ...headers, 'Content-Type': 'application/json' },
         });
       }
 

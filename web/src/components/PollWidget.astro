@@ -1,0 +1,607 @@
+---
+import { POLL_STRINGS, TAX_BUCKETS, SPLIT_BUCKETS, type PollLocale } from '../data/pollStrings';
+
+interface Props {
+  locale: PollLocale;
+}
+
+const { locale } = Astro.props;
+const s = POLL_STRINGS[locale];
+---
+
+<section class="poll-widget" data-locale={locale}>
+  <p class="poll-no-refund">{s.noRefundNote}</p>
+
+  <form class="poll-form" id="poll-form" novalidate>
+    <fieldset class="poll-fieldset">
+      <legend>{s.q1Label}</legend>
+      <label class="poll-option">
+        <input type="radio" name="q1" value="keep" required />
+        <span>
+          <strong>{s.q1Keep}</strong>
+          <em>{s.q1KeepDesc}</em>
+        </span>
+      </label>
+      <label class="poll-option">
+        <input type="radio" name="q1" value="new" required />
+        <span>
+          <strong>{s.q1New}</strong>
+          <em>{s.q1NewDesc}</em>
+        </span>
+      </label>
+    </fieldset>
+
+    <fieldset class="poll-fieldset poll-q2" hidden>
+      <legend>{s.q2Label}</legend>
+      <label class="poll-option">
+        <input type="radio" name="q2" value="tax" />
+        <span>
+          <strong>{s.q2Tax}</strong>
+          <em>{s.q2TaxDesc}</em>
+        </span>
+      </label>
+      <label class="poll-option">
+        <input type="radio" name="q2" value="notax" />
+        <span>
+          <strong>{s.q2NoTax}</strong>
+          <em>{s.q2NoTaxDesc}</em>
+        </span>
+      </label>
+    </fieldset>
+
+    <div class="poll-tax-details" hidden>
+      <div class="poll-row">
+        <label class="poll-row-label" for="poll-buy">{s.buyLabel}</label>
+        <div class="poll-chip-row" id="poll-buy-row">
+          {TAX_BUCKETS.map((n) => (
+            <label class="poll-chip">
+              <input type="radio" name="buy" value={n} />
+              <span>{n}%</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div class="poll-row">
+        <label class="poll-row-label" for="poll-sell">{s.sellLabel}</label>
+        <div class="poll-chip-row" id="poll-sell-row">
+          {TAX_BUCKETS.map((n) => (
+            <label class="poll-chip">
+              <input type="radio" name="sell" value={n} />
+              <span>{n}%</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div class="poll-row">
+        <label class="poll-row-label">{s.splitLabel}</label>
+        <div class="poll-chip-row" id="poll-split-row">
+          {SPLIT_BUCKETS.map((opt) => (
+            <label class="poll-chip poll-chip-wide">
+              <input type="radio" name="split" value={opt} />
+              <span>{s.splitOptions[opt]}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="poll-row poll-ticker-row">
+      <label class="poll-row-label" for="poll-ticker">{s.tickerLabel}</label>
+      <input type="text" id="poll-ticker" name="ticker" maxlength="12" placeholder={s.tickerPlaceholder} autocomplete="off" />
+      <p class="poll-ticker-hint">{s.tickerHint}</p>
+    </div>
+
+    <button type="submit" class="poll-submit" id="poll-submit">{s.submit}</button>
+    <p class="poll-status" id="poll-status" hidden></p>
+  </form>
+
+  <section class="poll-results" id="poll-results">
+    <h2>{s.resultsH}</h2>
+    <p class="poll-results-blurb">{s.resultsBlurb}</p>
+    <p class="poll-results-total" id="poll-total">{s.resultsLoading}</p>
+
+    <div class="poll-bars" id="poll-bars-q1"></div>
+    <div class="poll-bars" id="poll-bars-q2"></div>
+
+    <h3 class="poll-subhead" id="poll-tax-h" hidden>{s.resultsTaxBreakdown}</h3>
+    <div class="poll-grid-2" id="poll-tax-grid" hidden>
+      <div>
+        <h4>{s.buyLabel}</h4>
+        <div class="poll-bars" id="poll-bars-buy"></div>
+      </div>
+      <div>
+        <h4>{s.sellLabel}</h4>
+        <div class="poll-bars" id="poll-bars-sell"></div>
+      </div>
+    </div>
+
+    <h3 class="poll-subhead" id="poll-split-h" hidden>{s.resultsSplitBreakdown}</h3>
+    <div class="poll-bars" id="poll-bars-split"></div>
+
+    <h3 class="poll-subhead">{s.resultsTickers}</h3>
+    <ul class="poll-ticker-list" id="poll-tickers"></ul>
+  </section>
+</section>
+
+<script
+  is:inline
+  define:vars={{
+    locale,
+    labelKeep: s.q1Keep,
+    labelNew: s.q1New,
+    labelTax: s.q2Tax,
+    labelNoTax: s.q2NoTax,
+    splitMap: s.splitOptions,
+    txtSubmitting: s.submitting,
+    txtSubmit: s.submit,
+    txtAlready: s.alreadyVoted,
+    txtThanks: s.thanks,
+    txtError: s.errorGeneric,
+    txtEmpty: s.resultsEmpty,
+    txtTickerEmpty: s.resultsTickersEmpty,
+    totalFmt: locale === 'pl' ? 'Oddanych głosów: {n}' : locale === 'de' ? 'Bisher {n} Stimme(n)' : '{n} vote(s) so far',
+  }}
+>
+  (function () {
+    var meta = document.querySelector('meta[name="stats-api"]');
+    var api = meta ? (meta.getAttribute('content') || '').replace(/\/$/, '') : '';
+    if (!api) {
+      var st = document.getElementById('poll-status');
+      if (st) { st.hidden = false; st.textContent = txtError; }
+      return;
+    }
+
+    var form = document.getElementById('poll-form');
+    var status = document.getElementById('poll-status');
+    var submit = document.getElementById('poll-submit');
+    var q2set = document.querySelector('.poll-q2');
+    var taxDetails = document.querySelector('.poll-tax-details');
+
+    function show(el, on) { if (el) el.hidden = !on; }
+
+    form.addEventListener('change', function (ev) {
+      var name = ev.target && ev.target.name;
+      if (name === 'q1') {
+        var v = ev.target.value;
+        show(q2set, v === 'new');
+        if (v === 'keep') {
+          show(taxDetails, false);
+          var q2inputs = form.querySelectorAll('input[name="q2"]');
+          q2inputs.forEach(function (i) { i.checked = false; });
+          clearTaxInputs();
+        }
+      }
+      if (name === 'q2') {
+        show(taxDetails, ev.target.value === 'tax');
+        if (ev.target.value !== 'tax') clearTaxInputs();
+      }
+    });
+
+    function clearTaxInputs() {
+      ['buy', 'sell', 'split'].forEach(function (n) {
+        form.querySelectorAll('input[name="' + n + '"]').forEach(function (i) { i.checked = false; });
+      });
+    }
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      submitVote();
+    });
+
+    function readForm() {
+      var data = new FormData(form);
+      var payload = {
+        q1: data.get('q1'),
+        q2: data.get('q2'),
+        buy: data.get('buy'),
+        sell: data.get('sell'),
+        split: data.get('split'),
+        ticker: data.get('ticker'),
+      };
+      if (payload.buy !== null) payload.buy = Number(payload.buy);
+      if (payload.sell !== null) payload.sell = Number(payload.sell);
+      return payload;
+    }
+
+    function validate(p) {
+      if (!p.q1) return false;
+      if (p.q1 === 'new') {
+        if (!p.q2) return false;
+        if (p.q2 === 'tax') {
+          if (p.buy === null || p.sell === null || !p.split) return false;
+        }
+      }
+      return true;
+    }
+
+    function submitVote() {
+      var p = readForm();
+      if (!validate(p)) {
+        status.hidden = false;
+        status.textContent = txtError;
+        return;
+      }
+      submit.disabled = true;
+      submit.textContent = txtSubmitting;
+      status.hidden = true;
+      fetch(api + '/poll/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(p),
+        credentials: 'omit',
+      }).then(function (r) {
+        return r.json().then(function (j) { return { status: r.status, body: j }; });
+      }).then(function (out) {
+        if (out.status === 200) {
+          markVoted(txtThanks);
+          if (out.body.results) render(out.body.results);
+        } else if (out.status === 409 && out.body.duplicate) {
+          markVoted(txtAlready);
+          if (out.body.results) render(out.body.results);
+        } else {
+          submit.disabled = false;
+          submit.textContent = txtSubmit;
+          status.hidden = false;
+          status.textContent = txtError;
+        }
+      }).catch(function () {
+        submit.disabled = false;
+        submit.textContent = txtSubmit;
+        status.hidden = false;
+        status.textContent = txtError;
+      });
+    }
+
+    function markVoted(msg) {
+      submit.disabled = true;
+      submit.textContent = '✓';
+      status.hidden = false;
+      status.textContent = msg;
+      form.classList.add('poll-form-locked');
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function bar(label, count, total) {
+      var pct = total > 0 ? Math.round((count / total) * 100) : 0;
+      return '<div class="poll-bar"><div class="poll-bar-label"><span>' + escapeHtml(label) + '</span><span class="poll-bar-num">' + count + ' (' + pct + '%)</span></div><div class="poll-bar-track"><div class="poll-bar-fill" style="width:' + pct + '%"></div></div></div>';
+    }
+
+    function render(r) {
+      var total = r.total || 0;
+      document.getElementById('poll-total').textContent = total === 0 ? txtEmpty : totalFmt.replace('{n}', total);
+
+      var q1total = (r.q1.keep || 0) + (r.q1.new || 0);
+      document.getElementById('poll-bars-q1').innerHTML =
+        bar(labelKeep, r.q1.keep || 0, q1total) +
+        bar(labelNew, r.q1.new || 0, q1total);
+
+      var q2total = (r.q2.tax || 0) + (r.q2.notax || 0);
+      var q2bars = document.getElementById('poll-bars-q2');
+      if (q2total > 0) {
+        q2bars.innerHTML = bar(labelTax, r.q2.tax || 0, q2total) + bar(labelNoTax, r.q2.notax || 0, q2total);
+      } else {
+        q2bars.innerHTML = '';
+      }
+
+      var buyTotal = Object.values(r.buy || {}).reduce(function (a, b) { return a + b; }, 0);
+      var sellTotal = Object.values(r.sell || {}).reduce(function (a, b) { return a + b; }, 0);
+      var splitTotal = Object.values(r.split || {}).reduce(function (a, b) { return a + b; }, 0);
+
+      var taxH = document.getElementById('poll-tax-h');
+      var taxGrid = document.getElementById('poll-tax-grid');
+      if (buyTotal + sellTotal > 0) {
+        taxH.hidden = false;
+        taxGrid.hidden = false;
+        var buyBuckets = [0, 3, 5, 8, 10, 15];
+        document.getElementById('poll-bars-buy').innerHTML = buyBuckets.map(function (n) {
+          return bar(n + '%', (r.buy && r.buy[String(n)]) || 0, buyTotal);
+        }).join('');
+        document.getElementById('poll-bars-sell').innerHTML = buyBuckets.map(function (n) {
+          return bar(n + '%', (r.sell && r.sell[String(n)]) || 0, sellTotal);
+        }).join('');
+      } else {
+        taxH.hidden = true;
+        taxGrid.hidden = true;
+      }
+
+      var splitH = document.getElementById('poll-split-h');
+      var splitBars = document.getElementById('poll-bars-split');
+      if (splitTotal > 0) {
+        splitH.hidden = false;
+        var splitKeys = ['100-0', '80-20', '60-40', '50-50', '40-60'];
+        splitBars.innerHTML = splitKeys.map(function (k) {
+          return bar(splitMap[k] || k, (r.split && r.split[k]) || 0, splitTotal);
+        }).join('');
+      } else {
+        splitH.hidden = true;
+        splitBars.innerHTML = '';
+      }
+
+      var tickersEl = document.getElementById('poll-tickers');
+      if (!r.tickers || r.tickers.length === 0) {
+        tickersEl.innerHTML = '<li class="poll-ticker-empty">' + escapeHtml(txtTickerEmpty) + '</li>';
+      } else {
+        tickersEl.innerHTML = r.tickers.map(function (t) {
+          return '<li><code>$' + escapeHtml(t.ticker) + '</code><span class="poll-ticker-count">' + t.count + '</span></li>';
+        }).join('');
+      }
+    }
+
+    function loadResults() {
+      fetch(api + '/poll/results', { credentials: 'omit' })
+        .then(function (r) { return r.json(); })
+        .then(render)
+        .catch(function () {});
+    }
+
+    fetch(api + '/poll/check', { credentials: 'omit' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (j && j.voted) markVoted(txtAlready); })
+      .catch(function () {});
+
+    loadResults();
+    setInterval(loadResults, 15000);
+  })();
+</script>
+
+<style>
+  .poll-widget {
+    max-width: 760px;
+    margin: 2rem auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .poll-no-refund {
+    border-left: 3px solid var(--accent, #ffd60a);
+    background: rgba(255, 214, 10, 0.05);
+    padding: 0.85rem 1.1rem;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  .poll-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(196, 245, 214, 0.18);
+    padding: 1.4rem 1.3rem;
+    border-radius: 6px;
+  }
+  .poll-form-locked {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .poll-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .poll-fieldset legend {
+    font-weight: 600;
+    font-size: 1.02rem;
+    padding: 0;
+    margin-bottom: 0.4rem;
+  }
+  .poll-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid rgba(196, 245, 214, 0.18);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .poll-option:hover {
+    background: rgba(196, 245, 214, 0.04);
+    border-color: rgba(196, 245, 214, 0.35);
+  }
+  .poll-option input[type="radio"] {
+    margin-top: 0.2rem;
+    accent-color: var(--accent, #ffd60a);
+  }
+  .poll-option strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+  }
+  .poll-option em {
+    font-style: normal;
+    opacity: 0.7;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+  .poll-tax-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 0.4rem;
+    border-top: 1px dashed rgba(196, 245, 214, 0.15);
+    padding-top: 1.1rem;
+  }
+  .poll-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .poll-row-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .poll-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .poll-chip {
+    cursor: pointer;
+  }
+  .poll-chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .poll-chip span {
+    display: inline-block;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid rgba(196, 245, 214, 0.25);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    transition: all 0.12s;
+  }
+  .poll-chip input:checked + span {
+    background: var(--accent, #ffd60a);
+    color: #111;
+    border-color: var(--accent, #ffd60a);
+    font-weight: 600;
+  }
+  .poll-chip-wide span { padding: 0.45rem 1rem; }
+
+  .poll-ticker-row input {
+    padding: 0.55rem 0.7rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(196, 245, 214, 0.25);
+    color: inherit;
+    border-radius: 4px;
+    text-transform: uppercase;
+    max-width: 240px;
+  }
+  .poll-ticker-hint {
+    font-size: 0.82rem;
+    opacity: 0.65;
+    margin: 0.2rem 0 0;
+  }
+
+  .poll-submit {
+    align-self: flex-start;
+    background: var(--accent, #ffd60a);
+    color: #111;
+    border: none;
+    padding: 0.75rem 1.6rem;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: opacity 0.15s;
+  }
+  .poll-submit:disabled { opacity: 0.55; cursor: default; }
+  .poll-status {
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+
+  .poll-results {
+    border-top: 1px solid rgba(196, 245, 214, 0.18);
+    padding-top: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .poll-results h2 {
+    margin: 0;
+    font-size: 1.3rem;
+  }
+  .poll-results-blurb {
+    margin: 0;
+    font-size: 0.88rem;
+    opacity: 0.65;
+  }
+  .poll-results-total {
+    margin: 0;
+    font-weight: 600;
+  }
+  .poll-subhead {
+    margin: 0.8rem 0 0.2rem;
+    font-size: 1rem;
+    opacity: 0.85;
+  }
+  .poll-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .poll-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .poll-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+  }
+  .poll-bar-num {
+    opacity: 0.7;
+    font-variant-numeric: tabular-nums;
+  }
+  .poll-bar-track {
+    height: 8px;
+    background: rgba(196, 245, 214, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .poll-bar-fill {
+    height: 100%;
+    background: var(--accent, #ffd60a);
+    transition: width 0.5s ease;
+  }
+  .poll-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 560px) {
+    .poll-grid-2 { grid-template-columns: 1fr; }
+  }
+  .poll-grid-2 h4 {
+    margin: 0 0 0.4rem;
+    font-size: 0.92rem;
+    opacity: 0.8;
+  }
+
+  .poll-ticker-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .poll-ticker-list li {
+    background: rgba(196, 245, 214, 0.06);
+    border: 1px solid rgba(196, 245, 214, 0.2);
+    padding: 0.3rem 0.65rem;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.88rem;
+  }
+  .poll-ticker-list code {
+    font-weight: 600;
+    color: var(--accent, #ffd60a);
+  }
+  .poll-ticker-count {
+    opacity: 0.7;
+    font-size: 0.8rem;
+  }
+  .poll-ticker-empty {
+    opacity: 0.55;
+    font-style: italic;
+  }
+</style>

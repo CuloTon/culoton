@@ -153,6 +153,8 @@ interface UIStrings {
   nav_apps: string;
   nav_launch: string;
   nav_launch_badge: string;
+  nav_poll: string;
+  nav_poll_badge: string;
   launch_banner_pill: string;
   launch_banner_text: string;
   launch_banner_cta: string;
@@ -292,6 +294,8 @@ export const UI: Record<Locale, UIStrings> = {
     nav_apps: 'Mini-Apps',
     nav_launch: 'Launcher',
     nav_launch_badge: 'NEW',
+    nav_poll: 'Vote',
+    nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 New · Building now',
     launch_banner_text: 'CuloTon Launcher — deploy your own TON jetton in 60 seconds. Logo upload, edit, revoke.',
     launch_banner_cta: 'See the preview →',
@@ -429,6 +433,8 @@ export const UI: Record<Locale, UIStrings> = {
     nav_apps: 'Mini-Apps',
     nav_launch: 'Launcher',
     nav_launch_badge: 'NEW',
+    nav_poll: 'Голос',
+    nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 Новинка · Строим сейчас',
     launch_banner_text: 'CuloTon Launcher — задеплой свой TON-jetton за 60 секунд. Загрузка лого, правка, revoke.',
     launch_banner_cta: 'Смотреть превью →',
@@ -566,6 +572,8 @@ export const UI: Record<Locale, UIStrings> = {
     nav_apps: 'Mini-Appy',
     nav_launch: 'Launcher',
     nav_launch_badge: 'NOWE',
+    nav_poll: 'Głosuj',
+    nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 Nowość · Budujemy właśnie',
     launch_banner_text: 'CuloTon Launcher — wdróż własnego jettona TON w 60 sekund. Logo, edycja, revoke.',
     launch_banner_cta: 'Zobacz podgląd →',
@@ -703,6 +711,8 @@ export const UI: Record<Locale, UIStrings> = {
     nav_apps: 'Mini-Apps',
     nav_launch: 'Launcher',
     nav_launch_badge: 'NEU',
+    nav_poll: 'Abstimmen',
+    nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 Neu · Wir bauen jetzt',
     launch_banner_text: 'CuloTon Launcher — deploye dein eigenes TON-Jetton in 60 Sekunden. Logo, Edit, Revoke.',
     launch_banner_cta: 'Vorschau ansehen →',
@@ -840,6 +850,8 @@ export const UI: Record<Locale, UIStrings> = {
     nav_apps: 'Mini-Apps',
     nav_launch: 'Launcher',
     nav_launch_badge: 'NUEVO',
+    nav_poll: 'Votar',
+    nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 Nuevo · Construyendo ahora',
     launch_banner_text: 'CuloTon Launcher — despliega tu propio jetton de TON en 60 segundos. Logo, edición, revoke.',
     launch_banner_cta: 'Ver la vista previa →',
@@ -977,6 +989,8 @@ export const UI: Record<Locale, UIStrings> = {
     nav_apps: 'Mini-Apps',
     nav_launch: 'Launcher',
     nav_launch_badge: 'НОВЕ',
+    nav_poll: 'Голосуй',
+    nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 Новинка · Будуємо зараз',
     launch_banner_text: 'CuloTon Launcher — задеплой свій TON-джетон за 60 секунд. Логотип, редагування, revoke.',
     launch_banner_cta: 'Дивитись превʼю →',
