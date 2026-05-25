@@ -1,16 +1,15 @@
 name: Update news and deploy
 
 on:
-  schedule:
-    # Routine fetch every 2h, but skip the roundup hours (6, 20) so we don't
-    # double-fire with the dedicated roundup crons below.
-    - cron: '0 0,2,4,8,10,12,14,16,18,22 * * *'
-    # Three roundup slots (UTC): morning 06:00, midday 15:00, evening 20:00.
-    # Each also runs the routine fetch first, then generates + deploys the
-    # roundup, and a follow-up workflow (telegram-digest) posts it to the chat.
-    - cron: '0 6 * * *'   # morning
-    - cron: '0 15 * * *'  # noon (midday)
-    - cron: '0 20 * * *'  # evening
+  # 2026-05-25: scheduled news + blog cron WYŁĄCZONE (małe zainteresowanie portalem).
+  # Pipeline odpalamy ręcznie przez workflow_dispatch — user wieczorem wybiera
+  # newsy z shortlisty, ja triggeruję dispatch (opcjonalnie z roundup_kind).
+  # Żeby przywrócić auto-rewrite: odkomentować poniższy `schedule:` blok.
+  # schedule:
+  #   - cron: '0 0,2,4,8,10,12,14,16,18,22 * * *'
+  #   - cron: '0 6 * * *'   # morning
+  #   - cron: '0 15 * * *'  # noon (midday)
+  #   - cron: '0 20 * * *'  # evening
   workflow_dispatch:
     inputs:
       roundup_kind:
