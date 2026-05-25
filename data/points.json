@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 28,
+  "group_msg_count": 31,
   "users": {
     "1415897955": {
       "daily_day": "",
@@ -160,6 +160,16 @@
       "total_points": 0,
       "username": "@Darwin_ian",
       "weekly_points": 0
+    },
+    "5869136588": {
+      "daily_day": "2026-05-25",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-05-25T20:02:51.791190+00:00",
+      "last_msg_point_at": "2026-05-25T20:02:51.791202+00:00",
+      "total_points": 1,
+      "username": "@Piffu9",
+      "weekly_points": 1
     },
     "6170025212": {
       "daily_day": "2026-05-23",
