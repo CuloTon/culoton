@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 26,
+  "group_msg_count": 27,
   "users": {
     "1415897955": {
       "daily_day": "",
@@ -210,6 +210,16 @@
       "total_points": 0,
       "username": "@rekt_panda",
       "weekly_points": 0
+    },
+    "6907303457": {
+      "daily_day": "2026-05-25",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-05-25T14:24:24.192768+00:00",
+      "last_msg_point_at": "2026-05-25T14:24:24.192779+00:00",
+      "total_points": 1,
+      "username": "@Cenchcrypt",
+      "weekly_points": 1
     },
     "6925009087": {
       "daily_day": "",
