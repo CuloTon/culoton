@@ -1,26 +1,22 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import PollWidget from '../components/PollWidget.astro';
-import { POLL_STRINGS } from '../data/pollStrings';
-
-const locale = 'en' as const;
-const s = POLL_STRINGS[locale];
+import PollResults from '../components/PollResults.astro';
 ---
 
 <Layout
   locale="en"
   pathWithoutLocale="/poll"
-  title={s.pageTitle}
-  description={s.metaDescription}
+  title="Tokenomics vote — BRAINROT"
+  description="Community vote on $BRT tokenomics. Closed with 38 votes — final result: 25% buy tax, 25% sell tax, 50% of revenue distributed to holders."
 >
   <article class="poll-page">
     <header class="poll-hero">
-      <span class="kicker">{s.kicker}</span>
-      <h1>{s.h1}</h1>
-      {s.intro.map((p) => <p class="poll-intro">{p}</p>)}
+      <span class="kicker">Closed · Community decision</span>
+      <h1>$BRT tokenomics — your call</h1>
+      <p class="poll-intro">The community had the floor on how the new $BRT contract should behave. We asked, you voted, the dust has settled.</p>
     </header>
 
-    <PollWidget locale="en" />
+    <PollResults locale="en" />
   </article>
 </Layout>
 

@@ -11,7 +11,7 @@ const TELEGRAM = 'https://t.me/culoton';
 ---
 
 <aside class="featured-token">
-  <img src="/culo.png" alt="$CULOTON token" />
+  <img src="/brainrot.png" alt="$BRT token" />
   <div class="ft-text">
     <span class="pill">{t.featured_token_pill}</span>
     <h3 set:html={t.featured_token_h_html} />
@@ -31,32 +31,33 @@ const TELEGRAM = 'https://t.me/culoton';
   }
   .ft-btn-primary,
   .ft-btn-secondary {
-    font-family: var(--font-mono);
-    font-size: 13px;
+    font-family: var(--font-sans);
+    font-size: 14px;
     font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 11px 18px;
-    border-radius: 0;
+    letter-spacing: 0.04em;
+    padding: 12px 22px;
+    border-radius: 999px;
     text-align: center;
-    border: 2px solid var(--accent);
-    transition: background 0.12s, color 0.12s;
+    transition: transform 0.18s, box-shadow 0.18s, background 0.18s, color 0.18s;
+    border: 2px solid transparent;
   }
   .ft-btn-primary {
-    background: var(--accent);
-    color: #1a1408 !important;
+    background: var(--text);
+    color: var(--bg) !important;
+    box-shadow: 0 8px 24px rgba(20, 20, 30, 0.18);
   }
   .ft-btn-primary:hover {
-    background: transparent;
-    color: var(--accent) !important;
+    transform: translateY(-2px);
+    background: var(--accent-text);
   }
   .ft-btn-secondary {
-    background: transparent;
-    color: #fff8e0 !important;
-    border-color: #4d4032;
+    background: #fff;
+    color: var(--text) !important;
+    border-color: var(--rule);
   }
   .ft-btn-secondary:hover {
     border-color: var(--accent);
-    color: var(--accent) !important;
+    color: var(--accent-text) !important;
+    transform: translateY(-2px);
   }
 </style>
