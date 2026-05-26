@@ -1980,3 +1980,192 @@ article.news-article .source-attribution strong {
   [data-theme="newspaper"] .feature-hero .lead h1 { font-size: 32px; }
   [data-theme="newspaper"] article.news-article h1 { font-size: 30px; }
 }
+
+/* ========================================================================
+   BRAINROT — fresh cheerful rebrand theme (2026-05-26)
+   Hot pink + bright yellow + lime + sky on cream butter background.
+   Italian brainrot meme energy. Loud, friendly, juvenile-but-fun.
+   ======================================================================== */
+:root[data-theme="brainrot"] {
+  --bg: #fff8dc;
+  --bg-section: #fff3b0;
+  --bg-card: #ffffff;
+  --bg-elev: #ffe680;
+  --rule: #1a0033;
+  --rule-soft: #ff4d8d;
+  --border: #1a0033;
+  --border-soft: #ffd1e8;
+  --text: #1a0033;
+  --text-dim: #4a1a6b;
+  --text-mute: #8a4a8e;
+  --accent: #ff4d8d;
+  --accent-text: #c4002b;
+  --accent-hot: #00b8a3;
+  --ton: #00a0e6;
+  --danger: #ff3333;
+  --font-display: "Archivo Black", "IBM Plex Sans", system-ui, sans-serif;
+  --font-sans: "Inter", "IBM Plex Sans", system-ui, sans-serif;
+}
+
+[data-theme="brainrot"] body {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(255, 230, 0, 0.45) 0%, transparent 38%),
+    radial-gradient(circle at 88% 18%, rgba(91, 200, 255, 0.45) 0%, transparent 40%),
+    radial-gradient(circle at 50% 88%, rgba(182, 255, 91, 0.40) 0%, transparent 42%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+[data-theme="brainrot"] .site-header {
+  background: linear-gradient(90deg, #ff4d8d 0%, #ffe600 33%, #b6ff5b 66%, #5bc8ff 100%);
+  border-bottom: 4px solid var(--rule);
+}
+[data-theme="brainrot"] .site-header .inner { padding: 8px 24px; }
+[data-theme="brainrot"] .logo img {
+  border: 3px solid #1a0033;
+  border-radius: 16px;
+  background: #fff;
+  padding: 2px;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  box-shadow: 4px 4px 0 #1a0033;
+}
+[data-theme="brainrot"] .logo .brand-culo,
+[data-theme="brainrot"] .logo .brand-ton {
+  font-family: "Archivo Black", system-ui, sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #1a0033;
+  font-style: normal;
+  text-shadow: 2px 2px 0 #fff, 4px 4px 0 #ff4d8d;
+}
+[data-theme="brainrot"] .logo .brand-ton { color: #c4002b; }
+[data-theme="brainrot"] .masthead-tag {
+  background: #1a0033;
+  color: #ffe600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+[data-theme="brainrot"] nav.main-nav a {
+  color: #1a0033 !important;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 6px 12px;
+  margin: 0 2px;
+  border-radius: 999px;
+  border: 2px solid #1a0033;
+  transition: transform 0.12s, background 0.12s;
+}
+[data-theme="brainrot"] nav.main-nav a:hover {
+  background: #ffe600;
+  transform: translateY(-2px) rotate(-1deg);
+  border-bottom: 2px solid #1a0033 !important;
+}
+
+[data-theme="brainrot"] .ticker {
+  background: #1a0033;
+  color: #ffe600;
+  border-top: 3px solid #1a0033;
+  border-bottom: 3px solid #1a0033;
+  font-family: "Archivo Black", system-ui, sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+[data-theme="brainrot"] .ticker .ticker-tag {
+  background: #ff4d8d;
+  color: #fff;
+  padding: 1px 8px;
+  border-radius: 6px;
+  margin: 0 4px;
+}
+
+[data-theme="brainrot"] h1, [data-theme="brainrot"] h2, [data-theme="brainrot"] h3 {
+  font-family: "Archivo Black", "Inter", system-ui, sans-serif;
+  color: #1a0033;
+  letter-spacing: -0.01em;
+}
+
+[data-theme="brainrot"] a { color: #c4002b; }
+[data-theme="brainrot"] a:hover { color: #ff4d8d; border-bottom-color: #ffe600; }
+
+[data-theme="brainrot"] .news-card,
+[data-theme="brainrot"] article.news-article,
+[data-theme="brainrot"] .feature-hero .secondary .sec-card,
+[data-theme="brainrot"] section,
+[data-theme="brainrot"] .pill-row > *,
+[data-theme="brainrot"] .stats-grid > div {
+  background: #ffffff;
+  border: 3px solid #1a0033;
+  border-radius: 18px;
+  box-shadow: 5px 5px 0 #ff4d8d;
+}
+
+[data-theme="brainrot"] .news-card:hover,
+[data-theme="brainrot"] .feature-hero .secondary .sec-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 #00b8a3;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+[data-theme="brainrot"] .feature-hero .lead {
+  background: linear-gradient(135deg, #ffe600 0%, #ff4d8d 50%, #5bc8ff 100%);
+  border: 4px solid #1a0033;
+  border-radius: 22px;
+  padding: 32px;
+  box-shadow: 8px 8px 0 #1a0033;
+}
+[data-theme="brainrot"] .feature-hero .lead h1 a {
+  color: #1a0033;
+  font-family: "Archivo Black", system-ui, sans-serif;
+}
+[data-theme="brainrot"] .feature-hero .lead p,
+[data-theme="brainrot"] .feature-hero .lead .kicker {
+  color: #1a0033;
+  font-weight: 600;
+}
+
+[data-theme="brainrot"] .site-footer {
+  background: linear-gradient(90deg, #5bc8ff 0%, #b6ff5b 50%, #ffe600 100%);
+  border-top: 4px solid #1a0033;
+  color: #1a0033;
+  padding: 32px 0;
+}
+[data-theme="brainrot"] .site-footer a { color: #1a0033; font-weight: 700; }
+[data-theme="brainrot"] .footer-ticker {
+  background: #ff4d8d;
+  color: #fff;
+  padding: 2px 10px;
+  border-radius: 8px;
+}
+
+/* "Why rebrand" banner — sits above content on every page */
+.rebrand-banner {
+  background: linear-gradient(90deg, #ff4d8d, #ffe600, #b6ff5b);
+  border-bottom: 4px solid #1a0033;
+  padding: 14px 20px;
+  text-align: center;
+  font-family: "Archivo Black", "Inter", system-ui, sans-serif;
+  color: #1a0033;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.rebrand-banner a {
+  display: inline-block;
+  margin-left: 8px;
+  background: #1a0033;
+  color: #ffe600;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  text-decoration: none;
+  border-bottom: none !important;
+}
+.rebrand-banner a:hover { background: #c4002b; color: #fff; }

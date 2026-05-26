@@ -22,6 +22,11 @@ on:
           - morning
           - noon
           - evening
+      skip_fetch:
+        description: 'Skip news fetch (rebrand/style-only deploys)'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -47,6 +52,7 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Fetch and rewrite news
+        if: github.event.inputs.skip_fetch != 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python scripts/fetch_news.py
@@ -74,6 +80,7 @@ jobs:
         run: python scripts/blog_roundup.py --kind "${{ steps.roundup.outputs.kind }}"
 
       - name: Commit new content + dedup state
+        if: github.event.inputs.skip_fetch != 'true'
         run: |
           bash scripts/git_commit_push.sh \
             "auto: update news $(date -u +%Y-%m-%dT%H:%MZ)" \

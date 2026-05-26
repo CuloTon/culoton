@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>BRAINROT — site rebrand in progress</title>
+<meta name="description" content="CuloTon is rebranding to BRAINROT ($BRT). Same team, cleaner brand, fresh bag. Site coming back online shortly." />
+<meta property="og:title" content="BRAINROT — site rebrand in progress" />
+<meta property="og:description" content="CuloTon is rebranding to BRAINROT ($BRT). Same team, cleaner brand, fresh bag." />
+<meta property="og:image" content="/brainrot.png" />
+<link rel="icon" type="image/png" href="/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700;800&display=swap" />
+<style>
+  :root {
+    --pink: #ff4d8d;
+    --pink-dark: #c4002b;
+    --yellow: #ffe600;
+    --lime: #b6ff5b;
+    --sky: #5bc8ff;
+    --teal: #00b8a3;
+    --ink: #1a0033;
+    --cream: #fff8dc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    min-height: 100vh;
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 12% 14%, rgba(255, 230, 0, 0.55) 0%, transparent 38%),
+      radial-gradient(circle at 88% 18%, rgba(91, 200, 255, 0.55) 0%, transparent 40%),
+      radial-gradient(circle at 50% 92%, rgba(182, 255, 91, 0.50) 0%, transparent 42%),
+      radial-gradient(circle at 20% 60%, rgba(255, 77, 141, 0.40) 0%, transparent 40%),
+      var(--cream);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+  .strip {
+    background: linear-gradient(90deg, var(--pink) 0%, var(--yellow) 33%, var(--lime) 66%, var(--sky) 100%);
+    height: 12px;
+    border-bottom: 3px solid var(--ink);
+  }
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  .logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .logo-row img {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 28px;
+    border: 5px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--pink);
+    background: #fff;
+    padding: 4px;
+  }
+  .logo-text {
+    font-family: "Archivo Black", system-ui, sans-serif;
+    font-size: clamp(48px, 9vw, 92px);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    text-shadow: 4px 4px 0 #fff, 8px 8px 0 var(--pink);
+  }
+  .logo-text .rot { color: var(--pink-dark); }
+  .ticker-pill {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--yellow);
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-family: "Archivo Black", system-ui, sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--lime);
+  }
+  .center { text-align: center; }
+  .from-to {
+    margin: 8px auto 36px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .from-to .old {
+    text-decoration: line-through;
+    color: var(--ink);
+    opacity: 0.55;
+  }
+  .from-to .arrow {
+    display: inline-block;
+    margin: 0 12px;
+    font-weight: 800;
+    color: var(--pink-dark);
+  }
+  .from-to .new {
+    background: var(--yellow);
+    padding: 2px 12px;
+    border-radius: 8px;
+    border: 2px solid var(--ink);
+  }
+
+  .langs {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+  }
+  .langs button {
+    font-family: "Archivo Black", system-ui, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 3px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.12s, background 0.12s;
+  }
+  .langs button:hover { transform: translateY(-2px); background: var(--lime); }
+  .langs button.active { background: var(--ink); color: var(--yellow); }
+
+  .msg-card {
+    background: #fff;
+    border: 4px solid var(--ink);
+    border-radius: 22px;
+    padding: 28px 30px;
+    box-shadow: 8px 8px 0 var(--teal);
+    margin-bottom: 26px;
+  }
+  .msg-card h2 {
+    font-family: "Archivo Black", system-ui, sans-serif;
+    font-size: 24px;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+  .msg-card p {
+    font-size: 17px;
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+  .msg-card p:last-child { margin-bottom: 0; }
+  .msg-card strong { background: var(--yellow); padding: 0 4px; }
+  .msg-card .pull {
+    font-family: "Archivo Black", system-ui, sans-serif;
+    font-size: 20px;
+    background: linear-gradient(90deg, var(--pink), var(--yellow));
+    padding: 14px 18px;
+    border: 3px solid var(--ink);
+    border-radius: 14px;
+    margin: 16px 0;
+  }
+
+  .msg-group { display: none; }
+  .msg-group.active { display: block; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 14px;
+    color: var(--ink);
+    opacity: 0.7;
+    margin-top: 24px;
+  }
+  .footer-note a {
+    color: var(--pink-dark);
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid var(--pink);
+  }
+
+  .preview-cta {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .preview-cta a {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--yellow);
+    font-family: "Archivo Black", system-ui, sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 999px;
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--pink);
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .preview-cta a:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--pink); }
+  .preview-cta small {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    opacity: 0.65;
+  }
+
+  .tg-note {
+    text-align: center;
+    margin-top: 28px;
+    padding: 16px 20px;
+    background: var(--ink);
+    color: var(--yellow);
+    border-radius: 14px;
+    border: 3px solid var(--ink);
+    font-family: "Inter", system-ui, sans-serif;
+    font-weight: 700;
+  }
+  .tg-note .icon { font-size: 22px; vertical-align: middle; margin-right: 6px; }
+
+  @media (max-width: 600px) {
+    .logo-row img { width: 100px; height: 100px; }
+    .logo-text { font-size: 56px; }
+    .msg-card { padding: 22px 20px; }
+    .msg-card .pull { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+  <div class="strip"></div>
+
+  <div class="container">
+    <div class="logo-row">
+      <img src="/brainrot.png" alt="BRAINROT logo" />
+      <div>
+        <div class="logo-text">BRAIN<span class="rot">ROT</span></div>
+        <div class="center"><span class="ticker-pill">$BRT · ON TON</span></div>
+      </div>
+    </div>
+
+    <div class="from-to">
+      <span class="old">CuloTon · $CULOTON</span>
+      <span class="arrow">→</span>
+      <span class="new">BRAINROT · $BRT</span>
+    </div>
+
+    <div class="langs" id="langs">
+      <button data-lang="en" class="active">EN</button>
+      <button data-lang="ru">RU</button>
+      <button data-lang="pl">PL</button>
+      <button data-lang="de">DE</button>
+      <button data-lang="es">ES</button>
+      <button data-lang="uk">UK</button>
+    </div>
+
+    <!-- EN -->
+    <div class="msg-group active" data-lang="en">
+      <div class="msg-card">
+        <h2>We're rebranding 🧠</h2>
+        <p>CuloTon is now <strong>BRAINROT</strong> · ticker <strong>$BRT</strong>. Same team, same TON desk, fresh bag.</p>
+        <div class="pull">Two tokens under the old name. Almost zero holders. The name capped us. So we rebranded.</div>
+        <h2>Why BRAINROT?</h2>
+        <p>The portal stays as your <strong>informational support</strong> for the TON ecosystem — multilingual news, blog, ecosystem map. That part isn't changing.</p>
+        <p>But the token side needed a clean slate. <strong>$BRT is a pure FOMO meme play</strong> — no fake utility, no pretending to be serious. Just a meme token that lives in the brainrot economy of TON, alongside the news desk that brought you here.</p>
+        <p>Same humans. Cleaner brand. Coming back online shortly with the fresh look.</p>
+      </div>
+      <div class="tg-note"><span class="icon">🔒</span> Telegram comments locked for 7 days during rebrand. Bot is on a quiet retreat.</div>
+    </div>
+
+    <!-- RU -->
+    <div class="msg-group" data-lang="ru">
+      <div class="msg-card">
+        <h2>Мы делаем ребрендинг 🧠</h2>
+        <p>CuloTon теперь <strong>BRAINROT</strong> · тикер <strong>$BRT</strong>. Та же команда, тот же TON-десs, свежий заряд.</p>
+        <div class="pull">Два токена под старым именем. Почти ноль холдеров. Имя нас тормозило. Мы переименовались.</div>
+        <h2>Почему BRAINROT?</h2>
+        <p>Портал остаётся вашей <strong>информационной опорой</strong> по экосистеме TON — мультиязычные новости, блог, карта экосистемы. Эта часть не меняется.</p>
+        <p>Но токену нужна была чистая страница. <strong>$BRT — это чистый FOMO-мем</strong> без фальшивой utility, без претензий на серьёзность. Просто мем-токен, живущий в brainrot-экономике TON, рядом с новостным десом, который вас сюда привёл.</p>
+        <p>Те же люди. Чище бренд. Вернёмся онлайн скоро со свежим лицом.</p>
+      </div>
+      <div class="tg-note"><span class="icon">🔒</span> Комментарии в Telegram закрыты на 7 дней во время ребрендинга. Бот ушёл в тихий ретрит.</div>
+    </div>
+
+    <!-- PL -->
+    <div class="msg-group" data-lang="pl">
+      <div class="msg-card">
+        <h2>Robimy rebranding 🧠</h2>
+        <p>CuloTon to teraz <strong>BRAINROT</strong> · ticker <strong>$BRT</strong>. Ta sama ekipa, ten sam TON desk, świeży vibe.</p>
+        <div class="pull">Dwa tokeny pod starą nazwą. Prawie zero holderów. Nazwa nas blokowała. Więc zmieniamy brand.</div>
+        <h2>Dlaczego BRAINROT?</h2>
+        <p>Portal zostaje twoim <strong>wsparciem informacyjnym</strong> o ekosystemie TON — wielojęzyczne newsy, blog, mapa ekosystemu. To się nie zmienia.</p>
+        <p>Ale token potrzebował czystej karty. <strong>$BRT to czysta FOMO-meme zabawa</strong> — bez sztucznej utility, bez udawania powagi. Po prostu memecoin żyjący w brainrot-ekonomii TON, obok newsdeska który cię tu przyprowadził.</p>
+        <p>Ci sami ludzie. Czystszy brand. Wracamy online niedługo ze świeżym wyglądem.</p>
+      </div>
+      <div class="tg-note"><span class="icon">🔒</span> Komentarze na Telegramie zablokowane na 7 dni podczas rebrandingu. Bot poszedł na cichy reset.</div>
+    </div>
+
+    <!-- DE -->
+    <div class="msg-group" data-lang="de">
+      <div class="msg-card">
+        <h2>Wir machen Rebranding 🧠</h2>
+        <p>Aus CuloTon wird <strong>BRAINROT</strong> · Ticker <strong>$BRT</strong>. Gleiches Team, gleicher TON-Desk, frischer Vibe.</p>
+        <div class="pull">Zwei Tokens unter dem alten Namen. Fast null Holder. Der Name hat uns ausgebremst. Also: neue Marke.</div>
+        <h2>Warum BRAINROT?</h2>
+        <p>Das Portal bleibt deine <strong>Info-Stütze</strong> zum TON-Ökosystem — mehrsprachige News, Blog, Ökosystem-Karte. Daran ändert sich nichts.</p>
+        <p>Aber der Token brauchte einen Neustart. <strong>$BRT ist ein reines FOMO-Meme-Play</strong> — keine Pseudo-Utility, kein Ernst-Tun. Einfach ein Memecoin in der Brainrot-Ökonomie von TON, neben dem News-Desk, der dich hierher gebracht hat.</p>
+        <p>Gleiche Menschen. Sauberere Marke. Wir sind bald wieder online mit frischem Gesicht.</p>
+      </div>
+      <div class="tg-note"><span class="icon">🔒</span> Telegram-Kommentare für 7 Tage während des Rebrandings gesperrt. Der Bot macht eine stille Auszeit.</div>
+    </div>
+
+    <!-- ES -->
+    <div class="msg-group" data-lang="es">
+      <div class="msg-card">
+        <h2>Estamos cambiando de marca 🧠</h2>
+        <p>CuloTon ahora es <strong>BRAINROT</strong> · ticker <strong>$BRT</strong>. Mismo equipo, mismo TON desk, energía fresca.</p>
+        <div class="pull">Dos tokens bajo el nombre antiguo. Casi cero holders. El nombre nos limitaba. Así que cambiamos de marca.</div>
+        <h2>¿Por qué BRAINROT?</h2>
+        <p>El portal sigue siendo tu <strong>apoyo informativo</strong> sobre el ecosistema TON — noticias multilingües, blog, mapa del ecosistema. Eso no cambia.</p>
+        <p>Pero el token necesitaba empezar de cero. <strong>$BRT es un meme FOMO puro</strong> — sin utility fingida, sin pretender ser serio. Solo un memecoin que vive en la economía brainrot de TON, junto al news desk que te trajo aquí.</p>
+        <p>Las mismas personas. Marca más limpia. Volvemos pronto online con la cara fresca.</p>
+      </div>
+      <div class="tg-note"><span class="icon">🔒</span> Comentarios de Telegram bloqueados durante 7 días por el rebrand. El bot está de retiro silencioso.</div>
+    </div>
+
+    <!-- UK -->
+    <div class="msg-group" data-lang="uk">
+      <div class="msg-card">
+        <h2>Ми робимо ребрендинг 🧠</h2>
+        <p>CuloTon тепер <strong>BRAINROT</strong> · тикер <strong>$BRT</strong>. Та сама команда, той самий TON-десс, свіжий заряд.</p>
+        <div class="pull">Два токени під старою назвою. Майже нуль холдерів. Назва нас гальмувала. Тому — ребрендинг.</div>
+        <h2>Чому BRAINROT?</h2>
+        <p>Портал залишається вашою <strong>інформаційною опорою</strong> з екосистеми TON — багатомовні новини, блог, карта екосистеми. Це не змінюється.</p>
+        <p>Але токен потребував чистого старту. <strong>$BRT — це чиста FOMO-мем гра</strong> без штучної utility, без удавання серйозності. Просто мем-токен у brainrot-економіці TON, поруч із новинним десом, який вас сюди привів.</p>
+        <p>Ті самі люди. Чистіший бренд. Скоро повертаємось онлайн зі свіжим обличчям.</p>
+      </div>
+      <div class="tg-note"><span class="icon">🔒</span> Коментарі в Telegram заблоковані на 7 днів під час ребрендингу. Бот пішов у тихий ретрит.</div>
+    </div>
+
+    <div class="preview-cta">
+      <a href="/home">Preview the new BRAINROT site →</a>
+      <small>password required · friends &amp; team only</small>
+    </div>
+
+    <div class="footer-note">
+      $BRT contract address publishing soon · BRAINROT on TON · Same team, formerly known as CuloTon.
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var buttons = document.querySelectorAll('#langs button');
+      var groups = document.querySelectorAll('.msg-group');
+      function show(lang) {
+        buttons.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
+        groups.forEach(function (g) { g.classList.toggle('active', g.getAttribute('data-lang') === lang); });
+        try { localStorage.setItem('brainrot-lang', lang); } catch (_) {}
+        document.documentElement.setAttribute('lang', lang);
+      }
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () { show(b.getAttribute('data-lang')); });
+      });
+      // Auto-pick by browser locale if first visit
+      try {
+        var saved = localStorage.getItem('brainrot-lang');
+        if (saved) { show(saved); return; }
+        var nav = (navigator.language || 'en').slice(0, 2).toLowerCase();
+        var supported = ['en','ru','pl','de','es','uk'];
+        if (supported.indexOf(nav) !== -1) show(nav);
+      } catch (_) {}
+    })();
+  </script>
+</body>
+</html>

@@ -16,7 +16,7 @@ const {
   locale,
   title,
   description,
-  ogImage = '/culoton.jpeg',
+  ogImage = '/brainrot.png',
   pathWithoutLocale,
 } = Astro.props;
 
@@ -74,10 +74,9 @@ const alternates = LOCALES.map((loc) => ({
 
     <script is:inline>
       (function () {
-        // Single live theme — terminal. Switcher widget is hidden in CSS.
-        // Force-overwrite any prior localStorage value from when A/B/C/D/F were exposed.
-        document.documentElement.setAttribute('data-theme', 'terminal');
-        try { localStorage.setItem('culoton-theme', 'terminal'); } catch (_) {}
+        // BRAINROT rebrand — fresh cheerful theme.
+        document.documentElement.setAttribute('data-theme', 'brainrot');
+        try { localStorage.setItem('culoton-theme', 'brainrot'); } catch (_) {}
       })();
     </script>
     <script is:inline>
@@ -125,12 +124,12 @@ const alternates = LOCALES.map((loc) => ({
   <body>
     <header class="site-header" id="site-header">
       <div class="inner">
-        <a href={localizedPath(locale, '/')} class="logo">
-          <img src="/culoton.jpeg" alt="CULO TON logo" />
+        <a href={locale === 'en' ? '/home' : localizedPath(locale, '/')} class="logo">
+          <img src="/brainrot.png" alt="BRAINROT logo" />
           <div>
-            <span class="brand-culo">Culo</span><span class="brand-ton">Ton</span>
+            <span class="brand-culo">BRAIN</span><span class="brand-ton">ROT</span>
           </div>
-          <span class="masthead-tag">— TON Desk</span>
+          <span class="masthead-tag">— TON Desk · $BRT</span>
         </a>
         <button
           type="button"
@@ -223,15 +222,26 @@ const alternates = LOCALES.map((loc) => ({
 
     <div class="ticker" aria-hidden="true">
       <div class="track">
+        <span><span class="ticker-tag">$BRT</span> brainrot economy on TON</span>
+        <span>formerly known as <span class="ticker-tag">CuloTon</span> — same team, fresh bag</span>
         <span><span class="ticker-tag">$TON</span> tracking telegram-driven flows</span>
-        <span><span class="ticker-tag">$CULOTON</span> native token of the desk</span>
-        <span>edited by <span class="ticker-tag">CuloScribe</span> AI</span>
-        <span><span class="ticker-tag">desk</span> covers ton ecosystem 24/7</span>
+        <span>edited by <span class="ticker-tag">BrainScribe</span> AI</span>
+        <span>stay brainrotted · more brt in the bag</span>
+        <span><span class="ticker-tag">$BRT</span> brainrot economy on TON</span>
+        <span>formerly known as <span class="ticker-tag">CuloTon</span> — same team, fresh bag</span>
         <span><span class="ticker-tag">$TON</span> tracking telegram-driven flows</span>
-        <span><span class="ticker-tag">$CULOTON</span> native token of the desk</span>
-        <span>edited by <span class="ticker-tag">CuloScribe</span> AI</span>
-        <span><span class="ticker-tag">desk</span> covers ton ecosystem 24/7</span>
+        <span>edited by <span class="ticker-tag">BrainScribe</span> AI</span>
+        <span>stay brainrotted · more brt in the bag</span>
       </div>
+    </div>
+
+    <div class="rebrand-banner">
+      {locale === 'en' && <>🧠 We rebranded — CuloTon is now <strong>BRAINROT</strong> · ticker <strong>$BRT</strong>. Two tokens didn't catch under the old name. Same team, cleaner brand, fresh bag. Pure FOMO meme energy — the portal stays as your informational support for the TON ecosystem.</>}
+      {locale === 'ru' && <>🧠 Ребрендинг — CuloTon теперь <strong>BRAINROT</strong> · тикер <strong>$BRT</strong>. Под старым именем два токена не взлетели. Та же команда, чище бренд, свежий заряд. Чистая FOMO-меметика — портал остаётся вашей информационной опорой по экосистеме TON.</>}
+      {locale === 'pl' && <>🧠 Rebranding — CuloTon to teraz <strong>BRAINROT</strong> · ticker <strong>$BRT</strong>. Pod starą nazwą dwa tokeny nie złapały. Ta sama ekipa, czystszy brand, świeży vibe. Czysta FOMO-meme energia — portal zostaje twoim wsparciem informacyjnym o ekosystemie TON.</>}
+      {locale === 'de' && <>🧠 Rebranding — aus CuloTon wird <strong>BRAINROT</strong> · Ticker <strong>$BRT</strong>. Unter dem alten Namen zündeten zwei Tokens nicht. Gleiches Team, sauberere Marke, frischer Vibe. Pure FOMO-Meme-Energie — das Portal bleibt deine Info-Stütze zum TON-Ökosystem.</>}
+      {locale === 'es' && <>🧠 Rebranding — CuloTon ahora es <strong>BRAINROT</strong> · ticker <strong>$BRT</strong>. Bajo el nombre antiguo dos tokens no despegaron. Mismo equipo, marca más limpia, energía fresca. FOMO meme puro — el portal sigue siendo tu apoyo informativo sobre el ecosistema TON.</>}
+      {locale === 'uk' && <>🧠 Ребрендинг — CuloTon тепер <strong>BRAINROT</strong> · тикер <strong>$BRT</strong>. Під старою назвою два токени не злетіли. Та сама команда, чистіший бренд, свіжий заряд. Чиста FOMO-мем енергія — портал залишається вашою інформаційною опорою з екосистеми TON.</>}
     </div>
 
     <LaunchBanner locale={locale} />
