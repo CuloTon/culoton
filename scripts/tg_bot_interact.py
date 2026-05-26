@@ -10,7 +10,7 @@ Commands:
   /start, /help        — welcome + command list
   /news                — latest 7 EN stories (near-dupe headlines collapsed)
   /blog                — link to the latest BrainScribe roundup
-  /price ton|culoton   — live market data
+  /price ton|brt       — live market data
   /ask <question>      — Haiku Q&A grounded in the latest 50 EN news
   /points              — caller's score
   /leaderboard         — top 10 most active members (running total)
@@ -39,8 +39,6 @@ from pathlib import Path
 import yaml
 
 from _culo_market import (
-    CTAX_TAX,
-    fetch_ctax_data,
     fetch_culo_data,
     fmt_change,
     fmt_money,
@@ -91,8 +89,7 @@ COMMANDS_HELP = (
     "/blog — latest BrainScribe roundup\n\n"
     "💰 <b>Market</b>\n"
     "/price ton — live $TON price\n"
-    "/price brt — $BRT market data\n"
-    "/price ctax — $CTAX market data (tax token: 25b/15s, 50% holders)\n\n"
+    "/price brt — $BRT market data\n\n"
     "🤖 <b>Ask me anything</b>\n"
     "/ask &lt;question&gt; — anything about TON, BRAINROT, $BRT or sTONks; "
     f"light small-talk welcome too. <b>Limit: 1 per {ASK_COOLDOWN_MIN} min per user.</b>\n\n"
@@ -147,7 +144,7 @@ $BRT TOKEN
 - Brand: born from a long-running cross-chain meme; community-driven.
 
 CHANNELS
-- Web: https://brainrot-ton.fun (legacy mirror at https://culoton.fun)
+- Web: https://brainrot-ton.fun (legacy notice at https://culoton.fun)
 - Telegram (this bot): @brainrot_info_bot
 - Telegram community: https://t.me/culoton
 - X / Twitter: https://x.com/culoton_
@@ -440,7 +437,7 @@ def cmd_blog() -> str:
         f"{kind_emoji} <b>BrainScribe — {kind}</b>\n\n"
         f"<b>{title}</b>\n\n"
         f"{summary}\n\n"
-        f"👉 <a href=\"{url}\">Read on culoton.fun</a>"
+        f"👉 <a href=\"{url}\">Read on brainrot-ton.fun</a>"
     )
 
 
@@ -476,33 +473,7 @@ def cmd_price(arg: str) -> str:
             f"24h volume: {vol}\n\n"
             "Source: GeckoTerminal"
         )
-    if asset in ("ctax", "$ctax", "culotax", "$culotax"):
-        d = fetch_ctax_data()
-        tax_line = (
-            f"Tax: <b>{CTAX_TAX['buy']}%</b> buy · <b>{CTAX_TAX['sell']}%</b> sell · "
-            f"<b>{CTAX_TAX['holders_share']}%</b> of tax → holders"
-        )
-        if not d or d.get("price") is None:
-            return (
-                "💰 <b>$CTAX — companion tax token</b>\n\n"
-                f"{tax_line}\n\n"
-                "No DEX market data yet — token is freshly deployed, "
-                "ownership already renounced (admin = 0x0). Live price will appear "
-                "here as soon as a pool exists on GeckoTerminal."
-            )
-        price = fmt_money(d["price"])
-        change = fmt_change(d.get("change_h24"))
-        vol = fmt_money(d.get("vol_h24"))
-        valuation = fmt_money(d.get("valuation"))
-        return (
-            "💰 <b>$CTAX — live</b>\n\n"
-            f"Price: <b>{price}</b> ({change} 24h)\n"
-            f"FDV: {valuation}\n"
-            f"24h volume: {vol}\n\n"
-            f"{tax_line}\n\n"
-            "Source: GeckoTerminal"
-        )
-    return "Usage: /price ton  ·  /price brt  ·  /price ctax"
+    return "Usage: /price ton  ·  /price brt"
 
 
 def cmd_ask(question: str) -> str:

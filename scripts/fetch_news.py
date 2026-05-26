@@ -42,7 +42,7 @@ NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 MODEL = "claude-haiku-4-5-20251001"
 MAX_PER_SOURCE = 5
 RETRY_LIMIT = 2
-USER_AGENT = "BRAINROT-NewsBot/1.0 (+https://culoton.fun)"
+USER_AGENT = "BRAINROT-NewsBot/1.0 (+https://brainrot-ton.fun)"
 
 LOCALES = ("en", "ru", "pl", "de", "es", "uk")
 

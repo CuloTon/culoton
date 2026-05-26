@@ -172,9 +172,9 @@ def post_take_as_x_draft(take: str) -> None:
     if not tg_token or not drafts_chat:
         return
 
-    tweet = f"{take}\n\n#TON #CULOTON"
+    tweet = f"{take}\n\n#TON #BRAINROT"
     if len(tweet) > 280:
-        tweet = take[: 280 - len("\n\n#TON #CULOTON") - 1].rstrip() + "\n\n#TON #CULOTON"
+        tweet = take[: 280 - len("\n\n#TON #BRAINROT") - 1].rstrip() + "\n\n#TON #BRAINROT"
 
     intent_url = "https://twitter.com/intent/tweet?text=" + urllib.parse.quote(tweet, safe="")
     body = (

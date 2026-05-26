@@ -1,6 +1,6 @@
 """Shared $BRT market data helpers.
 
-Used by both telegram_notify.py and x_notify.py so price/FDV/volume
+Used by telegram_notify.py and x_notify.py so price/FDV/volume
 formatting and GeckoTerminal access stay in one place.
 """
 
@@ -11,14 +11,9 @@ import sys
 import urllib.request
 
 CULO_CONTRACT = "EQDsbT3_IfYbdN4hgDCFK8-AGQ7x0FpVspYPEN8sDpkm2PIh"
-CTAX_CONTRACT = "EQC4fCG7nZQiLSSoy7LUXj4EZhB092PC-pj1Upx5CJQUopY9"
 GECKO_NET = "ton"
 GECKO_API = "https://api.geckoterminal.com/api/v2"
 HTTP_TIMEOUT = 20
-
-# $CTAX is a separate tax-bearing companion token to $BRT. Tax:
-# 25% on buys, 15% on sells, 50% of taxes distributed to holders.
-CTAX_TAX = {"buy": 25, "sell": 15, "holders_share": 50}
 
 
 def http_get_json(url: str) -> dict | None:
@@ -130,8 +125,3 @@ def fetch_token_data(contract: str) -> dict | None:
 def fetch_culo_data() -> dict | None:
     """$BRT-specific shim — kept for callers that import the old name."""
     return fetch_token_data(CULO_CONTRACT)
-
-
-def fetch_ctax_data() -> dict | None:
-    """$CTAX-specific shim."""
-    return fetch_token_data(CTAX_CONTRACT)

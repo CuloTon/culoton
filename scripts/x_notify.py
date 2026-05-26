@@ -40,8 +40,6 @@ except ImportError:
     tweepy = None  # graceful no-op when dep missing
 
 from _culo_market import (  # noqa: E402
-    CTAX_TAX,
-    fetch_ctax_data,
     fetch_culo_data,
     fmt_change,
     fmt_money,
@@ -55,7 +53,7 @@ ROOT = Path(__file__).resolve().parent.parent
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 DB_PATH = Path(__file__).resolve().parent / "x_announced.db"
 
-SITE = "https://culoton.fun"
+SITE = "https://brainrot-ton.fun"
 URL_LEN = 23   # X shortens every URL through t.co; counts as 23 chars
 TWEET_MAX = 280
 
@@ -64,7 +62,7 @@ TWEET_MAX = 280
 #  - 1-2 randomly picked from a niche pool (rotates → no duplicate-content flag)
 #  - For news mode, also 1 article-specific tag if available in frontmatter
 #  - Hard cap at ~4 hashtags total — X starts treating 5+ as spam
-CORE_TAGS = ["#TON", "#CULOTON"]
+CORE_TAGS = ["#TON", "#BRAINROT"]
 
 NICHE_POOL = [
     "#CULO",
@@ -369,27 +367,10 @@ def post_mcap(client, delivery: str) -> int:
     hashtags = pick_hashtags(niche_count=2)
     url = f"{SITE}/culo"
 
-    # Companion $CTAX line — kept on a single row to fit X's 280-char
-    # budget. Shows live numbers when a pool exists, otherwise just the
-    # tax mechanic so the community knows about the token.
-    ctax = fetch_ctax_data()
-    if ctax and ctax.get("price") is not None:
-        ctax_pulse = "📈" if (ctax.get("change_h24") or 0) >= 0 else "📉"
-        ctax_line = (
-            f"$CTAX ({CTAX_TAX['buy']}b/{CTAX_TAX['sell']}s, {CTAX_TAX['holders_share']}%→holders): "
-            f"{ctax_pulse} {fmt_money(ctax['price'])} ({fmt_change(ctax['change_h24'])} 24h)"
-        )
-    else:
-        ctax_line = (
-            f"$CTAX companion: {CTAX_TAX['buy']}% buy / {CTAX_TAX['sell']}% sell tax, "
-            f"{CTAX_TAX['holders_share']}% → holders. Ownership renounced."
-        )
-
     body = (
         f"$BRT market pulse\n"
         f"{pulse} {fmt_money(data['price'])} ({fmt_change(data['change_h24'])} 24h)\n"
         f"FDV {fmt_money(data['valuation'])} · Vol {fmt_money(data['vol_h24'])}\n\n"
-        f"{ctax_line}\n\n"
         f"{tagline}\n\n"
         f"{hashtags}\n\n"
         f"{url}"

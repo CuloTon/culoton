@@ -38,7 +38,7 @@ from dotenv import load_dotenv
 
 ROOT = Path(__file__).resolve().parent.parent
 PULSE_DIR = ROOT / "web" / "src" / "content" / "pulse"
-SITE = "https://culoton.fun"
+SITE = "https://brainrot-ton.fun"
 CHAT_USERNAME = "stonksonton"
 LOOKBACK_HOURS = 8
 MAX_MESSAGES = 800
@@ -279,7 +279,7 @@ def post_teaser(payload: dict, *, slot: str, date_label: str, msg_count: int) ->
         f"<b>{html.escape(title)}</b>\n\n"
         f"{html.escape(summary)}\n\n"
         f"<i>{msg_count} messages from @{CHAT_USERNAME} in the last {LOOKBACK_HOURS}h.</i>\n\n"
-        f"👉 <a href=\"{url}\">Read on culoton.fun</a>"
+        f"👉 <a href=\"{url}\">Read on brainrot-ton.fun</a>"
     )
     import urllib.parse
     import urllib.request

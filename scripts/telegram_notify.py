@@ -8,7 +8,7 @@ Three modes:
   --mode news
       Picks the newest EN article that has not yet been announced,
       builds a multilingual digest (EN/RU/PL/DE title + summary +
-      link to the article on culoton.fun) and posts it. Marks the
+      link to the article on brainrot-ton.fun) and posts it. Marks the
       article as announced in scripts/announced.db.
 
   --mode mcap
@@ -50,15 +50,12 @@ DB_PATH = Path(__file__).resolve().parent / "announced.db"
 
 LOCALES = ("en", "ru", "pl", "de")
 FLAGS = {"en": "🇬🇧", "ru": "🇷🇺", "pl": "🇵🇱", "de": "🇩🇪"}
-SITE = "https://culoton.fun"
+SITE = "https://brainrot-ton.fun"
 GH_REPO_URL = "https://github.com/CuloTon/culoton"
 
 from _culo_market import (  # noqa: E402
-    CTAX_CONTRACT,
-    CTAX_TAX,
     CULO_CONTRACT,
     GECKO_NET,
-    fetch_ctax_data,
     fetch_culo_data,
     fmt_change,
     fmt_money,
@@ -207,7 +204,7 @@ def news_notify(token: str, chat_id: str) -> int:
         print(f"Article URL not live yet: {article_url} — skipping; will retry next cron.")
         return 0
 
-    parts: list[str] = ["🔥 <b>NEW ON CULOTON</b>", ""]
+    parts: list[str] = ["🔥 <b>NEW ON BRAINROT</b>", ""]
     for loc in LOCALES:
         if loc not in metas:
             continue
@@ -293,29 +290,6 @@ def mcap_notify(token: str, chat_id: str) -> int:
     if data.get("pool_addr"):
         parts.append(f"🔗 <a href=\"https://www.geckoterminal.com/{GECKO_NET}/pools/{data['pool_addr']}\">Chart on GeckoTerminal</a>")
     parts.append(f"💎 <b>CA:</b> <code>{CULO_CONTRACT}</code>")
-
-    # Companion tax-token block: $CTAX. Always show the tax line so the
-    # community can see the mechanic; live price only when a pool exists.
-    ctax = fetch_ctax_data()
-    parts.append("")
-    parts.append("🪙 <b>$CTAX — companion tax token</b>")
-    parts.append(
-        f"💸 Tax: <b>{CTAX_TAX['buy']}%</b> buy · <b>{CTAX_TAX['sell']}%</b> sell · "
-        f"<b>{CTAX_TAX['holders_share']}%</b> of tax → holders"
-    )
-    if ctax and ctax.get("price") is not None:
-        ctax_emoji = "📈" if (ctax.get("change_h24") or 0) >= 0 else "📉"
-        parts.append(
-            f"💵 {fmt_money(ctax['price'])} · "
-            f"{ctax_emoji} {fmt_change(ctax['change_h24'])} 24h · "
-            f"FDV {fmt_money(ctax['valuation'])} · "
-            f"Vol {fmt_money(ctax['vol_h24'])}"
-        )
-        if ctax.get("pool_addr"):
-            parts.append(f"🔗 <a href=\"https://www.geckoterminal.com/{GECKO_NET}/pools/{ctax['pool_addr']}\">$CTAX chart</a>")
-    else:
-        parts.append("📭 No DEX pool yet — fresh deploy, ownership already renounced.")
-    parts.append(f"💎 <b>CA:</b> <code>{CTAX_CONTRACT}</code>")
     parts.append("")
     parts.append(f"📰 <a href=\"{SITE}/culo\">Token info on BRAINROT</a>")
 
