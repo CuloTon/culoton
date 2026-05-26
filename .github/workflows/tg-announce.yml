@@ -11,6 +11,11 @@ on:
         description: 'Message for the public TG group (Telegram HTML allowed)'
         required: true
         type: string
+      photo_url:
+        description: 'Optional photo URL — if set, sends as photo+caption (max 1024 chars)'
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: read
@@ -38,4 +43,5 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           ANNOUNCE_TEXT: ${{ github.event.inputs.message }}
+          ANNOUNCE_PHOTO_URL: ${{ github.event.inputs.photo_url }}
         run: python scripts/tg_announce.py
