@@ -64,6 +64,13 @@ function fmt(d: Date) {
   title={t.site_title}
   description={t.site_description}
 >
+  <section class="home-hero">
+    <img class="hero-logo" src="/brainrot.png" alt="BRAINROT logo" />
+    <span class="home-pill">$BRT · ON TON · BRAINROT ECONOMY</span>
+    <h1 class="home-h1" set:html={t.hero_headline_html} />
+    <p class="home-sub">{t.hero_blurb}</p>
+  </section>
+
   <div class="container">
     {lead ? (
       <section class="feature-hero">
