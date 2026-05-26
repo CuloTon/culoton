@@ -1,4 +1,4 @@
-"""Interactive Telegram bot for CuloTon community.
+"""Interactive Telegram bot for BRAINROT community.
 
 Polled every 2 minutes from .github/workflows/tg-interact.yml.
 
@@ -9,7 +9,7 @@ Reads pending updates via getUpdates with persistent offset
 Commands:
   /start, /help        — welcome + command list
   /news                — latest 7 EN stories (near-dupe headlines collapsed)
-  /blog                — link to the latest CuloScribe roundup
+  /blog                — link to the latest BrainScribe roundup
   /price ton|culoton   — live market data
   /ask <question>      — Haiku Q&A grounded in the latest 50 EN news
   /points              — caller's score
@@ -63,7 +63,7 @@ from _tg_points import (
 ROOT = Path(__file__).resolve().parent.parent
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 BLOG_DIR = ROOT / "web" / "src" / "content" / "blog"
-SITE = "https://culoton.fun"
+SITE = "https://brainrot-ton.fun"
 RECAP_EVERY_N_MSGS = 10  # post a standings + rules recap every N group messages
 
 TG_API_TIMEOUT = 35  # > long-poll timeout below, with margin
@@ -83,18 +83,18 @@ ASK_COOLDOWN_NOTE = (
 )
 
 COMMANDS_HELP = (
-    "👋 <b>Welcome to CuloTon Desk</b>\n"
-    "I'm <b>@cscriber_bot</b> — the editorial AI for CuloTon, "
+    "👋 <b>Welcome to BRAINROT Desk</b>\n"
+    "I'm <b>@brainrot_info_bot</b> — the editorial AI for BRAINROT, "
     "covering the TON ecosystem 24/7.\n\n"
     "📰 <b>News</b>\n"
     "/news — the 7 latest TON stories\n"
-    "/blog — latest CuloScribe roundup\n\n"
+    "/blog — latest BrainScribe roundup\n\n"
     "💰 <b>Market</b>\n"
     "/price ton — live $TON price\n"
-    "/price culoton — $CULOTON market data\n"
+    "/price brt — $BRT market data\n"
     "/price ctax — $CTAX market data (tax token: 25b/15s, 50% holders)\n\n"
     "🤖 <b>Ask me anything</b>\n"
-    "/ask &lt;question&gt; — anything about TON, CuloTon, $CULOTON or sTONks; "
+    "/ask &lt;question&gt; — anything about TON, BRAINROT, $BRT or sTONks; "
     f"light small-talk welcome too. <b>Limit: 1 per {ASK_COOLDOWN_MIN} min per user.</b>\n\n"
     "🏆 <b>Activity & rewards</b>\n"
     "💬 Every message in the group = +1 pt (max once per 90s). /ask = +3. Cap 20 pts/day.\n"
@@ -103,22 +103,24 @@ COMMANDS_HELP = (
     "/leaderboard — top 10 most active members (running total)\n"
     "🎁 Rewards are discretionary — the dev may reward standout active members "
     "from time to time. No fixed or guaranteed payout.\n\n"
-    "🌐 <a href=\"https://culoton.fun\">culoton.fun</a>"
+    "🌐 <a href=\"https://brainrot-ton.fun\">brainrot-ton.fun</a>"
 )
 
 
 # ---------- Knowledge baked into /ask ---------------------------------------
 
 CULOTON_FACTS = """\
-CULO TON / $CULOTON — ground truth (always reply in English).
+CULO TON / $BRT — ground truth (always reply in English).
 
 PLATFORM
-- CuloTon (https://culoton.fun) is an English-language news desk covering the
-  TON Blockchain ecosystem. It is the editorial layer built around the
-  $CULOTON memecoin: legitimate TON content first, $CULOTON surfaced as the
+- BRAINROT (https://brainrot-ton.fun) is an English-language news desk covering
+  the TON Blockchain ecosystem. It is the editorial layer built around the
+  $BRT memecoin: legitimate TON content first, $BRT surfaced as the
   platform's native token (banner, /culo page, branding).
+- Note: the legacy domain culoton.fun stays online as a public rebrand notice
+  with the full story; the live project lives at brainrot-ton.fun.
 - Multilingual: every story exists in EN, RU, PL and DE — same slug, native
-  re-reporting (not translation) by CuloScribe.
+  re-reporting (not translation) by BrainScribe.
 - Cadence: ~24 news items/day, plus 3 editorial roundups every day
   (morning ~08:00 PL, noon ~13:00, evening ~19:00). Archive at /archive.
 - Stack (for the curious): Astro static site, Python ingest, Claude Haiku
@@ -126,22 +128,27 @@ PLATFORM
   github.com/CuloTon.
 
 PERSONA
-- You are CuloScribe — the AI editor. Witty, dry, professional. Never break
+- You are BrainScribe — the AI editor. Witty, dry, professional. Never break
   character to mention you are Claude.
 
-$CULOTON TOKEN
-- Memecoin on TON. Contract: EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc
+$BRT TOKEN
+- Memecoin on TON. Contract: EQDsbT3_IfYbdN4hgDCFK8-AGQ7x0FpVspYPEN8sDpkm2PIh
 - Track record: ~10,000X market-cap move on Polygon (2024), follow-through on
   SUI, then launched on TON in 2026 with this dedicated platform.
-- Relaunched in May 2026 as a tax-free token under the new ticker $CULOTON,
-  retiring the original $CULO contract. The relaunch was triggered by
-  consultations with senior figures in the TON ecosystem who endorsed the
-  project as developmental but required a token without TAX.
+- Relaunched on 2026-05-26 under the new ticker $BRT (BRAINROT), retiring the
+  prior CuloTon/$CULOTON brand. Reason for the rebrand: two members of the
+  Polish Telegram group impersonated the dedust team and pressured the dev
+  into halting the entire project; once the scam was uncovered, both accounts
+  were permanently banned and the project relaunched under a clean brand,
+  tied to a registered business.
+- Tokenomics decided by community poll (38 votes, closed): 25% buy tax + 25%
+  sell tax, with 50% of all tax revenue distributed to $BRT holders. The new
+  contract ships with this configuration.
 - Brand: born from a long-running cross-chain meme; community-driven.
 
 CHANNELS
-- Web: https://culoton.fun
-- Telegram (this bot): @cscriber_bot
+- Web: https://brainrot-ton.fun (legacy mirror at https://culoton.fun)
+- Telegram (this bot): @brainrot_info_bot
 - Telegram community: https://t.me/culoton
 - X / Twitter: https://x.com/culoton_
 
@@ -196,11 +203,11 @@ stonks.pump — THE LAUNCHPAD
 - Launch via @stonks_sniper_bot or stonkslabs.com/launch/ton
 - Manual: stonks-bot.gitbook.io/stonks-bot-manual/stonks.pump-launchpad
 
-$CULOTON RELATION
-- $CULOTON is the live token of the project (TON contract
-  EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc, tax-free). It is the
+$BRT RELATION
+- $BRT is the live token of the project (TON contract
+  EQDsbT3_IfYbdN4hgDCFK8-AGQ7x0FpVspYPEN8sDpkm2PIh, tax-free). It is the
   relaunched successor to the original $CULO contract, which was deployed via
-  stonks.pump and has since been retired. The CuloTon news desk is the
+  stonks.pump and has since been retired. The BRAINROT news desk is the
   editorial layer that the token sits inside.
 """
 
@@ -378,7 +385,7 @@ def fetch_ton_price() -> dict | None:
     """CoinGecko free endpoint — TON price + 24h change."""
     url = "https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "CuloTon-Bot/1.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": "BRAINROT-Bot/1.0"})
         with urllib.request.urlopen(req, timeout=TG_API_TIMEOUT) as r:
             data = json.loads(r.read().decode("utf-8"))
     except Exception as e:
@@ -423,14 +430,14 @@ def cmd_news() -> str:
 def cmd_blog() -> str:
     blog = latest_blog()
     if not blog:
-        return "📓 No blog roundup yet. CuloScribe drops them 3× daily."
+        return "📓 No blog roundup yet. BrainScribe drops them 3× daily."
     url = f"{SITE}/blog/{blog['slug']}/"
     title = html.escape(blog["title"])
     summary = html.escape(blog["summary"])
     kind_emoji = {"morning": "⚡", "noon": "☀️", "evening": "🌅"}.get(blog.get("kind", ""), "📓")
     kind = (blog.get("kind") or "").upper() or "ROUNDUP"
     return (
-        f"{kind_emoji} <b>CuloScribe — {kind}</b>\n\n"
+        f"{kind_emoji} <b>BrainScribe — {kind}</b>\n\n"
         f"<b>{title}</b>\n\n"
         f"{summary}\n\n"
         f"👉 <a href=\"{url}\">Read on culoton.fun</a>"
@@ -454,16 +461,16 @@ def cmd_price(arg: str) -> str:
             f"24h volume: {vol}\n\n"
             "Source: CoinGecko"
         )
-    if asset in ("culo", "$culo", "culoton", "$culoton"):
+    if asset in ("brt", "$brt", "brainrot", "$brainrot", "culo", "$culo", "culoton", "$culoton"):
         d = fetch_culo_data()
         if not d or d.get("price") is None:
-            return "💰 $CULOTON market data unavailable right now. Try again in a minute."
+            return "💰 $BRT market data unavailable right now. Try again in a minute."
         price = fmt_money(d["price"])
         change = fmt_change(d.get("change_h24"))
         vol = fmt_money(d.get("vol_h24"))
         valuation = fmt_money(d.get("valuation"))
         return (
-            "💰 <b>$CULOTON — live</b>\n\n"
+            "💰 <b>$BRT — live</b>\n\n"
             f"Price: <b>{price}</b> ({change} 24h)\n"
             f"FDV: {valuation}\n"
             f"24h volume: {vol}\n\n"
@@ -495,7 +502,7 @@ def cmd_price(arg: str) -> str:
             f"{tax_line}\n\n"
             "Source: GeckoTerminal"
         )
-    return "Usage: /price ton  ·  /price culoton  ·  /price ctax"
+    return "Usage: /price ton  ·  /price brt  ·  /price ctax"
 
 
 def cmd_ask(question: str) -> str:
@@ -522,17 +529,17 @@ def cmd_ask(question: str) -> str:
     context_block = "\n".join(context_lines) if context_lines else "(no recent news on file)"
 
     system = (
-        "You are CuloScribe, the AI editor of CuloTon — a TON-blockchain news desk.\n"
+        "You are BrainScribe, the AI editor of BRAINROT — a TON-blockchain news desk.\n"
         "\n"
         "WHAT YOU CAN ANSWER\n"
         "- Anything about the TON blockchain ecosystem (apps, protocols, news, "
         "trends, the chain itself).\n"
-        "- Anything about CuloTon, the $CULOTON token, this Telegram bot, the news "
+        "- Anything about BRAINROT, the $BRT token, this Telegram bot, the news "
         "platform, the brand and our channels — see CULOTON FACTS below.\n"
         "- Anything about sTONks and the stonks.pump launchpad — see STONKS "
         "FACTS below.\n"
         "- Friendly small talk: greetings, how-are-you, weather, mood, light "
-        "jokes. Keep it short (1-2 sentences) and on-vibe (dry CuloScribe wit).\n"
+        "jokes. Keep it short (1-2 sentences) and on-vibe (dry BrainScribe wit).\n"
         "\n"
         "WHAT YOU MUST REFUSE (politely, then redirect to /news /price /blog or "
         "an on-topic question)\n"
@@ -542,7 +549,7 @@ def cmd_ask(question: str) -> str:
         "- Personal data, doxxing, anything invasive about the user, the team, "
         "or third parties.\n"
         "- NSFW, illegal, hateful, manipulative requests.\n"
-        "- Off-topic rabbit holes unrelated to TON, CuloTon, sTONks or light "
+        "- Off-topic rabbit holes unrelated to TON, BRAINROT, sTONks or light "
         "small talk (politics, religion, medical, legal).\n"
         "\n"
         "STYLE\n"
@@ -554,7 +561,7 @@ def cmd_ask(question: str) -> str:
         "- Do not invent prices, dates, contract addresses, or quotes that are "
         "not in FACTS or NEWS CONTEXT. If unsure, say so.\n"
         "- Never break character to mention you are Claude or any other model. "
-        "You are CuloScribe.\n"
+        "You are BrainScribe.\n"
         "\n"
         "=== CULOTON FACTS ===\n"
         f"{CULOTON_FACTS}\n"
@@ -583,7 +590,7 @@ def cmd_ask(question: str) -> str:
         return f"🤖 The Q&A call failed: {html.escape(str(e)[:240])}"
 
     return (
-        f"🤖 <b>CuloScribe answers</b>\n\n"
+        f"🤖 <b>BrainScribe answers</b>\n\n"
         f"<i>Q: {html.escape(question.strip()[:200])}</i>\n\n"
         f"{html.escape(answer)}\n\n"
         f"{ASK_COOLDOWN_NOTE}"

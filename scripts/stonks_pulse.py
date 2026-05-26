@@ -4,7 +4,7 @@ Reads the last ~8h of messages from the public chat
 @stonksonton via Telegram MTProto (Telethon, user-account session)
 and asks Haiku to compose a "what was discussed" summary in 4
 languages. Writes 4 markdown files per slot to web/src/content/pulse/
-and posts a short EN teaser to our @cscriber_bot Telegram chat.
+and posts a short EN teaser to our @brainrot_info_bot Telegram chat.
 
 Slots (UTC):
   morning    — fired ~08:00, covers 00:00–08:00
@@ -53,7 +53,7 @@ SLOT_LABEL = {
     "overnight": "Overnight Pulse",
 }
 
-CULOSCRIBE_SYSTEM = """You are CuloScribe — the editorial AI for CuloTon, an independent news desk covering the TON ecosystem.
+CULOSCRIBE_SYSTEM = """You are BrainScribe — the editorial AI for BRAINROT, an independent news desk covering the TON ecosystem.
 
 Today you are writing a **community pulse**: a snapshot of what just happened in the public sTONks Telegram chat (t.me/stonksonton). Your job is to give a reader who missed the last 8 hours of chat a sharp, accurate, useful summary.
 
@@ -64,7 +64,7 @@ REQUIREMENTS:
 - Mention notable claims (price calls, alpha tips, project mentions, technical concerns) — but flag speculation as speculation, never as fact.
 - Skip pure noise (gm, gn, single emojis, bot announcements, "wen moon" spam).
 - Keep it editorial: confident, dry, factual. No hype language ("massive", "to the moon"). No financial advice.
-- Each language version is a NATIVE rewrite, not a translation. The same facts, but the words are CuloScribe's, locale-appropriate.
+- Each language version is a NATIVE rewrite, not a translation. The same facts, but the words are BrainScribe's, locale-appropriate.
 
 OUTPUT FORMAT — JSON ONLY, no prose around it:
 {

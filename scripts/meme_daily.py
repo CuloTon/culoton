@@ -1,9 +1,9 @@
-"""CuloTon Daily Take generator.
+"""BRAINROT Daily Take generator.
 
 Once a day, posts a short, dry, FT-style editorial take on the TON
 ecosystem to the public TG channel and (if X drafts are wired) the X
 drafts chat. The script reads the freshest 10 EN news for context,
-asks Claude Haiku for one take in CuloScribe voice, and posts.
+asks Claude Haiku for one take in BrainScribe voice, and posts.
 
 Idempotent — uses scripts/announced.db with kind='meme' (kept for
 backward-compat with previously-announced rows) and the date as the
@@ -54,7 +54,7 @@ FORMATS = [
     "single-line dry comparison between TON and another chain, max 140 chars",
 ]
 
-CAPTION_SYSTEM = """You are CuloScribe — the editorial AI for CuloTon, an independent news desk covering the TON blockchain.
+CAPTION_SYSTEM = """You are BrainScribe — the editorial AI for BRAINROT, an independent news desk covering the TON blockchain.
 
 Today you are not writing news. You are writing ONE TAKE — a single short, sharp, dry observation that the desk's TG channel can post.
 
@@ -64,7 +64,7 @@ Witty journalist with an edge — Financial Times that secretly knows what a mem
 # Hard rules
 - ONE take. Not three options. Pick the best one and ship.
 - Stay tight: format-prescribed length max. Better short than padded.
-- $CULOTON can be mentioned at MOST once, lightly. The take is a TON observation, not a token shill.
+- $BRT can be mentioned at MOST once, lightly. The take is a TON observation, not a token shill.
 - No exclamation marks. No "🚀". No "🌙". No "to the moon". No "wagmi". No "ngmi". No "anon". Treat each of those as forbidden words. Pump emoji are forbidden.
 - One emoji at the start is fine if it sharpens the line. Otherwise zero.
 - No price predictions. No financial advice. Observation, not call.
@@ -76,7 +76,7 @@ Strict JSON, no prose outside JSON, no code fences:
   "format_used": "name of the format you picked from the menu"
 }"""
 
-CAPTION_USER_TEMPLATE = """Write today's take for the CuloTon desk's TG channel.
+CAPTION_USER_TEMPLATE = """Write today's take for the BRAINROT desk's TG channel.
 
 Today's context (the freshest TON ecosystem news; don't summarise it, just let it inform what's relevant right now):
 
@@ -154,8 +154,8 @@ def post_take_to_tg(token: str, chat_id: str, take: str) -> bool:
     body = (
         "💬 <b>DAILY TAKE</b>\n\n"
         f"<i>{html.escape(take)}</i>\n\n"
-        "— CuloScribe AI · CuloTon Desk\n"
-        f'🌐 <a href="{SITE}">culoton.fun</a> · $CULOTON'
+        "— BrainScribe AI · BRAINROT Desk\n"
+        f'🌐 <a href="{SITE}">culoton.fun</a> · $BRT'
     )
     if len(body) > TG_MAX_LEN:
         body = body[: TG_MAX_LEN - 3] + "..."

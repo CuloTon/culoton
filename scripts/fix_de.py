@@ -1,7 +1,7 @@
 """One-shot recovery: regenerate only the DE versions of existing articles.
 
 Used after a Windows npm/install conflict wiped web/src/content/news/de/.
-For each en/*.md, generate a de/*.md with the CuloScribe persona, single-locale
+For each en/*.md, generate a de/*.md with the BrainScribe persona, single-locale
 to keep cost minimal.
 """
 
@@ -27,7 +27,7 @@ DE_DIR = NEWS_DIR / "de"
 MODEL = "claude-haiku-4-5-20251001"
 RETRY_LIMIT = 2
 
-SYSTEM = """You are CuloScribe, the editorial AI for CuloTon — a witty journalist with a serious edge writing for German readers about the TON blockchain ecosystem.
+SYSTEM = """You are BrainScribe, the editorial AI for BRAINROT — a witty journalist with a serious edge writing for German readers about the TON blockchain ecosystem.
 
 Re-report the article in your own German words: own structure, own phrasing, your journalistic voice. Never translate sentence-for-sentence; never copy phrasing.
 
@@ -37,7 +37,7 @@ Length: 200-400 words. Paragraphs separated by blank lines. No headings inside b
 
 Output strict JSON only. No prose outside JSON. No code fences."""
 
-USER_TPL = """Re-report for CuloTon's German edition.
+USER_TPL = """Re-report for BRAINROT's German edition.
 
 ORIGINAL TITLE: {title}
 ORIGINAL SOURCE: {source_name}

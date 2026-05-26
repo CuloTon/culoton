@@ -1,4 +1,4 @@
-"""Shared $CULOTON market data helpers.
+"""Shared $BRT market data helpers.
 
 Used by both telegram_notify.py and x_notify.py so price/FDV/volume
 formatting and GeckoTerminal access stay in one place.
@@ -10,13 +10,13 @@ import json
 import sys
 import urllib.request
 
-CULO_CONTRACT = "EQAYaqIikryTucQEz3IGRC62M7Eo4rzvduFAV5iWZ1b0A2Uc"
+CULO_CONTRACT = "EQDsbT3_IfYbdN4hgDCFK8-AGQ7x0FpVspYPEN8sDpkm2PIh"
 CTAX_CONTRACT = "EQC4fCG7nZQiLSSoy7LUXj4EZhB092PC-pj1Upx5CJQUopY9"
 GECKO_NET = "ton"
 GECKO_API = "https://api.geckoterminal.com/api/v2"
 HTTP_TIMEOUT = 20
 
-# $CTAX is a separate tax-bearing companion token to $CULOTON. Tax:
+# $CTAX is a separate tax-bearing companion token to $BRT. Tax:
 # 25% on buys, 15% on sells, 50% of taxes distributed to holders.
 CTAX_TAX = {"buy": 25, "sell": 15, "holders_share": 50}
 
@@ -24,7 +24,7 @@ CTAX_TAX = {"buy": 25, "sell": 15, "holders_share": 50}
 def http_get_json(url: str) -> dict | None:
     req = urllib.request.Request(
         url,
-        headers={"Accept": "application/json", "User-Agent": "CuloTon-Bot/1.0"},
+        headers={"Accept": "application/json", "User-Agent": "BRAINROT-Bot/1.0"},
     )
     try:
         with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as r:
@@ -128,7 +128,7 @@ def fetch_token_data(contract: str) -> dict | None:
 
 
 def fetch_culo_data() -> dict | None:
-    """$CULOTON-specific shim — kept for callers that import the old name."""
+    """$BRT-specific shim — kept for callers that import the old name."""
     return fetch_token_data(CULO_CONTRACT)
 
 

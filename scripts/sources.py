@@ -1,4 +1,4 @@
-"""RSS sources for CuloTon news aggregator.
+"""RSS sources for BRAINROT news aggregator.
 
 Each source has:
 - name: Display name shown in attribution

@@ -1,4 +1,4 @@
-"""CuloTon blog roundup generator.
+"""BRAINROT blog roundup generator.
 
 Three times a day (morning / noon / evening) read the most recent EN news
 and synthesise them into one editorial blog post in 4 languages.
@@ -44,7 +44,7 @@ KIND_HEADLINE = {
     "evening": "evening",
 }
 
-CULOSCRIBE_SYSTEM = """You are CuloScribe — the editorial AI for CuloTon, an independent news desk covering the TON blockchain ecosystem.
+CULOSCRIBE_SYSTEM = """You are BrainScribe — the editorial AI for BRAINROT, an independent news desk covering the TON blockchain ecosystem.
 
 Today you are not writing a news article. You are writing a **roundup blog post** — a single editorial brief that stitches together the most recent TON-ecosystem news into one read for someone who has been away for a few hours.
 
@@ -59,10 +59,10 @@ For market moves, security incidents, regulatory news and technical detail — s
 - Then 3-5 short sections separated by blank lines. Each section is one paragraph. Use **bold lead phrases** (NOT markdown headings) to mark each subtopic — e.g. "**On the validator front,** ..." or "**In DeFi,** ...". No "##" headings inside the body.
 - Close with one neutral sentence framing what to watch next. No calls to action, no investment advice.
 
-Do NOT mention $CULOTON inside the roundup body. The roundup is about TON, not the token. The site as a whole signals the brand; the editorial stays clean.
+Do NOT mention $BRT inside the roundup body. The roundup is about TON, not the token. The site as a whole signals the brand; the editorial stays clean.
 
 # Sourcing
-You will be given the full text of recent CuloTon news articles. Synthesise across them — show connections, group related events, distinguish what is confirmed from what is reported/speculative. You may quote a specific source name in passing (e.g. "according to BeInCrypto") but do not bullet-list every source. The roundup is a synthesis, not a digest.
+You will be given the full text of recent BRAINROT news articles. Synthesise across them — show connections, group related events, distinguish what is confirmed from what is reported/speculative. You may quote a specific source name in passing (e.g. "according to BeInCrypto") but do not bullet-list every source. The roundup is a synthesis, not a digest.
 
 If two articles disagree, briefly acknowledge the disagreement. If the period was quiet, the roundup is shorter and says so.
 
@@ -74,7 +74,7 @@ Strict JSON only. No prose outside JSON. No code fences."""
 
 CULOSCRIBE_USER_TEMPLATE = """Write the {kind} roundup for the TON ecosystem, dated {date_label}, in your editorial voice across four languages.
 
-The {n} most recent CuloTon articles are below, in reverse-chronological order. Synthesise them into one brief — group related events, show the dominant theme, mention names and numbers where useful, but do not list articles individually.
+The {n} most recent BRAINROT articles are below, in reverse-chronological order. Synthesise them into one brief — group related events, show the dominant theme, mention names and numbers where useful, but do not list articles individually.
 
 ARTICLES (newest first):
 
@@ -86,7 +86,7 @@ Output JSON with exactly these keys:
   "en": {{
     "title": "Editorial title for the {kind} roundup, max 80 chars, no clickbait",
     "summary": "1-2 sentence dek that captures the dominant theme, max 200 chars",
-    "body_markdown": "350-550 words, paragraphs separated by blank lines, bold lead phrases NOT headings, no $CULOTON references"
+    "body_markdown": "350-550 words, paragraphs separated by blank lines, bold lead phrases NOT headings, no $BRT references"
   }},
   "ru": {{
     "title": "Редакционный заголовок для {kind_label_ru} обзора, max 80 chars",

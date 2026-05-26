@@ -1,9 +1,9 @@
-"""CuloTon Telegram notifier.
+"""BRAINROT Telegram notifier.
 
 Three modes:
 
   --mode deploy --sha <sha> --author <name> --message <text>
-      Posts a "CuloTon update deployed" notice with commit link.
+      Posts a "BRAINROT update deployed" notice with commit link.
 
   --mode news
       Picks the newest EN article that has not yet been announced,
@@ -12,7 +12,7 @@ Three modes:
       article as announced in scripts/announced.db.
 
   --mode mcap
-      Fetches $CULOTON market data from GeckoTerminal (price, FDV,
+      Fetches $BRT market data from GeckoTerminal (price, FDV,
       24h change, 24h volume), builds a multilingual market-pulse
       message and posts it.
 
@@ -176,7 +176,7 @@ def load_locale_meta(slug: str) -> dict[str, tuple[str, str]]:
 def deploy_notify(token: str, chat_id: str, *, sha: str, message: str, author: str) -> int:
     first_line = message.strip().splitlines()[0] if message.strip() else "(no message)"
     text = (
-        f"🚀 <b>CuloTon update deployed</b>\n\n"
+        f"🚀 <b>BRAINROT update deployed</b>\n\n"
         f"{html.escape(first_line[:280])}\n\n"
         f"<b>By:</b> {html.escape(author)}\n"
         f"<b>Commit:</b> <a href=\"{GH_REPO_URL}/commit/{sha}\">{html.escape(sha[:7])}</a>\n"
@@ -215,7 +215,7 @@ def news_notify(token: str, chat_id: str) -> int:
         parts.append(f"{FLAGS[loc]} <b>{html.escape(title)}</b>")
         parts.append(f"<i>{html.escape(summary)}</i>")
         parts.append("")
-    parts.append(f"→ <a href=\"{article_url}\">Read on CuloTon</a>")
+    parts.append(f"→ <a href=\"{article_url}\">Read on BRAINROT</a>")
     text = "\n".join(parts)
     if len(text) > TG_MAX_LEN:
         text = text[: TG_MAX_LEN - 3] + "..."
@@ -239,32 +239,32 @@ def news_notify(token: str, chat_id: str) -> int:
 # bullish but not cringe — confident, not begging.
 FOMO_LINES = {
     "en": [
-        "TON's quietly building, $CULOTON is along for the ride.",
+        "TON's quietly building, $BRT is along for the ride.",
         "Early-stage memecoin on the fastest chain in crypto. You know the drill.",
         "Small cap, big chain, attentive crew. Don't sleep on this one.",
-        "While others chase noise, $CULOTON compounds on TON.",
-        "The native token of CuloTon — and we're just getting started.",
+        "While others chase noise, $BRT compounds on TON.",
+        "The native token of BRAINROT — and we're just getting started.",
     ],
     "ru": [
-        "TON тихо строится, $CULOTON едет вместе с ним.",
+        "TON тихо строится, $BRT едет вместе с ним.",
         "Ранний мем-токен на одной из самых быстрых сетей. Сами понимаете.",
         "Малая капа, большая сеть, внимательная команда. Не упустите.",
-        "Пока другие гоняются за шумом, $CULOTON копится на TON.",
-        "Нативный токен CuloTon — и мы только разогреваемся.",
+        "Пока другие гоняются за шумом, $BRT копится на TON.",
+        "Нативный токен BRAINROT — и мы только разогреваемся.",
     ],
     "pl": [
-        "TON cicho buduje, $CULOTON jedzie razem z nim.",
+        "TON cicho buduje, $BRT jedzie razem z nim.",
         "Wczesny memecoin na jednej z najszybszych sieci. Wiecie, o co chodzi.",
         "Mała kapa, duża sieć, czujna ekipa. Nie przegapcie.",
-        "Inni gonią szum, $CULOTON składa się na TON.",
-        "Natywny token CuloTon — to dopiero rozgrzewka.",
+        "Inni gonią szum, $BRT składa się na TON.",
+        "Natywny token BRAINROT — to dopiero rozgrzewka.",
     ],
     "de": [
-        "TON baut still weiter, $CULOTON fährt mit.",
+        "TON baut still weiter, $BRT fährt mit.",
         "Früher Memecoin auf einer der schnellsten Chains. Ihr wisst Bescheid.",
         "Small cap, großer Chain, aufmerksame Crew. Nicht verschlafen.",
-        "Andere jagen Lärm — $CULOTON baut auf TON.",
-        "Der native Token von CuloTon — und wir fangen gerade erst an.",
+        "Andere jagen Lärm — $BRT baut auf TON.",
+        "Der native Token von BRAINROT — und wir fangen gerade erst an.",
     ],
 }
 
@@ -273,12 +273,12 @@ def mcap_notify(token: str, chat_id: str) -> int:
     import random
     data = fetch_culo_data()
     if not data or data["price"] is None:
-        print("Could not fetch $CULOTON data from GeckoTerminal — skipping.", file=sys.stderr)
+        print("Could not fetch $BRT data from GeckoTerminal — skipping.", file=sys.stderr)
         return 0  # soft skip — don't fail the workflow
 
     pulse_emoji = "📈" if (data["change_h24"] or 0) >= 0 else "📉"
     parts = [
-        f"📊 <b>$CULOTON MARKET PULSE</b>",
+        f"📊 <b>$BRT MARKET PULSE</b>",
         "",
         f"💵 <b>Price:</b> {fmt_money(data['price'])}",
         f"{pulse_emoji} <b>24h:</b> {fmt_change(data['change_h24'])}",
@@ -317,7 +317,7 @@ def mcap_notify(token: str, chat_id: str) -> int:
         parts.append("📭 No DEX pool yet — fresh deploy, ownership already renounced.")
     parts.append(f"💎 <b>CA:</b> <code>{CTAX_CONTRACT}</code>")
     parts.append("")
-    parts.append(f"📰 <a href=\"{SITE}/culo\">Token info on CuloTon</a>")
+    parts.append(f"📰 <a href=\"{SITE}/culo\">Token info on BRAINROT</a>")
 
     text = "\n".join(parts)
     if len(text) > TG_MAX_LEN:
@@ -416,7 +416,7 @@ def digest_notify(token: str, chat_id: str, kind: str = "evening") -> int:
         if summary:
             parts.append(f"<i>{html.escape(summary)}</i>")
         parts.append("")
-    parts.append(f"→ <a href=\"{blog_url}\">Read full roundup on CuloTon</a>")
+    parts.append(f"→ <a href=\"{blog_url}\">Read full roundup on BRAINROT</a>")
     text = "\n".join(parts)
     if len(text) > TG_MAX_LEN:
         text = text[: TG_MAX_LEN - 3] + "..."

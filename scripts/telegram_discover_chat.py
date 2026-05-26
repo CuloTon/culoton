@@ -52,7 +52,7 @@ def main() -> int:
         kind = chat.get("type", "?")
         title = chat.get("title") or chat.get("username") or chat.get("first_name") or "(unnamed)"
         print(f"  chat_id = {cid}    type = {kind:<10} title = {title}")
-    print("\nUse the 'chat_id' of your CuloTon group as the TELEGRAM_CHAT_ID secret.")
+    print("\nUse the 'chat_id' of your BRAINROT group as the TELEGRAM_CHAT_ID secret.")
     return 0
 
 

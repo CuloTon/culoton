@@ -3,7 +3,7 @@
 Run manually after the workflow lands:
   TELEGRAM_BOT_TOKEN=... python scripts/tg_set_commands.py
 
-This populates the in-app "/" autocomplete menu in @cscriber_bot
+This populates the in-app "/" autocomplete menu in @brainrot_info_bot
 and sets the about-bot blurb shown when users tap on the bot info.
 """
 
@@ -21,17 +21,17 @@ API_BASE = "https://api.telegram.org/bot"
 COMMANDS = [
     {"command": "help", "description": "Show all commands"},
     {"command": "news", "description": "Top 5 stories from the last 6h"},
-    {"command": "blog", "description": "Latest CuloScribe roundup"},
-    {"command": "price", "description": "Live $TON or $CULOTON market data"},
-    {"command": "ask", "description": "Ask CuloScribe anything (AI Q&A)"},
+    {"command": "blog", "description": "Latest BrainScribe roundup"},
+    {"command": "price", "description": "Live $TON or $BRT market data"},
+    {"command": "ask", "description": "Ask BrainScribe anything (AI Q&A)"},
     {"command": "points", "description": "Your activity score"},
     {"command": "leaderboard", "description": "Top 10 active members this week"},
 ]
 
 DESCRIPTION = (
-    "CuloScribe — editorial AI for CuloTon, covering the TON ecosystem "
+    "BrainScribe — editorial AI for BRAINROT, covering the TON ecosystem "
     "24/7. Hit /help for the full command list. Top 3 active members each "
-    "week win prizes. culoton.fun"
+    "week win prizes. brainrot-ton.fun"
 )
 
 SHORT_DESCRIPTION = (

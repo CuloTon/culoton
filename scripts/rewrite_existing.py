@@ -1,15 +1,15 @@
-"""One-off: re-rewrite existing English articles through the CuloScribe
+"""One-off: re-rewrite existing English articles through the BrainScribe
 multilingual prompt and produce RU/PL/DE companions.
 
 Source data:
 - web/src/content/news/en/*.md (already AI-rewritten English versions)
 - We treat each existing body as the "source material" for re-reporting.
-  Quality limit: AI rewriting AI. Acceptable for backfill of pre-CuloScribe
+  Quality limit: AI rewriting AI. Acceptable for backfill of pre-BrainScribe
   articles. New articles fetched via fetch_news.py go through the full
-  CuloScribe pass directly from RSS source content.
+  BrainScribe pass directly from RSS source content.
 
 Output:
-- Overwrites en/<slug>.md with the new CuloScribe English version
+- Overwrites en/<slug>.md with the new BrainScribe English version
 - Writes ru/, pl/, de/<slug>.md with the new translations
 - Preserves slug, date, source_name, source_url, original_url
 """
@@ -38,7 +38,7 @@ RETRY_LIMIT = 2
 LOCALES = ("en", "ru", "pl", "de", "es", "uk")
 
 # Same prompts as fetch_news.py — keep in sync.
-CULOSCRIBE_SYSTEM = """You are CuloScribe — the editorial AI for CuloTon, an independent news desk covering the TON blockchain ecosystem.
+CULOSCRIBE_SYSTEM = """You are BrainScribe — the editorial AI for BRAINROT, an independent news desk covering the TON blockchain ecosystem.
 
 # Voice
 You are a witty journalist with a serious edge. Think Financial Times reporter who sometimes lets a sharp observation slip in. Your default register is clear, factual, journalistic. You add a light wry note where it fits — especially for community, memecoin, or culture stories — but you stay strictly serious for:
@@ -69,7 +69,7 @@ Each language version: 200-400 words in body_markdown. Paragraphs separated by b
 # Output format
 Strict JSON only. No prose outside JSON. No code fences."""
 
-CULOSCRIBE_USER_TEMPLATE = """Re-report the following TON-related article for CuloTon, in your own words, in six languages.
+CULOSCRIBE_USER_TEMPLATE = """Re-report the following TON-related article for BRAINROT, in your own words, in six languages.
 
 ORIGINAL TITLE: {title}
 ORIGINAL SOURCE: {source_name}

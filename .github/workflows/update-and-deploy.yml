@@ -162,9 +162,7 @@ jobs:
             scripts/announced.db
 
       - name: Telegram deploy notification (skip bot commits)
-        # 2026-05-26: BRAINROT rebrand freeze — bot SILENT until user gives signal after new $BRT CA.
-        # Re-enable by removing this `if: false &&`.
-        if: false && success()
+        if: success()
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

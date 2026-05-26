@@ -1,10 +1,10 @@
-"""CuloTon news fetcher — multilingual edition (EN/RU/PL/DE/ES/UK).
+"""BRAINROT news fetcher — multilingual edition (EN/RU/PL/DE/ES/UK).
 
 Pipeline:
 1. Pull RSS feeds from sources.py
 2. Skip entries already in seen.db (dedup by canonical URL)
 3. Filter by keywords if source defines them
-4. Rewrite each new entry through Claude Haiku 4.5 in CuloScribe voice —
+4. Rewrite each new entry through Claude Haiku 4.5 in BrainScribe voice —
    one API call returns the article in EN, RU, PL and DE.
 5. Write four markdown files (one per locale) with shared slug and metadata
    to web/src/content/news/{locale}/
@@ -42,11 +42,11 @@ NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 MODEL = "claude-haiku-4-5-20251001"
 MAX_PER_SOURCE = 5
 RETRY_LIMIT = 2
-USER_AGENT = "CuloTon-NewsBot/1.0 (+https://culoton.fun)"
+USER_AGENT = "BRAINROT-NewsBot/1.0 (+https://culoton.fun)"
 
 LOCALES = ("en", "ru", "pl", "de", "es", "uk")
 
-CULOSCRIBE_SYSTEM = """You are CuloScribe — the editorial AI for CuloTon, an independent news desk covering the TON blockchain ecosystem.
+CULOSCRIBE_SYSTEM = """You are BrainScribe — the editorial AI for BRAINROT, an independent news desk covering the TON blockchain ecosystem.
 
 # Voice
 You are a witty journalist with a serious edge. Think Financial Times reporter who sometimes lets a sharp observation slip in. Your default register is clear, factual, journalistic. You add a light wry note where it fits — especially for community, memecoin, or culture stories — but you stay strictly serious for:
@@ -77,7 +77,7 @@ Each language version: 200-400 words in body_markdown. Paragraphs separated by b
 # Output format
 Strict JSON only. No prose outside JSON. No code fences."""
 
-CULOSCRIBE_USER_TEMPLATE = """Re-report the following TON-related article for CuloTon, in your own words, in four languages.
+CULOSCRIBE_USER_TEMPLATE = """Re-report the following TON-related article for BRAINROT, in your own words, in four languages.
 
 ORIGINAL TITLE: {title}
 ORIGINAL SOURCE: {source_name}

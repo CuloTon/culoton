@@ -1,12 +1,12 @@
-"""CuloTon "TON Tales" generator.
+"""BRAINROT "TON Tales" generator.
 
-Once a week, read the most recent CuloTon coverage (news + community pulse)
-and ask CuloScribe to weave it into ONE narrative piece — a chronicle / vignette
+Once a week, read the most recent BRAINROT coverage (news + community pulse)
+and ask BrainScribe to weave it into ONE narrative piece — a chronicle / vignette
 / essay with a story arc, told in a register the material supports (fun,
 interesting, or quietly inspiring). The facts stay real; only the framing and
 pacing are dramatized.
 
-If the material can't honestly support a worthwhile story, CuloScribe returns
+If the material can't honestly support a worthwhile story, BrainScribe returns
 `{"skip": true, "reason": "..."}` and nothing is written. Quality over cadence —
 a skipped week is fine.
 
@@ -51,7 +51,7 @@ PULSE_INPUT_COUNT = 3
 NEWS_BODY_CLIP = 1300
 PULSE_BODY_CLIP = 900
 
-CULOSCRIBE_SYSTEM = """You are CuloScribe — the editorial AI for CuloTon, an independent news desk covering the TON blockchain ecosystem.
+CULOSCRIBE_SYSTEM = """You are BrainScribe — the editorial AI for BRAINROT, an independent news desk covering the TON blockchain ecosystem.
 
 Today you are NOT writing a news article and NOT writing a roundup. You are writing a **TON Tale** — a single narrative piece that turns the recent TON-ecosystem developments you are given into ONE story with a real arc.
 
@@ -69,7 +69,7 @@ Today you are NOT writing a news article and NOT writing a roundup. You are writ
 If the material is thin, disjointed, or simply can't honestly carry a worthwhile story, do not force one. Return `{"skip": true, "reason": "<one sentence>"}` and write nothing. A skipped week is completely fine.
 
 # The token
-Do NOT shill or pitch $CULOTON inside the tale. The site as a whole carries the brand; the tale stays clean editorial.
+Do NOT shill or pitch $BRT inside the tale. The site as a whole carries the brand; the tale stays clean editorial.
 
 # Multilingual output
 Produce the tale in six languages: English (en), Russian (ru), Polish (pl), German (de), Spanish (es), Ukrainian (uk). Each version is a NATIVE piece — natural idiom and rhythm for that language, not a literal translation. The facts and the arc match across all six; the prose is independent.
@@ -80,7 +80,7 @@ Each language version: 600-1000 words in body_markdown. Paragraphs separated by 
 # Output format
 Strict JSON only. No prose outside JSON. No code fences."""
 
-CULOSCRIBE_USER_TEMPLATE = """Below is CuloTon's recent coverage of the TON ecosystem — {n_news} news items and {n_pulse} community-pulse notes, newest first. Read across all of it, find the thread, and write ONE TON Tale, in your editorial voice, across six languages. Or skip if it can't honestly carry a story.
+CULOSCRIBE_USER_TEMPLATE = """Below is BRAINROT's recent coverage of the TON ecosystem — {n_news} news items and {n_pulse} community-pulse notes, newest first. Read across all of it, find the thread, and write ONE TON Tale, in your editorial voice, across six languages. Or skip if it can't honestly carry a story.
 
 === RECENT NEWS (newest first) ===
 {news_block}
@@ -95,7 +95,7 @@ Output strict JSON. If you write a tale:
   "en": {{
     "title": "Evocative title for the tale, max 80 chars, no clickbait",
     "summary": "1-2 sentence dek that sets the scene, max 200 chars",
-    "body_markdown": "600-1000 words, paragraphs separated by blank lines, optional bold lead phrases, NO headings, no $CULOTON pitch"
+    "body_markdown": "600-1000 words, paragraphs separated by blank lines, optional bold lead phrases, NO headings, no $BRT pitch"
   }},
   "ru": {{ "title": "...", "summary": "...", "body_markdown": "..." }},
   "pl": {{ "title": "...", "summary": "...", "body_markdown": "..." }},
@@ -275,7 +275,7 @@ def main() -> int:
     )
 
     if data.get("skip"):
-        print(f"CuloScribe declined to write a tale: {data.get('reason')}")
+        print(f"BrainScribe declined to write a tale: {data.get('reason')}")
         return 0
 
     paths = write_tale(generated_at=now_utc, articles_covered=articles_covered, data=data)
