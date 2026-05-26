@@ -27,6 +27,16 @@ on:
         required: false
         default: false
         type: boolean
+      target_dir:
+        description: 'Remote FTP target dir (default: public_html for culoton.fun; for sibling domain use e.g. ../brainrot-ton.fun/public_html or domains/brainrot-ton.fun/public_html)'
+        required: false
+        default: 'public_html'
+        type: string
+      probe_ftp:
+        description: 'Probe FTP layout (ls / and a few candidate paths) without uploading. Use to discover correct target_dir.'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -102,12 +112,40 @@ jobs:
           PUBLIC_STATS_API: ${{ secrets.PUBLIC_STATS_API }}
         run: npm run build
 
-      - name: Deploy via Python FTPS
+      - name: Probe FTP layout (discovery only, no upload)
+        if: github.event.inputs.probe_ftp == 'true'
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: python scripts/deploy_ftp.py web/dist public_html
+        run: |
+          python <<'PY'
+          import os, ssl
+          from ftplib import FTP_TLS
+          ctx = ssl.create_default_context(); ctx.check_hostname = False; ctx.verify_mode = ssl.CERT_NONE
+          ftp = FTP_TLS(os.environ['FTP_HOST'], timeout=30, context=ctx)
+          ftp.login(os.environ['FTP_USER'], os.environ['FTP_PASSWORD'])
+          ftp.prot_p(); ftp.set_pasv(True)
+          print(f"PWD: {ftp.pwd()}")
+          def listit(p):
+              print(f"\n--- ls {p} ---")
+              try:
+                  ftp.cwd(p); ftp.dir()
+              except Exception as e:
+                  print(f"  ERR: {e}")
+          for path in ["/", "/public_html", "/domains", "/domains/brainrot-ton.fun", "/domains/brainrot-ton.fun/public_html", "/brainrot-ton.fun", "/brainrot-ton.fun/public_html"]:
+              listit(path)
+          ftp.quit()
+          PY
+
+      - name: Deploy via Python FTPS
+        if: github.event.inputs.probe_ftp != 'true'
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          TARGET_DIR: ${{ github.event.inputs.target_dir || 'public_html' }}
+        run: python scripts/deploy_ftp.py web/dist "$TARGET_DIR"
 
       - name: Post roundup digest to Telegram (${{ steps.roundup.outputs.kind }})
         if: success() && steps.roundup.outputs.kind != '' && steps.roundup_gen.outcome == 'success'
