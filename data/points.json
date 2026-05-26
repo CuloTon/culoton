@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 63,
+  "group_msg_count": 64,
   "users": {
     "1415897955": {
       "daily_day": "",
@@ -389,6 +389,16 @@
       "total_points": 0,
       "username": "@gemblin",
       "weekly_points": 0
+    },
+    "782697126": {
+      "daily_day": "2026-05-26",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-05-26T23:25:17.913521+00:00",
+      "last_msg_point_at": "2026-05-26T23:25:17.913532+00:00",
+      "total_points": 1,
+      "username": "@nftplayer",
+      "weekly_points": 1
     },
     "7831478280": {
       "daily_day": "",
