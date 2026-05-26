@@ -133,8 +133,15 @@ jobs:
                   ftp.cwd(p); ftp.dir()
               except Exception as e:
                   print(f"  ERR: {e}")
-          for path in ["/", "/public_html", "/domains", "/domains/brainrot-ton.fun", "/domains/brainrot-ton.fun/public_html", "/brainrot-ton.fun", "/brainrot-ton.fun/public_html"]:
+          for path in ["/", "/public_html", "/public_html/brainrot-ton.fun", "/public_html/brainrot-ton.fun/_astro", "/public_html/brainrot-ton.fun/news", "/public_html/brainrot-ton.fun/pl"]:
               listit(path)
+          # also count files inside subdir
+          try:
+              ftp.cwd("/public_html/brainrot-ton.fun")
+              names = ftp.nlst()
+              print(f"\n--- /public_html/brainrot-ton.fun: {len(names)} top-level entries ---")
+          except Exception as e:
+              print(f"  count err: {e}")
           ftp.quit()
           PY
 
