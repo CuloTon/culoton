@@ -37,6 +37,11 @@ on:
         required: false
         default: false
         type: boolean
+      use_master_ftp:
+        description: 'Use master FTP creds (srv96450) instead of culoton@culoton.fun — required when deploying to sibling domains like brainrot-ton.fun.'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -149,8 +154,8 @@ jobs:
         if: github.event.inputs.probe_ftp != 'true'
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
-          FTP_USER: ${{ secrets.FTP_USER }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_USER: ${{ github.event.inputs.use_master_ftp == 'true' && secrets.FTP_USER_MASTER || secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ github.event.inputs.use_master_ftp == 'true' && secrets.FTP_PASSWORD_MASTER || secrets.FTP_PASSWORD }}
           TARGET_DIR: ${{ github.event.inputs.target_dir || 'public_html' }}
         run: python scripts/deploy_ftp.py web/dist "$TARGET_DIR"
 
