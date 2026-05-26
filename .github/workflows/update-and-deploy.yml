@@ -159,6 +159,40 @@ jobs:
           TARGET_DIR: ${{ github.event.inputs.target_dir || 'public_html' }}
         run: python scripts/deploy_ftp.py web/dist "$TARGET_DIR"
 
+      - name: Post-deploy cleanup for brainrot-ton.fun (public, no auth, home as root)
+        if: github.event.inputs.probe_ftp != 'true' && contains(github.event.inputs.target_dir, 'brainrot-ton.fun')
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ github.event.inputs.use_master_ftp == 'true' && secrets.FTP_USER_MASTER || secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ github.event.inputs.use_master_ftp == 'true' && secrets.FTP_PASSWORD_MASTER || secrets.FTP_PASSWORD }}
+          TARGET_DIR: ${{ github.event.inputs.target_dir }}
+        run: |
+          python <<'PY'
+          import os, ssl, io
+          from ftplib import FTP_TLS, error_perm
+          ctx = ssl.create_default_context(); ctx.check_hostname = False; ctx.verify_mode = ssl.CERT_NONE
+          ftp = FTP_TLS(os.environ['FTP_HOST'], timeout=30, context=ctx)
+          ftp.login(os.environ['FTP_USER'], os.environ['FTP_PASSWORD'])
+          ftp.prot_p(); ftp.set_pasv(True)
+          root = "/" + os.environ['TARGET_DIR'].strip("/")
+          ftp.cwd(root)
+          for f in (".htaccess", ".htpasswd"):
+              try:
+                  ftp.delete(f); print(f"deleted {f}")
+              except error_perm as e:
+                  print(f"  skip {f}: {e}")
+          # Replace /index.html (maintenance) with /home/index.html (BRAINROT home)
+          buf = io.BytesIO()
+          try:
+              ftp.retrbinary("RETR home/index.html", buf.write)
+              data = buf.getvalue()
+              ftp.storbinary("STOR index.html", io.BytesIO(data))
+              print(f"index.html overwritten with home/index.html ({len(data)} bytes)")
+          except Exception as e:
+              print(f"  home->index swap failed: {e}")
+          ftp.quit()
+          PY
+
       - name: Post roundup digest to Telegram (${{ steps.roundup.outputs.kind }})
         if: success() && steps.roundup.outputs.kind != '' && steps.roundup_gen.outcome == 'success'
         env:
