@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="BrainScribe — BRAINROT AI editor portrait">
+  <title>BrainScribe — BRAINROT AI editor</title>
+  <desc>Pink cartoon brain wearing round reading glasses, holding a PRESS notepad. Mascot of the BRAINROT editorial AI.</desc>
+
+  <defs>
+    <radialGradient id="brainFill" cx="40%" cy="35%" r="68%">
+      <stop offset="0%" stop-color="#ffd4e0"/>
+      <stop offset="55%" stop-color="#ff9fbe"/>
+      <stop offset="100%" stop-color="#ed5f8c"/>
+    </radialGradient>
+    <linearGradient id="padFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fffcec"/>
+      <stop offset="100%" stop-color="#f3ead0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background -->
+  <rect x="0" y="0" width="600" height="600" fill="#ffffff"/>
+
+  <!-- soft drop shadow -->
+  <ellipse cx="305" cy="565" rx="200" ry="14" fill="#000000" opacity="0.10"/>
+
+  <!-- BRAIN BODY -->
+  <path d="M150 320
+           C 110 270, 115 195, 175 165
+           C 195 110, 280 88, 320 120
+           C 360 80, 450 92, 470 155
+           C 530 180, 540 260, 495 305
+           C 525 340, 510 410, 460 425
+           C 450 480, 380 510, 330 480
+           C 305 530, 230 528, 210 480
+           C 155 480, 110 435, 130 380
+           C 90 365, 95 320, 150 320 Z"
+        fill="url(#brainFill)"
+        stroke="#1a1408"
+        stroke-width="12"
+        stroke-linejoin="round"/>
+
+  <!-- BRAIN WRINKLES -->
+  <g fill="none" stroke="#1a1408" stroke-width="6" stroke-linecap="round">
+    <path d="M195 200 C 215 220, 220 250, 200 280"/>
+    <path d="M260 165 C 280 185, 280 220, 260 245"/>
+    <path d="M325 145 C 345 175, 340 215, 315 240"/>
+    <path d="M395 165 C 420 195, 415 240, 385 265"/>
+    <path d="M450 220 C 470 245, 465 285, 440 305"/>
+    <path d="M200 335 C 230 350, 260 350, 285 335"/>
+    <path d="M325 330 C 355 350, 390 350, 415 330"/>
+    <path d="M205 405 C 235 425, 280 425, 305 405"/>
+    <path d="M345 410 C 380 430, 415 425, 435 405"/>
+  </g>
+
+  <!-- cheek blush -->
+  <ellipse cx="200" cy="385" rx="26" ry="11" fill="#ff7aa6" opacity="0.55"/>
+  <ellipse cx="440" cy="385" rx="26" ry="11" fill="#ff7aa6" opacity="0.55"/>
+
+  <!-- READING GLASSES -->
+  <g stroke="#1a1408" stroke-width="11" fill="none" stroke-linecap="round">
+    <circle cx="235" cy="310" r="55" fill="#ffffff" fill-opacity="0.55"/>
+    <circle cx="385" cy="310" r="55" fill="#ffffff" fill-opacity="0.55"/>
+    <path d="M290 310 C 300 295, 320 295, 330 310"/>
+    <path d="M180 308 C 162 305, 150 320, 148 340"/>
+    <path d="M440 308 C 458 305, 470 320, 472 340"/>
+    <path d="M210 282 C 220 277, 232 280, 240 290" stroke="#ffffff" stroke-width="7"/>
+    <path d="M360 282 C 370 277, 382 280, 390 290" stroke="#ffffff" stroke-width="7"/>
+  </g>
+
+  <!-- EYES behind lenses -->
+  <g fill="#1a1408">
+    <circle cx="240" cy="318" r="11"/>
+    <circle cx="390" cy="318" r="11"/>
+    <circle cx="244" cy="314" r="3.5" fill="#ffffff"/>
+    <circle cx="394" cy="314" r="3.5" fill="#ffffff"/>
+  </g>
+
+  <!-- mouth — small smirk -->
+  <path d="M285 415 C 300 430, 320 430, 335 415"
+        fill="none"
+        stroke="#1a1408"
+        stroke-width="6"
+        stroke-linecap="round"/>
+
+  <!-- TONGUE (small, BRAINROT continuity) -->
+  <path d="M306 422 C 304 440, 320 445, 328 438 C 336 432, 336 422, 328 419 Z"
+        fill="#ff5d8a"
+        stroke="#1a1408"
+        stroke-width="5"
+        stroke-linejoin="round"/>
+
+  <!-- PRESS NOTEPAD (lower right, tucked under brain) -->
+  <g transform="translate(420 430) rotate(-10)">
+    <rect x="0" y="0" width="120" height="140" rx="6" fill="url(#padFill)" stroke="#1a1408" stroke-width="8"/>
+    <g stroke="#1a1408" stroke-width="5" fill="none">
+      <path d="M15 -4 L15 14"/>
+      <path d="M45 -4 L45 14"/>
+      <path d="M75 -4 L75 14"/>
+      <path d="M105 -4 L105 14"/>
+    </g>
+    <rect x="12" y="22" width="96" height="26" rx="3" fill="#1a1408"/>
+    <text x="60" y="42" font-family="Inter, Arial, sans-serif" font-weight="900" font-size="18" fill="#f0b400" text-anchor="middle" letter-spacing="3">PRESS</text>
+    <g stroke="#1a1408" stroke-width="3" stroke-linecap="round">
+      <line x1="16" y1="70" x2="104" y2="70"/>
+      <line x1="16" y1="88" x2="104" y2="88"/>
+      <line x1="16" y1="106" x2="86" y2="106"/>
+      <line x1="16" y1="124" x2="104" y2="124"/>
+    </g>
+  </g>
+
+  <!-- PENCIL (lower left, balancing composition) -->
+  <g transform="translate(60 460) rotate(-22)">
+    <rect x="0" y="0" width="150" height="22" fill="#f0b400" stroke="#1a1408" stroke-width="6"/>
+    <polygon points="150,0 184,11 150,22" fill="#ffe8b3" stroke="#1a1408" stroke-width="6" stroke-linejoin="round"/>
+    <polygon points="172,5 184,11 172,17" fill="#1a1408"/>
+    <rect x="-22" y="0" width="22" height="22" fill="#ff5d8a" stroke="#1a1408" stroke-width="6"/>
+    <line x1="40" y1="0" x2="40" y2="22" stroke="#1a1408" stroke-width="3"/>
+    <line x1="80" y1="0" x2="80" y2="22" stroke="#1a1408" stroke-width="3"/>
+    <line x1="120" y1="0" x2="120" y2="22" stroke="#1a1408" stroke-width="3"/>
+  </g>
+</svg>
