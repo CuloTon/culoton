@@ -24,11 +24,11 @@ const HOW = {
     h: 'Jak działa system CULO TON',
     intro: 'CULO TON to dwie rzeczy ściśle ze sobą sprzężone: redakcja newsowa o ekosystemie TON oraz token bez TAX siedzący w jej środku. Po redakcję ludzie przychodzą; token finansuje redakcję i nagradza społeczność budowaną wokół niej.',
     pillars: [
-      ['📰 Redakcja newsowa', 'CuloScribe, nasz redaktor AI, pobiera RSS-y z głównych publikacji o ekosystemie TON, odsiewa to co już opisaliśmy, i opowiada każdą historię własnymi słowami w czterech językach (EN/RU/PL/DE). Około 24 newsy dziennie plus trzy redakcyjne podsumowania (rano, południe, wieczór), które syntetyzują dany odcinek w jednym tekście.'],
+      ['📰 Redakcja newsowa', 'BrainScribe, nasz redaktor AI, pobiera RSS-y z głównych publikacji o ekosystemie TON, odsiewa to co już opisaliśmy, i opowiada każdą historię własnymi słowami w czterech językach (EN/RU/PL/DE). Około 24 newsy dziennie plus trzy redakcyjne podsumowania (rano, południe, wieczór), które syntetyzują dany odcinek w jednym tekście.'],
       ['🤖 Bot Telegramowy', '@cscriber_bot żyje na naszym czacie t.me/culoton. /news daje ostatnie 6h newsów. /price culoton pobiera dane rynkowe z GeckoTerminal na żywo. /ask odpowiada przez Claude Haiku z ostatnimi 50 newsami EN jako kontekstem. /points i /leaderboard śledzą aktywność, a dzienny /quiz spada o 17:00 czasu polskiego.'],
       ['🏆 Tygodniowa pula nagród', 'Najaktywniejszy członek tygodnia dostaje 5 TON, wypłacane w każdą niedzielę o 20:00 UTC. Aktywność = posty, wygrane quizy, użycie /ask, ranking. Bez farmienia — limit 20 punktów na osobę dziennie.'],
-      ['📡 Publikacja wielokanałowa', 'Każda historia leci automatycznie na Telegram (@culoton) i X (@culoton_). Market pulse dla $CULOTON wychodzi 4× dziennie na obu kanałach, dane z GeckoTerminal. Trzy podsumowania dziennie lądują na blogu culoton.fun/blog.'],
-      ['💎 Token $CULOTON', 'Jetton na TON bez TAX, kontrakt EQAYaqIikry…b0A2Uc. Token jest brandowym ramieniem platformy — nie jest papierem wartościowym ani produktem yieldowym. Holderzy dostają tę samą treść co wszyscy, a projekt finansuje rozwój z aktywności po stronie tokenu.'],
+      ['📡 Publikacja wielokanałowa', 'Każda historia leci automatycznie na Telegram (@culoton) i X (@culoton_). Market pulse dla $BRT wychodzi 4× dziennie na obu kanałach, dane z GeckoTerminal. Trzy podsumowania dziennie lądują na blogu brainrot-ton.fun/blog.'],
+      ['💎 Token $BRT', 'Jetton na TON bez TAX, kontrakt EQDsbT3…2PIh. Token jest brandowym ramieniem platformy — nie jest papierem wartościowym ani produktem yieldowym. Holderzy dostają tę samą treść co wszyscy, a projekt finansuje rozwój z aktywności po stronie tokenu.'],
     ],
     closer: 'Wszystko wychodzi z jednego repo GitHub, na cronie. Astro statyczne, Python ingest, Claude Haiku rewrites, GitHub Actions schedule, deploy FTP. Żadnych modów, żadnych shillerów, żadnych obietnic poza łańcuchem — kod otwarty na github.com/CuloTon.',
   },
@@ -36,11 +36,11 @@ const HOW = {
     h: 'Как работает система CULO TON',
     intro: 'CULO TON — это две вещи в одной связке: редакция новостей об экосистеме TON и tax-free мем-коин в её центре. Ради редакции люди приходят; токен её финансирует и вознаграждает сообщество, которое строится вокруг.',
     pillars: [
-      ['📰 Редакция', 'CuloScribe, наш AI-редактор, забирает RSS из основных публикаций об экосистеме TON, отсеивает уже освещённое и пересказывает каждую историю своим голосом на четырёх языках (EN/RU/PL/DE). Около 24 новостей в день плюс три редакционных дайджеста (утро, полдень, вечер), синтезирующих период в один материал.'],
+      ['📰 Редакция', 'BrainScribe, наш AI-редактор, забирает RSS из основных публикаций об экосистеме TON, отсеивает уже освещённое и пересказывает каждую историю своим голосом на четырёх языках (EN/RU/PL/DE). Около 24 новостей в день плюс три редакционных дайджеста (утро, полдень, вечер), синтезирующих период в один материал.'],
       ['🤖 Telegram-бот', '@cscriber_bot живёт в чате t.me/culoton. /news — последние 6ч новостей. /price culoton — рыночные данные с GeckoTerminal в реальном времени. /ask отвечает через Claude Haiku с последними 50 EN-новостями как контекстом. /points и /leaderboard отслеживают активность, ежедневный /quiz выпадает в 17:00 по польскому времени.'],
       ['🏆 Еженедельный призовой фонд', 'Самый активный участник недели получает 5 TON, выплата каждое воскресенье в 20:00 UTC. Активность = посты, победы в квизах, использование /ask, подъём в рейтинге. Без фарма — лимит 20 очков на человека в день.'],
-      ['📡 Публикация по каналам', 'Каждая история автоматически уходит в Telegram (@culoton) и X (@culoton_). Market pulse $CULOTON выходит 4 раза в день на обоих каналах, данные с GeckoTerminal. Три дайджеста в день оседают в блоге culoton.fun/blog.'],
-      ['💎 Токен $CULOTON', 'Jetton на TON без TAX, контракт EQAYaqIikry…b0A2Uc. Токен — это бренд-нога платформы, не ценная бумага и не yield-продукт. Холдеры получают тот же контент, что и все, а проект финансирует разработку через активность вокруг токена.'],
+      ['📡 Публикация по каналам', 'Каждая история автоматически уходит в Telegram (@culoton) и X (@culoton_). Market pulse $BRT выходит 4 раза в день на обоих каналах, данные с GeckoTerminal. Три дайджеста в день оседают в блоге brainrot-ton.fun/blog.'],
+      ['💎 Токен $BRT', 'Jetton на TON без TAX, контракт EQDsbT3…2PIh. Токен — это бренд-нога платформы, не ценная бумага и не yield-продукт. Холдеры получают тот же контент, что и все, а проект финансирует разработку через активность вокруг токена.'],
     ],
     closer: 'Всё выходит из одного GitHub-репозитория, по cron. Astro static, Python ingest, Claude Haiku rewrites, GitHub Actions schedule, FTP deploy. Без модов, без шиллеров, без обещаний вне цепочки — код открыт на github.com/CuloTon.',
   },
@@ -48,11 +48,11 @@ const HOW = {
     h: 'Wie das CULO TON System funktioniert',
     intro: 'CULO TON ist zweierlei, eng gekoppelt: eine Nachrichtenredaktion für das TON-Ökosystem und ein steuerfreier Memecoin in ihrer Mitte. Wegen der Redaktion kommen die Leute; der Token finanziert die Redaktion und belohnt die Community, die sich darum bildet.',
     pillars: [
-      ['📰 Die Redaktion', 'CuloScribe, unser KI-Redakteur, liest RSS-Feeds der wichtigsten TON-Publikationen, dedupliziert bereits Behandeltes und erzählt jede Story in eigener Stimme über vier Sprachen (EN/RU/PL/DE). Etwa 24 News am Tag plus drei redaktionelle Roundups (Morgen, Mittag, Abend), die den Zeitraum in einen Text bündeln.'],
+      ['📰 Die Redaktion', 'BrainScribe, unser KI-Redakteur, liest RSS-Feeds der wichtigsten TON-Publikationen, dedupliziert bereits Behandeltes und erzählt jede Story in eigener Stimme über vier Sprachen (EN/RU/PL/DE). Etwa 24 News am Tag plus drei redaktionelle Roundups (Morgen, Mittag, Abend), die den Zeitraum in einen Text bündeln.'],
       ['🤖 Der Telegram-Bot', '@cscriber_bot lebt im Chat t.me/culoton. /news liefert die News der letzten 6h. /price culoton zieht live Marktdaten von GeckoTerminal. /ask antwortet via Claude Haiku mit den letzten 50 EN-News als Kontext. /points und /leaderboard tracken Aktivität, das tägliche /quiz fällt um 17:00 PL.'],
       ['🏆 Wöchentlicher Preispool', 'Das aktivste Mitglied jede Woche erhält 5 TON, ausgezahlt jeden Sonntag um 20:00 UTC. Aktivität = Posts, Quiz-Siege, /ask-Nutzung, Leaderboard-Aufstieg. Kein Farming — Cap bei 20 Punkten pro Person und Tag.'],
-      ['📡 Cross-Channel-Publishing', 'Jede Story geht automatisch an Telegram (@culoton) und X (@culoton_). $CULOTON-Marktimpulse 4× täglich auf beiden Kanälen, Daten live von GeckoTerminal. Drei Roundups pro Tag landen im Blog auf culoton.fun/blog.'],
-      ['💎 Der $CULOTON-Token', 'Steuerfreies TON-Jetton, Vertrag EQAYaqIikry…b0A2Uc. Der Token ist das Brand-Bein der Plattform — kein Wertpapier und kein Yield-Produkt. Halter bekommen denselben Content wie alle, und das Projekt finanziert die Entwicklung über Token-seitige Aktivität.'],
+      ['📡 Cross-Channel-Publishing', 'Jede Story geht automatisch an Telegram (@culoton) und X (@culoton_). $BRT-Marktimpulse 4× täglich auf beiden Kanälen, Daten live von GeckoTerminal. Drei Roundups pro Tag landen im Blog auf brainrot-ton.fun/blog.'],
+      ['💎 Der $BRT-Token', 'Steuerfreies TON-Jetton, Vertrag EQDsbT3…2PIh. Der Token ist das Brand-Bein der Plattform — kein Wertpapier und kein Yield-Produkt. Halter bekommen denselben Content wie alle, und das Projekt finanziert die Entwicklung über Token-seitige Aktivität.'],
     ],
     closer: 'Alles läuft aus einem GitHub-Repo per Cron. Astro Static Site, Python-Ingest, Claude Haiku Rewrites, GitHub Actions Schedule, FTP-Deploy. Keine Mods, keine Shiller, keine Off-Chain-Versprechen — Code offen auf github.com/CuloTon.',
   },
@@ -63,7 +63,7 @@ const CTAX_TXT = {
   pl: {
     kicker: 'Token towarzyszący',
     h: '$CTAX — bliźniak z taksem',
-    intro: 'Obok $CULOTON projekt prowadzi też mały token towarzyszący — $CTAX (CuloTax). Jeśli $CULOTON to brandowy token bez TAX, który ma chodzić swobodnie, to $CTAX jest jego odpowiednikiem z TAX-em: każda transakcja płaci prowizję, a połowa każdej prowizji wraca prosto do dotychczasowych holderów.',
+    intro: 'Obok $BRT projekt prowadzi też mały token towarzyszący — $CTAX (CuloTax). Jeśli $BRT to brandowy token bez TAX, który ma chodzić swobodnie, to $CTAX jest jego odpowiednikiem z TAX-em: każda transakcja płaci prowizję, a połowa każdej prowizji wraca prosto do dotychczasowych holderów.',
     tax_h: 'Mechanika TAX',
     tax_rows: [
       ['25%', 'od każdego kupna', 'płaci kupujący do kontraktu'],
@@ -73,7 +73,7 @@ const CTAX_TXT = {
     locked_h: 'Już zablokowany',
     locked_p: 'Własność zrzeczona — admin to adres zerowy (0:0…0). Tokena nie można domintować, TAX-u nie da się zmienić, metadanych edytować. Supply jest hard-capowane on-chain na 100 000 000 000 $CTAX. Co widzisz, to zostaje.',
     why_h: 'Po co dwa tokeny?',
-    why_p: '$CULOTON zostaje czysty do transferów, tippingu, listingów na trasach DEX bez TAX-u. $CTAX wyłapuje ruch traderski — każdy spekulacyjny zakup czy sprzedaż wzmacnia długoterminowych holderów. Dwa tokeny, dwie role, jeden ekosystem.',
+    why_p: '$BRT zostaje czysty do transferów, tippingu, listingów na trasach DEX bez TAX-u. $CTAX wyłapuje ruch traderski — każdy spekulacyjny zakup czy sprzedaż wzmacnia długoterminowych holderów. Dwa tokeny, dwie role, jeden ekosystem.',
     cta_view: 'Zobacz na tonviewer',
     cta_chart: 'Wykres na GeckoTerminal',
     contract_label: 'Kontrakt CTAX',
@@ -81,7 +81,7 @@ const CTAX_TXT = {
   ru: {
     kicker: 'Токен-компаньон',
     h: '$CTAX — близнец с налогом',
-    intro: 'Помимо $CULOTON у проекта есть небольшой токен-компаньон — $CTAX (CuloTax). Если $CULOTON — это бренд-токен без налога, который должен ходить свободно, то $CTAX — его налоговый двойник: каждая сделка платит комиссию, и половина каждой комиссии возвращается прямо к текущим холдерам.',
+    intro: 'Помимо $BRT у проекта есть небольшой токен-компаньон — $CTAX (CuloTax). Если $BRT — это бренд-токен без налога, который должен ходить свободно, то $CTAX — его налоговый двойник: каждая сделка платит комиссию, и половина каждой комиссии возвращается прямо к текущим холдерам.',
     tax_h: 'Механика налога',
     tax_rows: [
       ['25%', 'с каждой покупки', 'платит покупатель в контракт'],
@@ -91,7 +91,7 @@ const CTAX_TXT = {
     locked_h: 'Уже залочен',
     locked_p: 'Владение отказано — admin это нулевой адрес (0:0…0). Токен нельзя домятить, налог нельзя изменить, метаданные нельзя редактировать. Supply жёстко зафиксирован on-chain на 100 000 000 000 $CTAX. Что видишь, то и остаётся.',
     why_h: 'Зачем два токена?',
-    why_p: '$CULOTON остаётся чистым для трансферов, чаевых, листингов на маршрутах DEX без налога. $CTAX ловит трейдерский поток — каждая спекулятивная покупка или продажа усиливает долгосрочных холдеров. Два токена, две роли, одна экосистема.',
+    why_p: '$BRT остаётся чистым для трансферов, чаевых, листингов на маршрутах DEX без налога. $CTAX ловит трейдерский поток — каждая спекулятивная покупка или продажа усиливает долгосрочных холдеров. Два токена, две роли, одна экосистема.',
     cta_view: 'Смотреть на tonviewer',
     cta_chart: 'График на GeckoTerminal',
     contract_label: 'Контракт CTAX',
@@ -99,7 +99,7 @@ const CTAX_TXT = {
   de: {
     kicker: 'Companion-Token',
     h: '$CTAX — der besteuerte Zwilling',
-    intro: 'Neben $CULOTON betreibt das Projekt auch einen kleinen Companion-Token namens $CTAX (CuloTax). Während $CULOTON der steuerfreie Marken-Token ist, der frei laufen soll, ist $CTAX das besteuerte Gegenstück: jeder Trade zahlt eine Gebühr, und die Hälfte jeder Gebühr fließt direkt zurück an bestehende Halter.',
+    intro: 'Neben $BRT betreibt das Projekt auch einen kleinen Companion-Token namens $CTAX (CuloTax). Während $BRT der steuerfreie Marken-Token ist, der frei laufen soll, ist $CTAX das besteuerte Gegenstück: jeder Trade zahlt eine Gebühr, und die Hälfte jeder Gebühr fließt direkt zurück an bestehende Halter.',
     tax_h: 'Steuermechanik',
     tax_rows: [
       ['25%', 'auf jeden Kauf', 'vom Käufer an den Kontrakt'],
@@ -109,7 +109,7 @@ const CTAX_TXT = {
     locked_h: 'Bereits gesperrt',
     locked_p: 'Ownership ist abgegeben — Admin-Adresse ist die Null-Adresse (0:0…0). Der Token kann nicht nachgemintet, die Steuer nicht geändert, die Metadaten nicht bearbeitet werden. Supply ist on-chain hart auf 100.000.000.000 $CTAX gedeckelt. Was du siehst, bleibt.',
     why_h: 'Warum zwei Token?',
-    why_p: '$CULOTON bleibt sauber für Transfers, Tipping, Listings auf steuerfreien DEX-Routen. $CTAX fängt den Trader-Flow ein — jeder spekulative Kauf oder Verkauf stärkt langfristige Halter. Zwei Token, zwei Rollen, ein Ökosystem.',
+    why_p: '$BRT bleibt sauber für Transfers, Tipping, Listings auf steuerfreien DEX-Routen. $CTAX fängt den Trader-Flow ein — jeder spekulative Kauf oder Verkauf stärkt langfristige Halter. Zwei Token, zwei Rollen, ein Ökosystem.',
     cta_view: 'Auf tonviewer ansehen',
     cta_chart: 'Chart auf GeckoTerminal',
     contract_label: 'CTAX-Kontrakt',
@@ -129,7 +129,7 @@ const ctaxTxt = CTAX_TXT[(locale as 'pl' | 'ru' | 'de')] ?? CTAX_TXT.ru;
       <img src="/brainrot.png" alt="$BRT token" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--accent); margin: 0 auto;" />
     </div>
 
-    <h1 style="text-align: center;"><span style="color: var(--accent); font-family: var(--font-mono);">$CULOTON</span></h1>
+    <h1 style="text-align: center;"><span style="color: var(--accent); font-family: var(--font-mono);">$BRT</span></h1>
 
     <p class="article-summary" style="text-align: center; border-left: none; padding-left: 0;">
       {t.culo_summary}

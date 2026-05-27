@@ -252,6 +252,16 @@ export const ECOSYSTEM: EcosystemCategory[] = [
           de: 'Telegram-native Mini-App-Börse — Jetton-Swaps, tägliche Drops, eine der größten aktiven Retail-Audienzen auf TON.',
         },
       },
+      {
+        name: 'Maziton (MZT)',
+        url: 'https://t.me/MaziTonBot',
+        description: {
+          en: 'TON buybot and trend tracker — live transaction alerts plus the MAZITONTRENDING feed of the hottest jettons right now.',
+          ru: 'Buybot и трекер трендов в сети TON — живые алерты по транзакциям и лента MAZITONTRENDING с самыми горячими джеттонами прямо сейчас.',
+          pl: 'Buybot i tracker trendów w sieci TON — alerty o transakcjach na żywo plus feed MAZITONTRENDING z najgorętszymi jettonami właśnie teraz.',
+          de: 'TON-Buybot und Trend-Tracker — Live-Transaktionsalerts plus der MAZITONTRENDING-Feed mit den aktuell heißesten Jettons.',
+        },
+      },
     ],
   },
   {

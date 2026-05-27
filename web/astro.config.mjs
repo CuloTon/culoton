@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://culoton.fun',
+  site: 'https://brainrot-ton.fun',
   trailingSlash: 'never',
   build: {
     format: 'directory',

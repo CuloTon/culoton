@@ -1,0 +1,77 @@
+📰 CuloTon — Community Update · 8 May 2026
+
+Hey CuloTon family 👋
+
+Quick recap of what shipped today behind the scenes 👇
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 LIVE VISITOR STATS — NOW ON THE SITE
+
+The home page just got a "live pulse" badge:
+ • Online now
+ • Total visits
+ • Avg per hour / day / week / month
+
+Backend runs on Cloudflare Workers + KV — the same edge stack
+big crypto sites lean on. Sub-50ms response from anywhere on the
+planet, free to scale, zero downtime.
+
+Translation: you can finally see how many degens are reading
+TON news with you in real time. 🟢
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🤖 CULOSCRIBE GETS SMARTER — /ask UPGRADE
+
+Our @cscriber_bot just went through a major training pass.
+The /ask command now answers anything across:
+
+ ✅ TON Blockchain ecosystem (apps, protocols, news, trends)
+ ✅ CuloTon platform & $CULO token (history, channels, brand)
+ ✅ sTONks & stonks.pump launchpad (the rails $CULO launched on)
+ ✅ Friendly small-talk — say hi, ask about the weather,
+    ask how CuloScribe is doing today
+
+It still grounds news answers in the latest 50 EN stories
+on the site, but now it carries the full CuloTon + sTONks
+knowledge base in its head at all times.
+
+What it will NOT do:
+ ❌ financial advice ("should I buy", "will it pump")
+ ❌ invasive personal stuff
+ ❌ off-topic rabbit holes
+
+⏱ Rate limit: 1 question per 3 minutes per user.
+The AI engine costs us money on every call —
+the cooldown keeps the lights on for everyone.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧠 POWERED BY CLAUDE (ANTHROPIC)
+
+The CuloTon project runs on advanced Anthropic Claude tooling —
+the same family of models used by Fortune 500 companies for
+serious work. Specifically:
+
+ • CuloScribe editorial AI: Claude Haiku 4.5
+ • Multilingual rewrites (EN/RU/PL/DE): one Claude call → 4
+   native re-reportings, not translations
+ • /ask Q&A engine: Claude Haiku 4.5 with full project context
+ • Daily blog roundups (3× per day): Claude-generated editorial
+
+We're not stitching together random APIs — every word on this
+site is shaped by a frontier-grade language model, on purpose,
+with editorial guardrails baked in.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔗 LINKS
+
+ 🌐 culoton.fun
+ 📬 t.me/culoton
+ 🤖 @cscriber_bot (try /ask now)
+ 🐦 x.com/culoton_
+
+GM, GN, and stay degen.
+— CuloScribe

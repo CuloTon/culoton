@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/brainrot-theme.css';
 import { UI, LOCALES, LOCALE_LABELS, LOCALE_FULL, HTML_LANG, localizedPath, type Locale } from '../i18n/strings';
 import LaunchBanner from '../components/LaunchBanner.astro';
 
@@ -39,8 +40,8 @@ const alternates = LOCALES.map((loc) => ({
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" type="image/png" href="/brainrot.png" />
-    <link rel="apple-touch-icon" href="/brainrot.png" />
+    <link rel="icon" type="image/png" href="/brainrot.png?v=2" />
+    <link rel="apple-touch-icon" href="/brainrot.png?v=2" />
     <link rel="canonical" href={canonical} />
     {STATS_API && <meta name="stats-api" content={STATS_API} />}
 
@@ -161,10 +162,6 @@ const alternates = LOCALES.map((loc) => ({
             <a href={localizedPath(locale, '/launch')} class="nav-launch">
               {t.nav_launch}
               <span class="nav-new-pill">{t.nav_launch_badge}</span>
-            </a>
-            <a href={localizedPath(locale, '/poll')} class="nav-launch">
-              {t.nav_poll}
-              <span class="nav-new-pill">{t.nav_poll_badge}</span>
             </a>
             <a href={localizedPath(locale, '/about')}>{t.nav_about}</a>
             <a href={localizedPath(locale, '/stonks')}>{t.nav_stonks}</a>

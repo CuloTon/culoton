@@ -155,7 +155,7 @@ def post_take_to_tg(token: str, chat_id: str, take: str) -> bool:
         "💬 <b>DAILY TAKE</b>\n\n"
         f"<i>{html.escape(take)}</i>\n\n"
         "— BrainScribe AI · BRAINROT Desk\n"
-        f'🌐 <a href="{SITE}">culoton.fun</a> · $BRT'
+        f'🌐 <a href="{SITE}">brainrot-ton.fun</a> · $BRT'
     )
     if len(body) > TG_MAX_LEN:
         body = body[: TG_MAX_LEN - 3] + "..."

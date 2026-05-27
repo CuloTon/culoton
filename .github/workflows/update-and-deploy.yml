@@ -1,15 +1,12 @@
 name: Update news and deploy
 
 on:
-  # 2026-05-25: scheduled news + blog cron WYŁĄCZONE (małe zainteresowanie portalem).
-  # Pipeline odpalamy ręcznie przez workflow_dispatch — user wieczorem wybiera
-  # newsy z shortlisty, ja triggeruję dispatch (opcjonalnie z roundup_kind).
-  # Żeby przywrócić auto-rewrite: odkomentować poniższy `schedule:` blok.
-  # schedule:
-  #   - cron: '0 0,2,4,8,10,12,14,16,18,22 * * *'
-  #   - cron: '0 6 * * *'   # morning
-  #   - cron: '0 15 * * *'  # noon (midday)
-  #   - cron: '0 20 * * *'  # evening
+  # 2026-05-27: cron przywrócony — BRAINROT rebrand live, boty znów same robią newsy.
+  schedule:
+    - cron: '0 0,2,4,8,10,12,14,16,18,22 * * *'
+    - cron: '0 6 * * *'   # morning roundup
+    - cron: '0 15 * * *'  # noon roundup
+    - cron: '0 20 * * *'  # evening roundup
   workflow_dispatch:
     inputs:
       roundup_kind:
