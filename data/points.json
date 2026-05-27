@@ -1,6 +1,16 @@
 {
-  "group_msg_count": 75,
+  "group_msg_count": 76,
   "users": {
+    "1277897740": {
+      "daily_day": "2026-05-27",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-05-27T09:17:38.159035+00:00",
+      "last_msg_point_at": "2026-05-27T09:17:38.159048+00:00",
+      "total_points": 1,
+      "username": "@Tony_West_Side",
+      "weekly_points": 1
+    },
     "1415897955": {
       "daily_day": "",
       "daily_points": 0,
