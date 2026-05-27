@@ -1,15 +1,15 @@
 {
-  "group_msg_count": 114,
+  "group_msg_count": 115,
   "users": {
     "1277897740": {
       "daily_day": "2026-05-27",
-      "daily_points": 1,
+      "daily_points": 2,
       "last_ask_at": "",
-      "last_command_at": "2026-05-27T09:17:38.159035+00:00",
-      "last_msg_point_at": "2026-05-27T09:17:38.159048+00:00",
-      "total_points": 1,
+      "last_command_at": "2026-05-27T20:53:23.822114+00:00",
+      "last_msg_point_at": "2026-05-27T20:53:23.822125+00:00",
+      "total_points": 2,
       "username": "@Tony_West_Side",
-      "weekly_points": 1
+      "weekly_points": 2
     },
     "1415897955": {
       "daily_day": "",
