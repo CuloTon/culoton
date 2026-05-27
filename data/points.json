@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 93,
+  "group_msg_count": 97,
   "users": {
     "1277897740": {
       "daily_day": "2026-05-27",
@@ -322,13 +322,13 @@
     },
     "702938265": {
       "daily_day": "2026-05-27",
-      "daily_points": 13,
+      "daily_points": 14,
       "last_ask_at": "",
-      "last_command_at": "2026-05-27T18:13:47.557793+00:00",
-      "last_msg_point_at": "2026-05-27T18:13:47.557807+00:00",
-      "total_points": 14,
+      "last_command_at": "2026-05-27T18:51:50.204613+00:00",
+      "last_msg_point_at": "2026-05-27T18:51:50.204626+00:00",
+      "total_points": 15,
       "username": "@BMW7long",
-      "weekly_points": 14
+      "weekly_points": 15
     },
     "7140433600": {
       "daily_day": "2026-05-26",
@@ -462,13 +462,13 @@
     },
     "8354207388": {
       "daily_day": "2026-05-27",
-      "daily_points": 11,
+      "daily_points": 12,
       "last_ask_at": "",
-      "last_command_at": "2026-05-27T18:47:04.752446+00:00",
-      "last_msg_point_at": "2026-05-27T18:47:04.752455+00:00",
-      "total_points": 31,
+      "last_command_at": "2026-05-27T18:51:46.882578+00:00",
+      "last_msg_point_at": "2026-05-27T18:51:46.882591+00:00",
+      "total_points": 32,
       "username": "@brainrot_daddy",
-      "weekly_points": 31
+      "weekly_points": 32
     },
     "8660294407": {
       "daily_day": "",
