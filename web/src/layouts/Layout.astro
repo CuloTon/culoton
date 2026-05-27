@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/brainrot-theme.css';
+import '../styles/brainrot-midnight.css';
 import { UI, LOCALES, LOCALE_LABELS, LOCALE_FULL, HTML_LANG, localizedPath, type Locale } from '../i18n/strings';
 import LaunchBanner from '../components/LaunchBanner.astro';
 
@@ -76,9 +77,30 @@ const alternates = LOCALES.map((loc) => ({
 
     <script is:inline>
       (function () {
-        // BRAINROT rebrand — fresh cheerful theme.
-        document.documentElement.setAttribute('data-theme', 'brainrot');
-        try { localStorage.setItem('culoton-theme', 'brainrot'); } catch (_) {}
+        // Theme picker FOUC guard. Default = "brainrot" (modern pastel,
+        // the public look). "midnight" = admin-only dark preview, unlocked
+        // by ?admin=admin12345 in the URL (then persisted in localStorage).
+        // Turn off via ?admin=off.
+        var ADMIN_PASS = 'admin12345';
+        var FLAG = 'brainrot-preview-midnight';
+        var params = new URLSearchParams(window.location.search);
+        var adminParam = params.get('admin');
+        if (adminParam === ADMIN_PASS) {
+          try { localStorage.setItem(FLAG, '1'); } catch (_) {}
+        } else if (adminParam === 'off' || adminParam === 'reset') {
+          try { localStorage.removeItem(FLAG); } catch (_) {}
+        }
+        if (adminParam !== null) {
+          // Strip ?admin= from the URL so the secret doesn't leak in copies.
+          var clean = new URL(window.location.href);
+          clean.searchParams.delete('admin');
+          window.history.replaceState({}, '', clean.toString());
+        }
+        var unlocked = false;
+        try { unlocked = localStorage.getItem(FLAG) === '1'; } catch (_) {}
+        var theme = unlocked ? 'midnight' : 'brainrot';
+        document.documentElement.setAttribute('data-theme', theme);
+        try { localStorage.setItem('culoton-theme', theme); } catch (_) {}
       })();
     </script>
     <script is:inline>
