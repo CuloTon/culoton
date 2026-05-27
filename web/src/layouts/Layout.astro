@@ -522,6 +522,113 @@ const alternates = LOCALES.map((loc) => ({
   .header-menu nav.main-nav a:last-child {
     border-bottom: none;
   }
+
+  /* === Desktop drawer — button-card grid (≥721px) === */
+  @media (min-width: 721px) {
+    .header-menu {
+      padding: 22px 28px 26px;
+    }
+    .site-header.menu-open .header-menu {
+      padding: 24px 28px 30px;
+    }
+    /* Constrain the inner drawer content so it doesn't stretch edge-to-edge
+       on wide viewports — keeps everything visually grouped as a panel. */
+    .header-menu nav.main-nav,
+    .header-menu > .lang-switcher,
+    .header-menu > .theme-switcher,
+    .header-menu > .edited-by {
+      width: 100%;
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .header-menu nav.main-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .header-menu nav.main-nav a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 18px;
+      border: 1px solid var(--rule, rgba(20, 20, 30, 0.10));
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.62);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--text, #1a1612);
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(20, 20, 30, 0.05);
+      transition: transform 0.16s ease, box-shadow 0.16s ease,
+                  border-color 0.16s ease, background 0.16s ease,
+                  color 0.16s ease;
+    }
+    .header-menu nav.main-nav a:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.92);
+      border-color: rgba(255, 111, 111, 0.45);
+      color: var(--accent-text, #d63838);
+      box-shadow: 0 10px 22px rgba(255, 111, 111, 0.18);
+      padding-left: 18px; /* neutralise the mobile slide-in hover */
+    }
+    .header-menu nav.main-nav a.nav-launch {
+      background: linear-gradient(135deg,
+                  rgba(255, 230, 0, 0.30),
+                  rgba(255, 111, 111, 0.22));
+      border-color: rgba(255, 111, 111, 0.40);
+    }
+    .header-menu nav.main-nav a.nav-launch:hover {
+      background: linear-gradient(135deg,
+                  rgba(255, 230, 0, 0.55),
+                  rgba(255, 111, 111, 0.38));
+    }
+    /* $BRT token tile — make it the standout button */
+    .header-menu nav.main-nav a:last-child {
+      background: linear-gradient(135deg, #ff6f6f 0%, #b8a5ff 100%);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(255, 111, 111, 0.30);
+    }
+    .header-menu nav.main-nav a:last-child:hover {
+      transform: translateY(-3px);
+      color: #fff;
+      box-shadow: 0 12px 26px rgba(255, 111, 111, 0.38);
+    }
+    /* Lang switcher: pill row centered under the grid */
+    .header-menu > .lang-switcher {
+      margin-top: 18px;
+      margin-left: auto;
+      padding-left: 0;
+      border-left: none;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .header-menu .lang-link {
+      padding: 7px 12px;
+      font-size: 12px;
+      border: 1px solid var(--rule, rgba(20, 20, 30, 0.10));
+      border-radius: 999px;
+    }
+    /* Theme switcher (currently display:none, kept hidden) — but if re-enabled,
+       center it under the lang row to match. */
+    .header-menu > .theme-switcher {
+      margin-top: 12px;
+      margin-left: auto;
+      padding-left: 0;
+      border-left: none;
+      justify-content: center;
+    }
+  }
+  @media (min-width: 721px) and (max-width: 900px) {
+    .header-menu nav.main-nav {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (max-width: 720px) {
     .masthead-tag { display: none; }
     .header-menu {
