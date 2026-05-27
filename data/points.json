@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 69,
+  "group_msg_count": 71,
   "users": {
     "1415897955": {
       "daily_day": "",
@@ -311,14 +311,14 @@
       "weekly_points": 0
     },
     "702938265": {
-      "daily_day": "2026-05-26",
+      "daily_day": "2026-05-27",
       "daily_points": 1,
       "last_ask_at": "",
-      "last_command_at": "2026-05-26T18:48:54.966167+00:00",
-      "last_msg_point_at": "2026-05-26T18:48:54.966178+00:00",
-      "total_points": 1,
+      "last_command_at": "2026-05-27T07:58:27.992619+00:00",
+      "last_msg_point_at": "2026-05-27T07:58:27.992632+00:00",
+      "total_points": 2,
       "username": "@BMW7long",
-      "weekly_points": 1
+      "weekly_points": 2
     },
     "7140433600": {
       "daily_day": "2026-05-26",
