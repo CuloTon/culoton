@@ -1,341 +1,360 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { LAUNCH } from '../data/launch';
 
 const locale = 'en' as const;
-const c = LAUNCH[locale];
-const TELEGRAM = 'https://t.me/culoton';
+
+const STONKS_PUMP = 'https://stonks.pump';
+const TON_FOUNDATION_JETTON = 'https://docs.ton.org/develop/dapps/asset-processing/jettons';
+const TONKEEPER = 'https://tonkeeper.com';
+const TONHUB = 'https://tonhub.com';
+const MYTONWALLET = 'https://mytonwallet.io';
+
+const meta_title = 'Launch a TON jetton — BRAINROT';
+const meta_description = 'Deploy your own TIP-3 jetton on TON via an audited launchpad. Connect a wallet, fill the form, optionally renounce admin. We charge nothing. Gas + launchpad fee are transparent.';
 ---
 
 <Layout
   locale={locale}
   pathWithoutLocale="/launch"
-  title={c.meta_title}
-  description={c.meta_description}
+  title={meta_title}
+  description={meta_description}
 >
   <article class="launch-page">
     <header class="launch-hero">
-      <div class="status-row">
-        <span class="kicker">{c.status_kicker}</span>
-        <span class="status-pill">{c.status_pill}</span>
-      </div>
-      <h1>{c.hero_h}</h1>
-      <p class="lede">{c.hero_lede}</p>
-      <p class="eta">{c.hero_eta}</p>
+      <span class="kicker">Launch · TIP-3 Jetton on TON</span>
+      <h1>Launch your own TON jetton.</h1>
+      <p class="lede">
+        Deploy a TIP-3 jetton via <strong>stonks.pump</strong> — an
+        audited launchpad on TON. Connect a TON wallet, fill the form, sign
+        the transaction. Optionally renounce admin afterwards so nobody can
+        ever mint, burn, or rug.
+      </p>
+      <p class="lede small">
+        We do not charge anything. You pay TON network gas and the launchpad
+        provider's fee. Both are itemised below before you commit.
+      </p>
       <div class="hero-cta">
-        <a class="cta-btn cta-primary" href={TELEGRAM} target="_blank" rel="noopener noreferrer">
-          {c.cta_telegram}
+        <a class="cta-btn cta-primary cta-big" href={STONKS_PUMP} target="_blank" rel="noopener noreferrer">
+          Open stonks.pump →
         </a>
-        <span class="hero-cta-blurb">{c.cta_telegram_blurb}</span>
+        <span class="hero-cta-blurb">External, audited service. Opens in a new tab.</span>
       </div>
     </header>
 
-    <section class="block">
-      <h2>{c.why_h}</h2>
-      <p class="block-lede">{c.why_lede}</p>
-      <ul class="why-list">
-        {c.why_points.map(([t, b]) => (
-          <li>
-            <strong>{t}</strong>
-            <p>{b}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
-
-    <section class="block">
-      <h2>{c.features_h}</h2>
-      <div class="features-grid">
-        {c.features.map((f) => (
-          <div class="feat">
-            <div class="feat-icon" aria-hidden="true">{f.icon}</div>
-            <h3>{f.title}</h3>
-            <p>{f.body}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-
     <section class="block audit-block">
       <div class="audit-header">
-        <h2>{c.audit_h}</h2>
-        <span class="audit-pill">{c.audit_pill}</span>
+        <h2>Why stonks.pump</h2>
+        <span class="audit-pill">Audited</span>
       </div>
-      <p class="audit-lede">{c.audit_lede}</p>
+      <p class="audit-lede">
+        We're not reinventing the launchpad. stonks.pump is a production
+        product on TON with an external smart-contract audit, real volume,
+        and existing tooling for renounce, LP burn, and anti-sniper
+        protections.
+      </p>
       <ul class="audit-list">
-        {c.audit_points.map(([t, b]) => (
-          <li>
-            <strong>{t}</strong>
-            <p>{b}</p>
-          </li>
-        ))}
+        <li>
+          <strong>Audited contracts</strong>
+          <p>The jetton master, jetton wallet, and LP-binding contracts have been reviewed by a third-party auditor.</p>
+        </li>
+        <li>
+          <strong>Standard TIP-3</strong>
+          <p>Your token is a vanilla TON jetton. Wallets, DEXes, and explorers recognise it without custom integrations.</p>
+        </li>
+        <li>
+          <strong>Renounce after deploy</strong>
+          <p>One-click admin renounce. After it, nobody — not us, not stonks.pump, not you — can mint, burn, or freeze.</p>
+        </li>
+        <li>
+          <strong>Built-in LP options</strong>
+          <p>Seed an LP at launch or use the virtual LP curve. Either way the LP can be burned on creation.</p>
+        </li>
       </ul>
-      <p class="audit-foot">{c.audit_foot}</p>
+      <p class="audit-foot">
+        Caveat: an audit is not a guarantee. Read the latest audit report before deploying anything you care about.
+      </p>
     </section>
 
     <section class="block">
-      <h2>{c.flow_h}</h2>
-      <p class="block-lede">{c.flow_intro}</p>
+      <h2>Three steps</h2>
+      <p class="block-lede">
+        End-to-end, this takes about five minutes once your wallet is funded.
+      </p>
       <ol class="flow-steps">
-        {c.flow_steps.map((s) => (
-          <li>
-            <div class="flow-n">{s.n}</div>
-            <div class="flow-body">
-              <h3>{s.title}</h3>
-              <p>{s.body}</p>
-            </div>
-          </li>
-        ))}
+        <li>
+          <div class="flow-n">1</div>
+          <div class="flow-body">
+            <h3>Get a TON wallet with funds</h3>
+            <p>
+              Install
+              <a href={TONKEEPER} target="_blank" rel="noopener noreferrer">Tonkeeper</a>,
+              <a href={TONHUB} target="_blank" rel="noopener noreferrer">Tonhub</a>, or
+              <a href={MYTONWALLET} target="_blank" rel="noopener noreferrer">MyTonWallet</a>.
+              Top it up with around 5 TON to cover gas plus the launchpad fee with a margin.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="flow-n">2</div>
+          <div class="flow-body">
+            <h3>Open stonks.pump and connect</h3>
+            <p>
+              Click the CTA above. Connect via TON Connect (it pairs with any
+              of the three wallets above). Fill in: <em>name, symbol, decimals (use 9), total supply, description, image</em>.
+              Pick LP mode — virtual LP is cheaper and simpler for a first launch.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="flow-n">3</div>
+          <div class="flow-body">
+            <h3>Sign, deploy, and optionally renounce</h3>
+            <p>
+              Review the fee summary, sign with your wallet. Within ~30 seconds
+              your jetton is live and listed in your wallet. From the same dashboard
+              you can renounce admin in one transaction — recommended unless you
+              have a specific reason to keep mint rights.
+            </p>
+          </div>
+        </li>
       </ol>
     </section>
 
-    <section class="block preview-block">
-      <h2>{c.preview_h}</h2>
-      <p class="block-lede">{c.preview_intro}</p>
-      <div class="mock-window" aria-hidden="true">
-        <div class="mock-chrome">
-          <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
-          <span class="mock-url">brainrot-ton.fun/launch</span>
-        </div>
-        <form class="mock-form" onsubmit="return false">
-          <div class="mock-grid">
-            <label class="mock-field">
-              <span>{c.preview_form_label_name}</span>
-              <input type="text" placeholder={c.preview_form_ph_name} disabled />
-            </label>
-            <label class="mock-field">
-              <span>{c.preview_form_label_symbol}</span>
-              <input type="text" placeholder={c.preview_form_ph_symbol} disabled />
-            </label>
-            <label class="mock-field">
-              <span>{c.preview_form_label_supply}</span>
-              <input type="text" placeholder={c.preview_form_ph_supply} disabled />
-            </label>
-            <label class="mock-field">
-              <span>{c.preview_form_label_decimals}</span>
-              <input type="text" value="9" disabled />
-            </label>
-          </div>
-          <label class="mock-field">
-            <span>{c.preview_form_label_desc}</span>
-            <textarea rows="2" placeholder={c.preview_form_ph_desc} disabled></textarea>
-          </label>
-          <label class="mock-field mock-file">
-            <span>{c.preview_form_label_logo}</span>
-            <div class="mock-file-drop">
-              <span class="mock-file-btn">{c.preview_form_logo_choose}</span>
-              <span class="mock-file-hint">{c.preview_form_logo_hint}</span>
-            </div>
-          </label>
-          <label class="mock-checkbox">
-            <input type="checkbox" disabled />
-            <span class="mock-cb-text">
-              <strong>{c.preview_form_label_revoke}</strong>
-              <em>{c.preview_form_revoke_hint}</em>
-            </span>
-          </label>
-          <button type="button" class="mock-submit" disabled>{c.preview_form_submit}</button>
-          <p class="mock-disabled-note">{c.preview_form_disabled_note}</p>
-        </form>
-      </div>
-      <p class="preview-caption">{c.preview_caption}</p>
-    </section>
-
     <section class="block">
-      <h2>{c.pricing_h}</h2>
+      <h2>What it costs</h2>
       <table class="pricing-table">
         <tbody>
-          {c.pricing_rows.map((r) => (
-            <tr>
-              <td class="p-label">{r.label}</td>
-              <td class="p-value">{r.value}</td>
-              <td class="p-note">{r.note}</td>
-            </tr>
-          ))}
+          <tr>
+            <td class="p-label">BRAINROT platform fee</td>
+            <td class="p-value">0 TON</td>
+            <td class="p-note">We add nothing. Pure tutorial + link.</td>
+          </tr>
+          <tr>
+            <td class="p-label">TON network gas (deploy)</td>
+            <td class="p-value">~0.5 TON</td>
+            <td class="p-note">Goes to TON validators. Not us, not stonks.pump.</td>
+          </tr>
+          <tr>
+            <td class="p-label">stonks.pump fee (virtual LP)</td>
+            <td class="p-value">~3.2 TON</td>
+            <td class="p-note">Flat fee. Buy/sell tax applies later (~5%).</td>
+          </tr>
+          <tr>
+            <td class="p-label">stonks.pump fee (seed LP)</td>
+            <td class="p-value">~4 TON + LP</td>
+            <td class="p-note">Higher upfront cost but lower trading fees afterwards.</td>
+          </tr>
+          <tr>
+            <td class="p-label">Optional: renounce admin tx</td>
+            <td class="p-value">~0.3 TON</td>
+            <td class="p-note">One more gas-only transaction.</td>
+          </tr>
         </tbody>
       </table>
-      <p class="pricing-disclaimer">{c.pricing_disclaimer}</p>
+      <p class="pricing-disclaimer">
+        Fees above are launchpad and network numbers, verified at time of writing — open stonks.pump for the live amount before signing. Once we have decided what we charge for a managed flow, we will say so on this page. Until then, zero.
+      </p>
     </section>
 
     <section class="block">
-      <h2>{c.wallets_h}</h2>
-      <p class="block-lede">{c.wallets_blurb}</p>
-      <ul class="wallets-list">
-        {c.wallets.map((w) => <li>{w}</li>)}
+      <h2>What you should know</h2>
+      <ul class="why-list">
+        <li>
+          <strong>Memecoins are gambling</strong>
+          <p>Most jettons go to zero within days. Do not put in money you cannot lose. If you are deploying for fun, that is fine — say so.</p>
+        </li>
+        <li>
+          <strong>Renounce vs. keep admin</strong>
+          <p>Renouncing builds trust but removes recovery. Keeping admin means you can fix mistakes — and so can anyone who steals your wallet.</p>
+        </li>
+        <li>
+          <strong>Image hosting</strong>
+          <p>Your token image lives off-chain. stonks.pump uploads to IPFS by default. Don't use copyrighted art unless you own it.</p>
+        </li>
+        <li>
+          <strong>Regulatory exposure</strong>
+          <p>You are the issuer. EU and US rules around marketing a token to retail are non-trivial. Talk to a lawyer before you do paid promotion.</p>
+        </li>
       </ul>
     </section>
 
     <section class="block">
-      <h2>{c.faq_h}</h2>
-      <dl class="faq">
-        {c.faq.map((qa) => (
-          <>
-            <dt>{qa.q}</dt>
-            <dd>{qa.a}</dd>
-          </>
-        ))}
-      </dl>
+      <h2>Alternatives</h2>
+      <p class="block-lede">
+        Not interested in a managed launchpad? You can deploy a standard TIP-3 jetton yourself using the official TON Foundation reference contracts.
+      </p>
+      <ul class="wallets-list">
+        <li><a href={TON_FOUNDATION_JETTON} target="_blank" rel="noopener noreferrer">TON jetton dev guide</a></li>
+        <li><a href="https://github.com/ton-blockchain/token-contract" target="_blank" rel="noopener noreferrer">Reference Jetton contract</a></li>
+        <li><a href="https://github.com/ton-org/blueprint" target="_blank" rel="noopener noreferrer">TON Blueprint (CLI)</a></li>
+      </ul>
     </section>
 
     <section class="block cta-final">
-      <h2>{c.cta_bottom_h}</h2>
-      <p>{c.cta_bottom_p}</p>
-      <a class="cta-btn cta-primary cta-big" href={TELEGRAM} target="_blank" rel="noopener noreferrer">
-        {c.cta_bottom_btn}
+      <h2>Ready?</h2>
+      <p>Connect a wallet and try it. Five minutes, around 4 TON in fees, your jetton is live.</p>
+      <a class="cta-btn cta-primary cta-big" href={STONKS_PUMP} target="_blank" rel="noopener noreferrer">
+        Open stonks.pump →
       </a>
     </section>
 
-    <p class="legal">{c.disclaimer}</p>
+    <p class="legal">
+      Disclaimer: stonks.pump is a third-party service. BRAINROT (the editorial portal at brainrot-ton.fun) is not affiliated with stonks.pump and does not custody funds, sign transactions on your behalf, or take a cut. This page is a tutorial and a link. Everything you sign is signed in your wallet under your control. Cryptocurrency carries financial and regulatory risk; this page is not financial advice.
+    </p>
   </article>
 </Layout>
 
 <style>
-  .launch-page { max-width: 920px; margin: 0 auto; padding: 0 4px; }
+  .launch-page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 4px;
+  }
 
   .launch-hero {
-    margin: 12px 0 36px;
-    padding: 28px 0 24px;
-    border-bottom: 2px solid var(--rule);
-  }
-  .status-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 14px;
-    align-items: center;
-    margin-bottom: 14px;
+    margin: 32px 0 48px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--rule);
   }
   .kicker {
+    display: inline-block;
     font-family: var(--font-mono);
     font-size: 11px;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--accent);
-  }
-  .status-pill {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 3px 9px;
-    background: var(--accent);
-    color: #1a1408;
-    border-radius: 0;
+    color: var(--accent-text);
+    margin-bottom: 24px;
   }
   .launch-hero h1 {
-    margin: 0 0 14px;
-    font-size: clamp(34px, 5.5vw, 56px);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
+    margin: 0 0 24px;
     font-family: var(--font-display);
+    font-size: clamp(40px, 6vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    font-weight: 800;
   }
   .launch-hero .lede {
-    font-size: 18px;
+    font-family: var(--font-serif);
+    font-size: 22px;
     line-height: 1.55;
     color: var(--text-dim);
-    max-width: 760px;
-    margin: 0 0 12px;
+    margin: 0 0 16px;
+    max-width: 640px;
   }
-  .launch-hero .eta {
-    font-family: var(--font-mono);
-    font-size: 12px;
+  .launch-hero .lede.small {
+    font-size: 17px;
     color: var(--text-mute);
-    margin: 0 0 22px;
-    letter-spacing: 0.04em;
   }
+  .launch-hero .lede strong {
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+
   .hero-cta {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 18px;
     flex-wrap: wrap;
+    margin-top: 28px;
   }
   .hero-cta-blurb {
     color: var(--text-mute);
-    font-size: 13px;
-    max-width: 380px;
+    font-size: 14px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
   }
 
   .cta-btn {
     display: inline-block;
-    padding: 12px 22px;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    transition: transform 0.12s, opacity 0.12s;
-    border-radius: 4px;
+    text-decoration: none !important;
+    border-bottom: none !important;
+    transition: background 0.15s, color 0.15s;
   }
-  .cta-btn:hover { transform: translateY(-1px); opacity: 0.92; }
-  .cta-primary { background: var(--accent); color: #1a1408 !important; }
-  .cta-big { padding: 16px 28px; font-size: 15px; }
+  .cta-primary {
+    background: transparent;
+    color: var(--accent-text);
+    border: 1px solid var(--accent);
+    padding: 14px 26px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .cta-primary:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .cta-big {
+    padding: 16px 30px;
+    font-size: 14px;
+  }
 
-  .block { margin: 0 0 52px; }
+  .block { margin: 0 0 64px; }
   .block h2 {
-    margin: 0 0 12px;
-    font-size: clamp(22px, 3vw, 28px);
-    border-bottom: 1px solid var(--rule);
-    padding-bottom: 8px;
-    color: var(--text);
+    margin: 0 0 16px;
     font-family: var(--font-display);
+    font-size: clamp(24px, 3vw, 32px);
+    color: #ffffff;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+    font-weight: 700;
   }
   .block-lede {
+    font-family: var(--font-serif);
     color: var(--text-dim);
-    font-size: 16px;
-    line-height: 1.55;
-    margin: 0 0 18px;
-    max-width: 760px;
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+    max-width: 600px;
   }
 
-  .why-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  /* Why list (cards) */
+  .why-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 16px;
+  }
   .why-list li {
     background: var(--bg-section);
-    border-left: 3px solid var(--accent);
-    padding: 14px 18px;
+    border-left: 2px solid var(--accent);
+    padding: 18px 22px;
   }
   .why-list strong {
     display: block;
     font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--accent);
+    font-size: 11px;
+    color: var(--accent-text);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 6px;
+    letter-spacing: 0.16em;
+    margin-bottom: 10px;
+    font-weight: 700;
   }
-  .why-list p { margin: 0; color: var(--text-dim); font-size: 15px; line-height: 1.55; }
-
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
-  }
-  .feat {
-    background: var(--bg-section);
-    border: 1px solid var(--rule-soft);
-    border-top: 3px solid var(--accent);
-    padding: 18px 18px 16px;
-  }
-  .feat-icon { font-size: 28px; line-height: 1; margin-bottom: 10px; }
-  .feat h3 {
-    margin: 0 0 8px;
+  .why-list p {
+    margin: 0;
+    font-family: var(--font-serif);
+    color: var(--text-dim);
     font-size: 17px;
-    color: var(--text);
-    font-family: var(--font-display);
+    line-height: 1.6;
   }
-  .feat p { margin: 0; color: var(--text-dim); font-size: 14px; line-height: 1.55; }
 
+  /* Audit block */
   .audit-block {
-    background: linear-gradient(180deg, rgba(74, 222, 128, 0.06) 0%, transparent 100%);
-    border-left: 4px solid #4ade80;
-    padding: 22px 22px 4px;
-    margin-left: -22px;
-    margin-right: -22px;
+    background: transparent;
+    border-left: 2px solid #6dd4a8;
+    padding: 0 0 0 24px;
   }
   .audit-header {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
   }
   .audit-header h2 {
     margin: 0;
@@ -343,317 +362,230 @@ const TELEGRAM = 'https://t.me/culoton';
     padding: 0;
   }
   .audit-pill {
-    display: inline-block;
-    background: #4ade80;
-    color: #052e16;
     font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
+    color: #6dd4a8;
+    border: 1px solid rgba(109, 212, 168, 0.45);
     padding: 4px 10px;
-    border-radius: 0;
   }
   .audit-lede {
-    color: var(--text);
-    font-size: 16px;
-    line-height: 1.55;
-    margin: 0 0 18px;
-    max-width: 760px;
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0 0 22px;
+    max-width: 600px;
   }
-  .audit-list { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 10px; }
+  .audit-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 22px;
+    display: grid;
+    gap: 14px;
+  }
   .audit-list li {
-    padding: 14px 16px;
+    padding: 16px 20px;
     background: var(--bg-section);
-    border-left: 3px solid #4ade80;
+    border-left: 2px solid #6dd4a8;
   }
   .audit-list strong {
     display: block;
-    color: #4ade80;
+    color: #6dd4a8;
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 6px;
+    letter-spacing: 0.16em;
+    margin-bottom: 8px;
+    font-weight: 700;
   }
-  .audit-list p { margin: 0; color: var(--text-dim); font-size: 14px; line-height: 1.55; }
+  .audit-list p {
+    margin: 0;
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    font-size: 16px;
+    line-height: 1.6;
+  }
   .audit-foot {
-    margin: 16px 0 0;
-    padding: 12px 16px;
-    background: rgba(74, 222, 128, 0.08);
-    border: 1px solid rgba(74, 222, 128, 0.3);
-    color: var(--text);
+    margin: 18px 0 0;
+    padding: 14px 18px;
+    background: rgba(109, 212, 168, 0.06);
+    border: 1px solid rgba(109, 212, 168, 0.2);
+    color: var(--text-dim);
     font-style: italic;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  @media (max-width: 720px) {
-    .audit-block { margin-left: 0; margin-right: 0; padding: 16px 14px 4px; }
+    font-family: var(--font-serif);
+    font-size: 15px;
+    line-height: 1.6;
   }
 
-  .flow-steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+  /* Flow steps */
+  .flow-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
   .flow-steps li {
     display: grid;
-    grid-template-columns: 70px 1fr;
-    gap: 18px;
+    grid-template-columns: 64px 1fr;
+    gap: 20px;
     align-items: flex-start;
-    padding: 18px 0;
-    border-bottom: 1px dashed var(--rule-soft);
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule-soft);
   }
   .flow-steps li:last-child { border-bottom: none; }
   .flow-n {
-    font-family: var(--font-mono);
-    font-size: 36px;
+    font-family: var(--font-display);
+    font-size: 44px;
     font-weight: 800;
     color: var(--accent);
     line-height: 1;
     letter-spacing: -0.04em;
   }
   .flow-body h3 {
-    margin: 0 0 6px;
-    font-size: 18px;
-    color: var(--text);
+    margin: 0 0 8px;
     font-family: var(--font-display);
-  }
-  .flow-body p { margin: 0; color: var(--text-dim); font-size: 15px; line-height: 1.55; }
-
-  .preview-block { }
-  .mock-window {
-    background: #faf7f0;
-    border: 1px solid var(--rule);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-    border-radius: 6px;
-    overflow: hidden;
-    color: #1a1408;
-  }
-  .mock-chrome {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 14px;
-    background: #ede6d2;
-    border-bottom: 1px solid #d8cfb5;
-  }
-  .mock-chrome .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #d4ccae;
-  }
-  .mock-chrome .d1 { background: #ff605c; }
-  .mock-chrome .d2 { background: #ffbd44; }
-  .mock-chrome .d3 { background: #00ca4e; }
-  .mock-url {
-    margin-left: 16px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: #5a4f30;
-    letter-spacing: 0.02em;
-  }
-  .mock-form { padding: 22px; display: grid; gap: 14px; }
-  .mock-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-  }
-  .mock-field { display: flex; flex-direction: column; gap: 4px; }
-  .mock-field > span {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #5a4f30;
-  }
-  .mock-field input,
-  .mock-field textarea {
-    background: #fffdf6;
-    border: 1px solid #d8cfb5;
-    border-radius: 3px;
-    padding: 8px 10px;
-    font-size: 14px;
-    color: #1a1408;
-    font-family: var(--font-mono);
-    opacity: 0.7;
-  }
-  .mock-field input:disabled,
-  .mock-field textarea:disabled {
-    cursor: not-allowed;
-  }
-  .mock-file-drop {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border: 1.5px dashed #b8a978;
-    background: #fdf9eb;
-    border-radius: 3px;
-  }
-  .mock-file-btn {
-    background: #1a1408;
-    color: #f0b400;
-    padding: 6px 14px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 22px;
+    color: #ffffff;
     font-weight: 700;
-    border-radius: 2px;
   }
-  .mock-file-hint {
-    font-size: 12px;
-    color: #5a4f30;
-    font-family: var(--font-mono);
-  }
-  .mock-checkbox {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 10px 12px;
-    background: #fdf9eb;
-    border: 1px solid #e3d7ac;
-    border-radius: 3px;
-  }
-  .mock-checkbox input {
-    margin-top: 4px;
-    accent-color: #1a1408;
-  }
-  .mock-cb-text strong {
-    display: block;
-    color: #1a1408;
-    font-size: 13px;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-  .mock-cb-text em {
-    display: block;
-    margin-top: 3px;
-    font-style: normal;
-    color: #5a4f30;
-    font-size: 12px;
-  }
-  .mock-submit {
-    background: #1a1408;
-    color: #f0b400;
-    border: none;
-    padding: 14px 22px;
-    font-family: var(--font-mono);
-    font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: not-allowed;
-    opacity: 0.85;
-    border-radius: 3px;
-  }
-  .mock-disabled-note {
+  .flow-body p {
     margin: 0;
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: #5a4f30;
-    letter-spacing: 0.04em;
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    font-size: 17px;
+    line-height: 1.65;
   }
-  .preview-caption {
-    margin: 14px 0 0;
-    font-size: 13px;
-    color: var(--text-mute);
+  .flow-body a {
+    color: var(--accent-text);
+  }
+  .flow-body em {
     font-style: italic;
-    text-align: center;
+    color: var(--text);
   }
 
+  /* Pricing table */
   .pricing-table {
     width: 100%;
     border-collapse: collapse;
     border-top: 1px solid var(--rule);
+    margin-top: 8px;
   }
   .pricing-table td {
-    padding: 12px 8px;
+    padding: 16px 12px;
     border-bottom: 1px solid var(--rule-soft);
     vertical-align: top;
-    font-size: 14px;
+    font-family: var(--font-serif);
+    font-size: 16px;
   }
-  .p-label { color: var(--text); }
+  .p-label {
+    color: var(--text);
+    width: 42%;
+  }
   .p-value {
     font-family: var(--font-mono);
-    font-weight: 700;
-    color: var(--accent);
+    font-weight: 600;
+    color: var(--accent-text);
     white-space: nowrap;
+    letter-spacing: 0.04em;
   }
-  .p-note { color: var(--text-mute); font-size: 13px; font-style: italic; }
-  .pricing-disclaimer {
-    margin: 16px 0 0;
+  .p-note {
     color: var(--text-mute);
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 14px;
+    font-style: italic;
+  }
+  .pricing-disclaimer {
+    margin: 22px 0 0;
+    font-family: var(--font-serif);
+    color: var(--text-mute);
+    font-size: 15px;
+    line-height: 1.6;
+    font-style: italic;
   }
 
+  /* Alternative / wallets list */
   .wallets-list {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
   }
   .wallets-list li {
-    padding: 8px 14px;
+    padding: 10px 18px;
     background: var(--bg-section);
-    border: 1px solid var(--rule-soft);
+    border: 1px solid var(--rule);
     font-family: var(--font-mono);
     font-size: 12px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
+  }
+  .wallets-list a {
     color: var(--text);
+    border: none !important;
+  }
+  .wallets-list a:hover {
+    color: var(--accent-text);
   }
 
-  .faq dt {
-    margin-top: 16px;
-    font-weight: 700;
-    color: var(--text);
-    font-size: 16px;
-  }
-  .faq dt:first-child { margin-top: 0; }
-  .faq dd {
-    margin: 6px 0 0;
-    color: var(--text-dim);
-    font-size: 15px;
-    line-height: 1.55;
-    padding-left: 0;
-  }
-
+  /* Final CTA */
   .cta-final {
     text-align: center;
-    padding: 28px 22px;
+    padding: 48px 32px;
     background: var(--bg-section);
-    border: 1px solid var(--rule-soft);
-    border-top: 3px solid var(--accent);
+    border: 1px solid var(--rule);
+    margin-top: 40px;
   }
   .cta-final h2 {
     border: none;
-    margin-bottom: 8px;
     padding: 0;
-    text-align: center;
+    margin: 0 0 12px;
   }
   .cta-final p {
+    font-family: var(--font-serif);
     color: var(--text-dim);
-    margin: 0 auto 18px;
-    max-width: 560px;
+    font-size: 18px;
+    margin: 0 auto 28px;
+    max-width: 480px;
   }
 
+  /* Legal */
   .legal {
-    margin: 28px 0 24px;
-    padding: 14px 16px;
-    border-left: 3px solid var(--rule);
+    margin: 56px 0 32px;
+    padding: 18px 22px;
+    border-left: 2px solid var(--rule);
+    background: var(--bg-section);
     color: var(--text-mute);
-    font-size: 12px;
-    line-height: 1.55;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.65;
     font-style: italic;
   }
 
+  /* Primary nav: Launch link styling (Editorial Noir) */
+  :global([data-theme="editorial"] .primary-nav-desktop a.primary-launch) {
+    color: var(--accent-text) !important;
+    border-bottom: 1px solid var(--accent-soft);
+  }
+  :global([data-theme="editorial"] .primary-nav-desktop a.primary-launch:hover) {
+    color: var(--accent) !important;
+    border-bottom-color: var(--accent);
+  }
+
   @media (max-width: 720px) {
-    .flow-steps li { grid-template-columns: 48px 1fr; gap: 12px; }
-    .flow-n { font-size: 26px; }
-    .pricing-table td { font-size: 13px; padding: 10px 6px; }
-    .p-note { display: block; padding-top: 4px; }
+    .launch-hero { margin: 20px 0 36px; padding-bottom: 28px; }
+    .launch-hero h1 { font-size: clamp(32px, 9vw, 44px); }
+    .launch-hero .lede { font-size: 18px; }
+    .launch-hero .lede.small { font-size: 15px; }
+    .audit-block { padding-left: 18px; }
+    .flow-steps li { grid-template-columns: 44px 1fr; gap: 14px; padding: 18px 0; }
+    .flow-n { font-size: 32px; }
+    .flow-body h3 { font-size: 19px; }
+    .flow-body p { font-size: 16px; }
+    .pricing-table td { font-size: 14px; padding: 12px 8px; }
+    .p-note { display: block; padding-top: 4px; font-size: 13px; }
+    .cta-final { padding: 36px 22px; }
+    .block { margin-bottom: 48px; }
   }
 </style>
