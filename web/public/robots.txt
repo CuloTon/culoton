@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://culoton.fun/sitemap-index.xml
+Sitemap: https://brainrot-ton.fun/sitemap-index.xml

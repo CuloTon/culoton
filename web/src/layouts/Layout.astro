@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css';
-import '../styles/brainrot-theme.css';
-import '../styles/brainrot-midnight.css';
+import '../styles/editorial.css';
 import { UI, LOCALES, LOCALE_LABELS, LOCALE_FULL, HTML_LANG, localizedPath, type Locale } from '../i18n/strings';
 import LaunchBanner from '../components/LaunchBanner.astro';
 
@@ -76,32 +75,13 @@ const alternates = LOCALES.map((loc) => ({
     />
 
     <script is:inline>
-      (function () {
-        // Theme picker FOUC guard. Default = "brainrot" (modern pastel,
-        // the public look). "midnight" = admin-only dark preview, unlocked
-        // by ?admin=admin12345 in the URL (then persisted in localStorage).
-        // Turn off via ?admin=off.
-        var ADMIN_PASS = 'admin12345';
-        var FLAG = 'brainrot-preview-midnight';
-        var params = new URLSearchParams(window.location.search);
-        var adminParam = params.get('admin');
-        if (adminParam === ADMIN_PASS) {
-          try { localStorage.setItem(FLAG, '1'); } catch (_) {}
-        } else if (adminParam === 'off' || adminParam === 'reset') {
-          try { localStorage.removeItem(FLAG); } catch (_) {}
-        }
-        if (adminParam !== null) {
-          // Strip ?admin= from the URL so the secret doesn't leak in copies.
-          var clean = new URL(window.location.href);
-          clean.searchParams.delete('admin');
-          window.history.replaceState({}, '', clean.toString());
-        }
-        var unlocked = false;
-        try { unlocked = localStorage.getItem(FLAG) === '1'; } catch (_) {}
-        var theme = unlocked ? 'midnight' : 'brainrot';
-        document.documentElement.setAttribute('data-theme', theme);
-        try { localStorage.setItem('culoton-theme', theme); } catch (_) {}
-      })();
+      // Editorial Noir is the only theme. Force it on every visit and clear any
+      // stale localStorage flag from legacy theme experiments.
+      document.documentElement.setAttribute('data-theme', 'editorial');
+      try {
+        localStorage.setItem('brainrot-theme', 'editorial');
+        localStorage.setItem('culoton-theme', 'editorial');
+      } catch (_) {}
     </script>
     <script is:inline>
       (function () {
@@ -199,14 +179,6 @@ const alternates = LOCALES.map((loc) => ({
               >{LOCALE_LABELS[loc]}</a>
             ))}
           </div>
-          <div class="theme-switcher" role="radiogroup" aria-label="Theme">
-            <button type="button" data-theme-set="magazine" title="A — Magazine">A</button>
-            <button type="button" data-theme-set="memecoin" title="B — Memecoin">B</button>
-            <button type="button" data-theme-set="minimal" title="C — Minimal">C</button>
-            <button type="button" data-theme-set="memecoin-white" title="D — Memecoin White">D</button>
-            <button type="button" data-theme-set="terminal" title="E — Terminal">E</button>
-            <button type="button" data-theme-set="newspaper" title="F — Newspaper">F</button>
-          </div>
         </div>
       </div>
     </header>
@@ -227,24 +199,6 @@ const alternates = LOCALES.map((loc) => ({
           });
         }
 
-        // Theme switcher: paint active state, swap on click, persist to localStorage.
-        var current = document.documentElement.getAttribute('data-theme') || 'magazine';
-        function paintActive(t) {
-          document.querySelectorAll('[data-theme-set]').forEach(function (b) {
-            var on = b.getAttribute('data-theme-set') === t;
-            b.classList.toggle('active', on);
-            b.setAttribute('aria-checked', on ? 'true' : 'false');
-          });
-        }
-        paintActive(current);
-        document.querySelectorAll('[data-theme-set]').forEach(function (b) {
-          b.addEventListener('click', function () {
-            var t = b.getAttribute('data-theme-set');
-            document.documentElement.setAttribute('data-theme', t);
-            try { localStorage.setItem('culoton-theme', t); } catch (_) {}
-            paintActive(t);
-          });
-        });
       })();
     </script>
 
