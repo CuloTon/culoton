@@ -3,6 +3,10 @@
 Pipeline:
 1. Pull RSS feeds from sources.py
 2. Skip entries already in seen.db (dedup by canonical URL)
+2b. Skip entries whose title closely matches a story already published
+    recently (title-similarity dedup) — guards against the same event
+    being re-reported under different URLs across multiple feeds / Google
+    News redirects, which the URL dedup alone cannot catch.
 3. Filter by keywords if source defines them
 4. Rewrite each new entry through Claude Haiku 4.5 in BrainScribe voice —
    one API call returns the article in EN, RU, PL and DE.
@@ -45,6 +49,52 @@ RETRY_LIMIT = 2
 USER_AGENT = "BRAINROT-NewsBot/1.0 (+https://brainrot-ton.fun)"
 
 LOCALES = ("en", "ru", "pl", "de", "es", "uk")
+
+# --- Title-similarity dedup -------------------------------------------------
+# The same story (e.g. "TON/USDT listed on Binance") routinely arrives from
+# several feeds and from Google News under different URLs, so URL dedup alone
+# lets it be re-reported and re-announced over and over. We additionally skip
+# any entry whose (original) title overlaps strongly with a story we already
+# published in the last DUP_WINDOW_DAYS days.
+DUP_THRESHOLD = 0.45         # Jaccard over significant title tokens
+                             # (same-story variants cluster 0.44-0.83;
+                             #  unrelated TON stories sit near 0.10)
+DUP_WINDOW_DAYS = 14         # only compare against recent stories
+DUP_STOPWORDS = {
+    "the", "a", "an", "and", "or", "of", "to", "in", "on", "for", "with",
+    "as", "at", "by", "is", "are", "be", "was", "were", "from", "into",
+    "now", "new", "after", "amid", "over", "up", "down", "out", "off",
+    "its", "his", "her", "their", "this", "that", "these", "those",
+    "says", "say", "said", "report", "reports", "via", "but", "not",
+    "has", "have", "had", "will", "can", "could", "amp",
+}
+# Collapse a few interchangeable terms so "Toncoin" and "TON" match.
+DUP_SYNONYMS = {"toncoin": "ton", "toncoins": "ton"}
+
+
+def title_tokens(title: str) -> frozenset[str]:
+    """Significant lowercased tokens of a headline, for similarity dedup."""
+    words = re.split(r"[^a-z0-9]+", (title or "").lower())
+    out: set[str] = set()
+    for w in words:
+        if len(w) < 2 or w in DUP_STOPWORDS:
+            continue
+        out.add(DUP_SYNONYMS.get(w, w))
+    return frozenset(out)
+
+
+def jaccard(a: frozenset[str], b: frozenset[str]) -> float:
+    if not a or not b:
+        return 0.0
+    inter = len(a & b)
+    if not inter:
+        return 0.0
+    return inter / len(a | b)
+
+
+def is_duplicate_title(tokens: frozenset[str], recent: list[frozenset[str]]) -> bool:
+    return any(jaccard(tokens, prev) >= DUP_THRESHOLD for prev in recent)
+
 
 CULOSCRIBE_SYSTEM = """You are BrainScribe — the editorial AI for BRAINROT, an independent news desk covering the TON blockchain ecosystem.
 
@@ -131,6 +181,11 @@ def db_init() -> sqlite3.Connection:
             fetched_at TEXT NOT NULL
         )"""
     )
+    # Migration: store the original headline so we can do title-similarity
+    # dedup across feeds/URLs. Older rows keep NULL — they still dedup by URL.
+    cols = {row[1] for row in conn.execute("PRAGMA table_info(seen)")}
+    if "title" not in cols:
+        conn.execute("ALTER TABLE seen ADD COLUMN title TEXT")
     conn.commit()
     return conn
 
@@ -140,12 +195,48 @@ def already_seen(conn: sqlite3.Connection, url: str) -> bool:
     return cur.fetchone() is not None
 
 
-def mark_seen(conn: sqlite3.Connection, url: str, source: str) -> None:
+def mark_seen(conn: sqlite3.Connection, url: str, source: str, title: str = "") -> None:
     conn.execute(
-        "INSERT OR IGNORE INTO seen (url, source, fetched_at) VALUES (?, ?, ?)",
-        (url, source, datetime.now(timezone.utc).isoformat()),
+        "INSERT OR IGNORE INTO seen (url, source, fetched_at, title) VALUES (?, ?, ?, ?)",
+        (url, source, datetime.now(timezone.utc).isoformat(), title),
     )
     conn.commit()
+
+
+def load_recent_title_sets(conn: sqlite3.Connection) -> list[frozenset[str]]:
+    """Token sets of stories published in the last DUP_WINDOW_DAYS days,
+    pulled from both seen.db (original titles, going forward) and the
+    EN markdown on disk (rewritten titles — automatic backfill so dedup
+    works for stories that predate the seen.title column)."""
+    cutoff = datetime.now(timezone.utc).timestamp() - DUP_WINDOW_DAYS * 86400
+    cutoff_date = datetime.fromtimestamp(cutoff, tz=timezone.utc).strftime("%Y-%m-%d")
+    sets: list[frozenset[str]] = []
+
+    # From seen.db (original RSS titles).
+    for (title,) in conn.execute(
+        "SELECT title FROM seen WHERE title IS NOT NULL AND title != '' AND fetched_at >= ?",
+        (cutoff_date,),
+    ):
+        toks = title_tokens(title)
+        if toks:
+            sets.append(toks)
+
+    # From disk (rewritten EN headlines). Filename prefix is the date.
+    en_dir = NEWS_DIR / "en"
+    if en_dir.exists():
+        for path in en_dir.glob("*.md"):
+            if path.name[:10] < cutoff_date:
+                continue
+            try:
+                head = path.read_text(encoding="utf-8")[:600]
+            except Exception:
+                continue
+            m = re.search(r'^title:\s*"(.*?)"', head, re.MULTILINE)
+            if m:
+                toks = title_tokens(m.group(1))
+                if toks:
+                    sets.append(toks)
+    return sets
 
 
 def matches_keywords(text: str, keywords: list[str] | None) -> bool:
@@ -279,9 +370,11 @@ def main() -> int:
 
     client = Anthropic(api_key=api_key)
     conn = db_init()
+    recent_titles = load_recent_title_sets(conn)
 
     total_new = 0
     total_skipped = 0
+    total_dups = 0
     total_errors = 0
 
     for source in SOURCES:
@@ -313,8 +406,16 @@ def main() -> int:
             content = extract_content(entry)
 
             if not matches_keywords(f"{title} {content}", source.get("keywords")):
-                mark_seen(conn, url, source["name"])
+                mark_seen(conn, url, source["name"], title)
                 total_skipped += 1
+                continue
+
+            # Title-similarity dedup: same story, different URL/feed.
+            toks = title_tokens(title)
+            if is_duplicate_title(toks, recent_titles):
+                print(f"  dup (title match), skipping: {title[:70]}")
+                mark_seen(conn, url, source["name"], title)
+                total_dups += 1
                 continue
 
             print(f"  rewriting: {title[:70]}")
@@ -334,7 +435,8 @@ def main() -> int:
                     original_url=url,
                     rewritten=rewritten,
                 )
-                mark_seen(conn, url, source["name"])
+                mark_seen(conn, url, source["name"], title)
+                recent_titles.append(toks)
                 total_new += 1
                 per_source += 1
                 print(f"  -> {paths[0].name} (×{len(paths)} locales)")
@@ -342,7 +444,7 @@ def main() -> int:
                 print(f"  ERROR: {e}")
                 total_errors += 1
 
-    print(f"\nDone. new={total_new} skipped={total_skipped} errors={total_errors}")
+    print(f"\nDone. new={total_new} dups={total_dups} skipped={total_skipped} errors={total_errors}")
     return 0
 
 
