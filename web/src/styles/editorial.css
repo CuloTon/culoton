@@ -761,3 +761,40 @@
   }
   [data-theme="editorial"] .section-title { margin: 48px 0 20px; }
 }
+
+/* ========================================================================
+   Desktop layout (≥1024px): use the screen instead of a single narrow,
+   centered mobile-style column. Wider content rail + multi-column news
+   index. Article prose keeps its narrow measure (--maxw-prose) for reading.
+   ======================================================================== */
+@media (min-width: 1024px) {
+  :root[data-theme="editorial"] { --maxw: min(1640px, 94vw); }
+
+  /* News / blog / tales index: multi-column grid filling the rail,
+     instead of one 680px column centered. Each entry keeps its hairline. */
+  [data-theme="editorial"] .news-grid,
+  [data-theme="editorial"] .blog-grid,
+  [data-theme="editorial"] .tales-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)) !important;
+    max-width: none !important;
+    margin: 0 !important;
+    column-gap: 56px !important;
+    row-gap: 0 !important;
+  }
+  [data-theme="editorial"] .news-grid > *,
+  [data-theme="editorial"] .blog-grid > *,
+  [data-theme="editorial"] .tales-grid > * {
+    align-self: start;
+  }
+
+  /* Hero + feature span the wider rail; headline/sub keep a readable measure
+     so they don't stretch into one giant line. */
+  [data-theme="editorial"] .home-hero,
+  [data-theme="editorial"] .feature-hero {
+    max-width: none !important;
+  }
+  [data-theme="editorial"] .home-hero h1 { max-width: 18ch; }
+  [data-theme="editorial"] .home-hero p.home-sub { max-width: 68ch; }
+}
+
