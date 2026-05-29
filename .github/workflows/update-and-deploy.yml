@@ -1,12 +1,17 @@
 name: Update news and deploy
 
 on:
-  # Deploy target = brainrot-ton.fun ONLY. culoton.fun zostaje jako maintenance landing — nigdy nie tykamy.
-  schedule:
-    - cron: '0 0,2,4,8,10,12,14,16,18,22 * * *'
-    - cron: '0 6 * * *'   # morning roundup
-    - cron: '0 15 * * *'  # noon roundup
-    - cron: '0 20 * * *'  # evening roundup
+  # NOTE (2026-05-29): scheduled auto-deploy DISABLED. seohost FTP from
+  # GitHub Azure runners repeatedly hangs/resets on the "Deploy via Python
+  # FTPS" step. We now deploy from a local Polish IP via scripts/deploy_local.py
+  # (reads creds from FileZilla's saved seohost site). Re-enable only if the
+  # FTP-from-CI reliability is fixed.
+  #
+  # schedule:
+  #   - cron: '0 0,2,4,8,10,12,14,16,18,22 * * *'
+  #   - cron: '0 6 * * *'   # morning roundup
+  #   - cron: '0 15 * * *'  # noon roundup
+  #   - cron: '0 20 * * *'  # evening roundup
   workflow_dispatch:
     inputs:
       roundup_kind:
@@ -21,6 +26,11 @@ on:
           - evening
       skip_fetch:
         description: 'Skip news fetch (rebrand/style-only deploys)'
+        required: false
+        default: false
+        type: boolean
+      deploy_ftp:
+        description: 'Attempt FTP deploy to seohost (UNRELIABLE from CI — default off; deploy locally instead)'
         required: false
         default: false
         type: boolean
@@ -103,6 +113,7 @@ jobs:
         run: npm run build
 
       - name: Deploy via Python FTPS to brainrot-ton.fun
+        if: github.event.inputs.deploy_ftp == 'true'
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USER_MASTER }}
@@ -110,6 +121,7 @@ jobs:
         run: python scripts/deploy_ftp.py web/dist "$TARGET_DIR"
 
       - name: Post-deploy cleanup (drop Basic Auth, swap home/index.html as root)
+        if: github.event.inputs.deploy_ftp == 'true'
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USER_MASTER }}
