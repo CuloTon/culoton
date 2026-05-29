@@ -17,7 +17,10 @@
   --accent-hot: #b54e0a;
   --ton: #0083c8;
   --danger: #b3173d;
-  --maxw: 1180px;
+  /* Fluid on desktop: fills the screen instead of a narrow centered column,
+     capped at 1600px so ultrawide monitors stay readable. Mobile is
+     effectively full-width (92vw < cap). Article body uses --maxw-narrow. */
+  --maxw: min(1600px, 92vw);
   --maxw-narrow: 760px;
   --font-display: "IBM Plex Serif", "Newsreader", Georgia, "Times New Roman", serif;
   --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
