@@ -1,0 +1,701 @@
+---
+import type { Locale } from '../i18n/strings';
+import { LAUNCH_I18N } from '../data/launchI18n';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = LAUNCH_I18N[locale] ?? LAUNCH_I18N.en;
+
+const STONKS_PUMP = 'https://stonks.pump';
+const TON_FOUNDATION_JETTON = 'https://docs.ton.org/develop/dapps/asset-processing/jettons';
+const TONKEEPER = 'https://tonkeeper.com';
+const TONHUB = 'https://tonhub.com';
+const MYTONWALLET = 'https://mytonwallet.io';
+---
+
+<article class="launch-page">
+  <header class="launch-hero">
+    <span class="kicker">{t.kicker} <span class="net-badge">TESTNET</span></span>
+    <h1>{t.h1}</h1>
+    <p class="lede" set:html={t.lede1_html}></p>
+    <p class="lede small" set:html={t.lede2_html}></p>
+    <div class="hero-cta">
+      <a class="cta-btn cta-primary cta-big" href="#deployer">{t.cta_below}</a>
+      <span class="hero-cta-blurb">{t.hero_blurb}</span>
+    </div>
+  </header>
+
+  <section class="block deployer" id="deployer">
+    <div class="audit-header">
+      <h2>{t.deployer_h2}</h2>
+      <span class="net-badge">TESTNET</span>
+    </div>
+    <p class="block-lede" set:html={t.deployer_lede_html}></p>
+
+    <button type="button" id="jl-connect" class="cta-btn cta-primary cta-big jl-connect">{t.connect_btn}</button>
+
+    <form id="jl-form" class="jl-form" novalidate>
+      <div class="jl-grid">
+        <label class="jl-field">
+          <span>{t.f_name}</span>
+          <input id="jl-name" type="text" placeholder={t.f_name_ph} maxlength="60" required />
+        </label>
+        <label class="jl-field">
+          <span>{t.f_symbol}</span>
+          <input id="jl-symbol" type="text" placeholder={t.f_symbol_ph} maxlength="12" required />
+        </label>
+        <label class="jl-field">
+          <span>{t.f_decimals}</span>
+          <input id="jl-decimals" type="number" value="9" min="0" max="30" />
+        </label>
+        <label class="jl-field">
+          <span>{t.f_supply}</span>
+          <input id="jl-supply" type="text" inputmode="numeric" placeholder={t.f_supply_ph} required />
+        </label>
+        <label class="jl-field jl-span">
+          <span>{t.f_logo}</span>
+          <input id="jl-image" type="url" placeholder={t.f_logo_ph} />
+        </label>
+        <label class="jl-field jl-span">
+          <span>{t.f_desc}</span>
+          <textarea id="jl-desc" rows="2" maxlength="500" placeholder={t.f_desc_ph}></textarea>
+        </label>
+      </div>
+      <button type="submit" id="jl-deploy" class="cta-btn cta-primary cta-big jl-deploy" disabled>{t.deploy_btn}</button>
+      <p id="jl-status" class="jl-status" role="status" aria-live="polite"></p>
+    </form>
+
+    <div id="jl-result" class="jl-result" hidden>
+      <h3>{t.result_h3}</h3>
+      <p class="jl-result-row"><span>{t.result_address}</span> <code id="jl-address"></code></p>
+      <p class="jl-result-row">
+        <a id="jl-explorer" href="#" target="_blank" rel="noopener noreferrer" class="jl-explorer-link">{t.result_explorer}</a>
+      </p>
+      <div class="jl-renounce-box">
+        <p set:html={t.renounce_note_html}></p>
+        <button type="button" id="jl-renounce" class="cta-btn jl-renounce">{t.renounce_btn}</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="block audit-block">
+    <div class="audit-header">
+      <h2>{t.audit_h2}</h2>
+      <span class="audit-pill">{t.audit_pill}</span>
+    </div>
+    <p class="audit-lede" set:html={t.audit_lede_html}></p>
+    <ul class="audit-list">
+      {t.audit_items.map((it) => (
+        <li>
+          <strong>{it.t}</strong>
+          <p>{it.p}</p>
+        </li>
+      ))}
+    </ul>
+    <p class="audit-foot">{t.audit_foot}</p>
+  </section>
+
+  <section class="block">
+    <h2>{t.steps_h2}</h2>
+    <p class="block-lede">{t.steps_lede}</p>
+    <ol class="flow-steps">
+      <li>
+        <div class="flow-n">1</div>
+        <div class="flow-body">
+          <h3>{t.step1_h3}</h3>
+          <p set:html={t.step1_body_html}></p>
+        </div>
+      </li>
+      <li>
+        <div class="flow-n">2</div>
+        <div class="flow-body">
+          <h3>{t.step2_h3}</h3>
+          <p set:html={t.step2_body_html}></p>
+        </div>
+      </li>
+      <li>
+        <div class="flow-n">3</div>
+        <div class="flow-body">
+          <h3>{t.step3_h3}</h3>
+          <p set:html={t.step3_body_html}></p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <h2>{t.cost_h2}</h2>
+    <table class="pricing-table">
+      <tbody>
+        {t.pricing.map((r) => (
+          <tr>
+            <td class="p-label">{r.label}</td>
+            <td class="p-value">{r.value}</td>
+            <td class="p-note">{r.note}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="pricing-disclaimer">{t.pricing_disclaimer}</p>
+  </section>
+
+  <section class="block">
+    <h2>{t.know_h2}</h2>
+    <ul class="why-list">
+      {t.know_items.map((it) => (
+        <li>
+          <strong>{it.t}</strong>
+          <p>{it.p}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="block">
+    <h2>{t.alt_h2}</h2>
+    <p class="block-lede">{t.alt_lede}</p>
+    <ul class="wallets-list">
+      <li><a href={STONKS_PUMP} target="_blank" rel="noopener noreferrer">{t.alt_links.stonks}</a></li>
+      <li><a href={TON_FOUNDATION_JETTON} target="_blank" rel="noopener noreferrer">{t.alt_links.guide}</a></li>
+      <li><a href="https://github.com/ton-blockchain/token-contract" target="_blank" rel="noopener noreferrer">{t.alt_links.ref}</a></li>
+      <li><a href="https://github.com/ton-org/blueprint" target="_blank" rel="noopener noreferrer">{t.alt_links.blueprint}</a></li>
+    </ul>
+  </section>
+
+  <section class="block cta-final">
+    <h2>{t.ready_h2}</h2>
+    <p>{t.ready_body}</p>
+    <a class="cta-btn cta-primary cta-big" href="#deployer">{t.ready_cta}</a>
+  </section>
+
+  <p class="legal" set:html={t.legal_html}></p>
+</article>
+
+<script>
+  import '../scripts/launcher.ts';
+</script>
+
+<style>
+  .launch-page {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* === Testnet badge === */
+  .net-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #6dd4a8;
+    border: 1px solid rgba(109, 212, 168, 0.5);
+    border-radius: 4px;
+    padding: 3px 8px;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+
+  /* === Deployer === */
+  .deployer { scroll-margin-top: 90px; }
+  .jl-connect { margin: 8px 0 24px; }
+  .jl-connect[data-connected="true"] {
+    background: var(--bg-section);
+    color: var(--text-dim);
+    border-color: var(--rule-soft);
+  }
+  .jl-form { margin-top: 8px; }
+  .jl-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 20px;
+  }
+  .jl-field { display: flex; flex-direction: column; gap: 6px; }
+  .jl-field.jl-span { grid-column: 1 / -1; }
+  .jl-field > span {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-text);
+    font-weight: 700;
+  }
+  .jl-field input,
+  .jl-field textarea {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    color: var(--text);
+    background: var(--bg-section);
+    border: 1px solid var(--rule);
+    border-radius: 0;
+    padding: 12px 14px;
+    width: 100%;
+    resize: vertical;
+  }
+  .jl-field input:focus,
+  .jl-field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft, rgba(244,197,66,0.25));
+  }
+  .jl-deploy { margin-top: 22px; }
+  .jl-status {
+    margin: 16px 0 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 18px;
+  }
+  .jl-status[data-kind="error"] { color: var(--danger); }
+  .jl-status[data-kind="ok"] { color: #2e9c6b; }
+  .jl-status[data-kind="info"] { color: var(--text-mute); }
+  .jl-result {
+    margin-top: 28px;
+    padding: 24px;
+    background: var(--bg-section);
+    border: 1px solid #6dd4a8;
+    border-left-width: 3px;
+  }
+  .jl-result h3 {
+    margin: 0 0 14px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--text);
+  }
+  .jl-result-row {
+    margin: 8px 0;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    color: var(--text-dim);
+    word-break: break-all;
+  }
+  .jl-result-row code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent-text);
+  }
+  .jl-explorer-link { color: var(--accent-text); }
+  .jl-renounce-box {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .jl-renounce-box p {
+    margin: 0 0 12px;
+    font-family: var(--font-serif);
+    font-size: 15px;
+    color: var(--text-mute);
+    line-height: 1.6;
+  }
+  .jl-renounce {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    padding: 12px 22px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .jl-renounce:hover { background: rgba(179, 23, 61, 0.08); }
+  @media (max-width: 600px) {
+    .jl-grid { grid-template-columns: 1fr; }
+  }
+
+  .launch-hero {
+    margin: 32px 0 48px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .kicker {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    margin-bottom: 24px;
+  }
+  .launch-hero h1 {
+    margin: 0 0 24px;
+    font-family: var(--font-display);
+    font-size: clamp(40px, 6vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    font-weight: 800;
+  }
+  .launch-hero .lede {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    margin: 0 0 16px;
+    max-width: 640px;
+  }
+  .launch-hero .lede.small {
+    font-size: 17px;
+    color: var(--text-mute);
+  }
+  .launch-hero .lede strong {
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+
+  .hero-cta {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+  .hero-cta-blurb {
+    color: var(--text-mute);
+    font-size: 14px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    text-decoration: none !important;
+    border-bottom: none !important;
+    transition: background 0.15s, color 0.15s;
+  }
+  .cta-primary {
+    background: transparent;
+    color: var(--accent-text);
+    border: 1px solid var(--accent);
+    padding: 14px 26px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .cta-primary:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .cta-big {
+    padding: 16px 30px;
+    font-size: 14px;
+  }
+
+  .block { margin: 0 0 64px; }
+  .block h2 {
+    margin: 0 0 16px;
+    font-family: var(--font-display);
+    font-size: clamp(24px, 3vw, 32px);
+    color: #ffffff;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+    font-weight: 700;
+  }
+  .block-lede {
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+    max-width: 600px;
+  }
+
+  /* Why list (cards) */
+  .why-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 16px;
+  }
+  .why-list li {
+    background: var(--bg-section);
+    border-left: 2px solid var(--accent);
+    padding: 18px 22px;
+  }
+  .why-list strong {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent-text);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  .why-list p {
+    margin: 0;
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  /* Audit block */
+  .audit-block {
+    background: transparent;
+    border-left: 2px solid #6dd4a8;
+    padding: 0 0 0 24px;
+  }
+  .audit-header {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .audit-header h2 {
+    margin: 0;
+    border: none;
+    padding: 0;
+  }
+  .audit-pill {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #6dd4a8;
+    border: 1px solid rgba(109, 212, 168, 0.45);
+    padding: 4px 10px;
+  }
+  .audit-lede {
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0 0 22px;
+    max-width: 600px;
+  }
+  .audit-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 22px;
+    display: grid;
+    gap: 14px;
+  }
+  .audit-list li {
+    padding: 16px 20px;
+    background: var(--bg-section);
+    border-left: 2px solid #6dd4a8;
+  }
+  .audit-list strong {
+    display: block;
+    color: #6dd4a8;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .audit-list p {
+    margin: 0;
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .audit-foot {
+    margin: 18px 0 0;
+    padding: 14px 18px;
+    background: rgba(109, 212, 168, 0.06);
+    border: 1px solid rgba(109, 212, 168, 0.2);
+    color: var(--text-dim);
+    font-style: italic;
+    font-family: var(--font-serif);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Flow steps */
+  .flow-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .flow-steps li {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .flow-steps li:last-child { border-bottom: none; }
+  .flow-n {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .flow-body h3 {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: #ffffff;
+    font-weight: 700;
+  }
+  .flow-body p {
+    margin: 0;
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  .flow-body a {
+    color: var(--accent-text);
+  }
+  .flow-body em {
+    font-style: italic;
+    color: var(--text);
+  }
+
+  /* Pricing table */
+  .pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 1px solid var(--rule);
+    margin-top: 8px;
+  }
+  .pricing-table td {
+    padding: 16px 12px;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+    font-family: var(--font-serif);
+    font-size: 16px;
+  }
+  .p-label {
+    color: var(--text);
+    width: 42%;
+  }
+  .p-value {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--accent-text);
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  .p-note {
+    color: var(--text-mute);
+    font-size: 14px;
+    font-style: italic;
+  }
+  .pricing-disclaimer {
+    margin: 22px 0 0;
+    font-family: var(--font-serif);
+    color: var(--text-mute);
+    font-size: 15px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* Alternative / wallets list */
+  .wallets-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .wallets-list li {
+    padding: 10px 18px;
+    background: var(--bg-section);
+    border: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+  .wallets-list a {
+    color: var(--text);
+    border: none !important;
+  }
+  .wallets-list a:hover {
+    color: var(--accent-text);
+  }
+
+  /* Final CTA */
+  .cta-final {
+    text-align: center;
+    padding: 48px 32px;
+    background: var(--bg-section);
+    border: 1px solid var(--rule);
+    margin-top: 40px;
+  }
+  .cta-final h2 {
+    border: none;
+    padding: 0;
+    margin: 0 0 12px;
+  }
+  .cta-final p {
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    font-size: 18px;
+    margin: 0 auto 28px;
+    max-width: 480px;
+  }
+
+  /* Legal */
+  .legal {
+    margin: 56px 0 32px;
+    padding: 18px 22px;
+    border-left: 2px solid var(--rule);
+    background: var(--bg-section);
+    color: var(--text-mute);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.65;
+    font-style: italic;
+  }
+
+  /* Primary nav: Launch link styling (Editorial Noir) */
+  :global([data-theme="editorial"] .primary-nav-desktop a.primary-launch) {
+    color: var(--accent-text) !important;
+    border-bottom: 1px solid var(--accent-soft);
+  }
+  :global([data-theme="editorial"] .primary-nav-desktop a.primary-launch:hover) {
+    color: var(--accent) !important;
+    border-bottom-color: var(--accent);
+  }
+
+  /* Desktop: fill the screen instead of a narrow 760px column */
+  @media (min-width: 721px) {
+    .launch-hero .lede { max-width: 60ch; }
+    .block-lede,
+    .audit-lede { max-width: 64ch; }
+    .why-list,
+    .audit-list { grid-template-columns: 1fr 1fr; gap: 18px; }
+    .flow-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 40px;
+    }
+    .flow-steps li:nth-last-child(2) { border-bottom: none; }
+  }
+
+  @media (max-width: 720px) {
+    .launch-hero { margin: 20px 0 36px; padding-bottom: 28px; }
+    .launch-hero h1 { font-size: clamp(32px, 9vw, 44px); }
+    .launch-hero .lede { font-size: 18px; }
+    .launch-hero .lede.small { font-size: 15px; }
+    .audit-block { padding-left: 18px; }
+    .flow-steps li { grid-template-columns: 44px 1fr; gap: 14px; padding: 18px 0; }
+    .flow-n { font-size: 32px; }
+    .flow-body h3 { font-size: 19px; }
+    .flow-body p { font-size: 16px; }
+    .pricing-table td { font-size: 14px; padding: 12px 8px; }
+    .p-note { display: block; padding-top: 4px; font-size: 13px; }
+    .cta-final { padding: 36px 22px; }
+    .block { margin-bottom: 48px; }
+  }
+</style>

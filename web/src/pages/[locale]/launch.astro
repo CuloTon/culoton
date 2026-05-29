@@ -1,7 +1,10 @@
 ---
+import Layout from '../../layouts/Layout.astro';
+import LaunchContent from '../../components/LaunchContent.astro';
+import { LAUNCH_I18N } from '../../data/launchI18n';
 import type { Locale } from '../../i18n/strings';
 
-export async function getStaticPaths() {
+export function getStaticPaths() {
   return [
     { params: { locale: 'ru' } },
     { params: { locale: 'pl' } },
@@ -12,20 +15,14 @@ export async function getStaticPaths() {
 }
 
 const { locale } = Astro.params as { locale: Locale };
-const target = '/launch';
+const t = LAUNCH_I18N[locale];
 ---
 
-<html lang={locale}>
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content={`0;url=${target}`} />
-    <link rel="canonical" href={target} />
-    <title>Launch — redirecting</title>
-  </head>
-  <body>
-    <p>Redirecting to <a href={target}>{target}</a>…</p>
-    <script is:inline define:vars={{ target }}>
-      window.location.replace(target);
-    </script>
-  </body>
-</html>
+<Layout
+  locale={locale}
+  pathWithoutLocale="/launch"
+  title={t.meta_title}
+  description={t.meta_description}
+>
+  <LaunchContent locale={locale} />
+</Layout>
