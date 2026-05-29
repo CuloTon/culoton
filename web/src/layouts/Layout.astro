@@ -144,6 +144,17 @@ const alternates = LOCALES.map((loc) => ({
           <a href={localizedPath(locale, '/culo')} class="primary-token">{t.nav_token}</a>
         </nav>
 
+        <div class="lang-switcher-top" aria-label="Language">
+          {LOCALES.map((loc) => (
+            <a
+              href={localizedPath(loc, pathWithoutLocale)}
+              class:list={["lang-link", { active: loc === locale }]}
+              hreflang={loc}
+              title={LOCALE_FULL[loc]}
+            >{LOCALE_LABELS[loc]}</a>
+          ))}
+        </div>
+
         <button
           type="button"
           class="hamburger"
@@ -391,6 +402,33 @@ const alternates = LOCALES.map((loc) => ({
     padding-left: 16px;
     border-left: 1px solid var(--rule-soft);
   }
+  /* Top-bar language switcher — mobile only, sits next to the BRAINROT logo */
+  .lang-switcher-top {
+    display: none;
+    align-items: center;
+    gap: 3px;
+    margin-left: auto;
+    margin-right: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .lang-switcher-top .lang-link {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--rule-soft);
+    color: var(--text-mute) !important;
+    text-decoration: none;
+    line-height: 1;
+  }
+  .lang-switcher-top .lang-link.active {
+    background: var(--text);
+    color: var(--accent) !important;
+    border-color: var(--text);
+  }
   .lang-link {
     font-family: var(--font-mono);
     font-size: 11px;
@@ -599,24 +637,20 @@ const alternates = LOCALES.map((loc) => ({
 
   @media (max-width: 720px) {
     .masthead-tag { display: none; }
+    /* Lang switcher moves up to the top bar (next to BRAINROT); hide the
+       duplicate inside the drawer. */
+    .lang-switcher-top { display: flex; }
+    .header-menu .lang-switcher { display: none; }
     .header-menu {
       padding: 8px 20px 16px;
     }
     .site-header.menu-open .header-menu {
       padding: 12px 20px 18px;
     }
-    .header-menu .lang-switcher {
-      margin-top: 14px;
-      margin-left: 0;
-      padding-left: 0;
-      border-left: none;
-      justify-content: flex-start;
-      flex-wrap: wrap;
-    }
-    .header-menu .lang-link {
-      padding: 8px 12px;
-      font-size: 12px;
-      border: 1px solid var(--rule-soft);
-    }
+  }
+  /* Very narrow phones: shrink logo wordmark so the lang pills + hamburger fit. */
+  @media (max-width: 400px) {
+    .lang-switcher-top .lang-link { padding: 3px 5px; font-size: 9px; }
+    .lang-switcher-top { gap: 2px; margin-right: 6px; }
   }
 </style>
