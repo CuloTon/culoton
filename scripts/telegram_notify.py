@@ -132,25 +132,70 @@ def mark_announced(conn: sqlite3.Connection, slug: str, kind: str) -> None:
     conn.commit()
 
 
+# --- Title-similarity dedup for announcements ------------------------------
+# The same story (e.g. "TON/USDT on Binance") exists on disk under several
+# slugs from earlier duplicate fetches. Without this, the hourly notifier
+# announces each one in turn — the channel gets the same news for days.
+# We skip any candidate whose title closely matches a story already announced.
+DUP_THRESHOLD = 0.45
+DUP_STOPWORDS = {
+    "the", "a", "an", "and", "or", "of", "to", "in", "on", "for", "with",
+    "as", "at", "by", "is", "are", "be", "was", "were", "from", "into",
+    "now", "new", "after", "amid", "over", "up", "down", "out", "off",
+    "its", "his", "her", "their", "this", "that", "these", "those",
+    "says", "say", "said", "report", "reports", "via", "but", "not",
+    "has", "have", "had", "will", "can", "could", "amp",
+}
+DUP_SYNONYMS = {"toncoin": "ton", "toncoins": "ton"}
+
+
+def _title_tokens(title: str) -> frozenset[str]:
+    out: set[str] = set()
+    for w in re.split(r"[^a-z0-9]+", (title or "").lower()):
+        if len(w) < 2 or w in DUP_STOPWORDS:
+            continue
+        out.add(DUP_SYNONYMS.get(w, w))
+    return frozenset(out)
+
+
+def _jaccard(a: frozenset[str], b: frozenset[str]) -> float:
+    if not a or not b:
+        return 0.0
+    inter = len(a & b)
+    return inter / len(a | b) if inter else 0.0
+
+
 def find_next_news(conn: sqlite3.Connection) -> tuple[str, dict] | None:
     en_dir = NEWS_DIR / "en"
     if not en_dir.exists():
         return None
-    candidates: list[tuple[str, dict]] = []
+    announced_slugs = {row[0] for row in conn.execute("SELECT slug FROM announced WHERE kind = 'news'")}
+    announced_titles: list[frozenset[str]] = []
+    candidates: list[tuple[str, dict, frozenset[str]]] = []
     for path in en_dir.glob("*.md"):
         slug = path.stem
-        if already_announced(conn, slug, "news"):
-            continue
         try:
             fm, _ = parse_frontmatter(path.read_text(encoding="utf-8"))
         except Exception as e:
             print(f"  skip {path.name}: {e}", file=sys.stderr)
             continue
-        if not fm.get("date") or not fm.get("title"):
+        title = (fm.get("title") or "").strip()
+        if slug in announced_slugs:
+            if title:
+                announced_titles.append(_title_tokens(title))
             continue
-        candidates.append((slug, fm))
+        if not fm.get("date") or not title:
+            continue
+        candidates.append((slug, fm, _title_tokens(title)))
     candidates.sort(key=lambda x: str(x[1].get("date", "")), reverse=True)
-    return candidates[0] if candidates else None
+    for slug, fm, toks in candidates:
+        if any(_jaccard(toks, prev) >= DUP_THRESHOLD for prev in announced_titles):
+            # Near-duplicate of an already-announced story — never post it.
+            mark_announced(conn, slug, "news")
+            print(f"  skip dup (title match), marking announced: {slug}", file=sys.stderr)
+            continue
+        return slug, fm
+    return None
 
 
 def load_locale_meta(slug: str) -> dict[str, tuple[str, str]]:
