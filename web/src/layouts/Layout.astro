@@ -394,17 +394,19 @@ const alternates = LOCALES.map((loc) => ({
   .site-header.menu-open .hamburger span:nth-child(3) {
     transform: translateY(-6px) rotate(-45deg);
   }
+  /* Drawer language switcher — hidden; languages now live in the top bar
+     (.lang-switcher-top) on every viewport, desktop included. */
   .lang-switcher {
-    display: flex;
+    display: none;
     gap: 4px;
     align-items: center;
     margin-left: 16px;
     padding-left: 16px;
     border-left: 1px solid var(--rule-soft);
   }
-  /* Top-bar language switcher — mobile only, sits next to the BRAINROT logo */
+  /* Top-bar language switcher — top bar on desktop AND mobile. */
   .lang-switcher-top {
-    display: none;
+    display: flex;
     align-items: center;
     gap: 3px;
     margin-left: auto;
