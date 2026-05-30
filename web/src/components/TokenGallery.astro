@@ -1,0 +1,391 @@
+---
+import { localizedPath, type Locale } from '../i18n/strings';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+
+type TG = {
+  kicker: string; h1: string; lede: string;
+  cta: string; loading: string; empty: string; empty_cta: string;
+  error: string; retry: string;
+  supply: string; decimals: string; explorer: string; deployer: string;
+  count_one: string; count_many: string;
+};
+
+const TOKENS_I18N: Record<string, TG> = {
+  en: {
+    kicker: 'Launched on BRAINROT', h1: 'Token feed',
+    lede: 'Every jetton deployed through the BRAINROT launcher, straight from the TON testnet. Non-custodial, audited TEP-74 code — we just keep the list.',
+    cta: 'Launch your token →', loading: 'Loading the feed…',
+    empty: 'No tokens yet.', empty_cta: 'Be the first — launch one →',
+    error: 'Could not load the feed.', retry: 'Retry',
+    supply: 'Supply', decimals: 'Decimals', explorer: 'Explorer ↗', deployer: 'Deployer',
+    count_one: 'token', count_many: 'tokens',
+  },
+  pl: {
+    kicker: 'Wystartowane na BRAINROT', h1: 'Feed tokenów',
+    lede: 'Każdy jetton wdrożony przez launcher BRAINROT, prosto z testnetu TON. Non-custodial, zaudytowany kod TEP-74 — my tylko prowadzimy listę.',
+    cta: 'Wypuść swój token →', loading: 'Ładuję feed…',
+    empty: 'Jeszcze żadnych tokenów.', empty_cta: 'Bądź pierwszy — wypuść token →',
+    error: 'Nie udało się załadować feedu.', retry: 'Spróbuj ponownie',
+    supply: 'Podaż', decimals: 'Miejsca dziesiętne', explorer: 'Eksplorator ↗', deployer: 'Twórca',
+    count_one: 'token', count_many: 'tokenów',
+  },
+  ru: {
+    kicker: 'Запущено на BRAINROT', h1: 'Лента токенов',
+    lede: 'Каждый джеттон, развёрнутый через лаунчер BRAINROT, прямо из тестнета TON. Non-custodial, проверенный код TEP-74 — мы просто ведём список.',
+    cta: 'Запусти свой токен →', loading: 'Загружаю ленту…',
+    empty: 'Пока нет токенов.', empty_cta: 'Будь первым — запусти токен →',
+    error: 'Не удалось загрузить ленту.', retry: 'Повторить',
+    supply: 'Эмиссия', decimals: 'Десятичные', explorer: 'Эксплорер ↗', deployer: 'Создатель',
+    count_one: 'токен', count_many: 'токенов',
+  },
+  de: {
+    kicker: 'Gestartet auf BRAINROT', h1: 'Token-Feed',
+    lede: 'Jeder Jetton, der über den BRAINROT-Launcher deployt wurde, direkt aus dem TON-Testnet. Non-custodial, geprüfter TEP-74-Code — wir führen nur die Liste.',
+    cta: 'Starte deinen Token →', loading: 'Feed wird geladen…',
+    empty: 'Noch keine Token.', empty_cta: 'Sei der Erste — starte einen →',
+    error: 'Feed konnte nicht geladen werden.', retry: 'Erneut',
+    supply: 'Supply', decimals: 'Dezimalstellen', explorer: 'Explorer ↗', deployer: 'Deployer',
+    count_one: 'Token', count_many: 'Token',
+  },
+  es: {
+    kicker: 'Lanzado en BRAINROT', h1: 'Feed de tokens',
+    lede: 'Cada jetton desplegado con el launcher de BRAINROT, directo desde la testnet de TON. Non-custodial, código TEP-74 auditado — nosotros solo mantenemos la lista.',
+    cta: 'Lanza tu token →', loading: 'Cargando el feed…',
+    empty: 'Aún no hay tokens.', empty_cta: 'Sé el primero — lanza uno →',
+    error: 'No se pudo cargar el feed.', retry: 'Reintentar',
+    supply: 'Supply', decimals: 'Decimales', explorer: 'Explorador ↗', deployer: 'Creador',
+    count_one: 'token', count_many: 'tokens',
+  },
+  uk: {
+    kicker: 'Запущено на BRAINROT', h1: 'Стрічка токенів',
+    lede: 'Кожен джетон, розгорнутий через лаунчер BRAINROT, прямо з тестнету TON. Non-custodial, перевірений код TEP-74 — ми лише ведемо список.',
+    cta: 'Запусти свій токен →', loading: 'Завантажую стрічку…',
+    empty: 'Поки що немає токенів.', empty_cta: 'Будь першим — запусти токен →',
+    error: 'Не вдалося завантажити стрічку.', retry: 'Повторити',
+    supply: 'Емісія', decimals: 'Десяткові', explorer: 'Експлорер ↗', deployer: 'Творець',
+    count_one: 'токен', count_many: 'токенів',
+  },
+};
+
+const t = TOKENS_I18N[locale] ?? TOKENS_I18N.en;
+const launchHref = localizedPath(locale, '/launch');
+---
+
+<article class="tokens-page">
+  <header class="tokens-hero">
+    <span class="kicker">{t.kicker} <span class="net-badge">TESTNET</span></span>
+    <h1>{t.h1}</h1>
+    <p class="lede">{t.lede}</p>
+    <div class="hero-cta">
+      <a class="cta-btn cta-primary cta-big" href={launchHref}>{t.cta}</a>
+      <span class="tok-count" id="tok-count" hidden></span>
+    </div>
+  </header>
+
+  <div id="tok-feed" class="tok-feed" data-launch={launchHref}>
+    <p class="tok-state" id="tok-state">{t.loading}</p>
+    <div class="tok-grid" id="tok-grid"></div>
+  </div>
+</article>
+
+<script define:vars={{ T: t, locale }}>
+  (function () {
+    const meta = document.querySelector('meta[name="stats-api"]');
+    const api = meta ? (meta.getAttribute('content') || '').replace(/\/$/, '') : '';
+    const feed = document.getElementById('tok-feed');
+    const grid = document.getElementById('tok-grid');
+    const state = document.getElementById('tok-state');
+    const countEl = document.getElementById('tok-count');
+    const launchHref = feed.getAttribute('data-launch') || '/launch';
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    function shortAddr(a) {
+      return a && a.length > 14 ? a.slice(0, 6) + '…' + a.slice(-4) : a || '';
+    }
+    function fmtSupply(s) {
+      if (!s) return '—';
+      try { return BigInt(s).toLocaleString(locale); } catch (_) { return s; }
+    }
+    function fmtDate(iso) {
+      try { return new Date(iso).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' }); }
+      catch (_) { return ''; }
+    }
+    function ipfsToHttp(u) {
+      if (!u) return '';
+      return u.indexOf('ipfs://') === 0 ? 'https://ipfs.io/ipfs/' + u.slice(7) : u;
+    }
+
+    function card(tok) {
+      const img = ipfsToHttp(tok.image);
+      const sym = esc(tok.symbol || '?');
+      const letter = (tok.symbol || tok.name || '?').slice(0, 1).toUpperCase();
+      const logo = img
+        ? '<img class="tk-logo" src="' + esc(img) + '" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'tk-logo tk-logo-ph\',textContent:\'' + esc(letter) + '\'}))" />'
+        : '<div class="tk-logo tk-logo-ph">' + esc(letter) + '</div>';
+      const explorer = 'https://testnet.tonviewer.com/' + encodeURIComponent(tok.minter);
+      return (
+        '<div class="tk-card">' +
+          '<div class="tk-head">' + logo +
+            '<div class="tk-id"><span class="tk-name">' + esc(tok.name || '—') + '</span>' +
+            '<span class="tk-sym">$' + sym + '</span></div>' +
+          '</div>' +
+          '<dl class="tk-meta">' +
+            '<div><dt>' + esc(T.supply) + '</dt><dd>' + fmtSupply(tok.supply) + '</dd></div>' +
+            '<div><dt>' + esc(T.decimals) + '</dt><dd>' + esc(tok.decimals) + '</dd></div>' +
+          '</dl>' +
+          '<div class="tk-foot">' +
+            '<code class="tk-addr" title="' + esc(tok.minter) + '">' + esc(shortAddr(tok.minter)) + '</code>' +
+            '<span class="tk-date">' + esc(fmtDate(tok.at)) + '</span>' +
+          '</div>' +
+          '<a class="tk-link" href="' + explorer + '" target="_blank" rel="noopener noreferrer">' + esc(T.explorer) + '</a>' +
+        '</div>'
+      );
+    }
+
+    function render(tokens) {
+      if (!tokens || !tokens.length) {
+        state.innerHTML = esc(T.empty) + ' <a href="' + launchHref + '">' + esc(T.empty_cta) + '</a>';
+        state.hidden = false;
+        return;
+      }
+      state.hidden = true;
+      grid.innerHTML = tokens.map(card).join('');
+      const n = tokens.length;
+      countEl.textContent = n + ' ' + (n === 1 ? T.count_one : T.count_many);
+      countEl.hidden = false;
+    }
+
+    function load() {
+      if (!api) { state.textContent = T.error; return; }
+      state.textContent = T.loading;
+      state.hidden = false;
+      fetch(api + '/tokens/list?network=testnet', { credentials: 'omit' })
+        .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+        .then(function (j) { render(j && j.tokens ? j.tokens : []); })
+        .catch(function () {
+          state.innerHTML = esc(T.error) + ' <button type="button" id="tok-retry" class="tok-retry">' + esc(T.retry) + '</button>';
+          state.hidden = false;
+          const rb = document.getElementById('tok-retry');
+          if (rb) rb.addEventListener('click', load);
+        });
+    }
+
+    load();
+  })();
+</script>
+
+<style>
+  .tokens-page { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  .tokens-hero {
+    margin: 32px 0 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .kicker {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    margin-bottom: 22px;
+  }
+  .net-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #6dd4a8;
+    border: 1px solid rgba(109, 212, 168, 0.5);
+    border-radius: 4px;
+    padding: 3px 8px;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  .tokens-hero h1 {
+    margin: 0 0 18px;
+    font-family: var(--font-display);
+    font-size: clamp(40px, 6vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    font-weight: 800;
+  }
+  .tokens-hero .lede {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    margin: 0;
+    max-width: 64ch;
+  }
+  .hero-cta {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+  }
+  .tok-count {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-mute);
+    letter-spacing: 0.04em;
+  }
+  .cta-btn {
+    display: inline-block;
+    text-decoration: none !important;
+    border-bottom: none !important;
+    transition: background 0.15s, color 0.15s;
+  }
+  .cta-primary {
+    background: transparent;
+    color: var(--accent-text);
+    border: 1px solid var(--accent);
+    padding: 14px 26px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .cta-primary:hover { background: var(--accent-soft); color: var(--accent); }
+  .cta-big { padding: 16px 30px; font-size: 14px; }
+
+  .tok-feed { margin-bottom: 64px; }
+  .tok-state {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text-mute);
+    padding: 24px 0;
+  }
+  .tok-state a { color: var(--accent-text); }
+  .tok-retry {
+    margin-left: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent-text);
+    cursor: pointer;
+  }
+  .tok-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .tk-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+    background: var(--bg-section);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--accent);
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+  }
+  .tk-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(20, 20, 30, 0.10);
+    border-left-color: #6dd4a8;
+  }
+  .tk-head { display: flex; align-items: center; gap: 14px; }
+  .tk-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    flex-shrink: 0;
+  }
+  .tk-logo-ph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--accent-text);
+  }
+  .tk-id { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .tk-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    word-break: break-word;
+  }
+  .tk-sym {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-text);
+    letter-spacing: 0.04em;
+  }
+  .tk-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 14px;
+    margin: 0;
+    padding: 12px 0;
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .tk-meta dt {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-mute);
+    margin-bottom: 3px;
+  }
+  .tk-meta dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .tk-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .tk-addr {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .tk-date {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-mute);
+  }
+  .tk-link {
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-soft);
+  }
+  .tk-link:hover { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .tokens-hero h1 { font-size: clamp(32px, 9vw, 44px); }
+    .tokens-hero .lede { font-size: 17px; }
+    .tok-grid { grid-template-columns: 1fr; }
+  }
+</style>

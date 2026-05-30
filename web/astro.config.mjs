@@ -7,6 +7,12 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
+  vite: {
+    // Skip realpath() during resolution. The local NTFS volume intermittently
+    // throws EIO on realpath for some node_modules entries (e.g. @ton/*); since
+    // there are no real symlinks here, preserving paths is safe and avoids it.
+    resolve: { preserveSymlinks: true },
+  },
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'ru', 'pl', 'de'],

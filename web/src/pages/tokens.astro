@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TokenGallery from '../components/TokenGallery.astro';
+
+const locale = 'en' as const;
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/tokens"
+  title="Token feed — jettons launched on BRAINROT"
+  description="Every TON jetton deployed through the BRAINROT launcher, live from the testnet. Non-custodial, audited TEP-74 code."
+>
+  <TokenGallery locale={locale} />
+</Layout>

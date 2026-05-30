@@ -14,6 +14,7 @@ type Msgs = {
   confirmTx: string; signed: string; deployFail: string; renounceConfirm: string;
   renounceConfirmTx: string; renounceSigned: string; renounceSubmitted: string;
   renounceFail: string; disconnect: string; connect: string; loadFail: string;
+  confirming: string; confirmed: string; confirmTimeout: string;
 };
 const I18N: Record<string, Msgs> = {
   en: {
@@ -35,6 +36,9 @@ const I18N: Record<string, Msgs> = {
     renounceFail: 'Renounce cancelled or failed: ',
     disconnect: 'Disconnect ', connect: 'Connect TON wallet (testnet)',
     loadFail: 'Launcher failed to load: ',
+    confirming: 'Deployed — waiting for on-chain confirmation before renounce unlocks…',
+    confirmed: 'Confirmed on-chain ✓ Your token is live and listed in the feed.',
+    confirmTimeout: 'Not visible on-chain yet — open the explorer to check. Renounce stays locked until it confirms.',
   },
   pl: {
     mainnet: 'Portfel jest na MAINNECIE — przełącz na TESTNET, inaczej deploy zostanie odrzucony.',
@@ -55,6 +59,9 @@ const I18N: Record<string, Msgs> = {
     renounceFail: 'Zrzeczenie anulowane lub nieudane: ',
     disconnect: 'Rozłącz ', connect: 'Podłącz portfel TON (testnet)',
     loadFail: 'Nie udało się załadować launchera: ',
+    confirming: 'Wdrożono — czekam na potwierdzenie on-chain, zanim odblokuję zrzeczenie…',
+    confirmed: 'Potwierdzone on-chain ✓ Twój token żyje i jest w feedzie.',
+    confirmTimeout: 'Jeszcze niewidoczny on-chain — sprawdź w eksploratorze. Zrzeczenie pozostaje zablokowane do potwierdzenia.',
   },
   ru: {
     mainnet: 'Кошелёк в MAINNET — переключи на TESTNET, иначе деплой отклонят.',
@@ -75,6 +82,9 @@ const I18N: Record<string, Msgs> = {
     renounceFail: 'Отказ отменён или не удался: ',
     disconnect: 'Отключить ', connect: 'Подключить кошелёк TON (тестнет)',
     loadFail: 'Не удалось загрузить лаунчер: ',
+    confirming: 'Развёрнуто — ждём подтверждения on-chain, прежде чем открыть отказ…',
+    confirmed: 'Подтверждено on-chain ✓ Твой токен в сети и в ленте.',
+    confirmTimeout: 'Пока не виден on-chain — проверь в эксплорере. Отказ остаётся заблокированным до подтверждения.',
   },
   de: {
     mainnet: 'Wallet ist im MAINNET — wechsle ins TESTNET, sonst wird der Deploy abgelehnt.',
@@ -95,6 +105,9 @@ const I18N: Record<string, Msgs> = {
     renounceFail: 'Abgabe abgebrochen oder fehlgeschlagen: ',
     disconnect: 'Trennen ', connect: 'TON-Wallet verbinden (Testnet)',
     loadFail: 'Launcher konnte nicht geladen werden: ',
+    confirming: 'Deployt — warte auf On-chain-Bestätigung, bevor das Abgeben freigeschaltet wird…',
+    confirmed: 'On-chain bestätigt ✓ Dein Token ist live und im Feed gelistet.',
+    confirmTimeout: 'Noch nicht on-chain sichtbar — im Explorer prüfen. Abgabe bleibt bis zur Bestätigung gesperrt.',
   },
   es: {
     mainnet: 'La wallet está en MAINNET — cámbiala a TESTNET o se rechazará el despliegue.',
@@ -115,6 +128,9 @@ const I18N: Record<string, Msgs> = {
     renounceFail: 'Renuncia cancelada o fallida: ',
     disconnect: 'Desconectar ', connect: 'Conectar wallet TON (testnet)',
     loadFail: 'No se pudo cargar el launcher: ',
+    confirming: 'Desplegado — esperando confirmación on-chain antes de habilitar la renuncia…',
+    confirmed: 'Confirmado on-chain ✓ Tu token está activo y listado en el feed.',
+    confirmTimeout: 'Aún no visible on-chain — revisa el explorador. La renuncia sigue bloqueada hasta que se confirme.',
   },
   uk: {
     mainnet: 'Гаманець у MAINNET — переключи на TESTNET, інакше деплой відхилять.',
@@ -135,6 +151,9 @@ const I18N: Record<string, Msgs> = {
     renounceFail: 'Відмову скасовано або не вдалася: ',
     disconnect: 'Відключити ', connect: 'Підключити гаманець TON (тестнет)',
     loadFail: 'Не вдалося завантажити лаунчер: ',
+    confirming: 'Розгорнуто — чекаємо підтвердження on-chain, перш ніж відкрити відмову…',
+    confirmed: 'Підтверджено on-chain ✓ Твій токен у мережі та в стрічці.',
+    confirmTimeout: 'Ще не видно on-chain — перевір у експлорері. Відмова лишається заблокованою до підтвердження.',
   },
 };
 const LANG = (document.documentElement.lang || 'en').slice(0, 2);
@@ -167,10 +186,57 @@ async function main() {
   });
 
   let lastMinter: string | null = null;
+  renounceBtn.disabled = true; // unlocked only after the deploy confirms on-chain
+
+  const apiMeta = document.querySelector('meta[name="stats-api"]') as HTMLMetaElement | null;
+  const STATS_API = (apiMeta?.content || '').replace(/\/$/, '');
+  const NETWORK = 'testnet';
 
   function setStatus(msg: string, kind: 'info' | 'error' | 'ok' = 'info') {
     statusEl.textContent = msg;
     statusEl.dataset.kind = kind;
+  }
+
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+  async function registerToken(entry: Record<string, unknown>) {
+    if (!STATS_API) return;
+    try {
+      await fetch(STATS_API + '/tokens/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry),
+        credentials: 'omit',
+      });
+    } catch {
+      /* feed registration is best-effort */
+    }
+  }
+
+  // Poll the testnet indexer until the freshly-deployed minter is active, then
+  // unlock renounce and add the token to the public feed.
+  async function confirmDeploy(minterFriendly: string, entry: Record<string, unknown>) {
+    setStatus(M.confirming, 'info');
+    const start = Date.now();
+    const TIMEOUT = 90_000;
+    while (Date.now() - start < TIMEOUT) {
+      await sleep(4000);
+      try {
+        const r = await fetch('https://testnet.tonapi.io/v2/accounts/' + minterFriendly);
+        if (r.ok) {
+          const j = await r.json();
+          if (j && j.status === 'active') {
+            setStatus(M.confirmed, 'ok');
+            renounceBtn.disabled = false;
+            registerToken(entry);
+            return;
+          }
+        }
+      } catch {
+        /* keep polling */
+      }
+    }
+    setStatus(M.confirmTimeout, 'info');
   }
 
   function refreshConnection() {
@@ -270,6 +336,20 @@ async function main() {
       resultEl.hidden = false;
       resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setStatus(M.signed, 'ok');
+
+      // Lock renounce, confirm on-chain, then unlock + list in the feed.
+      renounceBtn.disabled = true;
+      const ownerFriendly = owner.toString({ bounceable: true, testOnly: true });
+      confirmDeploy(minterDisplay, {
+        minter: minterDisplay,
+        network: NETWORK,
+        name,
+        symbol,
+        decimals,
+        image,
+        owner: ownerFriendly,
+        supply: supplyStr.replace(/[\s,_]/g, ''),
+      });
     } catch (err: any) {
       setStatus(M.deployFail + (err?.message || String(err)), 'error');
     } finally {

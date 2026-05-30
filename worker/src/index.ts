@@ -283,6 +283,79 @@ async function invalidatePollCache(env: Env) {
   await env.STATS_KV.delete(`poll:${POLL_VERSION}:cache:results`);
 }
 
+// === Token registry — feed of jettons launched via /launch ===
+const TOK_VERSION = 'v1';
+const TOK_LIST_CACHE_TTL = 30;
+const TOK_MAX_LIST = 300;
+const TON_ADDR_RE = /^[A-Za-z0-9_-]{48}$/; // user-friendly base64url TON address
+const TOK_NET = new Set(['testnet', 'mainnet']);
+
+type TokenEntry = {
+  minter: string;
+  network: 'testnet' | 'mainnet';
+  name: string;
+  symbol: string;
+  decimals: number;
+  image: string;
+  owner: string;
+  supply: string;
+  at: string;
+};
+
+function clampStr(v: unknown, max: number): string {
+  if (typeof v !== 'string') return '';
+  return v.trim().slice(0, max);
+}
+
+function validateToken(body: any): TokenEntry | { error: string } {
+  if (!body || typeof body !== 'object') return { error: 'invalid body' };
+  const minter = clampStr(body.minter, 60);
+  if (!TON_ADDR_RE.test(minter)) return { error: 'invalid minter' };
+  const network = String(body.network ?? 'testnet');
+  if (!TOK_NET.has(network)) return { error: 'invalid network' };
+  const name = clampStr(body.name, 64);
+  const symbol = clampStr(body.symbol, 16);
+  if (!name || !symbol) return { error: 'missing name/symbol' };
+  let decimals = Number(body.decimals);
+  if (!Number.isInteger(decimals) || decimals < 0 || decimals > 30) decimals = 9;
+  const imageRaw = clampStr(body.image, 400);
+  const image = /^https?:\/\/|^ipfs:\/\//.test(imageRaw) ? imageRaw : '';
+  const ownerRaw = clampStr(body.owner, 60);
+  const owner = TON_ADDR_RE.test(ownerRaw) ? ownerRaw : '';
+  const supply = clampStr(body.supply, 40).replace(/[^0-9]/g, '');
+  return {
+    minter,
+    network: network as 'testnet' | 'mainnet',
+    name,
+    symbol,
+    decimals,
+    image,
+    owner,
+    supply,
+    at: new Date().toISOString(),
+  };
+}
+
+async function listTokens(env: Env, network: string): Promise<TokenEntry[]> {
+  const keys = await listAll(env.STATS_KV, `tok:${TOK_VERSION}:${network}:`);
+  const out: TokenEntry[] = [];
+  const BATCH = 50;
+  for (let i = 0; i < keys.length; i += BATCH) {
+    const slice = keys.slice(i, i + BATCH);
+    const vals = await Promise.all(slice.map((k) => env.STATS_KV.get(k.name)));
+    for (const raw of vals) {
+      if (!raw) continue;
+      try {
+        out.push(JSON.parse(raw) as TokenEntry);
+      } catch {
+        /* skip */
+      }
+    }
+  }
+  out.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+  return out.slice(0, TOK_MAX_LIST);
+}
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
@@ -411,6 +484,67 @@ export default {
         return new Response(JSON.stringify({ voted: !!existing }), {
           status: 200,
           headers: { ...headers, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (url.pathname === '/tokens/register' && req.method === 'POST') {
+        let body: any;
+        try {
+          body = await req.json();
+        } catch {
+          return new Response(JSON.stringify({ error: 'invalid json' }), {
+            status: 400,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const parsed = validateToken(body);
+        if ('error' in parsed) {
+          return new Response(JSON.stringify(parsed), {
+            status: 400,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const key = `tok:${TOK_VERSION}:${parsed.network}:${parsed.minter}`;
+        const existing = await env.STATS_KV.get(key);
+        if (!existing) {
+          await env.STATS_KV.put(key, JSON.stringify(parsed));
+          await env.STATS_KV.delete(`tok:${TOK_VERSION}:cache:${parsed.network}`);
+        }
+        return new Response(JSON.stringify({ ok: true, duplicate: !!existing }), {
+          status: 200,
+          headers: { ...headers, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (url.pathname === '/tokens/list' && req.method === 'GET') {
+        const netParam = url.searchParams.get('network') ?? 'testnet';
+        const network = TOK_NET.has(netParam) ? netParam : 'testnet';
+        const cacheKey = `tok:${TOK_VERSION}:cache:${network}`;
+        const cachedRaw = await env.STATS_KV.get(cacheKey);
+        let tokens: TokenEntry[] | null = null;
+        if (cachedRaw) {
+          try {
+            const c = JSON.parse(cachedRaw) as { gen: number; tokens: TokenEntry[] };
+            if ((Date.now() - c.gen) / 1000 < TOK_LIST_CACHE_TTL) tokens = c.tokens;
+          } catch {
+            /* recompute */
+          }
+        }
+        if (!tokens) {
+          tokens = await listTokens(env, network);
+          await env.STATS_KV.put(
+            cacheKey,
+            JSON.stringify({ gen: Date.now(), tokens }),
+            { expirationTtl: TOK_LIST_CACHE_TTL * 2 },
+          );
+        }
+        return new Response(JSON.stringify({ network, count: tokens.length, tokens }), {
+          status: 200,
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'public, max-age=15',
+          },
         });
       }
 

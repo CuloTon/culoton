@@ -5,7 +5,7 @@ workers_dev = true
 
 [vars]
 # Comma-separated list of allowed Origin headers. Set to "*" to disable.
-ALLOWED_ORIGIN = "https://culoton.fun"
+ALLOWED_ORIGIN = "https://brainrot-ton.fun,https://culoton.fun"
 
 [[kv_namespaces]]
 binding = "STATS_KV"
