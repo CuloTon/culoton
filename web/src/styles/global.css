@@ -373,11 +373,15 @@ article.news-article {
   padding: 0 24px;
 }
 
-/* Ecosystem is a directory grid, not prose — let it use the full site width
-   (same as home/tokens) instead of the narrow reading width. Text blocks
-   inside (hero lede, category blurbs) keep their own 720px cap. */
+/* Ecosystem is a directory grid, not prose. Break it out of the centered
+   --maxw column entirely and let the card grid use almost the whole screen
+   (full-bleed ~96vw) on desktop. Text blocks inside (hero lede, category
+   blurbs) keep their own 720px cap for readability. */
+main:has(article.news-article.ecosystem) {
+  max-width: 100%;
+}
 article.news-article.ecosystem {
-  max-width: var(--maxw);
+  max-width: 96vw;
 }
 
 article.news-article .breadcrumb {
