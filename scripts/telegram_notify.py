@@ -61,6 +61,7 @@ from _culo_market import (  # noqa: E402
     fmt_change,
     fmt_money,
 )
+from news_quality import is_low_value_title  # noqa: E402
 
 TG_API_TIMEOUT = 20
 TG_MAX_LEN = 4000  # Telegram limit is 4096 — keep margin for safety.
@@ -190,6 +191,12 @@ def find_next_news(conn: sqlite3.Connection) -> tuple[str, dict] | None:
         candidates.append((slug, fm, _title_tokens(title)))
     candidates.sort(key=lambda x: str(x[1].get("date", "")), reverse=True)
     for slug, fm, toks in candidates:
+        if is_low_value_title((fm.get("title") or "").strip()):
+            # Market-noise / price-recap filler ("TON holds at $2"). Per user
+            # directive the channel posts real, fresh stories only — never this.
+            # Skip without marking announced so a future tweak can reclaim it.
+            print(f"  skip low-value (market noise): {slug}", file=sys.stderr)
+            continue
         if any(_jaccard(toks, prev) >= DUP_THRESHOLD for prev in announced_titles):
             # Near-duplicate of an already-announced story — never post it.
             mark_announced(conn, slug, "news")

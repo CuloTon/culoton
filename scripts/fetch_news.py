@@ -34,6 +34,7 @@ from anthropic import Anthropic
 from dotenv import load_dotenv
 from slugify import slugify
 
+from news_quality import is_low_value_title
 from sources import SOURCES
 
 # Cap socket reads so a slow/dead feed cannot wedge the whole job.
@@ -416,6 +417,15 @@ def main() -> int:
                 print(f"  dup (title match), skipping: {title[:70]}")
                 mark_seen(conn, url, source["name"], title)
                 total_dups += 1
+                continue
+
+            # Market-noise / price-recap filler ("TON holds at $2", "TON/USDT
+            # pair on Binance"). Don't spend an API call rewriting it and don't
+            # let it clog the site — mark seen so it's never reconsidered.
+            if is_low_value_title(title):
+                print(f"  skip low-value (market noise): {title[:70]}")
+                mark_seen(conn, url, source["name"], title)
+                total_skipped += 1
                 continue
 
             print(f"  rewriting: {title[:70]}")
