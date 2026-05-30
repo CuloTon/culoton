@@ -7,6 +7,18 @@ import { Buffer } from 'buffer';
 
 const TESTNET = '-3'; // CHAIN.TESTNET
 
+// --- Platform fee (OFF by default) -----------------------------------------
+// When FEE_TREASURY holds a wallet address, every deploy ALSO sends
+// PLATFORM_FEE_TON to it inside the SAME signed transaction (one wallet
+// confirmation deploys the token + pays the fee). Intended for mainnet once
+// the launcher graduates off testnet — testnet TON is worthless, and a mainnet
+// treasury address must not be paired with a testnet tx. Leave FEE_TREASURY
+// empty to keep launches free.
+const PLATFORM_FEE_TON = 1;
+const FEE_TREASURY = ''; // e.g. 'UQ…' (mainnet) — empty = fee disabled
+const FEE_ENABLED = FEE_TREASURY.length > 0 && PLATFORM_FEE_TON > 0;
+const feeNano = (ton: number) => BigInt(Math.round(ton * 1e9)).toString();
+
 // Localized status/confirm strings, keyed by <html lang>. Falls back to en.
 type Msgs = {
   mainnet: string; connected: string; connectFirst: string; nameSymbol: string;
@@ -316,19 +328,28 @@ async function main() {
       lastMinter = minterMsgAddr;
 
       deployBtn.disabled = true;
-      setStatus(M.confirmTx, 'info');
+      setStatus(
+        FEE_ENABLED ? `${M.confirmTx} (+${PLATFORM_FEE_TON} TON platform fee)` : M.confirmTx,
+        'info',
+      );
+
+      const messages: Array<Record<string, string>> = [
+        {
+          address: minterMsgAddr,
+          amount: tx.amount.toString(),
+          stateInit: tx.stateInitB64,
+          payload: tx.payloadB64,
+        },
+      ];
+      // Optional platform fee in the same signed tx (see FEE_TREASURY above).
+      if (FEE_ENABLED) {
+        messages.push({ address: FEE_TREASURY, amount: feeNano(PLATFORM_FEE_TON) });
+      }
 
       await tcui.sendTransaction({
         validUntil: Math.floor(Date.now() / 1000) + 600,
         network: TESTNET,
-        messages: [
-          {
-            address: minterMsgAddr,
-            amount: tx.amount.toString(),
-            stateInit: tx.stateInitB64,
-            payload: tx.payloadB64,
-          },
-        ],
+        messages,
       });
 
       addrEl.textContent = minterDisplay;
