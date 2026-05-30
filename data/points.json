@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 176,
+  "group_msg_count": 179,
   "users": {
     "1277897740": {
       "daily_day": "2026-05-27",
@@ -401,14 +401,14 @@
       "weekly_points": 0
     },
     "7722389012": {
-      "daily_day": "",
-      "daily_points": 0,
+      "daily_day": "2026-05-30",
+      "daily_points": 1,
       "last_ask_at": "",
-      "last_command_at": "",
-      "last_msg_point_at": "",
-      "total_points": 0,
+      "last_command_at": "2026-05-30T03:20:39.837012+00:00",
+      "last_msg_point_at": "2026-05-30T03:20:39.837025+00:00",
+      "total_points": 1,
       "username": "@Kols_CEO",
-      "weekly_points": 0
+      "weekly_points": 1
     },
     "7757843118": {
       "daily_day": "",
