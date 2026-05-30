@@ -373,6 +373,13 @@ article.news-article {
   padding: 0 24px;
 }
 
+/* Ecosystem is a directory grid, not prose — let it use the wide column on
+   desktop instead of the narrow reading width. Text blocks inside (hero lede,
+   category blurbs) keep their own 720px cap. (/tokens already uses --maxw.) */
+article.news-article.ecosystem {
+  max-width: min(1180px, 92vw);
+}
+
 article.news-article .breadcrumb {
   font-family: var(--font-mono);
   font-size: 12px;
