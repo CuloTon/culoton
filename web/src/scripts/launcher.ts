@@ -5,7 +5,7 @@ import { Buffer } from 'buffer';
 (globalThis as any).Buffer = (globalThis as any).Buffer || Buffer;
 (globalThis as any).global = (globalThis as any).global || globalThis;
 
-const TESTNET = '-3'; // CHAIN.TESTNET
+const MAINNET = '-239'; // CHAIN.MAINNET
 
 // --- Platform fee (OFF by default) -----------------------------------------
 // When FEE_TREASURY holds a wallet address, every deploy ALSO sends
@@ -15,9 +15,32 @@ const TESTNET = '-3'; // CHAIN.TESTNET
 // treasury address must not be paired with a testnet tx. Leave FEE_TREASURY
 // empty to keep launches free.
 const PLATFORM_FEE_TON = 1;
-const FEE_TREASURY = ''; // e.g. 'UQ…' (mainnet) — empty = fee disabled
+const FEE_TREASURY = 'UQBzaZXIwj3mDY8HdYDkTO1lkn4OV8sfx2tsf-lChQex70NP'; // mainnet treasury — fee ENABLED
 const FEE_ENABLED = FEE_TREASURY.length > 0 && PLATFORM_FEE_TON > 0;
 const feeNano = (ton: number) => BigInt(Math.round(ton * 1e9)).toString();
+
+// --- Optional social links (feed metadata, not on-chain) -------------------
+// Accept a full URL, an @handle, or a bare handle/domain and normalize to a
+// canonical https URL. Empty input → empty string (field is optional).
+function normWebsite(v: string): string {
+  const s = (v || '').trim();
+  if (!s) return '';
+  return /^https?:\/\//i.test(s) ? s : 'https://' + s.replace(/^\/+/, '');
+}
+function normTelegram(v: string): string {
+  let s = (v || '').trim();
+  if (!s) return '';
+  if (/^https?:\/\//i.test(s)) return s;
+  s = s.replace(/^@/, '').replace(/^t\.me\//i, '');
+  return s ? 'https://t.me/' + s : '';
+}
+function normX(v: string): string {
+  let s = (v || '').trim();
+  if (!s) return '';
+  if (/^https?:\/\//i.test(s)) return s;
+  s = s.replace(/^@/, '').replace(/^(?:x\.com|twitter\.com)\//i, '');
+  return s ? 'https://x.com/' + s : '';
+}
 
 // Localized status/confirm strings, keyed by <html lang>. Falls back to en.
 type Msgs = {
@@ -30,8 +53,8 @@ type Msgs = {
 };
 const I18N: Record<string, Msgs> = {
   en: {
-    mainnet: 'Wallet is on MAINNET — switch it to TESTNET, or the deploy will be rejected.',
-    connected: 'Testnet wallet connected. Fill the form and deploy.',
+    mainnet: 'Wallet is on TESTNET — switch it to MAINNET, or the deploy will be rejected.',
+    connected: 'Mainnet wallet connected. Fill the form and deploy.',
     connectFirst: 'Connect a wallet first.',
     nameSymbol: 'Name and symbol are required.',
     decimals: 'Decimals must be a whole number between 0 and 30 (use 9).',
@@ -46,15 +69,15 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Renounce signed. Admin will be set to none on-chain shortly.',
     renounceSubmitted: 'Renounce submitted ✓',
     renounceFail: 'Renounce cancelled or failed: ',
-    disconnect: 'Disconnect ', connect: 'Connect TON wallet (testnet)',
+    disconnect: 'Disconnect ', connect: 'Connect TON wallet',
     loadFail: 'Launcher failed to load: ',
     confirming: 'Deployed — waiting for on-chain confirmation before renounce unlocks…',
     confirmed: 'Confirmed on-chain ✓ Your token is live and listed in the feed.',
     confirmTimeout: 'Not visible on-chain yet — open the explorer to check. Renounce stays locked until it confirms.',
   },
   pl: {
-    mainnet: 'Portfel jest na MAINNECIE — przełącz na TESTNET, inaczej deploy zostanie odrzucony.',
-    connected: 'Portfel testnet podłączony. Wypełnij formularz i wdróż.',
+    mainnet: 'Portfel jest na TESTNECIE — przełącz na MAINNET, inaczej deploy zostanie odrzucony.',
+    connected: 'Portfel mainnet podłączony. Wypełnij formularz i wdróż.',
     connectFirst: 'Najpierw podłącz portfel.',
     nameSymbol: 'Nazwa i symbol są wymagane.',
     decimals: 'Miejsca dziesiętne muszą być liczbą całkowitą 0–30 (użyj 9).',
@@ -69,15 +92,15 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Zrzeczenie podpisane. Admin zostanie wkrótce ustawiony na zerowy on-chain.',
     renounceSubmitted: 'Zrzeczenie wysłane ✓',
     renounceFail: 'Zrzeczenie anulowane lub nieudane: ',
-    disconnect: 'Rozłącz ', connect: 'Podłącz portfel TON (testnet)',
+    disconnect: 'Rozłącz ', connect: 'Podłącz portfel TON',
     loadFail: 'Nie udało się załadować launchera: ',
     confirming: 'Wdrożono — czekam na potwierdzenie on-chain, zanim odblokuję zrzeczenie…',
     confirmed: 'Potwierdzone on-chain ✓ Twój token żyje i jest w feedzie.',
     confirmTimeout: 'Jeszcze niewidoczny on-chain — sprawdź w eksploratorze. Zrzeczenie pozostaje zablokowane do potwierdzenia.',
   },
   ru: {
-    mainnet: 'Кошелёк в MAINNET — переключи на TESTNET, иначе деплой отклонят.',
-    connected: 'Тестнет-кошелёк подключён. Заполни форму и разверни.',
+    mainnet: 'Кошелёк в TESTNET — переключи на MAINNET, иначе деплой отклонят.',
+    connected: 'Mainnet-кошелёк подключён. Заполни форму и разверни.',
     connectFirst: 'Сначала подключи кошелёк.',
     nameSymbol: 'Название и символ обязательны.',
     decimals: 'Десятичные должны быть целым числом от 0 до 30 (ставь 9).',
@@ -92,15 +115,15 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Отказ подписан. Админ скоро будет обнулён on-chain.',
     renounceSubmitted: 'Отказ отправлен ✓',
     renounceFail: 'Отказ отменён или не удался: ',
-    disconnect: 'Отключить ', connect: 'Подключить кошелёк TON (тестнет)',
+    disconnect: 'Отключить ', connect: 'Подключить кошелёк TON',
     loadFail: 'Не удалось загрузить лаунчер: ',
     confirming: 'Развёрнуто — ждём подтверждения on-chain, прежде чем открыть отказ…',
     confirmed: 'Подтверждено on-chain ✓ Твой токен в сети и в ленте.',
     confirmTimeout: 'Пока не виден on-chain — проверь в эксплорере. Отказ остаётся заблокированным до подтверждения.',
   },
   de: {
-    mainnet: 'Wallet ist im MAINNET — wechsle ins TESTNET, sonst wird der Deploy abgelehnt.',
-    connected: 'Testnet-Wallet verbunden. Formular ausfüllen und deployen.',
+    mainnet: 'Wallet ist im TESTNET — wechsle ins MAINNET, sonst wird der Deploy abgelehnt.',
+    connected: 'Mainnet-Wallet verbunden. Formular ausfüllen und deployen.',
     connectFirst: 'Zuerst eine Wallet verbinden.',
     nameSymbol: 'Name und Symbol sind erforderlich.',
     decimals: 'Dezimalstellen müssen eine ganze Zahl zwischen 0 und 30 sein (nimm 9).',
@@ -115,15 +138,15 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Abgabe signiert. Admin wird in Kürze on-chain auf null gesetzt.',
     renounceSubmitted: 'Abgabe eingereicht ✓',
     renounceFail: 'Abgabe abgebrochen oder fehlgeschlagen: ',
-    disconnect: 'Trennen ', connect: 'TON-Wallet verbinden (Testnet)',
+    disconnect: 'Trennen ', connect: 'TON-Wallet verbinden',
     loadFail: 'Launcher konnte nicht geladen werden: ',
     confirming: 'Deployt — warte auf On-chain-Bestätigung, bevor das Abgeben freigeschaltet wird…',
     confirmed: 'On-chain bestätigt ✓ Dein Token ist live und im Feed gelistet.',
     confirmTimeout: 'Noch nicht on-chain sichtbar — im Explorer prüfen. Abgabe bleibt bis zur Bestätigung gesperrt.',
   },
   es: {
-    mainnet: 'La wallet está en MAINNET — cámbiala a TESTNET o se rechazará el despliegue.',
-    connected: 'Wallet de testnet conectada. Rellena el formulario y despliega.',
+    mainnet: 'La wallet está en TESTNET — cámbiala a MAINNET o se rechazará el despliegue.',
+    connected: 'Wallet de mainnet conectada. Rellena el formulario y despliega.',
     connectFirst: 'Conecta una wallet primero.',
     nameSymbol: 'El nombre y el símbolo son obligatorios.',
     decimals: 'Los decimales deben ser un número entero entre 0 y 30 (usa 9).',
@@ -138,15 +161,15 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Renuncia firmada. El admin se pondrá a nulo on-chain en breve.',
     renounceSubmitted: 'Renuncia enviada ✓',
     renounceFail: 'Renuncia cancelada o fallida: ',
-    disconnect: 'Desconectar ', connect: 'Conectar wallet TON (testnet)',
+    disconnect: 'Desconectar ', connect: 'Conectar wallet TON',
     loadFail: 'No se pudo cargar el launcher: ',
     confirming: 'Desplegado — esperando confirmación on-chain antes de habilitar la renuncia…',
     confirmed: 'Confirmado on-chain ✓ Tu token está activo y listado en el feed.',
     confirmTimeout: 'Aún no visible on-chain — revisa el explorador. La renuncia sigue bloqueada hasta que se confirme.',
   },
   uk: {
-    mainnet: 'Гаманець у MAINNET — переключи на TESTNET, інакше деплой відхилять.',
-    connected: 'Тестнет-гаманець підключено. Заповни форму та розгорни.',
+    mainnet: 'Гаманець у TESTNET — переключи на MAINNET, інакше деплой відхилять.',
+    connected: 'Mainnet-гаманець підключено. Заповни форму та розгорни.',
     connectFirst: 'Спершу підключи гаманець.',
     nameSymbol: 'Назва та символ обовʼязкові.',
     decimals: 'Десяткові мають бути цілим числом від 0 до 30 (став 9).',
@@ -161,7 +184,7 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Відмову підписано. Адміна невдовзі буде обнулено on-chain.',
     renounceSubmitted: 'Відмову надіслано ✓',
     renounceFail: 'Відмову скасовано або не вдалася: ',
-    disconnect: 'Відключити ', connect: 'Підключити гаманець TON (тестнет)',
+    disconnect: 'Відключити ', connect: 'Підключити гаманець TON',
     loadFail: 'Не вдалося завантажити лаунчер: ',
     confirming: 'Розгорнуто — чекаємо підтвердження on-chain, перш ніж відкрити відмову…',
     confirmed: 'Підтверджено on-chain ✓ Твій токен у мережі та в стрічці.',
@@ -202,7 +225,7 @@ async function main() {
 
   const apiMeta = document.querySelector('meta[name="stats-api"]') as HTMLMetaElement | null;
   const STATS_API = (apiMeta?.content || '').replace(/\/$/, '');
-  const NETWORK = 'testnet';
+  const NETWORK = 'mainnet';
 
   function setStatus(msg: string, kind: 'info' | 'error' | 'ok' = 'info') {
     statusEl.textContent = msg;
@@ -234,7 +257,7 @@ async function main() {
     while (Date.now() - start < TIMEOUT) {
       await sleep(4000);
       try {
-        const r = await fetch('https://testnet.tonapi.io/v2/accounts/' + minterFriendly);
+        const r = await fetch('https://tonapi.io/v2/accounts/' + minterFriendly);
         if (r.ok) {
           const j = await r.json();
           if (j && j.status === 'active') {
@@ -258,7 +281,7 @@ async function main() {
       connectBtn.textContent = M.disconnect + short;
       connectBtn.dataset.connected = 'true';
       deployBtn.disabled = false;
-      if (acc.chain && acc.chain !== TESTNET) {
+      if (acc.chain && acc.chain !== MAINNET) {
         setStatus(M.mainnet, 'error');
       } else {
         setStatus(M.connected, 'ok');
@@ -294,6 +317,9 @@ async function main() {
     const supplyStr = (($('jl-supply') as HTMLInputElement).value || '').trim();
     const description = (($('jl-desc') as HTMLTextAreaElement).value || '').trim();
     const image = (($('jl-image') as HTMLInputElement).value || '').trim();
+    const website = normWebsite((($('jl-website') as HTMLInputElement | null)?.value) || '');
+    const telegram = normTelegram((($('jl-telegram') as HTMLInputElement | null)?.value) || '');
+    const xUrl = normX((($('jl-x') as HTMLInputElement | null)?.value) || '');
 
     if (!name || !symbol) {
       setStatus(M.nameSymbol, 'error');
@@ -323,8 +349,8 @@ async function main() {
       const owner = Address.parse(tcui.account.address);
       const tx = jetton.buildDeployTx({ owner, name, symbol, decimals, description, image, supply });
 
-      const minterMsgAddr = tx.minterAddress.toString({ bounceable: false, testOnly: true });
-      const minterDisplay = tx.minterAddress.toString({ bounceable: true, testOnly: true });
+      const minterMsgAddr = tx.minterAddress.toString({ bounceable: false, testOnly: false });
+      const minterDisplay = tx.minterAddress.toString({ bounceable: true, testOnly: false });
       lastMinter = minterMsgAddr;
 
       deployBtn.disabled = true;
@@ -348,19 +374,19 @@ async function main() {
 
       await tcui.sendTransaction({
         validUntil: Math.floor(Date.now() / 1000) + 600,
-        network: TESTNET,
+        network: MAINNET,
         messages,
       });
 
       addrEl.textContent = minterDisplay;
-      explorerEl.href = 'https://testnet.tonviewer.com/' + minterDisplay;
+      explorerEl.href = 'https://tonviewer.com/' + minterDisplay;
       resultEl.hidden = false;
       resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setStatus(M.signed, 'ok');
 
       // Lock renounce, confirm on-chain, then unlock + list in the feed.
       renounceBtn.disabled = true;
-      const ownerFriendly = owner.toString({ bounceable: true, testOnly: true });
+      const ownerFriendly = owner.toString({ bounceable: true, testOnly: false });
       confirmDeploy(minterDisplay, {
         minter: minterDisplay,
         network: NETWORK,
@@ -370,6 +396,9 @@ async function main() {
         image,
         owner: ownerFriendly,
         supply: supplyStr.replace(/[\s,_]/g, ''),
+        website,
+        telegram,
+        x: xUrl,
       });
     } catch (err: any) {
       setStatus(M.deployFail + (err?.message || String(err)), 'error');
@@ -389,7 +418,7 @@ async function main() {
       const body = jetton.buildRenounceBody();
       await tcui.sendTransaction({
         validUntil: Math.floor(Date.now() / 1000) + 600,
-        network: TESTNET,
+        network: MAINNET,
         messages: [
           {
             address: lastMinter,

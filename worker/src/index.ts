@@ -299,12 +299,21 @@ type TokenEntry = {
   image: string;
   owner: string;
   supply: string;
+  website: string;
+  telegram: string;
+  x: string;
   at: string;
 };
 
 function clampStr(v: unknown, max: number): string {
   if (typeof v !== 'string') return '';
   return v.trim().slice(0, max);
+}
+
+// Optional social/website link — keep only well-formed http(s) URLs.
+function sanUrl(v: unknown, max = 200): string {
+  const s = clampStr(v, max);
+  return /^https?:\/\//i.test(s) ? s : '';
 }
 
 function validateToken(body: any): TokenEntry | { error: string } {
@@ -323,6 +332,9 @@ function validateToken(body: any): TokenEntry | { error: string } {
   const ownerRaw = clampStr(body.owner, 60);
   const owner = TON_ADDR_RE.test(ownerRaw) ? ownerRaw : '';
   const supply = clampStr(body.supply, 40).replace(/[^0-9]/g, '');
+  const website = sanUrl(body.website);
+  const telegram = sanUrl(body.telegram);
+  const x = sanUrl(body.x);
   return {
     minter,
     network: network as 'testnet' | 'mainnet',
@@ -332,6 +344,9 @@ function validateToken(body: any): TokenEntry | { error: string } {
     image,
     owner,
     supply,
+    website,
+    telegram,
+    x,
     at: new Date().toISOString(),
   };
 }

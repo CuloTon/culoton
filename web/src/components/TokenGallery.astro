@@ -15,7 +15,7 @@ type TG = {
 const TOKENS_I18N: Record<string, TG> = {
   en: {
     kicker: 'Launched on BRAINROT', h1: 'Token feed',
-    lede: 'Every jetton deployed through the BRAINROT launcher, straight from the TON testnet. Non-custodial, audited TEP-74 code — we just keep the list.',
+    lede: 'Every jetton deployed through the BRAINROT launcher, straight from TON mainnet. Non-custodial, audited TEP-74 code — we just keep the list.',
     cta: 'Launch your token →', loading: 'Loading the feed…',
     empty: 'No tokens yet.', empty_cta: 'Be the first — launch one →',
     error: 'Could not load the feed.', retry: 'Retry',
@@ -24,7 +24,7 @@ const TOKENS_I18N: Record<string, TG> = {
   },
   pl: {
     kicker: 'Wystartowane na BRAINROT', h1: 'Feed tokenów',
-    lede: 'Każdy jetton wdrożony przez launcher BRAINROT, prosto z testnetu TON. Non-custodial, zaudytowany kod TEP-74 — my tylko prowadzimy listę.',
+    lede: 'Każdy jetton wdrożony przez launcher BRAINROT, prosto z mainnetu TON. Non-custodial, zaudytowany kod TEP-74 — my tylko prowadzimy listę.',
     cta: 'Wypuść swój token →', loading: 'Ładuję feed…',
     empty: 'Jeszcze żadnych tokenów.', empty_cta: 'Bądź pierwszy — wypuść token →',
     error: 'Nie udało się załadować feedu.', retry: 'Spróbuj ponownie',
@@ -33,7 +33,7 @@ const TOKENS_I18N: Record<string, TG> = {
   },
   ru: {
     kicker: 'Запущено на BRAINROT', h1: 'Лента токенов',
-    lede: 'Каждый джеттон, развёрнутый через лаунчер BRAINROT, прямо из тестнета TON. Non-custodial, проверенный код TEP-74 — мы просто ведём список.',
+    lede: 'Каждый джеттон, развёрнутый через лаунчер BRAINROT, прямо из мейннета TON. Non-custodial, проверенный код TEP-74 — мы просто ведём список.',
     cta: 'Запусти свой токен →', loading: 'Загружаю ленту…',
     empty: 'Пока нет токенов.', empty_cta: 'Будь первым — запусти токен →',
     error: 'Не удалось загрузить ленту.', retry: 'Повторить',
@@ -42,7 +42,7 @@ const TOKENS_I18N: Record<string, TG> = {
   },
   de: {
     kicker: 'Gestartet auf BRAINROT', h1: 'Token-Feed',
-    lede: 'Jeder Jetton, der über den BRAINROT-Launcher deployt wurde, direkt aus dem TON-Testnet. Non-custodial, geprüfter TEP-74-Code — wir führen nur die Liste.',
+    lede: 'Jeder Jetton, der über den BRAINROT-Launcher deployt wurde, direkt aus dem TON-Mainnet. Non-custodial, geprüfter TEP-74-Code — wir führen nur die Liste.',
     cta: 'Starte deinen Token →', loading: 'Feed wird geladen…',
     empty: 'Noch keine Token.', empty_cta: 'Sei der Erste — starte einen →',
     error: 'Feed konnte nicht geladen werden.', retry: 'Erneut',
@@ -51,7 +51,7 @@ const TOKENS_I18N: Record<string, TG> = {
   },
   es: {
     kicker: 'Lanzado en BRAINROT', h1: 'Feed de tokens',
-    lede: 'Cada jetton desplegado con el launcher de BRAINROT, directo desde la testnet de TON. Non-custodial, código TEP-74 auditado — nosotros solo mantenemos la lista.',
+    lede: 'Cada jetton desplegado con el launcher de BRAINROT, directo desde la mainnet de TON. Non-custodial, código TEP-74 auditado — nosotros solo mantenemos la lista.',
     cta: 'Lanza tu token →', loading: 'Cargando el feed…',
     empty: 'Aún no hay tokens.', empty_cta: 'Sé el primero — lanza uno →',
     error: 'No se pudo cargar el feed.', retry: 'Reintentar',
@@ -60,7 +60,7 @@ const TOKENS_I18N: Record<string, TG> = {
   },
   uk: {
     kicker: 'Запущено на BRAINROT', h1: 'Стрічка токенів',
-    lede: 'Кожен джетон, розгорнутий через лаунчер BRAINROT, прямо з тестнету TON. Non-custodial, перевірений код TEP-74 — ми лише ведемо список.',
+    lede: 'Кожен джетон, розгорнутий через лаунчер BRAINROT, прямо з мейннету TON. Non-custodial, перевірений код TEP-74 — ми лише ведемо список.',
     cta: 'Запусти свій токен →', loading: 'Завантажую стрічку…',
     empty: 'Поки що немає токенів.', empty_cta: 'Будь першим — запусти токен →',
     error: 'Не вдалося завантажити стрічку.', retry: 'Повторити',
@@ -75,7 +75,7 @@ const launchHref = localizedPath(locale, '/launch');
 
 <article class="tokens-page">
   <header class="tokens-hero">
-    <span class="kicker">{t.kicker} <span class="net-badge">TESTNET</span></span>
+    <span class="kicker">{t.kicker} <span class="net-badge">MAINNET</span></span>
     <h1>{t.h1}</h1>
     <p class="lede">{t.lede}</p>
     <div class="hero-cta">
@@ -128,7 +128,13 @@ const launchHref = localizedPath(locale, '/launch');
       const logo = img
         ? '<img class="tk-logo" src="' + esc(img) + '" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'tk-logo tk-logo-ph\',textContent:\'' + esc(letter) + '\'}))" />'
         : '<div class="tk-logo tk-logo-ph">' + esc(letter) + '</div>';
-      const explorer = 'https://testnet.tonviewer.com/' + encodeURIComponent(tok.minter);
+      const explorer = 'https://tonviewer.com/' + encodeURIComponent(tok.minter);
+      const soc = [
+        tok.website ? '<a class="tk-soc" href="' + esc(tok.website) + '" target="_blank" rel="noopener noreferrer nofollow">Web ↗</a>' : '',
+        tok.telegram ? '<a class="tk-soc" href="' + esc(tok.telegram) + '" target="_blank" rel="noopener noreferrer nofollow">Telegram ↗</a>' : '',
+        tok.x ? '<a class="tk-soc" href="' + esc(tok.x) + '" target="_blank" rel="noopener noreferrer nofollow">X ↗</a>' : '',
+      ].filter(Boolean).join('');
+      const socialsRow = soc ? '<div class="tk-socials">' + soc + '</div>' : '';
       return (
         '<div class="tk-card">' +
           '<div class="tk-head">' + logo +
@@ -144,6 +150,7 @@ const launchHref = localizedPath(locale, '/launch');
             '<span class="tk-date">' + esc(fmtDate(tok.at)) + '</span>' +
           '</div>' +
           '<a class="tk-link" href="' + explorer + '" target="_blank" rel="noopener noreferrer">' + esc(T.explorer) + '</a>' +
+          socialsRow +
         '</div>'
       );
     }
@@ -165,7 +172,7 @@ const launchHref = localizedPath(locale, '/launch');
       if (!api) { state.textContent = T.error; return; }
       state.textContent = T.loading;
       state.hidden = false;
-      fetch(api + '/tokens/list?network=testnet', { credentials: 'omit' })
+      fetch(api + '/tokens/list?network=mainnet', { credentials: 'omit' })
         .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
         .then(function (j) { render(j && j.tokens ? j.tokens : []); })
         .catch(function () {
@@ -382,6 +389,20 @@ const launchHref = localizedPath(locale, '/launch');
     border-bottom: 1px solid var(--accent-soft);
   }
   .tk-link:hover { color: var(--accent); }
+  .tk-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 2px;
+  }
+  .tk-soc {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .tk-soc:hover { color: var(--accent-text); border-bottom-color: var(--accent-soft); }
 
   @media (max-width: 600px) {
     .tokens-hero h1 { font-size: clamp(32px, 9vw, 44px); }

@@ -15,7 +15,7 @@ const MYTONWALLET = 'https://mytonwallet.io';
 
 <article class="launch-page">
   <header class="launch-hero">
-    <span class="kicker">{t.kicker} <span class="net-badge">TESTNET</span></span>
+    <span class="kicker">{t.kicker} <span class="net-badge">MAINNET</span></span>
     <h1>{t.h1}</h1>
     <p class="lede" set:html={t.lede1_html}></p>
     <p class="lede small" set:html={t.lede2_html}></p>
@@ -28,7 +28,7 @@ const MYTONWALLET = 'https://mytonwallet.io';
   <section class="block deployer" id="deployer">
     <div class="audit-header">
       <h2>{t.deployer_h2}</h2>
-      <span class="net-badge">TESTNET</span>
+      <span class="net-badge">MAINNET</span>
     </div>
     <p class="block-lede" set:html={t.deployer_lede_html}></p>
 
@@ -59,6 +59,18 @@ const MYTONWALLET = 'https://mytonwallet.io';
         <label class="jl-field jl-span">
           <span>{t.f_desc}</span>
           <textarea id="jl-desc" rows="2" maxlength="500" placeholder={t.f_desc_ph}></textarea>
+        </label>
+        <label class="jl-field jl-span">
+          <span>{t.f_website}</span>
+          <input id="jl-website" type="url" placeholder={t.f_website_ph} maxlength="200" />
+        </label>
+        <label class="jl-field">
+          <span>{t.f_telegram}</span>
+          <input id="jl-telegram" type="text" placeholder={t.f_telegram_ph} maxlength="120" />
+        </label>
+        <label class="jl-field">
+          <span>{t.f_x}</span>
+          <input id="jl-x" type="text" placeholder={t.f_x_ph} maxlength="120" />
         </label>
       </div>
       <button type="submit" id="jl-deploy" class="cta-btn cta-primary cta-big jl-deploy" disabled>{t.deploy_btn}</button>
