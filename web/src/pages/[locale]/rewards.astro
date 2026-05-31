@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import RewardsContent from '../../components/RewardsContent.astro';
+import type { Locale } from '../../i18n/strings';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'ru' } },
+    { params: { locale: 'pl' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+
+const META: Record<string, { title: string; description: string }> = {
+  ru: { title: 'Награды холдерам $BRT — доля дохода в TON', description: 'BRAINROT делится доходом в TON с холдерами $BRT: 25% банка проекта, выплаты пропорционально каждую неделю. Формула, исключения и перенос от 0,05 TON.' },
+  pl: { title: 'Nagrody dla holderów $BRT — udział w dochodzie w TON', description: 'BRAINROT dzieli się dochodem w TON z holderami $BRT: 25% banku projektu, wypłaty pro-rata co tydzień. Wzór, wykluczenia i rolowanie od 0,05 TON.' },
+  de: { title: '$BRT-Holder-Rewards — TON-Umsatzbeteiligung', description: 'BRAINROT teilt TON-Einnahmen mit $BRT-Holdern: 25% der Projektbank, wöchentlich pro-rata ausgezahlt. Formel, Ausschlüsse und der 0,05-TON-Rollover erklärt.' },
+  es: { title: 'Recompensas a holders de $BRT — reparto de ingresos en TON', description: 'BRAINROT comparte ingresos en TON con holders de $BRT: 25% del banco del proyecto, pagado pro-rata cada semana. Fórmula, exclusiones y rollover desde 0,05 TON.' },
+  uk: { title: 'Винагороди холдерам $BRT — частка доходу в TON', description: 'BRAINROT ділиться доходом у TON з холдерами $BRT: 25% банку проєкту, виплати пропорційно щотижня. Формула, винятки та перенесення від 0,05 TON.' },
+};
+const m = META[locale] ?? META.pl;
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/rewards"
+  title={m.title}
+  description={m.description}
+>
+  <RewardsContent locale={locale} />
+</Layout>

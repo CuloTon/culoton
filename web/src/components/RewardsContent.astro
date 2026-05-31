@@ -1,0 +1,312 @@
+---
+// $BRT holder-rewards explainer. Live "bank" balance is read client-side from
+// tonapi (read-only, public). All amounts/rules mirror scripts/rewards_snapshot.py.
+import { localizedPath, type Locale } from '../i18n/strings';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+
+const DEV_ADDRESS = 'UQBzaZXIwj3mDY8HdYDkTO1lkn4OV8sfx2tsf-lChQex70NP';
+const BRT_MASTER = 'EQDsbT3_IfYbdN4hgDCFK8-AGQ7x0FpVspYPEN8sDpkm2PIh';
+const REWARD_PCT = 25;
+const MIN_PAYOUT = '0.05';
+const DEV_TONVIEWER = 'https://tonviewer.com/' + DEV_ADDRESS;
+const CONTRACT_TONVIEWER = 'https://tonviewer.com/' + BRT_MASTER;
+const HOLDERS_TONVIEWER = 'https://tonviewer.com/' + BRT_MASTER + '?section=holders';
+
+type Step = { t: string; p: string };
+type RW = {
+  kicker: string; h1: string; lede: string;
+  stat_bank: string; stat_pool: string; stat_cadence: string; cadence_value: string; loading: string;
+  trigger_note: string;
+  how_h2: string; steps: Step[];
+  roll_h3: string; roll_p: string;
+  gas_h3: string; gas_p: string;
+  disclaimer: string;
+  verify_h3: string; link_bank: string; link_holders: string; link_contract: string;
+};
+
+const I18N: Record<Locale, RW> = {
+  en: {
+    kicker: `$BRT · Holder rewards`,
+    h1: `TON rewards for $BRT holders`,
+    lede: `Revenue from the BRAINROT launchpad, $BRT taxes and future services flows into one on-chain wallet — the project bank. Every week a quarter of it is shared back with $BRT holders, in TON.`,
+    stat_bank: `Reward bank (live)`, stat_pool: `Next pool · 25%`, stat_cadence: `Payouts from`, cadence_value: `≥ 4 TON`, loading: `…`,
+    trigger_note: `A reward round only runs once the bank reaches at least 4 TON (pool ≥ 1 TON) and the team triggers it — so the first payouts are meaningful, not dust. Until then, everything keeps accumulating.`,
+    how_h2: `How it works`,
+    steps: [
+      { t: `Revenue accumulates`, p: `Launchpad fees (1 TON per launch), $BRT buy/sell taxes and any future BRAINROT service all land in the same on-chain wallet — the "BRT bank".` },
+      { t: `Weekly snapshot`, p: `Once a week we read the full list of $BRT holders and their balances directly from the chain.` },
+      { t: `25% becomes the pool`, p: `A quarter of the bank's TON balance at that moment forms the reward pool. The other 75% stays with the project to fund growth.` },
+      { t: `Split pro-rata`, p: `The pool is divided by how much $BRT each wallet holds. Hold 2% of the eligible supply, receive 2% of the pool.` },
+      { t: `Only real holders`, p: `The liquidity pool (DeDust), the project wallet and the burn address are excluded — they are never rewarded. Only genuine holder wallets count.` },
+    ],
+    roll_h3: `The 0.05 TON minimum & rollover`,
+    roll_p: `If your weekly share works out below 0.05 TON, it is not sent yet — it would cost more in network gas than it's worth. Instead it rolls over: your $BRT keeps counting, and as the bank grows (or you hold more) your share crosses 0.05 TON and you get paid. Nothing is lost — small shares simply accumulate until they're worth sending.`,
+    gas_h3: `You get the full share`,
+    gas_p: `Holders receive their full TON share; the project pays the network gas on top. No fee is taken out of your reward.`,
+    disclaimer: `$BRT is a community memecoin, not an investment. Rewards depend entirely on how much the project actually earns — they can be zero. This is not financial advice and not a promise of profit. Hold $BRT because you like the project, not for expected returns.`,
+    verify_h3: `Verify on-chain`, link_bank: `Reward bank wallet ↗`, link_holders: `$BRT holders ↗`, link_contract: `$BRT contract ↗`,
+  },
+  pl: {
+    kicker: `$BRT · Nagrody dla holderów`,
+    h1: `Nagrody w TON dla holderów $BRT`,
+    lede: `Dochody z launchpada BRAINROT, z taxa $BRT i z przyszłych usług spływają do jednego portfela on-chain — banku projektu. Co tydzień jedna czwarta wraca do holderów $BRT, w TON.`,
+    stat_bank: `Bank nagród (na żywo)`, stat_pool: `Następna pula · 25%`, stat_cadence: `Wypłaty od`, cadence_value: `≥ 4 TON`, loading: `…`,
+    trigger_note: `Runda nagród rusza dopiero, gdy bank osiągnie minimum 4 TON (pula ≥ 1 TON) i zespół ją odpali — żeby pierwsze wypłaty były sensowne, nie pył. Do tego czasu wszystko się kumuluje.`,
+    how_h2: `Jak to działa`,
+    steps: [
+      { t: `Dochody się kumulują`, p: `Opłaty launchpada (1 TON za launch), tax od kupna/sprzedaży $BRT i każda przyszła usługa BRAINROT trafiają do tego samego portfela on-chain — "banku BRT".` },
+      { t: `Tygodniowy snapshot`, p: `Raz w tygodniu czytamy pełną listę holderów $BRT i ich salda bezpośrednio z łańcucha.` },
+      { t: `25% tworzy pulę`, p: `Jedna czwarta salda TON banku w tym momencie tworzy pulę nagród. Pozostałe 75% zostaje w projekcie na rozwój.` },
+      { t: `Podział pro-rata`, p: `Pula dzieli się wg tego, ile $BRT trzyma dany portfel. Masz 2% uprawnionej podaży — dostajesz 2% puli.` },
+      { t: `Tylko realni holderzy`, p: `Pula płynności (DeDust), portfel projektu i adres burn są wykluczone — nigdy nie dostają nagród. Liczą się tylko prawdziwe portfele holderów.` },
+    ],
+    roll_h3: `Próg 0,05 TON i rolowanie`,
+    roll_p: `Jeśli Twój tygodniowy udział wychodzi poniżej 0,05 TON, na razie nie jest wysyłany — kosztowałby więcej w gazie sieciowym, niż jest wart. Zamiast tego roluje się dalej: Twoje $BRT liczy się nadal, a gdy bank rośnie (albo dokupisz) Twój udział przekracza 0,05 TON i dostajesz wypłatę. Nic nie przepada — małe udziały po prostu kumulują się, aż warto je wysłać.`,
+    gas_h3: `Dostajesz pełny udział`,
+    gas_p: `Holderzy dostają pełny udział w TON; gaz sieciowy dopłaca projekt. Z Twojej nagrody nie schodzi żadna opłata.`,
+    disclaimer: `$BRT to społecznościowy memecoin, nie inwestycja. Nagrody zależą wyłącznie od tego, ile projekt faktycznie zarobi — mogą wynosić zero. To nie jest porada inwestycyjna ani obietnica zysku. Trzymaj $BRT, bo lubisz projekt, a nie dla oczekiwanych zwrotów.`,
+    verify_h3: `Sprawdź on-chain`, link_bank: `Portfel banku nagród ↗`, link_holders: `Holderzy $BRT ↗`, link_contract: `Kontrakt $BRT ↗`,
+  },
+  ru: {
+    kicker: `$BRT · Награды холдерам`,
+    h1: `Награды в TON для холдеров $BRT`,
+    lede: `Доход с лаунчпада BRAINROT, с налогов $BRT и с будущих сервисов стекается в один кошелёк on-chain — банк проекта. Каждую неделю четверть возвращается холдерам $BRT, в TON.`,
+    stat_bank: `Банк наград (в эфире)`, stat_pool: `Следующий пул · 25%`, stat_cadence: `Выплаты от`, cadence_value: `≥ 4 TON`, loading: `…`,
+    trigger_note: `Раунд наград запускается только когда банк достигнет минимум 4 TON (пул ≥ 1 TON) и команда его запустит — чтобы первые выплаты были ощутимыми, а не пылью. До тех пор всё накапливается.`,
+    how_h2: `Как это работает`,
+    steps: [
+      { t: `Доход накапливается`, p: `Комиссии лаунчпада (1 TON за запуск), налоги на покупку/продажу $BRT и любой будущий сервис BRAINROT попадают в один кошелёк on-chain — "банк BRT".` },
+      { t: `Еженедельный снимок`, p: `Раз в неделю мы читаем полный список холдеров $BRT и их балансы прямо из сети.` },
+      { t: `25% становятся пулом`, p: `Четверть TON-баланса банка в этот момент образует пул наград. Остальные 75% остаются у проекта на развитие.` },
+      { t: `Деление пропорционально`, p: `Пул делится по тому, сколько $BRT держит кошелёк. Держишь 2% допустимого предложения — получаешь 2% пула.` },
+      { t: `Только реальные холдеры`, p: `Пул ликвидности (DeDust), кошелёк проекта и адрес сжигания исключены — они никогда не получают награды. Считаются только настоящие кошельки холдеров.` },
+    ],
+    roll_h3: `Минимум 0,05 TON и перенос`,
+    roll_p: `Если твоя недельная доля выходит меньше 0,05 TON, она пока не отправляется — газ сети стоил бы дороже, чем она. Вместо этого она переносится: твои $BRT продолжают считаться, и когда банк растёт (или ты держишь больше) доля переходит 0,05 TON и тебе платят. Ничего не теряется — малые доли просто копятся, пока их не стоит отправить.`,
+    gas_h3: `Ты получаешь полную долю`,
+    gas_p: `Холдеры получают полную долю в TON; газ сети доплачивает проект. Из твоей награды не вычитается комиссия.`,
+    disclaimer: `$BRT — это коммьюнити-мемкоин, а не инвестиция. Награды полностью зависят от того, сколько проект реально зарабатывает — они могут быть нулевыми. Это не финансовый совет и не обещание прибыли. Держи $BRT потому что тебе нравится проект, а не ради ожидаемой доходности.`,
+    verify_h3: `Проверь on-chain`, link_bank: `Кошелёк банка наград ↗`, link_holders: `Холдеры $BRT ↗`, link_contract: `Контракт $BRT ↗`,
+  },
+  de: {
+    kicker: `$BRT · Holder-Rewards`,
+    h1: `TON-Rewards für $BRT-Holder`,
+    lede: `Einnahmen vom BRAINROT-Launchpad, aus $BRT-Steuern und künftigen Services fließen in eine On-chain-Wallet — die Projektbank. Jede Woche wird ein Viertel davon an $BRT-Holder zurückgegeben, in TON.`,
+    stat_bank: `Reward-Bank (live)`, stat_pool: `Nächster Pool · 25%`, stat_cadence: `Auszahlung ab`, cadence_value: `≥ 4 TON`, loading: `…`,
+    trigger_note: `Eine Reward-Runde läuft erst, wenn die Bank mindestens 4 TON erreicht (Pool ≥ 1 TON) und das Team sie auslöst — damit die ersten Auszahlungen spürbar sind, kein Staub. Bis dahin sammelt sich alles weiter an.`,
+    how_h2: `So funktioniert es`,
+    steps: [
+      { t: `Einnahmen sammeln sich`, p: `Launchpad-Gebühren (1 TON pro Launch), $BRT-Kauf/Verkauf-Steuern und jeder künftige BRAINROT-Service landen in derselben On-chain-Wallet — der "BRT-Bank".` },
+      { t: `Wöchentlicher Snapshot`, p: `Einmal pro Woche lesen wir die vollständige Liste der $BRT-Holder und ihrer Salden direkt aus der Chain.` },
+      { t: `25% werden der Pool`, p: `Ein Viertel des TON-Saldos der Bank in diesem Moment bildet den Reward-Pool. Die anderen 75% bleiben beim Projekt für Wachstum.` },
+      { t: `Pro-rata-Aufteilung`, p: `Der Pool wird danach geteilt, wie viel $BRT eine Wallet hält. Hältst du 2% des berechtigten Supplys, bekommst du 2% des Pools.` },
+      { t: `Nur echte Holder`, p: `Der Liquiditätspool (DeDust), die Projekt-Wallet und die Burn-Adresse sind ausgeschlossen — sie werden nie belohnt. Nur echte Holder-Wallets zählen.` },
+    ],
+    roll_h3: `Das 0,05-TON-Minimum & Rollover`,
+    roll_p: `Liegt dein Wochenanteil unter 0,05 TON, wird er noch nicht gesendet — er würde mehr Netzwerk-Gas kosten, als er wert ist. Stattdessen rollt er über: dein $BRT zählt weiter, und wenn die Bank wächst (oder du mehr hältst) überschreitet dein Anteil 0,05 TON und du wirst ausgezahlt. Nichts geht verloren — kleine Anteile sammeln sich einfach, bis sie es wert sind.`,
+    gas_h3: `Du bekommst den vollen Anteil`,
+    gas_p: `Holder erhalten ihren vollen TON-Anteil; das Netzwerk-Gas zahlt das Projekt obendrauf. Von deinem Reward wird keine Gebühr abgezogen.`,
+    disclaimer: `$BRT ist ein Community-Memecoin, keine Geldanlage. Rewards hängen vollständig davon ab, wie viel das Projekt tatsächlich einnimmt — sie können null sein. Dies ist keine Finanzberatung und kein Gewinnversprechen. Halte $BRT, weil dir das Projekt gefällt, nicht wegen erwarteter Renditen.`,
+    verify_h3: `On-chain prüfen`, link_bank: `Reward-Bank-Wallet ↗`, link_holders: `$BRT-Holder ↗`, link_contract: `$BRT-Vertrag ↗`,
+  },
+  es: {
+    kicker: `$BRT · Recompensas a holders`,
+    h1: `Recompensas en TON para holders de $BRT`,
+    lede: `Los ingresos del launchpad de BRAINROT, de los impuestos de $BRT y de servicios futuros fluyen a una sola wallet on-chain — el banco del proyecto. Cada semana una cuarta parte se reparte a los holders de $BRT, en TON.`,
+    stat_bank: `Banco de recompensas (en vivo)`, stat_pool: `Próximo pool · 25%`, stat_cadence: `Pagos desde`, cadence_value: `≥ 4 TON`, loading: `…`,
+    trigger_note: `Una ronda de recompensas solo se ejecuta cuando el banco alcanza al menos 4 TON (pool ≥ 1 TON) y el equipo la lanza — para que los primeros pagos sean significativos, no polvo. Hasta entonces, todo sigue acumulándose.`,
+    how_h2: `Cómo funciona`,
+    steps: [
+      { t: `Los ingresos se acumulan`, p: `Las tarifas del launchpad (1 TON por lanzamiento), los impuestos de compra/venta de $BRT y cualquier servicio futuro de BRAINROT caen en la misma wallet on-chain — el "banco BRT".` },
+      { t: `Snapshot semanal`, p: `Una vez por semana leemos la lista completa de holders de $BRT y sus saldos directamente de la cadena.` },
+      { t: `25% forma el pool`, p: `Una cuarta parte del saldo TON del banco en ese momento forma el pool de recompensas. El otro 75% se queda en el proyecto para crecer.` },
+      { t: `Reparto pro-rata`, p: `El pool se divide según cuánto $BRT tiene cada wallet. Si tienes el 2% del supply elegible, recibes el 2% del pool.` },
+      { t: `Solo holders reales`, p: `El pool de liquidez (DeDust), la wallet del proyecto y la dirección de quema están excluidos — nunca reciben recompensa. Solo cuentan las wallets de holders reales.` },
+    ],
+    roll_h3: `El mínimo de 0,05 TON y el rollover`,
+    roll_p: `Si tu parte semanal sale por debajo de 0,05 TON, aún no se envía — costaría más en gas de red de lo que vale. En su lugar se traslada: tu $BRT sigue contando, y cuando el banco crece (o tienes más) tu parte supera 0,05 TON y cobras. Nada se pierde — las partes pequeñas simplemente se acumulan hasta que vale la pena enviarlas.`,
+    gas_h3: `Recibes la parte completa`,
+    gas_p: `Los holders reciben su parte completa en TON; el gas de red lo paga el proyecto aparte. No se descuenta ninguna comisión de tu recompensa.`,
+    disclaimer: `$BRT es un memecoin comunitario, no una inversión. Las recompensas dependen por completo de cuánto gane realmente el proyecto — pueden ser cero. Esto no es asesoramiento financiero ni una promesa de beneficio. Ten $BRT porque te gusta el proyecto, no por rendimientos esperados.`,
+    verify_h3: `Verifica on-chain`, link_bank: `Wallet del banco de recompensas ↗`, link_holders: `Holders de $BRT ↗`, link_contract: `Contrato de $BRT ↗`,
+  },
+  uk: {
+    kicker: `$BRT · Винагороди холдерам`,
+    h1: `Винагороди в TON для холдерів $BRT`,
+    lede: `Дохід із лаунчпада BRAINROT, з податків $BRT і з майбутніх сервісів стікається в один гаманець on-chain — банк проєкту. Щотижня чверть повертається холдерам $BRT, у TON.`,
+    stat_bank: `Банк винагород (наживо)`, stat_pool: `Наступний пул · 25%`, stat_cadence: `Виплати від`, cadence_value: `≥ 4 TON`, loading: `…`,
+    trigger_note: `Раунд винагород запускається лише коли банк сягне щонайменше 4 TON (пул ≥ 1 TON) і команда його запустить — щоб перші виплати були відчутними, а не пилом. До того часу все накопичується.`,
+    how_h2: `Як це працює`,
+    steps: [
+      { t: `Дохід накопичується`, p: `Комісії лаунчпада (1 TON за запуск), податки на купівлю/продаж $BRT і будь-який майбутній сервіс BRAINROT потрапляють в один гаманець on-chain — "банк BRT".` },
+      { t: `Щотижневий знімок`, p: `Раз на тиждень ми читаємо повний список холдерів $BRT та їхні баланси прямо з мережі.` },
+      { t: `25% стають пулом`, p: `Чверть TON-балансу банку в цей момент утворює пул винагород. Інші 75% лишаються у проєкту на розвиток.` },
+      { t: `Поділ пропорційно`, p: `Пул ділиться за тим, скільки $BRT тримає гаманець. Тримаєш 2% придатної пропозиції — отримуєш 2% пулу.` },
+      { t: `Лише справжні холдери`, p: `Пул ліквідності (DeDust), гаманець проєкту й адреса спалення виключені — вони ніколи не отримують винагороди. Рахуються лише справжні гаманці холдерів.` },
+    ],
+    roll_h3: `Мінімум 0,05 TON і перенесення`,
+    roll_p: `Якщо твоя тижнева частка виходить менше 0,05 TON, вона поки не надсилається — газ мережі коштував би дорожче, ніж вона. Натомість вона переноситься: твої $BRT далі рахуються, і коли банк росте (або ти тримаєш більше) частка переходить 0,05 TON і тобі платять. Нічого не втрачається — малі частки просто накопичуються, доки їх не варто надіслати.`,
+    gas_h3: `Ти отримуєш повну частку`,
+    gas_p: `Холдери отримують повну частку в TON; газ мережі доплачує проєкт. З твоєї винагороди не знімається жодна комісія.`,
+    disclaimer: `$BRT — це спільнотний мемкоїн, а не інвестиція. Винагороди повністю залежать від того, скільки проєкт реально заробляє — вони можуть бути нульовими. Це не фінансова порада і не обіцянка прибутку. Тримай $BRT тому що тобі подобається проєкт, а не заради очікуваної дохідності.`,
+    verify_h3: `Перевір on-chain`, link_bank: `Гаманець банку винагород ↗`, link_holders: `Холдери $BRT ↗`, link_contract: `Контракт $BRT ↗`,
+  },
+};
+
+const t = I18N[locale] ?? I18N.en;
+---
+
+<article class="rewards-page">
+  <header class="rw-hero">
+    <span class="kicker">{t.kicker}</span>
+    <h1>{t.h1}</h1>
+    <p class="lede">{t.lede}</p>
+  </header>
+
+  <div class="rw-stats">
+    <div class="rw-stat">
+      <span class="rw-stat-label">{t.stat_bank}</span>
+      <span class="rw-stat-val" id="rw-bank">{t.loading}</span>
+    </div>
+    <div class="rw-stat rw-stat-accent">
+      <span class="rw-stat-label">{t.stat_pool}</span>
+      <span class="rw-stat-val" id="rw-pool">{t.loading}</span>
+    </div>
+    <div class="rw-stat">
+      <span class="rw-stat-label">{t.stat_cadence}</span>
+      <span class="rw-stat-val">{t.cadence_value}</span>
+    </div>
+  </div>
+
+  <p class="rw-trigger">{t.trigger_note}</p>
+
+  <section class="rw-block">
+    <h2>{t.how_h2}</h2>
+    <ol class="rw-steps">
+      {t.steps.map((s, i) => (
+        <li>
+          <span class="rw-n">{i + 1}</span>
+          <div><strong>{s.t}</strong><p>{s.p}</p></div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="rw-callout">
+    <h3>{t.roll_h3}</h3>
+    <p>{t.roll_p}</p>
+  </section>
+
+  <section class="rw-block rw-gas">
+    <h3>{t.gas_h3}</h3>
+    <p>{t.gas_p}</p>
+  </section>
+
+  <section class="rw-verify">
+    <h3>{t.verify_h3}</h3>
+    <div class="rw-links">
+      <a href={DEV_TONVIEWER} target="_blank" rel="noopener noreferrer">{t.link_bank}</a>
+      <a href={HOLDERS_TONVIEWER} target="_blank" rel="noopener noreferrer">{t.link_holders}</a>
+      <a href={CONTRACT_TONVIEWER} target="_blank" rel="noopener noreferrer">{t.link_contract}</a>
+    </div>
+  </section>
+
+  <p class="rw-disclaimer">{t.disclaimer}</p>
+</article>
+
+<script define:vars={{ DEV_ADDRESS, REWARD_PCT }}>
+  (function () {
+    var bankEl = document.getElementById('rw-bank');
+    var poolEl = document.getElementById('rw-pool');
+    fetch('https://tonapi.io/v2/accounts/' + DEV_ADDRESS, { credentials: 'omit' })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(function (j) {
+        var ton = Number(j.balance || 0) / 1e9;
+        bankEl.textContent = ton.toFixed(2) + ' TON';
+        poolEl.textContent = (ton * REWARD_PCT / 100).toFixed(3) + ' TON';
+      })
+      .catch(function () { bankEl.textContent = '—'; poolEl.textContent = '—'; });
+  })();
+</script>
+
+<style>
+  .rewards-page { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  .rw-hero { margin: 32px 0 28px; padding-bottom: 26px; border-bottom: 1px solid var(--rule); }
+  .kicker {
+    display: inline-block; font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.22em; text-transform: uppercase; color: #6dd4a8; margin-bottom: 18px;
+  }
+  .rw-hero h1 {
+    margin: 0 0 16px; font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(38px, 6vw, 62px); line-height: 1.05; letter-spacing: -0.025em; color: #fff;
+  }
+  .rw-hero .lede {
+    font-family: var(--font-serif); font-size: 20px; line-height: 1.55;
+    color: var(--text-dim); margin: 0; max-width: 66ch;
+  }
+  .rw-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 0 0 40px; }
+  .rw-stat {
+    display: flex; flex-direction: column; gap: 8px; padding: 20px;
+    background: var(--bg-section); border: 1px solid var(--rule); border-left: 2px solid var(--rule);
+  }
+  .rw-stat-accent { border-left-color: #6dd4a8; background: linear-gradient(180deg, rgba(109,212,168,0.08), transparent); }
+  .rw-stat-label {
+    font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--text-mute);
+  }
+  .rw-stat-val { font-family: var(--font-mono); font-size: 26px; font-weight: 700; color: #fff; }
+  .rw-stat-accent .rw-stat-val { color: #6dd4a8; }
+  .rw-trigger {
+    margin: -24px 0 40px; padding: 14px 18px; border-radius: 10px;
+    background: rgba(255, 214, 10, 0.08); border: 1px solid rgba(255, 214, 10, 0.32);
+    font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: #ffe9a8;
+  }
+
+  .rw-block { margin: 0 0 40px; }
+  .rw-block h2 {
+    font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 4vw, 36px);
+    color: #fff; margin: 0 0 22px; letter-spacing: -0.02em;
+  }
+  .rw-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+  .rw-steps li { display: flex; gap: 16px; padding: 18px 20px; background: var(--bg-section); border-left: 2px solid #6dd4a8; }
+  .rw-n {
+    flex-shrink: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid #6dd4a8; border-radius: 50%; color: #6dd4a8;
+    font-family: var(--font-mono); font-size: 14px; font-weight: 700;
+  }
+  .rw-steps strong { display: block; color: #fff; font-family: var(--font-display); font-size: 18px; margin-bottom: 5px; }
+  .rw-steps p { margin: 0; font-family: var(--font-serif); color: var(--text-dim); font-size: 16px; line-height: 1.6; }
+
+  .rw-callout {
+    margin: 0 0 40px; padding: 26px 28px; border-radius: 14px;
+    background: linear-gradient(180deg, rgba(109,212,168,0.12), rgba(109,212,168,0.04));
+    border: 1px solid rgba(109,212,168,0.4);
+  }
+  .rw-callout h3 { margin: 0 0 12px; font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #aef0cf; }
+  .rw-callout p { margin: 0; font-family: var(--font-serif); font-size: 17px; line-height: 1.65; color: var(--text-dim); }
+
+  .rw-gas h3 { font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #fff; margin: 0 0 10px; }
+  .rw-gas p { margin: 0; font-family: var(--font-serif); font-size: 17px; line-height: 1.6; color: var(--text-dim); }
+
+  .rw-verify { margin: 0 0 32px; }
+  .rw-verify h3 {
+    font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--text-mute); margin: 0 0 14px;
+  }
+  .rw-links { display: flex; flex-wrap: wrap; gap: 10px 22px; }
+  .rw-links a { font-family: var(--font-mono); font-size: 13px; color: #6dd4a8; text-decoration: none; border-bottom: 1px solid rgba(109,212,168,0.4); }
+  .rw-links a:hover { color: #aef0cf; }
+
+  .rw-disclaimer {
+    margin: 0 0 64px; padding: 16px 20px; background: rgba(255,255,255,0.03);
+    border: 1px solid var(--rule); color: var(--text-mute);
+    font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
+  }
+
+  @media (max-width: 600px) {
+    .rw-stats { grid-template-columns: 1fr; }
+    .rw-hero h1 { font-size: clamp(30px, 9vw, 40px); }
+  }
+</style>

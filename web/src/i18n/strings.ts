@@ -154,6 +154,7 @@ interface UIStrings {
   nav_launch: string;
   nav_launch_badge: string;
   nav_tokens: string;
+  nav_rewards: string;
   nav_poll: string;
   nav_poll_badge: string;
   launch_banner_pill: string;
@@ -296,6 +297,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'NEW',
     nav_tokens: 'Tokens',
+    nav_rewards: 'Rewards',
     nav_poll: 'Vote',
     nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 New · Building now',
@@ -436,6 +438,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'NEW',
     nav_tokens: 'Токены',
+    nav_rewards: 'Награды',
     nav_poll: 'Голос',
     nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 Новинка · Строим сейчас',
@@ -576,6 +579,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'NOWE',
     nav_tokens: 'Tokeny',
+    nav_rewards: 'Nagrody',
     nav_poll: 'Głosuj',
     nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 Nowość · Budujemy właśnie',
@@ -716,6 +720,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'NEU',
     nav_tokens: 'Tokens',
+    nav_rewards: 'Rewards',
     nav_poll: 'Abstimmen',
     nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 Neu · Wir bauen jetzt',
@@ -856,6 +861,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'NUEVO',
     nav_tokens: 'Tokens',
+    nav_rewards: 'Recompensas',
     nav_poll: 'Votar',
     nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 Nuevo · Construyendo ahora',
@@ -996,6 +1002,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'НОВЕ',
     nav_tokens: 'Токени',
+    nav_rewards: 'Винагороди',
     nav_poll: 'Голосуй',
     nav_poll_badge: 'OPEN',
     launch_banner_pill: '🚀 Новинка · Будуємо зараз',
