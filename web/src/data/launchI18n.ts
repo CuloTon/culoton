@@ -34,6 +34,10 @@ export interface LaunchStrings {
   renounce_btn: string;
   audit_h2: string;
   audit_pill: string;
+  audit_audited_by: string;
+  audit_report_link: string;
+  audit_contract_link: string;
+  audit_scope_note: string;
   audit_lede_html: string;
   audit_items: { t: string; p: string }[];
   audit_foot: string;
@@ -86,6 +90,10 @@ export const LAUNCH_I18N: Record<Locale, LaunchStrings> = {
     renounce_btn: 'Renounce admin',
     audit_h2: 'The contract you deploy',
     audit_pill: 'Audited',
+    audit_audited_by: 'Independently audited · Trail of Bits — March 2024',
+    audit_report_link: 'Read the audit report',
+    audit_contract_link: 'View the contract source',
+    audit_scope_note: 'Scope: the Trail of Bits review covers the TON Foundation jetton / stablecoin contracts. This launcher deploys a jetton of the same TEP-74 / TEP-89 standard, byte-for-byte unmodified. An audit of the standard is not a guarantee for any individual token — always verify before trusting real value.',
     audit_lede_html: "We don't ship our own smart contract. The deploy uses the official <strong>TEP-74 reference Jetton Master</strong> maintained by the TON Foundation — the exact contract behind USDT-TON, Notcoin and most major TON tokens. We wrap it, we don't modify a byte.",
     audit_items: [
       { t: 'Audited & battle-tested', p: 'The reference jetton master in ton-blockchain/token-contract was audited before mainnet and has settled billions in volume on USDT and NOT with zero contract-level incidents.' },
@@ -156,6 +164,10 @@ export const LAUNCH_I18N: Record<Locale, LaunchStrings> = {
     renounce_btn: 'Zrzeknij się admina',
     audit_h2: 'Kontrakt, który wdrażasz',
     audit_pill: 'Zaudytowany',
+    audit_audited_by: 'Niezależny audyt · Trail of Bits — marzec 2024',
+    audit_report_link: 'Przeczytaj raport z audytu',
+    audit_contract_link: 'Zobacz kod kontraktu',
+    audit_scope_note: 'Zakres: audyt Trail of Bits obejmuje kontrakty jettona / stablecoina TON Foundation. Ten launcher wdraża jetton tego samego standardu TEP-74 / TEP-89, bajt w bajt bez zmian. Audyt standardu nie jest gwarancją dla pojedynczego tokena — zawsze weryfikuj, zanim powierzysz realną wartość.',
     audit_lede_html: 'Nie dostarczamy własnego smart kontraktu. Wdrożenie używa oficjalnego <strong>referencyjnego Jetton Master (TEP-74)</strong> utrzymywanego przez TON Foundation — dokładnie tego, na którym stoją USDT-TON, Notcoin i większość dużych tokenów TON. Opakowujemy go, nie zmieniamy ani bajtu.',
     audit_items: [
       { t: 'Zaudytowany i sprawdzony w boju', p: 'Referencyjny jetton master z ton-blockchain/token-contract został zaudytowany przed mainnetem i rozliczył miliardy wolumenu na USDT i NOT bez incydentów na poziomie kontraktu.' },
@@ -226,6 +238,10 @@ export const LAUNCH_I18N: Record<Locale, LaunchStrings> = {
     renounce_btn: 'Отказаться от админки',
     audit_h2: 'Контракт, который ты разворачиваешь',
     audit_pill: 'Аудирован',
+    audit_audited_by: 'Независимый аудит · Trail of Bits — март 2024',
+    audit_report_link: 'Читать отчёт об аудите',
+    audit_contract_link: 'Посмотреть код контракта',
+    audit_scope_note: 'Область: аудит Trail of Bits охватывает контракты джеттона / стейблкоина TON Foundation. Этот лаунчер разворачивает джеттон того же стандарта TEP-74 / TEP-89, байт в байт без изменений. Аудит стандарта — не гарантия для отдельного токена; всегда проверяй, прежде чем доверять реальную ценность.',
     audit_lede_html: 'Мы не поставляем собственный смарт-контракт. Развёртывание использует официальный <strong>эталонный Jetton Master (TEP-74)</strong>, поддерживаемый TON Foundation — тот самый, на котором стоят USDT-TON, Notcoin и большинство крупных токенов TON. Мы оборачиваем его, не меняя ни байта.',
     audit_items: [
       { t: 'Аудирован и проверен в бою', p: 'Эталонный jetton master из ton-blockchain/token-contract был аудирован до мейннета и провёл миллиарды объёма на USDT и NOT без инцидентов на уровне контракта.' },
@@ -296,6 +312,10 @@ export const LAUNCH_I18N: Record<Locale, LaunchStrings> = {
     renounce_btn: 'Admin abgeben',
     audit_h2: 'Der Vertrag, den du deployst',
     audit_pill: 'Auditiert',
+    audit_audited_by: 'Unabhängig auditiert · Trail of Bits — März 2024',
+    audit_report_link: 'Audit-Bericht lesen',
+    audit_contract_link: 'Vertrags-Quellcode ansehen',
+    audit_scope_note: 'Umfang: Die Prüfung von Trail of Bits betrifft die Jetton- / Stablecoin-Verträge der TON Foundation. Dieser Launcher deployt ein Jetton desselben TEP-74 / TEP-89-Standards, Byte für Byte unverändert. Ein Audit des Standards ist keine Garantie für ein einzelnes Token — prüfe immer, bevor du echten Wert anvertraust.',
     audit_lede_html: 'Wir liefern keinen eigenen Smart Contract. Der Deploy nutzt den offiziellen <strong>TEP-74-Referenz-Jetton-Master</strong> der TON Foundation — exakt den Vertrag hinter USDT-TON, Notcoin und den meisten großen TON-Token. Wir kapseln ihn, ändern kein Byte.',
     audit_items: [
       { t: 'Auditiert & kampferprobt', p: 'Der Referenz-Jetton-Master in ton-blockchain/token-contract wurde vor Mainnet auditiert und hat Milliarden an Volumen auf USDT und NOT ohne Vorfälle auf Vertragsebene abgewickelt.' },
@@ -366,6 +386,10 @@ export const LAUNCH_I18N: Record<Locale, LaunchStrings> = {
     renounce_btn: 'Renunciar al admin',
     audit_h2: 'El contrato que despliegas',
     audit_pill: 'Auditado',
+    audit_audited_by: 'Auditoría independiente · Trail of Bits — marzo 2024',
+    audit_report_link: 'Leer el informe de auditoría',
+    audit_contract_link: 'Ver el código del contrato',
+    audit_scope_note: 'Alcance: la revisión de Trail of Bits cubre los contratos de jetton / stablecoin de la TON Foundation. Este launcher despliega un jetton del mismo estándar TEP-74 / TEP-89, byte por byte sin modificar. Una auditoría del estándar no es garantía para un token concreto: verifica siempre antes de confiar valor real.',
     audit_lede_html: 'No enviamos nuestro propio smart contract. El despliegue usa el <strong>Jetton Master de referencia TEP-74</strong> oficial mantenido por la TON Foundation — exactamente el contrato detrás de USDT-TON, Notcoin y la mayoría de los grandes tokens de TON. Lo envolvemos, no modificamos ni un byte.',
     audit_items: [
       { t: 'Auditado y probado en combate', p: 'El jetton master de referencia en ton-blockchain/token-contract fue auditado antes de mainnet y ha liquidado miles de millones de volumen en USDT y NOT sin incidentes a nivel de contrato.' },
@@ -436,6 +460,10 @@ export const LAUNCH_I18N: Record<Locale, LaunchStrings> = {
     renounce_btn: 'Відмовитися від адмінки',
     audit_h2: 'Контракт, який ти розгортаєш',
     audit_pill: 'Аудований',
+    audit_audited_by: 'Незалежний аудит · Trail of Bits — березень 2024',
+    audit_report_link: 'Читати звіт аудиту',
+    audit_contract_link: 'Переглянути код контракту',
+    audit_scope_note: 'Обсяг: перевірка Trail of Bits охоплює контракти джетона / стейблкоїна TON Foundation. Цей лаунчер розгортає джетон того самого стандарту TEP-74 / TEP-89, байт у байт без змін. Аудит стандарту не є гарантією для окремого токена — завжди перевіряй, перш ніж довіряти реальну цінність.',
     audit_lede_html: 'Ми не постачаємо власний смартконтракт. Розгортання використовує офіційний <strong>еталонний Jetton Master (TEP-74)</strong>, який підтримує TON Foundation — саме той контракт за USDT-TON, Notcoin і більшістю великих токенів TON. Ми обгортаємо його, не змінюючи жодного байта.',
     audit_items: [
       { t: 'Аудований і перевірений у бою', p: 'Еталонний jetton master у ton-blockchain/token-contract був аудований до мейннету і провів мільярди обсягу на USDT і NOT без інцидентів на рівні контракту.' },
