@@ -251,4 +251,72 @@ SOURCES = [
         "feed": "https://thedefiant.io/api/feed",
         "keywords": TON_KEYWORDS,
     },
+
+    # --- Worldwide / non-English discovery -------------------------------
+    # Localized Google News feeds capture regional coverage (incl. Chinese
+    # outlets like PANews, Odaily, ChainCatcher, Jinse/8btc that lack clean
+    # RSS). The query already constrains to TON, so no keyword filter is
+    # needed — the English TON_KEYWORDS regex would not match CJK text anyway.
+    {
+        "name": "Google News (中文)",
+        "url": "https://news.google.com",
+        "feed": (
+            "https://news.google.com/rss/search?"
+            "q=%22Toncoin%22+OR+%22TON%E5%8C%BA%E5%9D%97%E9%93%BE%22+OR+%22TON+blockchain%22"
+            "&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
+        ),
+        "keywords": None,
+    },
+    {
+        "name": "Google News (日本語)",
+        "url": "https://news.google.com",
+        "feed": (
+            "https://news.google.com/rss/search?"
+            "q=%22Toncoin%22+OR+%22%E3%83%88%E3%83%B3%E3%82%B3%E3%82%A4%E3%83%B3%22+OR+%22TON+blockchain%22"
+            "&hl=ja&gl=JP&ceid=JP:ja"
+        ),
+        "keywords": None,
+    },
+    {
+        "name": "Google News (한국어)",
+        "url": "https://news.google.com",
+        "feed": (
+            "https://news.google.com/rss/search?"
+            "q=%22Toncoin%22+OR+%22%ED%86%A4%EC%BD%94%EC%9D%B8%22+OR+%22TON+blockchain%22"
+            "&hl=ko&gl=KR&ceid=KR:ko"
+        ),
+        "keywords": None,
+    },
+
+    # --- Additional global English desks (filter to TON-relevant entries) ---
+    {
+        "name": "Wu Blockchain",
+        "url": "https://wublock.substack.com",
+        "feed": "https://wublock.substack.com/feed",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "The Cryptonomist",
+        "url": "https://en.cryptonomist.ch",
+        "feed": "https://en.cryptonomist.ch/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "Coinpedia",
+        "url": "https://coinpedia.org",
+        "feed": "https://coinpedia.org/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "CryptoPotato",
+        "url": "https://cryptopotato.com",
+        "feed": "https://cryptopotato.com/feed/",
+        "keywords": TON_KEYWORDS,
+    },
+    {
+        "name": "Coinspeaker",
+        "url": "https://www.coinspeaker.com",
+        "feed": "https://www.coinspeaker.com/feed/",
+        "keywords": TON_KEYWORDS,
+    },
 ]
