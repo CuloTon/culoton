@@ -23,7 +23,7 @@ COMMANDS = [
     {"command": "news", "description": "Top 5 stories from the last 6h"},
     {"command": "blog", "description": "Latest BrainScribe roundup"},
     {"command": "price", "description": "Live $TON or $BRT market data"},
-    {"command": "ask", "description": "Ask BrainScribe anything (AI Q&A)"},
+    {"command": "roll", "description": "TON rewards paid so far + rollover status"},
     {"command": "points", "description": "Your activity score"},
     {"command": "leaderboard", "description": "Top 10 active members this week"},
 ]

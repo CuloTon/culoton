@@ -1,0 +1,132 @@
+{
+  "generated_at": "2026-06-01T18:28:49.630299+00:00",
+  "dev_address": "UQBzaZXIwj3mDY8HdYDkTO1lkn4OV8sfx2tsf-lChQex70NP",
+  "invest_address": "UQDue5ypYa45sG2CO6M_nIFJwpStYpDz3JbCZVeHes10j3n1",
+  "marketing_address": "UQBKy4WDlSLQq5XdSkFvw4QcgETG-gZk6PIXWMHU1R52Yx7w",
+  "rounds_count": 1,
+  "total_paid_ton": 1.653338482,
+  "holders_paid_unique": 9,
+  "rounds": [
+    {
+      "round": 1,
+      "at": "2026-06-01T12:14:38.922818+00:00",
+      "total_paid_ton": 1.653338482,
+      "treasury_total_ton": 4.394542064,
+      "bank_after_est": 1.1668,
+      "paid": [
+        {
+          "address": "0:9f34251aaba41bfcaaa669119d431dbeebaddcc2efb2e6f3e3dc53a92240e9a7",
+          "ton": 0.322347849,
+          "brt": 7728858775555868
+        },
+        {
+          "address": "0:4909c2cbcab6f96588df368ef0e7c1a92135c7a90a37e4291d75ccf2f5ec96f6",
+          "ton": 0.208535217,
+          "brt": 5000000000000000
+        },
+        {
+          "address": "0:93cb79a5b69b0029bb3518edc40a2e540494d96d65a22d37326eac1ec7cd1e1d",
+          "ton": 0.208535217,
+          "brt": 5000000000000000
+        },
+        {
+          "address": "0:ba45f46c0fd18c37047a229b5efcbe9b5afb969164b551a6ec13ae1b84232a6c",
+          "ton": 0.208535217,
+          "brt": 5000000000000000
+        },
+        {
+          "address": "0:ee7b9ca961ae39b06d823ba33f9c8149c294ad6290f3dc96c26557877acd748f",
+          "ton": 0.177959363,
+          "brt": 4266889897691473
+        },
+        {
+          "address": "0:845b53e643d8910a6c0dc074970ac7928e1c9a5f5f0acb04771627e75c30de82",
+          "ton": 0.170599803,
+          "brt": 4090431460492616
+        },
+        {
+          "address": "0:91e53f425945248914200fd1467c0b3b84bc6570ea31b2f97b6afc9a8f8cb4df",
+          "ton": 0.161697336,
+          "brt": 3876979100148117
+        },
+        {
+          "address": "0:f0f058d01b183c9e7050e6ae2d01cbf086262cf84f1aa3c121bd6a19387561a5",
+          "ton": 0.111714393,
+          "brt": 2678549797782967
+        },
+        {
+          "address": "0:7895ef02474e1f5b2a589fb32c94217c8974a24f5ff91d8e60729510818cb982",
+          "ton": 0.083414087,
+          "brt": 2000000000000000
+        }
+      ],
+      "rollover": [
+        {
+          "address": "0:7bdb33868af14ff41b3537ccb20c381d4774e921bbd52a77560f3c5ac4a4e24a",
+          "ton": 0.049229898,
+          "brt": 1180373725060538
+        },
+        {
+          "address": "0:1ca08d744bf449ba1e1deae23983805a3fb5a83cd535203241363e85d2977993",
+          "ton": 0.045439777,
+          "brt": 1089498878622158
+        },
+        {
+          "address": "0:dbcb1b2103a2f3cddba549f44473f0bd9f59aa965849ed3bcd6498a21cbed8de",
+          "ton": 0.02176387,
+          "brt": 521827194796491
+        },
+        {
+          "address": "0:908ac586b5b7b5d861ffa1ba42543b4d7c980a0efe397978fd14dc4ee7b0d8b1",
+          "ton": 0.013581088,
+          "brt": 325630570249619
+        },
+        {
+          "address": "0:32b04d526ada51daa5e71cfc62e692c0096acab7dc675ced5718700d2a55e4bb",
+          "ton": 0.007959123,
+          "brt": 190834014758093
+        },
+        {
+          "address": "0:61e1d766e9c9ac16bcf3dcb8ba896975f785f86ecdb3774dfa8a83a75d1a3652",
+          "ton": 0.006800406,
+          "brt": 163051734914173
+        },
+        {
+          "address": "0:88f10773383b667f314218c87f88156819c305074e343f9a0382d60cf7d464e8",
+          "ton": 0.006710025,
+          "brt": 160884696990166
+        },
+        {
+          "address": "0:3d0f9545b32b420d57b48fafa55317f20794a7d052a49319c221ac21722cab31",
+          "ton": 0.004776493,
+          "brt": 114524859845808
+        },
+        {
+          "address": "0:7dc33e2384e2636db1600db68abf76446540aca24bd80f3d221c63460b62d410",
+          "ton": 0.002664332,
+          "brt": 63882066248505
+        },
+        {
+          "address": "0:8e4bf2fb95c2fbde8c93f4b7f1f4c30abed6f8cf369615111470fd9dafbb0789",
+          "ton": 0.002650184,
+          "brt": 63542849393798
+        },
+        {
+          "address": "0:77d318ee2edadd3cec2501ee38be4bc4958261b78d0a222044aad78c7e6d7a35",
+          "ton": 0.002636149,
+          "brt": 63206328163762
+        },
+        {
+          "address": "0:f8c1707cf0b58f1046f0013225f52f5519438e7575c7eae40e70becca4fe317c",
+          "ton": 0.002630818,
+          "brt": 63078510996855
+        },
+        {
+          "address": "0:a8c882451e7f632e5bd1640dbc11cc68e766b5b75bd1d9a944b48ae244410bb8",
+          "ton": 4.2e-08,
+          "brt": 1000000000
+        }
+      ]
+    }
+  ]
+}

@@ -11,16 +11,17 @@ Commands:
   /news                — latest 7 EN stories (near-dupe headlines collapsed)
   /blog                — link to the latest BrainScribe roundup
   /price ton|brt       — live market data
-  /ask <question>      — Haiku Q&A grounded in the latest 50 EN news
+  /roll                — TON rewards paid to date + rollover status
   /points              — caller's score
   /leaderboard         — top 10 most active members (running total)
 
 Points: chatting in the group earns +1 (rate-limited to once per 90s),
-/ask earns +3, other commands +1 — all capped at 20 points / user / UTC
-day to prevent farming. Points accumulate continuously (no weekly reset);
-rewards are discretionary. Every 10 group messages the bot posts a short
-standings recap.
-/ask is rate-limited to once every 3 minutes per user (paid API).
+commands +1 — all capped at 20 points / user / UTC day to prevent farming.
+Points accumulate continuously (no weekly reset); rewards are discretionary.
+Every 10 group messages the bot posts a short standings recap.
+
+/roll is GLOBAL-rate-limited to once every 10 minutes (one call locks it for
+everyone) — except the dev/admin, who has no limit.
 """
 
 from __future__ import annotations
@@ -45,14 +46,15 @@ from _culo_market import (
 )
 from _tg_points import (
     MSG_POINT_REWARD,
+    ROLL_COOLDOWN_SEC,
     award_points,
     can_earn_msg_point,
-    can_use_ask,
+    can_use_roll,
     get_user,
     load_offset,
     load_state,
-    mark_ask,
     mark_msg_point,
+    mark_roll,
     save_offset,
     save_state,
     top_weekly,
@@ -61,7 +63,22 @@ from _tg_points import (
 ROOT = Path(__file__).resolve().parent.parent
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 BLOG_DIR = ROOT / "web" / "src" / "content" / "blog"
+REWARDS_DATA = ROOT / "web" / "src" / "data" / "rewards_rounds.json"
 SITE = "https://brainrot-ton.fun"
+
+# Reward bank wallet (mirrors scripts/rewards_snapshot.py / RewardsContent.astro).
+DEV_ADDRESS = "UQBzaZXIwj3mDY8HdYDkTO1lkn4OV8sfx2tsf-lChQex70NP"
+REWARD_PCT = 0.25
+ROLL_COOLDOWN_MIN = ROLL_COOLDOWN_SEC // 60
+
+# Admin/dev usernames that bypass the global /roll cooldown. Telegram usernames
+# are unique and non-transferable, so this is a safe (if simple) admin check.
+# Override via env TELEGRAM_ADMIN_USERNAMES="name1,name2" (no @).
+DEV_USERNAMES = {
+    u.strip().lstrip("@").lower()
+    for u in (os.environ.get("TELEGRAM_ADMIN_USERNAMES") or "culodaddy_ton").split(",")
+    if u.strip()
+}
 RECAP_EVERY_N_MSGS = 10  # post a standings + rules recap every N group messages
 
 TG_API_TIMEOUT = 35  # > long-poll timeout below, with margin
@@ -70,15 +87,6 @@ GET_UPDATES_LIMIT = 100
 LOOP_BUDGET_SEC = 270  # 4.5 minutes — leaves margin under workflow's 6-min cap
 NEWS_FOR_LIST_MAX = 7        # /news always shows this many — newest first, no age cutoff
 NEWS_RECENT_HOURS = 6        # only used for the "(N from the last Nh)" note in /news
-ASK_CONTEXT_NEWS_COUNT = 50
-ASK_MAX_QUESTION_CHARS = 400
-
-ANTHROPIC_MODEL = "claude-haiku-4-5-20251001"
-ASK_COOLDOWN_MIN = 3
-ASK_COOLDOWN_NOTE = (
-    f"ℹ <i>I answer once every {ASK_COOLDOWN_MIN} minutes per user — "
-    "the AI engine costs us money, the cooldown keeps the lights on.</i>"
-)
 
 COMMANDS_HELP = (
     "👋 <b>Welcome to BRAINROT Desk</b>\n"
@@ -90,11 +98,10 @@ COMMANDS_HELP = (
     "💰 <b>Market</b>\n"
     "/price ton — live $TON price\n"
     "/price brt — $BRT market data\n\n"
-    "🤖 <b>Ask me anything</b>\n"
-    "/ask &lt;question&gt; — anything about TON, BRAINROT, $BRT or sTONks; "
-    f"light small-talk welcome too. <b>Limit: 1 per {ASK_COOLDOWN_MIN} min per user.</b>\n\n"
+    "🎁 <b>Rewards</b>\n"
+    "/roll — TON rewards paid to date + rollover status\n\n"
     "🏆 <b>Activity & rewards</b>\n"
-    "💬 Every message in the group = +1 pt (max once per 90s). /ask = +3. Cap 20 pts/day.\n"
+    "💬 Every message in the group = +1 pt (max once per 90s). Cap 20 pts/day.\n"
     "⚠️ Spamming to farm points = ban — post something worth reading.\n"
     "/points — your activity score\n"
     "/leaderboard — top 10 most active members (running total)\n"
@@ -102,111 +109,6 @@ COMMANDS_HELP = (
     "from time to time. No fixed or guaranteed payout.\n\n"
     "🌐 <a href=\"https://brainrot-ton.fun\">brainrot-ton.fun</a>"
 )
-
-
-# ---------- Knowledge baked into /ask ---------------------------------------
-
-CULOTON_FACTS = """\
-CULO TON / $BRT — ground truth (always reply in English).
-
-PLATFORM
-- BRAINROT (https://brainrot-ton.fun) is an English-language news desk covering
-  the TON Blockchain ecosystem. It is the editorial layer built around the
-  $BRT memecoin: legitimate TON content first, $BRT surfaced as the
-  platform's native token (banner, /culo page, branding).
-- Note: the legacy domain culoton.fun stays online as a public rebrand notice
-  with the full story; the live project lives at brainrot-ton.fun.
-- Multilingual: every story exists in EN, RU, PL and DE — same slug, native
-  re-reporting (not translation) by BrainScribe.
-- Cadence: ~24 news items/day, plus 3 editorial roundups every day
-  (morning ~08:00 PL, noon ~13:00, evening ~19:00). Archive at /archive.
-- Stack (for the curious): Astro static site, Python ingest, Claude Haiku
-  rewrites, GitHub Actions cron, FTP deploy to seohost.pl. Logos and code on
-  github.com/CuloTon.
-
-PERSONA
-- You are BrainScribe — the AI editor. Witty, dry, professional. Never break
-  character to mention you are Claude.
-
-$BRT TOKEN
-- Memecoin on TON. Contract: EQDsbT3_IfYbdN4hgDCFK8-AGQ7x0FpVspYPEN8sDpkm2PIh
-- Track record: ~10,000X market-cap move on Polygon (2024), follow-through on
-  SUI, then launched on TON in 2026 with this dedicated platform.
-- Relaunched on 2026-05-26 under the new ticker $BRT (BRAINROT), retiring the
-  prior CuloTon/$CULOTON brand. Reason for the rebrand: two members of the
-  Polish Telegram group impersonated the dedust team and pressured the dev
-  into halting the entire project; once the scam was uncovered, both accounts
-  were permanently banned and the project relaunched under a clean brand,
-  tied to a registered business.
-- Tokenomics decided by community poll (38 votes, closed): 25% buy tax + 25%
-  sell tax, with 50% of all tax revenue distributed to $BRT holders. The new
-  contract ships with this configuration.
-- Brand: born from a long-running cross-chain meme; community-driven.
-
-CHANNELS
-- Web: https://brainrot-ton.fun (legacy notice at https://culoton.fun)
-- Telegram (this bot): @brainrot_info_bot
-- Telegram community: https://t.me/culoton
-- X / Twitter: https://x.com/culoton_
-
-EDITORIAL RULES
-- Never give specific financial advice ("buy now", "price will hit X"). You
-  can describe what is happening; recommendations are off-limits.
-- Never invent prices, dates, contract addresses, or quotes not present in
-  FACTS or NEWS CONTEXT. If unsure, say so.
-"""
-
-STONKS_FACTS = """\
-sTONks / stonks.pump — ground truth.
-
-WHAT IT IS
-- sTONks (https://stonksbots.com) is a four-stage on-chain pipeline on TON:
-  1. BUILD — agentic LLM pipelines (Claude/GPT/Gemini/Grok) write code,
-     humans review.
-  2. DEPLOY — one-click to managed infra, VPS, bare metal, Telegram Cloud or
-     LLM APIs. Encrypted secrets, autoscaling.
-  3. TOKENIZE — fairlaunch, presale, bonding curve, revshare, dividends, or
-     fully custom tokenomics. Or no token, just crypto payments.
-  4. GOVERN — Roundtable DAO with an AI Oracle that audits commits, deploys,
-     milestones against the on-chain roadmap.
-
-PUBLISHED METRICS
-- 2,170 projects launched. 12,000+ monthly active traders. 41,300 TON in
-  ecosystem liquidity. 160,000 TON in dividends paid to holders.
-
-TRADING STACK
-- Trading Terminal: multi-wallet, sniper, TradingView, limit orders, on-chain
-  fills, sub-100ms execution.
-- @stonks_sniper_bot — full terminal inside Telegram DM.
-- Stonks Gem Bot + New Pairs Bot — alpha alerts, no gatekeeping.
-
-REAL-WORLD-ASSET BINDING
-- Every token launched is cryptographically bound on-chain to its GitHub repo.
-- Holders watch real commits land. AI Oracle verifies progress for closed
-  source projects too. Supply / fees / curves locked at launch — no hidden
-  mints, no dev unlocks, no rug levers.
-
-stonks.pump — THE LAUNCHPAD
-- Free TON jetton launchpad inside sTONks. Two liquidity modes:
-  * Seed LP — you provide the LP yourself; cost = LP + 4 TON; 5% of tax
-    revenue to launchpad; ~5 min processing.
-  * Virtual LP — algorithmic, ~500 TON-equivalent liquidity for a flat
-    3.2 TON fee; 1-2 min processing.
-- Tokenomics: Simple coin (no tax) or Customize (buy/sell tax up to 30% each,
-  anti-sniper limits, dev bag max 5%, marketing wallet, holder rewards).
-- Built-in protections: LP burn, auto ownership revoke, anti-sniper rules,
-  single-tx LP add.
-- Walkthrough: youtube.com/watch?v=IaodzcNhy_4
-- Launch via @stonks_sniper_bot or stonkslabs.com/launch/ton
-- Manual: stonks-bot.gitbook.io/stonks-bot-manual/stonks.pump-launchpad
-
-$BRT RELATION
-- $BRT is the live token of the project (TON contract
-  EQDsbT3_IfYbdN4hgDCFK8-AGQ7x0FpVspYPEN8sDpkm2PIh, tax-free). It is the
-  relaunched successor to the original $CULO contract, which was deployed via
-  stonks.pump and has since been retired. The BRAINROT news desk is the
-  editorial layer that the token sits inside.
-"""
 
 
 # ---------- Telegram API ----------------------------------------------------
@@ -476,96 +378,64 @@ def cmd_price(arg: str) -> str:
     return "Usage: /price ton  ·  /price brt"
 
 
-def cmd_ask(question: str) -> str:
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "").lstrip("﻿").strip()
-    if not api_key:
-        return "🤖 The /ask service is offline (missing API key)."
-    if not question or len(question.strip()) < 5:
-        return "🤖 Ask me a real question — e.g. <code>/ask why is TON pumping?</code>"
-    if len(question) > ASK_MAX_QUESTION_CHARS:
-        return f"🤖 Question is too long (max {ASK_MAX_QUESTION_CHARS} chars). Shorten and try again."
+def is_admin(from_user: dict) -> bool:
+    """Dev/admin bypasses the /roll cooldown. Matched on Telegram username
+    (unique, non-transferable) against DEV_USERNAMES."""
+    uname = (from_user.get("username") or "").strip().lstrip("@").lower()
+    return bool(uname) and uname in DEV_USERNAMES
 
+
+def fetch_bank_ton() -> float | None:
+    """Live reward-bank (DEV wallet) TON balance via tonapi. Read-only."""
+    url = f"https://tonapi.io/v2/accounts/{DEV_ADDRESS}"
     try:
-        from anthropic import Anthropic
+        req = urllib.request.Request(url, headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=TG_API_TIMEOUT) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        return int(data.get("balance", 0)) / 1e9
     except Exception as e:
-        return f"🤖 Q&A engine not installed on the runner: {e}"
+        print(f"  bank balance fetch failed: {e}", file=sys.stderr)
+        return None
 
-    items = latest_news(ASK_CONTEXT_NEWS_COUNT)
-    context_lines = []
-    for it in items:
-        date = it["date"].strftime("%Y-%m-%d")
-        context_lines.append(
-            f"[{date}] {it['title']} — {it['summary']} (source: {it['source_name']})"
-        )
-    context_block = "\n".join(context_lines) if context_lines else "(no recent news on file)"
 
-    system = (
-        "You are BrainScribe, the AI editor of BRAINROT — a TON-blockchain news desk.\n"
-        "\n"
-        "WHAT YOU CAN ANSWER\n"
-        "- Anything about the TON blockchain ecosystem (apps, protocols, news, "
-        "trends, the chain itself).\n"
-        "- Anything about BRAINROT, the $BRT token, this Telegram bot, the news "
-        "platform, the brand and our channels — see CULOTON FACTS below.\n"
-        "- Anything about sTONks and the stonks.pump launchpad — see STONKS "
-        "FACTS below.\n"
-        "- Friendly small talk: greetings, how-are-you, weather, mood, light "
-        "jokes. Keep it short (1-2 sentences) and on-vibe (dry BrainScribe wit).\n"
-        "\n"
-        "WHAT YOU MUST REFUSE (politely, then redirect to /news /price /blog or "
-        "an on-topic question)\n"
-        "- Specific financial advice ('should I buy', 'will price hit X', 'is "
-        "this a good entry'). Describe what is happening, never recommend a "
-        "trade. State you do not give financial advice.\n"
-        "- Personal data, doxxing, anything invasive about the user, the team, "
-        "or third parties.\n"
-        "- NSFW, illegal, hateful, manipulative requests.\n"
-        "- Off-topic rabbit holes unrelated to TON, BRAINROT, sTONks or light "
-        "small talk (politics, religion, medical, legal).\n"
-        "\n"
-        "STYLE\n"
-        "- Always reply in ENGLISH, regardless of the language of the question.\n"
-        "- Concise: 2-4 short paragraphs max. Plain prose, no bullet lists "
-        "unless they truly help.\n"
-        "- Confident, dry wit. End substantive answers with one short "
-        "editorial take.\n"
-        "- Do not invent prices, dates, contract addresses, or quotes that are "
-        "not in FACTS or NEWS CONTEXT. If unsure, say so.\n"
-        "- Never break character to mention you are Claude or any other model. "
-        "You are BrainScribe.\n"
-        "\n"
-        "=== CULOTON FACTS ===\n"
-        f"{CULOTON_FACTS}\n"
-        "=== STONKS FACTS ===\n"
-        f"{STONKS_FACTS}"
-    )
-    user_prompt = (
-        f"NEWS CONTEXT (most recent first):\n{context_block}\n\n"
-        f"USER QUESTION: {question.strip()}"
-    )
-
+def load_rewards_rounds() -> dict:
+    """Consolidated payout history, written by
+    brt-nagrody/scripts/export_rounds_to_site.py. Same file the website reads."""
     try:
-        client = Anthropic(api_key=api_key)
-        resp = client.messages.create(
-            model=ANTHROPIC_MODEL,
-            max_tokens=600,
-            system=system,
-            messages=[{"role": "user", "content": user_prompt}],
-        )
-        parts = []
-        for block in resp.content:
-            if getattr(block, "type", None) == "text":
-                parts.append(block.text)
-        answer = "".join(parts).strip() or "(no answer)"
-    except Exception as e:
-        return f"🤖 The Q&A call failed: {html.escape(str(e)[:240])}"
+        return json.loads(REWARDS_DATA.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
 
-    return (
-        f"🤖 <b>BrainScribe answers</b>\n\n"
-        f"<i>Q: {html.escape(question.strip()[:200])}</i>\n\n"
-        f"{html.escape(answer)}\n\n"
-        f"{ASK_COOLDOWN_NOTE}"
-    )
+
+def cmd_roll() -> str:
+    data = load_rewards_rounds()
+    rounds = data.get("rounds", [])
+    total_paid = float(data.get("total_paid_ton", 0) or 0)
+    n_rounds = data.get("rounds_count", len(rounds))
+
+    lines = ["💸 <b>$BRT rewards — rollover status</b>\n"]
+
+    bank = fetch_bank_ton()
+    if bank is not None:
+        lines.append(f"🏦 Reward bank now: <b>{bank:.2f} TON</b> "
+                     f"(next pool ~{bank * REWARD_PCT:.3f} TON, 25%)")
+
+    if rounds:
+        lines.append(f"✅ Paid to date: <b>{total_paid:.3f} TON</b> across "
+                     f"{n_rounds} round{'s' if n_rounds != 1 else ''}")
+        last = rounds[-1]
+        lines.append(f"🏅 Last round #{last.get('round')} ({(last.get('at') or '')[:10]}): "
+                     f"{len(last.get('paid', []))} holders, {float(last.get('total_paid_ton', 0)):.3f} TON")
+        roll = last.get("rollover", [])
+        if roll:
+            roll_sum = sum(float(h.get("ton", 0)) for h in roll)
+            lines.append(f"⏳ Rolling over: {len(roll)} wallets ({roll_sum:.3f} TON) — "
+                         "shares below 0.05 TON, accumulating to next round")
+    else:
+        lines.append("No rounds have paid out yet — the first runs once the bank passes 4 TON.")
+
+    lines.append(f"\n📊 Full breakdown, ranked & on-chain ↗ <a href=\"{SITE}/rewards\">{SITE}/rewards</a>")
+    return "\n".join(lines)
 
 
 def cmd_points(rec: dict) -> str:
@@ -584,7 +454,7 @@ def cmd_leaderboard(state: dict) -> str:
         return (
             "🏆 <b>Leaderboard — most active members</b>\n\n"
             "Nobody has earned points yet — "
-            "be first. Try /news, /price ton, or /ask &lt;question&gt;."
+            "be first. Try /news, /price ton, or /roll."
         )
     lines = ["🏆 <b>Leaderboard — top 10 most active</b>\n"]
     medals = ["🥇", "🥈", "🥉"]
@@ -601,8 +471,8 @@ def cmd_leaderboard(state: dict) -> str:
 
 
 _RULES_FOOTER = (
-    "🎯 <b>How to score:</b> every message in this group = +1 pt (rate-limited) · "
-    "/ask = +3. Cap 20 pts/day per person. Spamming to farm points = ban — post something worth reading.\n"
+    "🎯 <b>How to score:</b> every message in this group = +1 pt (rate-limited). "
+    "Cap 20 pts/day per person. Spamming to farm points = ban — post something worth reading.\n"
     "🎁 Rewards are discretionary — the dev may reward standout active members from time to time. "
     "No fixed payout. /leaderboard · /points"
 )
@@ -612,7 +482,7 @@ def build_standings_recap(state: dict) -> str:
     """Short standings + contest rules — posted every RECAP_EVERY_N_MSGS group messages."""
     top = top_weekly(state, n=5)
     if not top:
-        head = "📊 <b>CULO COMMUNITY — activity standings</b>\n\nNo scores yet — be first. Just chat here, use /ask or /news."
+        head = "📊 <b>CULO COMMUNITY — activity standings</b>\n\nNo scores yet — be first. Just chat here, use /news or /roll."
     else:
         medals = {1: "🥇", 2: "🥈", 3: "🥉"}
         rows = ["📊 <b>CULO COMMUNITY — activity standings</b>", ""]
@@ -640,9 +510,7 @@ def route_command(text: str) -> tuple[str, str]:
 
 
 def points_for_command(cmd: str) -> int:
-    if cmd == "ask":
-        return 3
-    if cmd in ("start", "help", "news", "blog", "price", "points", "leaderboard"):
+    if cmd in ("start", "help", "news", "blog", "price", "roll", "points", "leaderboard"):
         return 1
     return 0
 
@@ -720,17 +588,22 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
             reply = cmd_blog()
         elif cmd == "price":
             reply = cmd_price(arg)
+        elif cmd == "roll":
+            if is_admin(from_user):
+                reply = cmd_roll()
+            else:
+                allowed, wait = can_use_roll(state)
+                if not allowed:
+                    m, s = divmod(wait, 60)
+                    reply = (f"⏳ /roll is on a shared {ROLL_COOLDOWN_MIN}-minute cooldown "
+                             f"(one call locks it for everyone). Try again in {m}m {s:02d}s.")
+                else:
+                    reply = cmd_roll()
+                    mark_roll(state)
         elif cmd == "points":
             reply = cmd_points(rec)
         elif cmd == "leaderboard":
             reply = cmd_leaderboard(state)
-        elif cmd == "ask":
-            allowed, wait = can_use_ask(rec)
-            if not allowed:
-                reply = f"🤖 Cool down — try /ask again in {wait}s."
-            else:
-                reply = cmd_ask(arg)
-                mark_ask(rec)
         else:
             # Unknown command — keep silent in groups to avoid noise,
             # respond with a hint in private chats.
@@ -740,9 +613,6 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
                 continue
 
         granted = award_points(rec, points_for_command(cmd))
-        if granted > 0 and cmd in ("ask",):
-            # Append a tiny pts hint for the ask path (visible reward signal).
-            reply = reply + f"\n\n<i>+{granted} pts</i>"
 
         send_resp = tg_send(token, chat["id"], reply, reply_to=msg.get("message_id"))
         ok = bool(send_resp and send_resp.get("ok"))

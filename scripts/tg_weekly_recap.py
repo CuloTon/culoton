@@ -34,7 +34,7 @@ def build_announcement(state: dict) -> str:
     if not top:
         return (
             "🏆 <b>Most active members</b> " + range_label + "\n\n"
-            "No activity tracked yet. Jump in — chatting, /ask and /news all earn activity points.\n\n"
+            "No activity tracked yet. Jump in — chatting, /news and /roll all earn activity points.\n\n"
             "🎁 Rewards are discretionary — the dev may reward standout members from time to time. "
             "/help for commands."
         )

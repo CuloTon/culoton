@@ -33,7 +33,12 @@ POINTS_PATH = ROOT / "data" / "points.json"
 OFFSET_PATH = ROOT / "data" / "tg_offset.txt"
 
 DAILY_POINT_CAP = 20
-ASK_COOLDOWN_SEC = 180  # 3 minutes between /ask uses per user
+
+# /roll is GLOBAL-rate-limited (not per user): once anyone runs it, the next
+# call by anyone must wait this long. The dev/admin bypasses it entirely (the
+# bot checks is_admin before consulting this). Keeps an on-chain-querying
+# command from being spammed by the whole group.
+ROLL_COOLDOWN_SEC = 600  # 10 minutes, shared across all non-admin users
 
 # Plain chat messages in the group earn a small activity point, rate-limited
 # so chatting normally pays but burst-spamming does not. The daily cap (20)
@@ -133,24 +138,28 @@ def award_points(rec: dict, amount: int) -> int:
     return granted
 
 
-def can_use_ask(rec: dict) -> tuple[bool, int]:
-    """Returns (allowed, seconds_remaining_until_next_ask)."""
-    last = rec.get("last_ask_at") or ""
+def can_use_roll(state: dict) -> tuple[bool, int]:
+    """GLOBAL cooldown for /roll. Returns (allowed, seconds_remaining).
+
+    The timestamp lives on the shared state (not per user), so one person's
+    /roll locks the command for everyone until the cooldown elapses. The bot
+    skips this check for the admin/dev.
+    """
+    last = state.get("roll_last_at") or ""
     if not last:
         return True, 0
     try:
         last_dt = datetime.fromisoformat(last)
     except Exception:
         return True, 0
-    now = datetime.now(timezone.utc)
-    elapsed = (now - last_dt).total_seconds()
-    if elapsed >= ASK_COOLDOWN_SEC:
+    elapsed = (datetime.now(timezone.utc) - last_dt).total_seconds()
+    if elapsed >= ROLL_COOLDOWN_SEC:
         return True, 0
-    return False, int(ASK_COOLDOWN_SEC - elapsed)
+    return False, int(ROLL_COOLDOWN_SEC - elapsed)
 
 
-def mark_ask(rec: dict) -> None:
-    rec["last_ask_at"] = _now_iso()
+def mark_roll(state: dict) -> None:
+    state["roll_last_at"] = _now_iso()
 
 
 def can_earn_msg_point(rec: dict) -> tuple[bool, int]:
