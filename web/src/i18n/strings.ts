@@ -154,6 +154,7 @@ interface UIStrings {
   nav_launch: string;
   nav_launch_badge: string;
   nav_tokens: string;
+  nav_board: string;
   nav_rewards: string;
   nav_poll: string;
   nav_poll_badge: string;
@@ -297,6 +298,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'NEW',
     nav_tokens: 'Tokens',
+    nav_board: 'Charts',
     nav_rewards: 'Rewards',
     nav_poll: 'Vote',
     nav_poll_badge: 'OPEN',
@@ -438,6 +440,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'NEW',
     nav_tokens: 'Токены',
+    nav_board: 'Графики',
     nav_rewards: 'Награды',
     nav_poll: 'Голос',
     nav_poll_badge: 'OPEN',
@@ -579,6 +582,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'NOWE',
     nav_tokens: 'Tokeny',
+    nav_board: 'Wykresy',
     nav_rewards: 'Nagrody',
     nav_poll: 'Głosuj',
     nav_poll_badge: 'OPEN',
@@ -720,6 +724,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'NEU',
     nav_tokens: 'Tokens',
+    nav_board: 'Charts',
     nav_rewards: 'Rewards',
     nav_poll: 'Abstimmen',
     nav_poll_badge: 'OPEN',
@@ -861,6 +866,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'NUEVO',
     nav_tokens: 'Tokens',
+    nav_board: 'Gráficos',
     nav_rewards: 'Recompensas',
     nav_poll: 'Votar',
     nav_poll_badge: 'OPEN',
@@ -1002,6 +1008,7 @@ export const UI: Record<Locale, UIStrings> = {
     nav_launch: 'Launcher',
     nav_launch_badge: 'НОВЕ',
     nav_tokens: 'Токени',
+    nav_board: 'Графіки',
     nav_rewards: 'Винагороди',
     nav_poll: 'Голосуй',
     nav_poll_badge: 'OPEN',
