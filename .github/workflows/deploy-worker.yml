@@ -38,3 +38,18 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         run: npx wrangler deploy
+
+      # Sync the admin-board secret (gates /listing/add and /listing/remove).
+      # Idempotent: re-puts the same value from repo secrets on every deploy.
+      - name: Sync ADMIN_KEY secret
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
+        run: |
+          if [ -n "$ADMIN_KEY" ]; then
+            printf '%s' "$ADMIN_KEY" | npx wrangler secret put ADMIN_KEY
+          else
+            echo "ADMIN_KEY not in repo secrets; skipping"
+          fi
