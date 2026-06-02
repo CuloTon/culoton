@@ -1059,6 +1059,13 @@ export default {
           await env.STATS_KV.delete(`blogin:${BLOG_VER}:${u.login.toLowerCase()}`);
           return jsonRes(headers, { ok: true, deleted: true });
         }
+        if (action === 'setpw') {
+          const pw = typeof b.pw === 'string' ? b.pw : '';
+          if (pw.length < 6) return jsonRes(headers, { error: 'password too short (min 6)' }, 400);
+          u.salt = randHex(16); u.hash = await pbkdf2(pw, u.salt);
+          await env.STATS_KV.put(k, JSON.stringify(u));
+          return jsonRes(headers, { ok: true });
+        }
         if (action === 'ban') u.banned = true; else if (action === 'unban') u.banned = false; else return jsonRes(headers, { error: 'bad action' }, 400);
         await env.STATS_KV.put(k, JSON.stringify(u));
         return jsonRes(headers, { ok: true });
