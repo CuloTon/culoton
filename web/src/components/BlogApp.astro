@@ -5,13 +5,35 @@
 
 <section class="bl">
   <div class="bl-aura" aria-hidden="true"></div>
-  <header class="bl-hero">
-    <span class="bl-kicker">BRAINROT community</span>
-    <h1 class="bl-h1">Blog</h1>
-    <p class="bl-lede">Write in your language, get upvoted, earn <b>BRTP</b>. Every point pushes your post up — and pays the author <b>10 BRTP</b>, the voter <b>1 BRTP</b>. Points are paid out to your TON address.</p>
-    <div class="bl-bar" id="bl-bar"></div>
-  </header>
-  <div id="bl-app" class="bl-app"><p class="bl-state">Loading…</p></div>
+  <div class="bl-wrap">
+    <div class="bl-main">
+      <header class="bl-hero">
+        <span class="bl-kicker">BRAINROT community</span>
+        <h1 class="bl-h1">Blog</h1>
+        <p class="bl-lede">Write in your language, get upvoted, earn <b>BRTP</b>. Every point pushes your post up — and pays the author <b>10 BRTP</b>, the voter <b>1 BRTP</b>.</p>
+        <div class="bl-bar" id="bl-bar"></div>
+        <details class="bl-rules">
+          <summary>📜 How it works &amp; rules</summary>
+          <div class="bl-rules-in">
+            <p><b>Write → get upvoted → earn BRTP.</b> Anyone can register and publish a post in any of our languages (EN / RU / PL / DE / ES / UK).</p>
+            <ul>
+              <li><b>Author:</b> +10 BRTP for every upvote your post receives.</li>
+              <li><b>Voter:</b> +1 BRTP for each upvote you give — good curation is rewarded too.</li>
+              <li>1 vote per person per article · you can't vote your own post · max 20 votes/day.</li>
+              <li>More points push your post higher up the board. Every post starts at 0 BRTP.</li>
+            </ul>
+            <p><b>Payouts:</b> BRTP are points linked to your TON address. <b>Withdrawals are not enabled yet</b> — exchanging your BRTP for real <b>$BRT</b> tokens is a feature coming in the future. Start earning now to be ahead when it launches.</p>
+            <p class="bl-rules-mini">Be cool: no spam, scams or hate. Admins may hide or remove posts and ban abusers.</p>
+          </div>
+        </details>
+      </header>
+      <div id="bl-app" class="bl-app"><p class="bl-state">Loading…</p></div>
+    </div>
+    <aside class="bl-side">
+      <div class="bl-side-h"><span>Members</span><span class="bl-online" id="bl-online"></span></div>
+      <div id="bl-people" class="bl-people"></div>
+    </aside>
+  </div>
 </section>
 
 <script>
@@ -223,15 +245,61 @@
       if (h === 'account') return renderAccount();
       return renderList();
     }
+    // --- members sidebar + presence ---
+    function renderPeople(d) {
+      var people = (d && d.people) || [];
+      var oc = document.getElementById('bl-online'); if (oc) oc.textContent = ((d && d.online) || 0) + ' online';
+      var box = document.getElementById('bl-people'); if (!box) return;
+      if (!people.length) { box.innerHTML = '<p class="bl-people-empty">No members yet.</p>'; return; }
+      box.innerHTML = people.map(function (p) {
+        return '<div class="bl-person" title="' + esc(p.login) + (p.online ? ' · online' : ' · offline') + '">' +
+          '<span class="bl-person-av">' + avatar(p.avatar, p.login, 'bl-av-xs') + '<span class="bl-dot ' + (p.online ? 'on' : 'off') + '"></span></span>' +
+          '<span class="bl-person-name">' + esc(p.login) + '</span></div>';
+      }).join('');
+    }
+    function loadPeople() { jget('/blog/people').then(function (r) { if (r.ok) renderPeople(r.j); }); }
+    function heartbeat() { if (tok()) jpost('/blog/seen', {}); }
+
     window.addEventListener('hashchange', route);
-    refreshMe().then(route);
+    refreshMe().then(function () { route(); heartbeat(); });
+    loadPeople();
+    setInterval(loadPeople, 45000);
+    setInterval(heartbeat, 60000);
   })();
 </script>
 
 <style is:global>
-  .bl { position: relative; max-width: 980px; margin: 26px auto 70px; padding: 0 24px; }
+  .bl { position: relative; max-width: 1340px; margin: 26px auto 70px; padding: 0 28px; }
   .bl-aura { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 80%; height: 320px;
     background: radial-gradient(60% 100% at 50% 0%, rgba(122,233,184,0.16), transparent 70%); filter: blur(22px); pointer-events: none; z-index: 0; }
+  .bl-wrap { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0,1fr) 290px; gap: 30px; align-items: start; }
+  .bl-main { min-width: 0; }
+  .bl-side { position: sticky; top: 18px; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px; background: rgba(255,255,255,0.02); }
+  .bl-side-h { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent-text); margin-bottom: 14px; }
+  .bl-online { font-size: 11px; color: #46d97f; letter-spacing: 0; text-transform: none; }
+  .bl-people { display: flex; flex-direction: column; gap: 9px; max-height: 72vh; overflow-y: auto; }
+  .bl-people-empty { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); }
+  .bl-person { display: flex; align-items: center; gap: 9px; }
+  .bl-person-av { position: relative; flex: 0 0 auto; display: inline-flex; }
+  .bl-av-xs { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+  .bl-av-xs.bl-av-ph { font-size: 12px; }
+  .bl-dot { position: absolute; right: -2px; bottom: -2px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #0c0c0e; }
+  .bl-dot.on { background: #46d97f; box-shadow: 0 0 6px rgba(70,217,127,0.7); }
+  .bl-dot.off { background: #e05a5a; }
+  .bl-person-name { font-family: var(--font-mono); font-size: 12px; color: #cdd2da; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bl-rules { margin-top: 18px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: rgba(255,255,255,0.02); }
+  .bl-rules > summary { cursor: pointer; padding: 12px 16px; font-family: var(--font-mono); font-size: 13px; color: var(--accent-text); list-style: none; }
+  .bl-rules > summary::-webkit-details-marker { display: none; }
+  .bl-rules-in { padding: 2px 18px 16px; font-family: var(--font-serif); color: var(--text-dim); font-size: 14px; line-height: 1.65; }
+  .bl-rules-in ul { margin: 8px 0; padding-left: 18px; } .bl-rules-in li { margin: 4px 0; }
+  .bl-rules-in b { color: #fff; } .bl-rules-in p { margin: 8px 0; }
+  .bl-rules-mini { font-size: 12px; color: var(--text-mute); }
+  @media (max-width: 900px) {
+    .bl-wrap { grid-template-columns: 1fr; }
+    .bl-side { position: static; }
+    .bl-people { flex-direction: row; flex-wrap: wrap; max-height: none; }
+    .bl-person-name { display: none; }
+  }
   .bl-hero { position: relative; z-index: 1; margin-bottom: 26px; }
   .bl-kicker { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-text); }
   .bl-h1 { margin: 10px 0 14px; font-family: var(--font-display); font-weight: 800; font-size: clamp(40px,6vw,66px); color: #fff; line-height: 1; }

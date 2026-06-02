@@ -32,7 +32,7 @@
     function load() {
       try { sessionStorage.setItem('brt_admin_key', keyEl.value.trim()); } catch (_) {}
       msg.textContent = 'Loading…';
-      Promise.all([jget('/blog/admin/users'), jget('/blog/articles')]).then(function (res) {
+      Promise.all([jget('/blog/admin/users'), jget('/blog/articles?all=1')]).then(function (res) {
         if (!res[0].ok) { msg.textContent = res[0].status === 401 ? 'Wrong admin key.' : 'Error'; root.innerHTML = ''; return; }
         msg.textContent = '';
         render(res[0].j.users || [], res[1].j.articles || []);
@@ -58,10 +58,11 @@
 
       h += '<h2 class="ba-h2">Articles</h2><div class="ba-arts">';
       h += arts.map(function (a) {
-        return '<div class="ba-art">' +
-          '<div class="ba-art-i"><b>' + esc(a.title) + '</b>' + (a.demo ? ' <span class="ba-tag">DEMO</span>' : '') +
+        return '<div class="ba-art' + (a.hidden ? ' ba-hidden' : '') + '">' +
+          '<div class="ba-art-i"><b>' + esc(a.title) + '</b>' + (a.demo ? ' <span class="ba-tag">DEMO</span>' : '') + (a.hidden ? ' <span class="ba-tag ba-tag-off">HIDDEN</span>' : '') +
             '<span class="ba-art-m">' + esc(a.authorLogin) + ' · ' + esc(a.lang) + ' · ' + fmt(a.points) + ' pts</span></div>' +
           '<div class="ba-actions">' +
+            '<button class="ba-mini" data-hide="' + a.aid + '" data-act="' + (a.hidden ? 'unhide' : 'hide') + '">' + (a.hidden ? 'Activate' : 'Deactivate') + '</button>' +
             '<button class="ba-mini" data-demo="' + a.aid + '" data-act="' + (a.demo ? 'undemo' : 'demo') + '">' + (a.demo ? 'Unmark demo' : 'Mark demo') + '</button>' +
             '<button class="ba-mini ba-del" data-delart="' + a.aid + '">Delete</button>' +
           '</div></div>';
@@ -78,6 +79,9 @@
       root.querySelectorAll('[data-deluser]').forEach(function (b) { b.addEventListener('click', function () {
         if (!confirm('Delete this user permanently?')) return;
         jpost('/blog/admin/user', { uid: b.getAttribute('data-deluser'), action: 'delete' }).then(function (r) { if (r.ok) load(); else alert(r.j.error || 'Error'); });
+      }); });
+      root.querySelectorAll('[data-hide]').forEach(function (b) { b.addEventListener('click', function () {
+        jpost('/blog/admin/article', { aid: b.getAttribute('data-hide'), action: b.getAttribute('data-act') }).then(function (r) { if (r.ok) load(); else alert(r.j.error || 'Error'); });
       }); });
       root.querySelectorAll('[data-demo]').forEach(function (b) { b.addEventListener('click', function () {
         jpost('/blog/admin/article', { aid: b.getAttribute('data-demo'), action: b.getAttribute('data-act') }).then(function (r) { if (r.ok) load(); else alert(r.j.error || 'Error'); });
@@ -119,4 +123,6 @@
   .ba-art-i { font-family: var(--font-serif); color: #fff; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
   .ba-art-m { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }
   .ba-tag { font-family: var(--font-mono); font-size: 9px; color: #ffcf5d; border: 1px solid rgba(255,207,93,0.5); border-radius: 4px; padding: 1px 5px; }
+  .ba-tag-off { color: #e08585; border-color: rgba(220,90,90,0.5); }
+  .ba-hidden { opacity: 0.55; }
 </style>

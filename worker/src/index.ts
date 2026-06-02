@@ -535,8 +535,9 @@ type BUser = {
 };
 type Article = {
   aid: string; uid: string; authorLogin: string; authorAvatar: string;
-  lang: string; title: string; body: string; points: number; demo: boolean; at: string;
+  lang: string; title: string; body: string; points: number; demo: boolean; hidden: boolean; at: string;
 };
+const ONLINE_TTL = 90; // seconds a user counts as "online" after a heartbeat
 
 function hex(buf: ArrayBuffer): string {
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
@@ -569,7 +570,7 @@ function pubUser(u: BUser) {
   return { uid: u.uid, login: u.login, email: u.email, avatar: u.avatar, ton: u.ton, earned: u.earned, paid: u.paid, unpaid: u.earned - u.paid };
 }
 function pubArticle(a: Article, full = false) {
-  const o: any = { aid: a.aid, authorLogin: a.authorLogin, authorAvatar: a.authorAvatar, lang: a.lang, title: a.title, points: a.points, brtp: a.points * BLOG_AUTHOR_REWARD, demo: a.demo, at: a.at };
+  const o: any = { aid: a.aid, authorLogin: a.authorLogin, authorAvatar: a.authorAvatar, lang: a.lang, title: a.title, points: a.points, brtp: a.points * BLOG_AUTHOR_REWARD, demo: a.demo, hidden: !!a.hidden, at: a.at };
   o.body = full ? a.body : a.body.slice(0, 200);
   return o;
 }
@@ -963,6 +964,23 @@ export default {
         const u = await blogUser(req, env); if (!u) return jsonRes(headers, { error: 'unauthorized' }, 401);
         return jsonRes(headers, { user: pubUser(u) });
       }
+      if (url.pathname === '/blog/seen' && req.method === 'POST') {
+        const u = await blogUser(req, env); if (!u) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        await env.STATS_KV.put(`bonline:${BLOG_VER}:${u.uid}`, '1', { expirationTtl: ONLINE_TTL });
+        return jsonRes(headers, { ok: true });
+      }
+      if (url.pathname === '/blog/people' && req.method === 'GET') {
+        const onlineKeys = await listAll(env.STATS_KV, `bonline:${BLOG_VER}:`);
+        const online = new Set(onlineKeys.map((k) => k.name.split(':').pop()));
+        const ukeys = await listAll(env.STATS_KV, `buser:${BLOG_VER}:`);
+        const out: any[] = []; const BATCH = 50;
+        for (let i = 0; i < ukeys.length; i += BATCH) {
+          const vals = await Promise.all(ukeys.slice(i, i + BATCH).map((kk) => env.STATS_KV.get(kk.name)));
+          for (const raw of vals) { if (!raw) continue; try { const u = JSON.parse(raw) as BUser; if (u.banned) continue; out.push({ login: u.login, avatar: u.avatar, online: online.has(u.uid) }); } catch { /* skip */ } }
+        }
+        out.sort((a, b) => ((b.online ? 1 : 0) - (a.online ? 1 : 0)) || a.login.localeCompare(b.login));
+        return jsonRes(headers, { count: out.length, online: online.size, people: out.slice(0, 200) }, 200);
+      }
       if (url.pathname === '/blog/account' && req.method === 'POST') {
         const u = await blogUser(req, env); if (!u) return jsonRes(headers, { error: 'unauthorized' }, 401);
         let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
@@ -973,7 +991,9 @@ export default {
       }
       if (url.pathname === '/blog/articles' && req.method === 'GET') {
         const lang = url.searchParams.get('lang') || '';
+        const showAll = url.searchParams.get('all') === '1' && adminOK(req, env);
         let arts = await listArticles(env);
+        if (!showAll) arts = arts.filter((a) => !a.hidden);
         if (BLOG_LANGS.has(lang)) arts = arts.filter((a) => a.lang === lang);
         arts.sort((x, y) => (y.points - x.points) || (x.at < y.at ? 1 : x.at > y.at ? -1 : 0));
         return jsonRes(headers, { count: arts.length, articles: arts.slice(0, 300).map((a) => pubArticle(a, false)) });
@@ -995,7 +1015,7 @@ export default {
         const title = clampStr(b.title, 200), body = clampStr(b.body, 20000);
         if (!title || body.length < 10) return jsonRes(headers, { error: 'title and body (min 10 chars) required' }, 400);
         const aid = randHex(8);
-        const a: Article = { aid, uid: u.uid, authorLogin: u.login, authorAvatar: u.avatar, lang, title, body, points: 0, demo: false, at: new Date().toISOString() };
+        const a: Article = { aid, uid: u.uid, authorLogin: u.login, authorAvatar: u.avatar, lang, title, body, points: 0, demo: false, hidden: false, at: new Date().toISOString() };
         await env.STATS_KV.put(`bart:${BLOG_VER}:${aid}`, JSON.stringify(a));
         return jsonRes(headers, { ok: true, aid });
       }
@@ -1078,7 +1098,11 @@ export default {
         if (!raw) return jsonRes(headers, { error: 'not found' }, 404);
         const a = JSON.parse(raw) as Article;
         if (action === 'delete') { await env.STATS_KV.delete(k); return jsonRes(headers, { ok: true, deleted: true }); }
-        if (action === 'demo') a.demo = true; else if (action === 'undemo') a.demo = false; else return jsonRes(headers, { error: 'bad action' }, 400);
+        if (action === 'demo') a.demo = true;
+        else if (action === 'undemo') a.demo = false;
+        else if (action === 'hide') a.hidden = true;
+        else if (action === 'unhide') a.hidden = false;
+        else return jsonRes(headers, { error: 'bad action' }, 400);
         await env.STATS_KV.put(k, JSON.stringify(a));
         return jsonRes(headers, { ok: true });
       }
