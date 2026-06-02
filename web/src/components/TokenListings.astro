@@ -22,6 +22,12 @@ const T = {
   tg: 'Telegram URL (optional)', x: 'X / Twitter URL (optional)',
   buy_l: 'Buy tax %', sell_l: 'Sell tax %', holders_l: 'Holders %',
   key: 'Admin key', save_key: 'Save key',
+  submit_title: '➕ Add your token', submit_lede: 'Submit your TON token for the TAX board. Reviewed before it goes live.',
+  s_name: 'Token name *', s_ticker: 'Ticker * (e.g. BRT)', s_ca: 'Contract address (CA) *', s_tg: 'Telegram * (https://t.me/…)',
+  s_web: 'Website (optional)', s_x: 'X / Twitter (optional)', s_created: 'Token created (e.g. 2026-05-26)',
+  s_buy: 'Tax BUY %', s_sell: 'Tax SELL %', s_holders: 'Holders %', s_chart: 'Chart link (GeckoTerminal / DexScreener)',
+  s_btn: 'Submit for review', s_ok: 'Submitted! Pending review — thanks 🙌',
+  pending_h: 'Pending submissions', approve: 'Approve', reject: 'Reject',
 };
 ---
 
@@ -31,6 +37,34 @@ const T = {
     <h1>{T.h1}</h1>
     <p class="lede">{T.lede}</p>
   </header>
+
+  <details class="admin-box submit-box" id="submit-box">
+    <summary>{T.submit_title}</summary>
+    <div class="admin-inner">
+      <p class="submit-lede">{T.submit_lede}</p>
+      <div class="admin-row">
+        <input type="text" id="s-name" placeholder={T.s_name} autocomplete="off" />
+        <input type="text" id="s-ticker" placeholder={T.s_ticker} autocomplete="off" />
+      </div>
+      <input type="text" id="s-ca" placeholder={T.s_ca} autocomplete="off" />
+      <div class="admin-row">
+        <input type="text" id="s-tg" placeholder={T.s_tg} autocomplete="off" />
+        <input type="text" id="s-web" placeholder={T.s_web} autocomplete="off" />
+      </div>
+      <div class="admin-row">
+        <input type="text" id="s-x" placeholder={T.s_x} autocomplete="off" />
+        <input type="text" id="s-created" placeholder={T.s_created} autocomplete="off" />
+      </div>
+      <div class="admin-row">
+        <input type="text" id="s-buy" inputmode="decimal" placeholder={T.s_buy} autocomplete="off" />
+        <input type="text" id="s-sell" inputmode="decimal" placeholder={T.s_sell} autocomplete="off" />
+        <input type="text" id="s-holders" inputmode="decimal" placeholder={T.s_holders} autocomplete="off" />
+      </div>
+      <input type="text" id="s-chart" placeholder={T.s_chart} autocomplete="off" />
+      <button type="button" id="s-submit" class="btn-add">{T.s_btn}</button>
+      <p class="adm-status" id="s-status" hidden></p>
+    </div>
+  </details>
 
   <details class="admin-box" id="admin-box">
     <summary>{T.admin}</summary>
@@ -55,6 +89,7 @@ const T = {
       </div>
       <button type="button" id="adm-add" class="btn-add">{T.add}</button>
       <p class="adm-status" id="adm-status" hidden></p>
+      <div class="adm-pending" id="adm-pending"></div>
     </div>
   </details>
 
@@ -226,7 +261,7 @@ const T = {
     if (adminKey()) keyInput.value = adminKey();
     document.getElementById('adm-savekey').addEventListener('click', function () {
       try { sessionStorage.setItem('brt_admin_key', keyInput.value.trim()); } catch (_) {}
-      var s = document.getElementById('adm-status'); s.textContent = 'Key saved for this session.'; s.hidden = false; load();
+      var s = document.getElementById('adm-status'); s.textContent = 'Key saved for this session.'; s.hidden = false; load(); loadPending();
     });
     document.getElementById('adm-add').addEventListener('click', function () {
       var s = document.getElementById('adm-status');
@@ -256,6 +291,47 @@ const T = {
         .catch(function () { s.textContent = 'Network error.'; });
     });
 
+    // public submit form
+    function val(id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }
+    var sBtn = document.getElementById('s-submit');
+    if (sBtn) sBtn.addEventListener('click', function () {
+      var s = document.getElementById('s-status'); s.hidden = false; s.textContent = 'Submitting…';
+      fetch(api + '/listing/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        network: net, name: val('s-name'), ticker: val('s-ticker'), ca: val('s-ca'), telegram: val('s-tg'),
+        website: val('s-web'), x: val('s-x'), created: val('s-created'), buy: val('s-buy'), sell: val('s-sell'), holders: val('s-holders'), chart: val('s-chart') }) })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j, status: r.status }; }); })
+        .then(function (res) {
+          if (res.ok && res.j.ok) { s.textContent = T.s_ok; ['s-name', 's-ticker', 's-ca', 's-tg', 's-web', 's-x', 's-created', 's-buy', 's-sell', 's-holders', 's-chart'].forEach(function (id) { var e = document.getElementById(id); if (e) e.value = ''; }); }
+          else { s.textContent = 'Error: ' + ((res.j && res.j.error) || res.status); }
+        })
+        .catch(function () { s.textContent = 'Network error.'; });
+    });
+
+    // admin: pending submissions
+    function loadPending() {
+      var box = document.getElementById('adm-pending'); var k = adminKey(); if (!box) return; if (!k) { box.innerHTML = ''; return; }
+      fetch(api + '/listing/pending?network=' + encodeURIComponent(net), { headers: { 'X-Admin-Key': k } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          var arr = (j && j.listings) || [];
+          if (!arr.length) { box.innerHTML = '<p class="pend-empty">No pending submissions.</p>'; return; }
+          box.innerHTML = '<div class="pend-h">' + esc(T.pending_h) + ' (' + arr.length + ')</div>' + arr.map(function (l) {
+            return '<div class="pend-it"><div class="pend-i"><b>' + esc(l.label || '—') + '</b> $' + esc(l.ticker || '') +
+              '<span class="pend-m">' + esc(shortAddr(l.ca)) + ' · Buy ' + esc(l.buy || '?') + '% Sell ' + esc(l.sell || '?') + '% Hold ' + esc(l.holders || '?') + '%</span></div>' +
+              '<div class="pend-a"><button class="btn-mini pend-ok" data-ca="' + esc(l.ca) + '">' + esc(T.approve) + '</button>' +
+              '<button class="btn-mini pend-no" data-ca="' + esc(l.ca) + '">' + esc(T.reject) + '</button></div></div>';
+          }).join('');
+          box.querySelectorAll('.pend-ok').forEach(function (b) { b.addEventListener('click', function () {
+            fetch(api + '/listing/approve', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey() }, body: JSON.stringify({ ca: b.getAttribute('data-ca'), network: net }) }).then(function (r) { if (r.ok) { loadPending(); load(); } else alert('Approve failed'); });
+          }); });
+          box.querySelectorAll('.pend-no').forEach(function (b) { b.addEventListener('click', function () {
+            if (!confirm('Reject & delete this submission?')) return;
+            fetch(api + '/listing/remove', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey() }, body: JSON.stringify({ ca: b.getAttribute('data-ca'), network: net }) }).then(function (r) { if (r.ok) loadPending(); else alert('Reject failed'); });
+          }); });
+        });
+    }
+    if (adminKey()) loadPending();
+
     load();
   })();
 </script>
@@ -280,6 +356,8 @@ const T = {
   .btn-add { align-self: flex-start; padding: 12px 26px; }
   .btn-mini:hover, .btn-add:hover { background: var(--accent-soft); color: var(--accent); }
   .adm-status { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); margin: 4px 0 0; }
+  .submit-box > summary { color: var(--accent-text); }
+  .submit-lede { font-family: var(--font-serif); font-size: 13px; color: var(--text-dim); margin: 0 0 6px; }
 
   /* board grid */
   .board-state { font-family: var(--font-mono); font-size: 14px; color: var(--text-mute); padding: 24px 0; }
@@ -354,6 +432,18 @@ const T = {
     border: 1px solid rgba(122,233,184,0.4); background: rgba(122,233,184,0.06); transition: all 0.16s; }
   .bk-dex:hover { background: rgba(122,233,184,0.14); color: #7ae9b8; transform: translateY(-1px); }
   .bk-dex-ar { opacity: 0.7; }
+  .adm-pending { margin-top: 8px; }
+  .pend-h { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-text); margin: 12px 0 6px; }
+  .pend-empty { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); margin: 8px 0; }
+  .pend-it { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; }
+  .pend-i { font-family: var(--font-mono); font-size: 13px; color: #fff; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .pend-m { font-size: 10px; color: var(--text-mute); }
+  .pend-a { display: flex; gap: 6px; flex: 0 0 auto; }
+  .pend-ok, .pend-no { cursor: pointer; font-family: var(--font-mono); font-size: 10px; font-weight: 700; padding: 6px 12px; border-radius: 6px; border: 1px solid; background: transparent; }
+  .pend-ok { color: #7ae9b8; border-color: rgba(122,233,184,0.5); }
+  .pend-ok:hover { background: rgba(122,233,184,0.12); }
+  .pend-no { color: #e08585; border-color: rgba(220,90,90,0.5); }
+  .pend-no:hover { background: rgba(220,90,90,0.12); }
 
   .bk-foot { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .bk-addr { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }

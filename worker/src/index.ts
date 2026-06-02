@@ -388,13 +388,18 @@ const LIST_MAX = 200;
 
 type Listing = {
   ca: string;
-  label: string;
+  label: string;        // token name
+  ticker: string;       // symbol
   note: string;
   telegram: string;
   x: string;
+  website: string;
+  created: string;      // when the token was created (free text, e.g. 2026-05-26)
+  chart: string;        // chart URL provided by the submitter
   buy: string;
   sell: string;
   holders: string;
+  status: 'pending' | 'approved';
   network: 'testnet' | 'mainnet';
   at: string;
 };
@@ -421,21 +426,26 @@ function adminOK(req: Request, env: Env): boolean {
   return diff === 0;
 }
 
-function validateListing(body: any): Listing | { error: string } {
+function validateListing(body: any, status: 'pending' | 'approved'): Listing | { error: string } {
   if (!body || typeof body !== 'object') return { error: 'invalid body' };
   const ca = clampStr(body.ca, 60);
-  if (!TON_ADDR_RE.test(ca)) return { error: 'invalid ca' };
+  if (!TON_ADDR_RE.test(ca)) return { error: 'invalid contract address' };
   const network = String(body.network ?? 'mainnet');
   if (!TOK_NET.has(network)) return { error: 'invalid network' };
   return {
     ca,
-    label: clampStr(body.label, 64),
+    label: clampStr(body.label ?? body.name, 64),
+    ticker: clampStr(body.ticker, 16).replace(/^\$+/, ''),
     note: clampStr(body.note, 200),
     telegram: sanUrl(body.telegram),
     x: sanUrl(body.x),
+    website: sanUrl(body.website),
+    created: clampStr(body.created, 40),
+    chart: sanUrl(body.chart),
     buy: taxPct(body.buy),
     sell: taxPct(body.sell),
     holders: taxPct(body.holders),
+    status,
     network: network as 'testnet' | 'mainnet',
     at: new Date().toISOString(),
   };
@@ -451,7 +461,8 @@ async function listListings(env: Env, network: string): Promise<Listing[]> {
     for (const raw of vals) {
       if (!raw) continue;
       try {
-        out.push(JSON.parse(raw) as Listing);
+        const l = JSON.parse(raw) as Listing;
+        if (l.status !== 'pending') out.push(l); // board = approved (legacy entries lack status)
       } catch {
         /* skip */
       }
@@ -781,7 +792,7 @@ export default {
             headers: { ...headers, 'Content-Type': 'application/json' },
           });
         }
-        const parsed = validateListing(body);
+        const parsed = validateListing(body, 'approved');
         if ('error' in parsed) {
           return new Response(JSON.stringify(parsed), {
             status: 400,
@@ -861,6 +872,55 @@ export default {
             'Cache-Control': 'public, max-age=15',
           },
         });
+      }
+
+      if (url.pathname === '/listing/submit' && req.method === 'POST') {
+        const ip = req.headers.get('CF-Connecting-IP') ?? '0.0.0.0';
+        const day = utcParts().day;
+        const rlKey = `lsub:${LIST_VERSION}:${day}:${ip}`;
+        const cnt = parseInt((await env.STATS_KV.get(rlKey)) || '0', 10);
+        if (cnt >= 5) return jsonRes(headers, { error: 'daily submission limit reached, try tomorrow' }, 429);
+        let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
+        const parsed = validateListing(b, 'pending');
+        if ('error' in parsed) return jsonRes(headers, parsed, 400);
+        if (!parsed.label) return jsonRes(headers, { error: 'token name required' }, 400);
+        if (!parsed.ticker) return jsonRes(headers, { error: 'ticker required' }, 400);
+        if (!parsed.telegram) return jsonRes(headers, { error: 'Telegram required' }, 400);
+        const key = `list:${LIST_VERSION}:${parsed.network}:${parsed.ca}`;
+        const existing = await env.STATS_KV.get(key);
+        if (existing) {
+          let st = 'approved'; try { st = (JSON.parse(existing) as Listing).status; } catch { /* */ }
+          return jsonRes(headers, { error: st === 'pending' ? 'already submitted — pending review' : 'already listed' }, 409);
+        }
+        await env.STATS_KV.put(key, JSON.stringify(parsed));
+        await env.STATS_KV.put(rlKey, String(cnt + 1), { expirationTtl: 60 * 60 * 48 });
+        return jsonRes(headers, { ok: true, pending: true });
+      }
+      if (url.pathname === '/listing/pending' && req.method === 'GET') {
+        if (!adminOK(req, env)) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        const netParam = url.searchParams.get('network') ?? 'mainnet';
+        const network = TOK_NET.has(netParam) ? netParam : 'mainnet';
+        const keys = await listAll(env.STATS_KV, `list:${LIST_VERSION}:${network}:`);
+        const out: Listing[] = []; const BATCH = 50;
+        for (let i = 0; i < keys.length; i += BATCH) {
+          const vals = await Promise.all(keys.slice(i, i + BATCH).map((kk) => env.STATS_KV.get(kk.name)));
+          for (const raw of vals) { if (!raw) continue; try { const l = JSON.parse(raw) as Listing; if (l.status === 'pending') out.push(l); } catch { /* skip */ } }
+        }
+        out.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+        return jsonRes(headers, { count: out.length, listings: out });
+      }
+      if (url.pathname === '/listing/approve' && req.method === 'POST') {
+        if (!adminOK(req, env)) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
+        const ca = clampStr(b.ca, 60), netRaw = String(b.network ?? 'mainnet');
+        if (!TON_ADDR_RE.test(ca) || !TOK_NET.has(netRaw)) return jsonRes(headers, { error: 'invalid ca/network' }, 400);
+        const key = `list:${LIST_VERSION}:${netRaw}:${ca}`, raw = await env.STATS_KV.get(key);
+        if (!raw) return jsonRes(headers, { error: 'not found' }, 404);
+        const l = JSON.parse(raw) as Listing; const wasPending = l.status === 'pending'; l.status = 'approved';
+        await env.STATS_KV.put(key, JSON.stringify(l));
+        await env.STATS_KV.delete(`list:${LIST_VERSION}:cache:${netRaw}`);
+        if (wasPending) { try { await announceListing(env, l); } catch { /* */ } }
+        return jsonRes(headers, { ok: true });
       }
 
       // ---------- BLOG ----------

@@ -96,9 +96,12 @@
       var links = '<div class="td-pills">';
       if (listing && listing.telegram) links += pill(listing.telegram, 'tg', 'Telegram');
       if (listing && listing.x) links += pill(listing.x, 'x', 'X');
+      if (listing && listing.website) links += pill(listing.website, 'web', 'Website');
+      if (listing && listing.chart) links += pill(listing.chart, 'dex', 'Chart');
       if (m && m.link) links += pill(m.link, 'dex', m.source);
       links += pill('https://tonviewer.com/' + encodeURIComponent(ca), 'view', 'Tonviewer');
       links += '</div>';
+      if (listing && listing.created) links += '<div class="td-created">Token created: <b>' + esc(listing.created) + '</b></div>';
       root.innerHTML = head + stats + tax + chart + links;
       if (POOL) { document.querySelectorAll('.td-tf').forEach(function (b) { b.addEventListener('click', function () { drawChart(b.getAttribute('data-tf')); }); }); drawChart('hour'); }
     }
@@ -173,6 +176,7 @@
   .td-pill:hover { transform: translateY(-2px); background: rgba(255,255,255,0.09); color: #fff; }
   .td-pill-tg:hover { color: #5fb8ee; border-color: rgba(42,160,233,0.5); }
   .td-pill-dex:hover { color: #7ae9b8; border-color: rgba(122,233,184,0.5); }
+  .td-created { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); margin-top: 14px; } .td-created b { color: #d6dae0; }
 
   @media (max-width: 560px) { .td-stat { flex: 1 1 44%; } }
 </style>
