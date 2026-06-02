@@ -129,7 +129,7 @@ def tg_api(token: str, method: str, payload: dict) -> dict | None:
         return None
 
 
-def tg_send(token: str, chat_id: int | str, text: str, *, reply_to: int | None = None) -> dict | None:
+def tg_send(token: str, chat_id: int | str, text: str, *, reply_to: int | None = None, reply_markup: dict | None = None) -> dict | None:
     payload = {
         "chat_id": chat_id,
         "text": text,
@@ -139,6 +139,8 @@ def tg_send(token: str, chat_id: int | str, text: str, *, reply_to: int | None =
     if reply_to:
         payload["reply_to_message_id"] = reply_to
         payload["allow_sending_without_reply"] = "true"
+    if reply_markup:
+        payload["reply_markup"] = json.dumps(reply_markup)
     return tg_api(token, "sendMessage", payload)
 
 
@@ -580,6 +582,7 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
         rec = get_user(state, from_user["id"], display_name(from_user))
 
         # Per-command handlers + replies
+        markup = None
         if cmd in ("start", "help"):
             reply = cmd_help()
         elif cmd == "news":
@@ -604,6 +607,12 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
             reply = cmd_points(rec)
         elif cmd == "leaderboard":
             reply = cmd_leaderboard(state)
+        elif cmd in ("tax", "app", "tokens"):
+            reply = "📊 <b>BRAINROT TAX board</b> — live TON token charts, market cap and buy/sell/holders tax."
+            if chat.get("type") == "private":
+                markup = {"inline_keyboard": [[{"text": "📊 Open TAX board", "web_app": {"url": SITE + "/app"}}]]}
+            else:
+                reply += f'\nOpen it from the bot menu button, or here: {SITE}/app'
         else:
             # Unknown command — keep silent in groups to avoid noise,
             # respond with a hint in private chats.
@@ -614,7 +623,7 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
 
         granted = award_points(rec, points_for_command(cmd))
 
-        send_resp = tg_send(token, chat["id"], reply, reply_to=msg.get("message_id"))
+        send_resp = tg_send(token, chat["id"], reply, reply_to=msg.get("message_id"), reply_markup=markup)
         ok = bool(send_resp and send_resp.get("ok"))
         print(f"    -> sent={ok} ({len(reply)} chars, +{granted} pts)")
         if send_resp and not send_resp.get("ok"):
