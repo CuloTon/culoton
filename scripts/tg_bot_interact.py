@@ -612,7 +612,11 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
             if chat.get("type") == "private":
                 markup = {"inline_keyboard": [[{"text": "📊 Open TAX board", "web_app": {"url": SITE + "/app"}}]]}
             else:
-                reply += f'\nOpen it from the bot menu button, or here: {SITE}/app'
+                # web_app inline buttons aren't allowed in groups → use the
+                # direct-link Mini App (t.me/<bot>/<shortname>), which opens
+                # the Mini App in-Telegram from any chat. Requires the Mini App
+                # to be registered in BotFather (short name: tax).
+                markup = {"inline_keyboard": [[{"text": "📊 Open TAX board", "url": "https://t.me/brainrot_info_bot/tax"}]]}
         else:
             # Unknown command — keep silent in groups to avoid noise,
             # respond with a hint in private chats.
