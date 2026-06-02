@@ -103,31 +103,7 @@ function fmt(d: Date) {
       </section>
     )}
 
-    {latestBlog.length > 0 && (
-      <section class="blog-section">
-        <div class="section-title">
-          <h2>{t.blog_section_h}</h2>
-          <a class="meta-link" href={localizedPath(locale, '/blog')}>{t.blog_section_view_all} →</a>
-        </div>
-        <p class="blog-section-blurb">{t.blog_section_blurb}</p>
-        <div class="blog-cards">
-          {latestBlog.map((entry) => {
-            const bSlug = stripLocaleSlugFromId(entry.id);
-            const bDate = entry.data.date.toLocaleDateString(DATE_LOCALE[locale], {
-              year: 'numeric', month: 'short', day: 'numeric',
-            });
-            return (
-              <a class={`blog-card kind-${entry.data.kind}`} href={localizedPath(locale, `/blog/${bSlug}`)}>
-                <span class="kind-pill">{t.blog_kind_label(entry.data.kind)}</span>
-                <h3>{entry.data.title}</h3>
-                <p>{entry.data.summary}</p>
-                <span class="blog-card-date">{bDate}</span>
-              </a>
-            );
-          })}
-        </div>
-      </section>
-    )}
+    {/* old roundup blog section removed — News is the single news source; Blog tab is now the community blog */}
 
     {rest.length > 0 && (
       <>
