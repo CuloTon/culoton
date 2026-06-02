@@ -505,6 +505,74 @@ async function announceListing(env: Env, t: Listing): Promise<void> {
   }
 }
 
+// ===================== BLOG (BRTP economy) =====================
+// Community blog: email+password accounts, multilingual articles, one upvote
+// per user per article. Author +10 BRTP/point, voter +1 BRTP/vote (cap 20/day).
+// BRTP is an off-chain ledger settled manually to each user's TON address.
+const BLOG_VER = 'v1';
+const BLOG_LANGS = new Set(['en', 'ru', 'pl', 'de', 'es', 'uk']);
+const BLOG_AUTHOR_REWARD = 10;
+const BLOG_VOTER_REWARD = 1;
+const BLOG_DAILY_VOTE_CAP = 20;
+const SESSION_TTL = 60 * 60 * 24 * 30; // 30 days
+const LOGIN_RE = /^[A-Za-z0-9_-]{3,24}$/;
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+type BUser = {
+  uid: string; login: string; email: string; avatar: string; ton: string;
+  salt: string; hash: string; earned: number; paid: number; banned: boolean; at: string;
+};
+type Article = {
+  aid: string; uid: string; authorLogin: string; authorAvatar: string;
+  lang: string; title: string; body: string; points: number; demo: boolean; at: string;
+};
+
+function hex(buf: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+function randHex(n: number): string {
+  const b = new Uint8Array(n); crypto.getRandomValues(b);
+  return Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join('');
+}
+async function pbkdf2(pw: string, saltHex: string): Promise<string> {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveBits']);
+  const salt = Uint8Array.from((saltHex.match(/../g) || []).map((h) => parseInt(h, 16)));
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, key, 256);
+  return hex(bits);
+}
+function jsonRes(headers: HeadersInit, body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), { status, headers: { ...headers, 'Content-Type': 'application/json; charset=utf-8' } });
+}
+async function blogUser(req: Request, env: Env): Promise<BUser | null> {
+  const auth = req.headers.get('Authorization') || '';
+  const tok = auth.replace(/^Bearer\s+/i, '').trim();
+  if (!tok) return null;
+  const uid = await env.STATS_KV.get(`bsess:${BLOG_VER}:${tok}`);
+  if (!uid) return null;
+  const raw = await env.STATS_KV.get(`buser:${BLOG_VER}:${uid}`);
+  if (!raw) return null;
+  try { return JSON.parse(raw) as BUser; } catch { return null; }
+}
+function pubUser(u: BUser) {
+  return { uid: u.uid, login: u.login, email: u.email, avatar: u.avatar, ton: u.ton, earned: u.earned, paid: u.paid, unpaid: u.earned - u.paid };
+}
+function pubArticle(a: Article, full = false) {
+  const o: any = { aid: a.aid, authorLogin: a.authorLogin, authorAvatar: a.authorAvatar, lang: a.lang, title: a.title, points: a.points, brtp: a.points * BLOG_AUTHOR_REWARD, demo: a.demo, at: a.at };
+  o.body = full ? a.body : a.body.slice(0, 200);
+  return o;
+}
+async function listArticles(env: Env): Promise<Article[]> {
+  const keys = await listAll(env.STATS_KV, `bart:${BLOG_VER}:`);
+  const out: Article[] = [];
+  const BATCH = 50;
+  for (let i = 0; i < keys.length; i += BATCH) {
+    const vals = await Promise.all(keys.slice(i, i + BATCH).map((k) => env.STATS_KV.get(k.name)));
+    for (const raw of vals) { if (!raw) continue; try { out.push(JSON.parse(raw) as Article); } catch { /* skip */ } }
+  }
+  return out;
+}
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
@@ -793,6 +861,142 @@ export default {
             'Cache-Control': 'public, max-age=15',
           },
         });
+      }
+
+      // ---------- BLOG ----------
+      if (url.pathname === '/blog/register' && req.method === 'POST') {
+        let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
+        const login = clampStr(b.login, 24);
+        const email = clampStr(b.email, 120).toLowerCase();
+        const password = typeof b.password === 'string' ? b.password : '';
+        const avatar = sanUrl(b.avatar, 400);
+        const ton = clampStr(b.ton, 60);
+        if (!LOGIN_RE.test(login)) return jsonRes(headers, { error: 'login must be 3-24 chars (a-z, 0-9, _ -)' }, 400);
+        if (!EMAIL_RE.test(email)) return jsonRes(headers, { error: 'invalid email' }, 400);
+        if (password.length < 6) return jsonRes(headers, { error: 'password too short (min 6)' }, 400);
+        if (!TON_ADDR_RE.test(ton)) return jsonRes(headers, { error: 'invalid TON address' }, 400);
+        if (await env.STATS_KV.get(`bemail:${BLOG_VER}:${email}`)) return jsonRes(headers, { error: 'email already registered' }, 409);
+        if (await env.STATS_KV.get(`blogin:${BLOG_VER}:${login.toLowerCase()}`)) return jsonRes(headers, { error: 'login already taken' }, 409);
+        const uid = randHex(8), salt = randHex(16), hash = await pbkdf2(password, salt);
+        const u: BUser = { uid, login, email, avatar, ton, salt, hash, earned: 0, paid: 0, banned: false, at: new Date().toISOString() };
+        await env.STATS_KV.put(`buser:${BLOG_VER}:${uid}`, JSON.stringify(u));
+        await env.STATS_KV.put(`bemail:${BLOG_VER}:${email}`, uid);
+        await env.STATS_KV.put(`blogin:${BLOG_VER}:${login.toLowerCase()}`, uid);
+        const tok = randHex(24); await env.STATS_KV.put(`bsess:${BLOG_VER}:${tok}`, uid, { expirationTtl: SESSION_TTL });
+        return jsonRes(headers, { ok: true, token: tok, user: pubUser(u) });
+      }
+      if (url.pathname === '/blog/login' && req.method === 'POST') {
+        let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
+        const email = clampStr(b.email, 120).toLowerCase();
+        const password = typeof b.password === 'string' ? b.password : '';
+        const uid = await env.STATS_KV.get(`bemail:${BLOG_VER}:${email}`);
+        if (!uid) return jsonRes(headers, { error: 'wrong email or password' }, 401);
+        const raw = await env.STATS_KV.get(`buser:${BLOG_VER}:${uid}`);
+        if (!raw) return jsonRes(headers, { error: 'wrong email or password' }, 401);
+        const u = JSON.parse(raw) as BUser;
+        if (u.banned) return jsonRes(headers, { error: 'account banned' }, 403);
+        if ((await pbkdf2(password, u.salt)) !== u.hash) return jsonRes(headers, { error: 'wrong email or password' }, 401);
+        const tok = randHex(24); await env.STATS_KV.put(`bsess:${BLOG_VER}:${tok}`, uid, { expirationTtl: SESSION_TTL });
+        return jsonRes(headers, { ok: true, token: tok, user: pubUser(u) });
+      }
+      if (url.pathname === '/blog/me' && req.method === 'GET') {
+        const u = await blogUser(req, env); if (!u) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        return jsonRes(headers, { user: pubUser(u) });
+      }
+      if (url.pathname === '/blog/account' && req.method === 'POST') {
+        const u = await blogUser(req, env); if (!u) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
+        if (b.avatar !== undefined) u.avatar = sanUrl(b.avatar, 400);
+        if (b.ton !== undefined) { const t = clampStr(b.ton, 60); if (t && !TON_ADDR_RE.test(t)) return jsonRes(headers, { error: 'invalid TON address' }, 400); u.ton = t; }
+        await env.STATS_KV.put(`buser:${BLOG_VER}:${u.uid}`, JSON.stringify(u));
+        return jsonRes(headers, { ok: true, user: pubUser(u) });
+      }
+      if (url.pathname === '/blog/articles' && req.method === 'GET') {
+        const lang = url.searchParams.get('lang') || '';
+        let arts = await listArticles(env);
+        if (BLOG_LANGS.has(lang)) arts = arts.filter((a) => a.lang === lang);
+        arts.sort((x, y) => (y.points - x.points) || (x.at < y.at ? 1 : x.at > y.at ? -1 : 0));
+        return jsonRes(headers, { count: arts.length, articles: arts.slice(0, 300).map((a) => pubArticle(a, false)) });
+      }
+      if (url.pathname === '/blog/article' && req.method === 'GET') {
+        const id = clampStr(url.searchParams.get('id'), 32);
+        const raw = await env.STATS_KV.get(`bart:${BLOG_VER}:${id}`);
+        if (!raw) return jsonRes(headers, { error: 'not found' }, 404);
+        const a = JSON.parse(raw) as Article;
+        const u = await blogUser(req, env);
+        const voted = u ? !!(await env.STATS_KV.get(`bvote:${BLOG_VER}:${id}:${u.uid}`)) : false;
+        return jsonRes(headers, { article: pubArticle(a, true), voted, mine: !!(u && u.uid === a.uid) });
+      }
+      if (url.pathname === '/blog/article' && req.method === 'POST') {
+        const u = await blogUser(req, env); if (!u) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        if (u.banned) return jsonRes(headers, { error: 'banned' }, 403);
+        let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
+        const lang = String(b.lang || 'en'); if (!BLOG_LANGS.has(lang)) return jsonRes(headers, { error: 'invalid language' }, 400);
+        const title = clampStr(b.title, 200), body = clampStr(b.body, 20000);
+        if (!title || body.length < 10) return jsonRes(headers, { error: 'title and body (min 10 chars) required' }, 400);
+        const aid = randHex(8);
+        const a: Article = { aid, uid: u.uid, authorLogin: u.login, authorAvatar: u.avatar, lang, title, body, points: 0, demo: false, at: new Date().toISOString() };
+        await env.STATS_KV.put(`bart:${BLOG_VER}:${aid}`, JSON.stringify(a));
+        return jsonRes(headers, { ok: true, aid });
+      }
+      if (url.pathname === '/blog/vote' && req.method === 'POST') {
+        const u = await blogUser(req, env); if (!u) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        if (u.banned) return jsonRes(headers, { error: 'banned' }, 403);
+        let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
+        const aid = clampStr(b.aid, 32);
+        const k = `bart:${BLOG_VER}:${aid}`, raw = await env.STATS_KV.get(k);
+        if (!raw) return jsonRes(headers, { error: 'article not found' }, 404);
+        const a = JSON.parse(raw) as Article;
+        if (a.uid === u.uid) return jsonRes(headers, { error: 'cannot vote your own article' }, 403);
+        const vkey = `bvote:${BLOG_VER}:${aid}:${u.uid}`;
+        if (await env.STATS_KV.get(vkey)) return jsonRes(headers, { error: 'already voted', points: a.points }, 409);
+        const day = utcParts().day, dkey = `bvday:${BLOG_VER}:${u.uid}:${day}`;
+        const cnt = parseInt((await env.STATS_KV.get(dkey)) || '0', 10);
+        if (cnt >= BLOG_DAILY_VOTE_CAP) return jsonRes(headers, { error: 'daily vote limit reached (' + BLOG_DAILY_VOTE_CAP + ')' }, 429);
+        await env.STATS_KV.put(vkey, '1');
+        await env.STATS_KV.put(dkey, String(cnt + 1), { expirationTtl: 60 * 60 * 48 });
+        a.points += 1;
+        await env.STATS_KV.put(k, JSON.stringify(a));
+        if (!a.demo) {
+          const araw = await env.STATS_KV.get(`buser:${BLOG_VER}:${a.uid}`);
+          if (araw) { const au = JSON.parse(araw) as BUser; au.earned += BLOG_AUTHOR_REWARD; await env.STATS_KV.put(`buser:${BLOG_VER}:${a.uid}`, JSON.stringify(au)); }
+          u.earned += BLOG_VOTER_REWARD; await env.STATS_KV.put(`buser:${BLOG_VER}:${u.uid}`, JSON.stringify(u));
+        }
+        return jsonRes(headers, { ok: true, points: a.points, brtp: a.points * BLOG_AUTHOR_REWARD, earnedVoter: !a.demo ? BLOG_VOTER_REWARD : 0 });
+      }
+      if (url.pathname === '/blog/admin/users' && req.method === 'GET') {
+        if (!adminOK(req, env)) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        const keys = await listAll(env.STATS_KV, `buser:${BLOG_VER}:`);
+        const out: any[] = []; const BATCH = 50;
+        for (let i = 0; i < keys.length; i += BATCH) {
+          const vals = await Promise.all(keys.slice(i, i + BATCH).map((kk) => env.STATS_KV.get(kk.name)));
+          for (const raw of vals) { if (!raw) continue; try { const u = JSON.parse(raw) as BUser; out.push({ uid: u.uid, login: u.login, email: u.email, ton: u.ton, earned: u.earned, paid: u.paid, unpaid: u.earned - u.paid, banned: u.banned, at: u.at }); } catch { /* skip */ } }
+        }
+        out.sort((a, b) => (b.earned - b.paid) - (a.earned - a.paid));
+        return jsonRes(headers, { count: out.length, users: out });
+      }
+      if (url.pathname === '/blog/admin/payout' && req.method === 'POST') {
+        if (!adminOK(req, env)) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
+        const uid = clampStr(b.uid, 32), amount = Number(b.amount);
+        if (!isFinite(amount) || amount < 0) return jsonRes(headers, { error: 'bad amount' }, 400);
+        const raw = await env.STATS_KV.get(`buser:${BLOG_VER}:${uid}`);
+        if (!raw) return jsonRes(headers, { error: 'user not found' }, 404);
+        const u = JSON.parse(raw) as BUser; u.paid += amount;
+        await env.STATS_KV.put(`buser:${BLOG_VER}:${uid}`, JSON.stringify(u));
+        return jsonRes(headers, { ok: true, user: pubUser(u) });
+      }
+      if (url.pathname === '/blog/admin/article' && req.method === 'POST') {
+        if (!adminOK(req, env)) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
+        const aid = clampStr(b.aid, 32), action = String(b.action || '');
+        const k = `bart:${BLOG_VER}:${aid}`, raw = await env.STATS_KV.get(k);
+        if (!raw) return jsonRes(headers, { error: 'not found' }, 404);
+        const a = JSON.parse(raw) as Article;
+        if (action === 'delete') { await env.STATS_KV.delete(k); return jsonRes(headers, { ok: true, deleted: true }); }
+        if (action === 'demo') a.demo = true; else if (action === 'undemo') a.demo = false; else return jsonRes(headers, { error: 'bad action' }, 400);
+        await env.STATS_KV.put(k, JSON.stringify(a));
+        return jsonRes(headers, { ok: true });
       }
 
       return new Response('Not Found', { status: 404, headers });
