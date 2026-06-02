@@ -1,0 +1,35 @@
+name: TG set Mini App menu button
+
+# Manual: points the bot's chat menu button at the TAX Mini App (web_app).
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Mini App URL (https)'
+        required: false
+        default: 'https://brainrot-ton.fun/app'
+        type: string
+      text:
+        description: 'Menu button label'
+        required: false
+        default: 'TAX board'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  set:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: setChatMenuButton
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          URL: ${{ github.event.inputs.url }}
+          TEXT: ${{ github.event.inputs.text }}
+        run: |
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setChatMenuButton" \
+            -H "Content-Type: application/json" \
+            -d "{\"menu_button\":{\"type\":\"web_app\",\"text\":\"${TEXT}\",\"web_app\":{\"url\":\"${URL}\"}}}"
+          echo
