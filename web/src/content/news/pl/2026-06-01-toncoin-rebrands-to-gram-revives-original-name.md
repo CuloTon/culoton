@@ -1,7 +1,7 @@
 ---
 locale: pl
 title: "Toncoin zmienia nazwę na Gram — Durov przywraca pierwotną nazwę tokena"
-summary: "Założyciel Telegrama Pavel Durov ogłosił, że natywna moneta sieci wróci do nazwy „Gram" z białej księgi TON z 2018 roku. Token odbił na tej wiadomości, a sam blockchain zachowuje nazwę TON."
+summary: "Założyciel Telegrama Pavel Durov ogłosił, że natywna moneta sieci wróci do nazwy Gram z białej księgi TON z 2018 roku. Token odbił na tej wiadomości, a sam blockchain zachowuje nazwę TON."
 date: 2026-06-01T12:00:00Z
 source_name: "Decrypt"
 source_url: "https://decrypt.co"

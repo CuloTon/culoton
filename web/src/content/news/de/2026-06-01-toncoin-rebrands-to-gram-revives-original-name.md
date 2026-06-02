@@ -1,7 +1,7 @@
 ---
 locale: de
 title: "Toncoin wird zu Gram — Durov belebt den ursprünglichen Token-Namen wieder"
-summary: "Telegram-Gründer Pavel Durov kündigt an, dass die native Münze des Netzwerks zu „Gram" zurückkehrt — dem Namen aus dem TON-Whitepaper von 2018. Der Token legte auf die Nachricht zu, während die Blockchain selbst den Namen TON behält."
+summary: "Telegram-Gründer Pavel Durov kündigt an, dass die native Münze des Netzwerks zu Gram zurückkehrt — dem Namen aus dem TON-Whitepaper von 2018. Der Token legte auf die Nachricht zu, während die Blockchain selbst den Namen TON behält."
 date: 2026-06-01T12:00:00Z
 source_name: "Decrypt"
 source_url: "https://decrypt.co"
