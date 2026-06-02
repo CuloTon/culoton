@@ -5,6 +5,9 @@ interface Env {
   STATS_KV: KVNamespace;
   ALLOWED_ORIGIN?: string;
   POLL_IP_SALT?: string;
+  // Secret for the admin-curated token listing board (/listing/*).
+  // Set via: wrangler secret put ADMIN_KEY
+  ADMIN_KEY?: string;
 }
 
 const HEARTBEAT_TTL = 45;
@@ -29,7 +32,7 @@ function corsHeaders(req: Request, allowed: string): HeadersInit {
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Key',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
   };
@@ -371,6 +374,68 @@ async function listTokens(env: Env, network: string): Promise<TokenEntry[]> {
   return out.slice(0, TOK_MAX_LIST);
 }
 
+// === Admin-curated listing board — tokens picked by hand (/token page) ===
+// Distinct from the launch feed above: these are arbitrary TON jettons the
+// admin lists by contract address; market data (chart/mcap/volume) is fetched
+// client-side from GeckoTerminal/DexScreener. Adding is gated by ADMIN_KEY so
+// the same endpoint can later be reused behind a paid (TON-fee) submission.
+const LIST_VERSION = 'v1';
+const LIST_CACHE_TTL = 30;
+const LIST_MAX = 200;
+
+type Listing = {
+  ca: string;
+  label: string;
+  note: string;
+  network: 'testnet' | 'mainnet';
+  at: string;
+};
+
+// Constant-time-ish comparison so a wrong key can't be timed out character by character.
+function adminOK(req: Request, env: Env): boolean {
+  const got = req.headers.get('X-Admin-Key') ?? '';
+  const want = env.ADMIN_KEY ?? '';
+  if (!want || got.length !== want.length) return false;
+  let diff = 0;
+  for (let i = 0; i < want.length; i++) diff |= got.charCodeAt(i) ^ want.charCodeAt(i);
+  return diff === 0;
+}
+
+function validateListing(body: any): Listing | { error: string } {
+  if (!body || typeof body !== 'object') return { error: 'invalid body' };
+  const ca = clampStr(body.ca, 60);
+  if (!TON_ADDR_RE.test(ca)) return { error: 'invalid ca' };
+  const network = String(body.network ?? 'mainnet');
+  if (!TOK_NET.has(network)) return { error: 'invalid network' };
+  return {
+    ca,
+    label: clampStr(body.label, 64),
+    note: clampStr(body.note, 200),
+    network: network as 'testnet' | 'mainnet',
+    at: new Date().toISOString(),
+  };
+}
+
+async function listListings(env: Env, network: string): Promise<Listing[]> {
+  const keys = await listAll(env.STATS_KV, `list:${LIST_VERSION}:${network}:`);
+  const out: Listing[] = [];
+  const BATCH = 50;
+  for (let i = 0; i < keys.length; i += BATCH) {
+    const slice = keys.slice(i, i + BATCH);
+    const vals = await Promise.all(slice.map((k) => env.STATS_KV.get(k.name)));
+    for (const raw of vals) {
+      if (!raw) continue;
+      try {
+        out.push(JSON.parse(raw) as Listing);
+      } catch {
+        /* skip */
+      }
+    }
+  }
+  out.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+  return out.slice(0, LIST_MAX);
+}
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
@@ -554,6 +619,103 @@ export default {
           );
         }
         return new Response(JSON.stringify({ network, count: tokens.length, tokens }), {
+          status: 200,
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'public, max-age=15',
+          },
+        });
+      }
+
+      if (url.pathname === '/listing/add' && req.method === 'POST') {
+        if (!adminOK(req, env)) {
+          return new Response(JSON.stringify({ error: 'unauthorized' }), {
+            status: 401,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        let body: any;
+        try {
+          body = await req.json();
+        } catch {
+          return new Response(JSON.stringify({ error: 'invalid json' }), {
+            status: 400,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const parsed = validateListing(body);
+        if ('error' in parsed) {
+          return new Response(JSON.stringify(parsed), {
+            status: 400,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const key = `list:${LIST_VERSION}:${parsed.network}:${parsed.ca}`;
+        const existing = await env.STATS_KV.get(key);
+        await env.STATS_KV.put(key, JSON.stringify(parsed));
+        await env.STATS_KV.delete(`list:${LIST_VERSION}:cache:${parsed.network}`);
+        return new Response(JSON.stringify({ ok: true, duplicate: !!existing }), {
+          status: 200,
+          headers: { ...headers, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (url.pathname === '/listing/remove' && req.method === 'POST') {
+        if (!adminOK(req, env)) {
+          return new Response(JSON.stringify({ error: 'unauthorized' }), {
+            status: 401,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        let body: any;
+        try {
+          body = await req.json();
+        } catch {
+          return new Response(JSON.stringify({ error: 'invalid json' }), {
+            status: 400,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        const ca = clampStr(body?.ca, 60);
+        const netRaw = String(body?.network ?? 'mainnet');
+        if (!TON_ADDR_RE.test(ca) || !TOK_NET.has(netRaw)) {
+          return new Response(JSON.stringify({ error: 'invalid ca/network' }), {
+            status: 400,
+            headers: { ...headers, 'Content-Type': 'application/json' },
+          });
+        }
+        await env.STATS_KV.delete(`list:${LIST_VERSION}:${netRaw}:${ca}`);
+        await env.STATS_KV.delete(`list:${LIST_VERSION}:cache:${netRaw}`);
+        return new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { ...headers, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (url.pathname === '/listing/list' && req.method === 'GET') {
+        const netParam = url.searchParams.get('network') ?? 'mainnet';
+        const network = TOK_NET.has(netParam) ? netParam : 'mainnet';
+        const cacheKey = `list:${LIST_VERSION}:cache:${network}`;
+        const cachedRaw = await env.STATS_KV.get(cacheKey);
+        let listings: Listing[] | null = null;
+        if (cachedRaw) {
+          try {
+            const c = JSON.parse(cachedRaw) as { gen: number; listings: Listing[] };
+            if ((Date.now() - c.gen) / 1000 < LIST_CACHE_TTL) listings = c.listings;
+          } catch {
+            /* recompute */
+          }
+        }
+        if (!listings) {
+          listings = await listListings(env, network);
+          await env.STATS_KV.put(
+            cacheKey,
+            JSON.stringify({ gen: Date.now(), listings }),
+            { expirationTtl: LIST_CACHE_TTL * 2 },
+          );
+        }
+        return new Response(JSON.stringify({ network, count: listings.length, listings }), {
           status: 200,
           headers: {
             ...headers,

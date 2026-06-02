@@ -1,0 +1,401 @@
+---
+import { type Locale } from '../i18n/strings';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+
+// English-only board (mirrors /tokens which is single-locale). `locale` is kept
+// for number/date formatting on the client.
+const T = {
+  kicker: 'Curated on BRAINROT',
+  h1: 'Token board',
+  lede: 'Hand-picked TON jettons with a live chart, market cap and 24h volume. Data is pulled live from GeckoTerminal (with a DexScreener fallback) — we just keep the list.',
+  loading: 'Loading the board…',
+  empty: 'No tokens listed yet.',
+  error: 'Could not load the board.',
+  retry: 'Retry',
+  price: 'Price',
+  mcap: 'Market cap',
+  vol24: 'Volume 24h',
+  chart: 'Show chart',
+  hide: 'Hide chart',
+  nomarket: 'No market data yet — token may be too new or unlisted on DEXes.',
+  admin: 'Admin',
+  add: 'Add token',
+  remove: 'Remove',
+  ca: 'Contract address (jetton master)',
+  label: 'Label (optional)',
+  note: 'Note (optional)',
+  key: 'Admin key',
+  save_key: 'Save key',
+};
+---
+
+<article class="board-page">
+  <header class="board-hero">
+    <span class="kicker">{T.kicker} <span class="net-badge">MAINNET</span></span>
+    <h1>{T.h1}</h1>
+    <p class="lede">{T.lede}</p>
+  </header>
+
+  <details class="admin-box" id="admin-box">
+    <summary>{T.admin}</summary>
+    <div class="admin-inner">
+      <div class="admin-row">
+        <input type="password" id="adm-key" placeholder={T.key} autocomplete="off" />
+        <button type="button" id="adm-savekey" class="btn-mini">{T.save_key}</button>
+      </div>
+      <input type="text" id="adm-ca" placeholder={T.ca} autocomplete="off" />
+      <div class="admin-row">
+        <input type="text" id="adm-label" placeholder={T.label} autocomplete="off" />
+        <input type="text" id="adm-note" placeholder={T.note} autocomplete="off" />
+      </div>
+      <button type="button" id="adm-add" class="btn-add">{T.add}</button>
+      <p class="adm-status" id="adm-status" hidden></p>
+    </div>
+  </details>
+
+  <div id="board" class="board" data-net="mainnet">
+    <p class="board-state" id="board-state">{T.loading}</p>
+    <div class="board-grid" id="board-grid"></div>
+  </div>
+</article>
+
+<script define:vars={{ T, locale }}>
+  (function () {
+    const meta = document.querySelector('meta[name="stats-api"]');
+    const api = meta ? (meta.getAttribute('content') || '').replace(/\/$/, '') : '';
+    const board = document.getElementById('board');
+    const grid = document.getElementById('board-grid');
+    const state = document.getElementById('board-state');
+    const net = board.getAttribute('data-net') || 'mainnet';
+
+    // --- helpers ---
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    function shortAddr(a) {
+      return a && a.length > 14 ? a.slice(0, 6) + '…' + a.slice(-4) : a || '';
+    }
+    function fmtUsd(n) {
+      if (n == null || !isFinite(n) || n <= 0) return '—';
+      try {
+        return '$' + new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 2 }).format(n);
+      } catch (_) { return '$' + Math.round(n); }
+    }
+    function fmtPrice(n) {
+      if (n == null || !isFinite(n) || n <= 0) return '—';
+      var dp = n >= 1 ? 4 : n >= 0.01 ? 6 : 8;
+      try {
+        return '$' + new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: dp }).format(n);
+      } catch (_) { return '$' + n; }
+    }
+
+    // --- market-data fetchers (client-side, no key) ---
+    function fromGecko(ca) {
+      var u = 'https://api.geckoterminal.com/api/v2/networks/ton/tokens/' + encodeURIComponent(ca) + '?include=top_pools';
+      return fetch(u, { headers: { Accept: 'application/json' } })
+        .then(function (r) { if (!r.ok) throw new Error('gt ' + r.status); return r.json(); })
+        .then(function (j) {
+          var a = j && j.data && j.data.attributes;
+          if (!a) return null;
+          var price = parseFloat(a.price_usd);
+          if (!isFinite(price) || price <= 0) return null;
+          var mcap = parseFloat(a.market_cap_usd);
+          if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(a.fdv_usd);
+          var vol = a.volume_usd ? parseFloat(a.volume_usd.h24) : NaN;
+          var pool = '';
+          if (j.included && j.included.length) {
+            for (var i = 0; i < j.included.length; i++) {
+              if (j.included[i].type === 'pool' && j.included[i].attributes && j.included[i].attributes.address) {
+                pool = j.included[i].attributes.address; break;
+              }
+            }
+          }
+          if (!pool && j.data.relationships && j.data.relationships.top_pools &&
+              j.data.relationships.top_pools.data && j.data.relationships.top_pools.data[0]) {
+            pool = String(j.data.relationships.top_pools.data[0].id).replace(/^ton_/, '');
+          }
+          return {
+            source: 'GeckoTerminal',
+            name: a.name || '', symbol: a.symbol || '',
+            price: price, mcap: mcap, vol: vol,
+            chart: pool ? 'https://www.geckoterminal.com/ton/pools/' + encodeURIComponent(pool) + '?embed=1&info=0&swaps=0' : '',
+            link: 'https://www.geckoterminal.com/ton/tokens/' + encodeURIComponent(ca),
+          };
+        })
+        .catch(function () { return null; });
+    }
+
+    function fromDex(ca) {
+      var u = 'https://api.dexscreener.com/latest/dex/tokens/' + encodeURIComponent(ca);
+      return fetch(u, { headers: { Accept: 'application/json' } })
+        .then(function (r) { if (!r.ok) throw new Error('ds ' + r.status); return r.json(); })
+        .then(function (j) {
+          var pairs = (j && j.pairs) || [];
+          pairs = pairs.filter(function (p) { return p && p.chainId === 'ton'; });
+          if (!pairs.length) return null;
+          pairs.sort(function (x, y) {
+            return ((y.liquidity && y.liquidity.usd) || 0) - ((x.liquidity && x.liquidity.usd) || 0);
+          });
+          var p = pairs[0];
+          var price = parseFloat(p.priceUsd);
+          if (!isFinite(price) || price <= 0) return null;
+          var side = (p.baseToken && p.baseToken.address === ca) ? p.baseToken : (p.quoteToken || p.baseToken);
+          var mcap = parseFloat(p.marketCap);
+          if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(p.fdv);
+          var vol = p.volume ? parseFloat(p.volume.h24) : NaN;
+          return {
+            source: 'DexScreener',
+            name: (side && side.name) || '', symbol: (side && side.symbol) || '',
+            price: price, mcap: mcap, vol: vol,
+            chart: p.pairAddress ? 'https://dexscreener.com/ton/' + encodeURIComponent(p.pairAddress) + '?embed=1&theme=dark&info=0&trades=0' : '',
+            link: p.url || 'https://dexscreener.com/ton/' + encodeURIComponent(ca),
+          };
+        })
+        .catch(function () { return null; });
+    }
+
+    function fetchMarket(ca) {
+      return fromGecko(ca).then(function (g) { return g || fromDex(ca); });
+    }
+
+    // --- rendering ---
+    function adminKey() { try { return sessionStorage.getItem('brt_admin_key') || ''; } catch (_) { return ''; } }
+
+    function fillCard(el, listing, m) {
+      var ca = listing.ca;
+      var name = (m && m.name) || listing.label || '—';
+      var sym = (m && m.symbol) || '';
+      var letter = (sym || name || '?').slice(0, 1).toUpperCase();
+      var removeBtn = adminKey()
+        ? '<button type="button" class="bk-remove" data-ca="' + esc(ca) + '">' + esc(T.remove) + '</button>'
+        : '';
+      var head =
+        '<div class="bk-head">' +
+          '<div class="bk-logo">' + esc(letter) + '</div>' +
+          '<div class="bk-id"><span class="bk-name">' + esc(name) + '</span>' +
+          (sym ? '<span class="bk-sym">$' + esc(sym) + '</span>' : '') + '</div>' +
+          removeBtn +
+        '</div>';
+      if (!m) {
+        el.innerHTML = head +
+          '<p class="bk-nomarket">' + esc(T.nomarket) + '</p>' +
+          '<div class="bk-foot"><code class="bk-addr" title="' + esc(ca) + '">' + esc(shortAddr(ca)) + '</code>' +
+          '<a class="bk-soc" href="https://tonviewer.com/' + encodeURIComponent(ca) + '" target="_blank" rel="noopener noreferrer">Tonviewer ↗</a></div>';
+        return;
+      }
+      var note = listing.note ? '<p class="bk-note">' + esc(listing.note) + '</p>' : '';
+      el.innerHTML = head + note +
+        '<dl class="bk-meta">' +
+          '<div><dt>' + esc(T.price) + '</dt><dd>' + esc(fmtPrice(m.price)) + '</dd></div>' +
+          '<div><dt>' + esc(T.mcap) + '</dt><dd>' + esc(fmtUsd(m.mcap)) + '</dd></div>' +
+          '<div><dt>' + esc(T.vol24) + '</dt><dd>' + esc(fmtUsd(m.vol)) + '</dd></div>' +
+        '</dl>' +
+        (m.chart ? '<button type="button" class="bk-chart-btn" data-chart="' + esc(m.chart) + '">' + esc(T.chart) + '</button><div class="bk-chart"></div>' : '') +
+        '<div class="bk-foot">' +
+          '<code class="bk-addr" title="' + esc(ca) + '">' + esc(shortAddr(ca)) + '</code>' +
+          '<span class="bk-src">' + esc(m.source) + '</span>' +
+        '</div>' +
+        '<div class="bk-socials">' +
+          '<a class="bk-soc" href="' + esc(m.link) + '" target="_blank" rel="noopener noreferrer">Chart ↗</a>' +
+          '<a class="bk-soc" href="https://tonviewer.com/' + encodeURIComponent(ca) + '" target="_blank" rel="noopener noreferrer">Tonviewer ↗</a>' +
+        '</div>';
+    }
+
+    function render(listings) {
+      if (!listings || !listings.length) {
+        state.textContent = T.empty; state.hidden = false; return;
+      }
+      state.hidden = true;
+      grid.innerHTML = '';
+      listings.forEach(function (listing) {
+        var el = document.createElement('div');
+        el.className = 'bk-card';
+        el.innerHTML = '<p class="bk-loading">…</p>';
+        grid.appendChild(el);
+        fetchMarket(listing.ca).then(function (m) { fillCard(el, listing, m); });
+      });
+    }
+
+    // lazy chart toggle + admin remove (event delegation)
+    grid.addEventListener('click', function (e) {
+      var cb = e.target.closest && e.target.closest('.bk-chart-btn');
+      if (cb) {
+        var holder = cb.nextElementSibling;
+        if (holder.firstChild) { holder.innerHTML = ''; cb.textContent = T.chart; }
+        else {
+          var f = document.createElement('iframe');
+          f.src = cb.getAttribute('data-chart');
+          f.loading = 'lazy'; f.className = 'bk-iframe';
+          f.setAttribute('frameborder', '0'); f.setAttribute('allowfullscreen', '');
+          holder.appendChild(f); cb.textContent = T.hide;
+        }
+        return;
+      }
+      var rm = e.target.closest && e.target.closest('.bk-remove');
+      if (rm) {
+        var ca = rm.getAttribute('data-ca');
+        if (!ca || !confirm('Remove ' + ca + '?')) return;
+        fetch(api + '/listing/remove', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey() },
+          body: JSON.stringify({ ca: ca, network: net }),
+        }).then(function (r) { if (r.ok) load(); else alert('Remove failed (' + r.status + ')'); });
+      }
+    });
+
+    function load() {
+      if (!api) { state.textContent = T.error; return; }
+      state.textContent = T.loading; state.hidden = false;
+      fetch(api + '/listing/list?network=' + encodeURIComponent(net), { credentials: 'omit' })
+        .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+        .then(function (j) { render(j && j.listings ? j.listings : []); })
+        .catch(function () {
+          state.innerHTML = esc(T.error) + ' <button type="button" id="bk-retry" class="btn-mini">' + esc(T.retry) + '</button>';
+          state.hidden = false;
+          var rb = document.getElementById('bk-retry');
+          if (rb) rb.addEventListener('click', load);
+        });
+    }
+
+    // --- admin panel ---
+    var keyInput = document.getElementById('adm-key');
+    var savedKey = adminKey();
+    if (savedKey) keyInput.value = savedKey;
+    document.getElementById('adm-savekey').addEventListener('click', function () {
+      try { sessionStorage.setItem('brt_admin_key', keyInput.value.trim()); } catch (_) {}
+      var s = document.getElementById('adm-status');
+      s.textContent = 'Key saved for this session.'; s.hidden = false;
+      load(); // re-render so remove buttons appear
+    });
+    document.getElementById('adm-add').addEventListener('click', function () {
+      var s = document.getElementById('adm-status');
+      var ca = document.getElementById('adm-ca').value.trim();
+      var payload = {
+        ca: ca, network: net,
+        label: document.getElementById('adm-label').value.trim(),
+        note: document.getElementById('adm-note').value.trim(),
+      };
+      var key = keyInput.value.trim() || adminKey();
+      s.hidden = false; s.textContent = 'Adding…';
+      fetch(api + '/listing/add', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Key': key },
+        body: JSON.stringify(payload),
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+        .then(function (res) {
+          if (res.ok && res.j.ok) {
+            s.textContent = res.j.duplicate ? 'Updated existing listing.' : 'Added.';
+            document.getElementById('adm-ca').value = '';
+            document.getElementById('adm-label').value = '';
+            document.getElementById('adm-note').value = '';
+            try { sessionStorage.setItem('brt_admin_key', key); } catch (_) {}
+            load();
+          } else if (res.status === 401) { s.textContent = 'Wrong admin key.'; }
+          else { s.textContent = 'Error: ' + ((res.j && res.j.error) || res.status); }
+        })
+        .catch(function () { s.textContent = 'Network error.'; });
+    });
+
+    load();
+  })();
+</script>
+
+<style>
+  .board-page { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  .board-hero { margin: 32px 0 28px; padding-bottom: 28px; border-bottom: 1px solid var(--rule); }
+  .kicker {
+    display: inline-block; font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 22px;
+  }
+  .net-badge {
+    display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #6dd4a8;
+    border: 1px solid rgba(109, 212, 168, 0.5); border-radius: 4px; padding: 3px 8px;
+    vertical-align: middle; margin-left: 8px;
+  }
+  .board-hero h1 {
+    margin: 0 0 18px; font-family: var(--font-display); font-size: clamp(40px, 6vw, 64px);
+    line-height: 1.05; letter-spacing: -0.025em; color: #fff; font-weight: 800;
+  }
+  .board-hero .lede {
+    font-family: var(--font-serif); font-size: 20px; line-height: 1.55; color: var(--text-dim);
+    margin: 0; max-width: 64ch;
+  }
+
+  /* admin */
+  .admin-box {
+    border: 1px solid var(--rule); border-radius: 8px; margin-bottom: 28px;
+    background: rgba(255, 255, 255, 0.015);
+  }
+  .admin-box > summary {
+    cursor: pointer; padding: 12px 16px; font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-mute); list-style: none;
+  }
+  .admin-box > summary::-webkit-details-marker { display: none; }
+  .admin-inner { padding: 4px 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+  .admin-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .admin-inner input {
+    flex: 1 1 200px; background: #0d0d0f; border: 1px solid var(--rule); border-radius: 6px;
+    padding: 10px 12px; color: #eee; font-family: var(--font-mono); font-size: 13px;
+  }
+  .admin-inner input:focus { outline: none; border-color: var(--accent); }
+  .btn-mini, .btn-add {
+    background: transparent; color: var(--accent-text); border: 1px solid var(--accent);
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 10px 18px; border-radius: 6px; cursor: pointer; flex: 0 0 auto;
+  }
+  .btn-add { align-self: flex-start; padding: 12px 26px; }
+  .btn-mini:hover, .btn-add:hover { background: var(--accent-soft); color: var(--accent); }
+  .adm-status { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); margin: 4px 0 0; }
+
+  /* board */
+  .board-state { font-family: var(--font-mono); font-size: 14px; color: var(--text-mute); padding: 24px 0; }
+  .board-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px; margin: 8px 0 56px;
+  }
+  .bk-card {
+    border: 1px solid var(--rule); border-radius: 10px; padding: 18px;
+    background: rgba(255, 255, 255, 0.015); display: flex; flex-direction: column; gap: 12px;
+  }
+  .bk-loading { color: var(--text-mute); font-family: var(--font-mono); margin: 0; }
+  .bk-head { display: flex; align-items: center; gap: 12px; }
+  .bk-logo {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft);
+    color: var(--accent-text); display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 800; font-size: 18px; flex: 0 0 auto;
+  }
+  .bk-id { display: flex; flex-direction: column; min-width: 0; }
+  .bk-name { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 17px; line-height: 1.2; }
+  .bk-sym { font-family: var(--font-mono); font-size: 12px; color: var(--accent-text); letter-spacing: 0.04em; }
+  .bk-remove {
+    margin-left: auto; background: transparent; border: 1px solid rgba(220, 90, 90, 0.5);
+    color: #e08585; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.1em; padding: 5px 9px; border-radius: 5px; cursor: pointer; flex: 0 0 auto;
+  }
+  .bk-remove:hover { background: rgba(220, 90, 90, 0.12); }
+  .bk-note { font-family: var(--font-serif); font-size: 14px; color: var(--text-dim); margin: 0; }
+  .bk-nomarket { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); margin: 0; line-height: 1.5; }
+  .bk-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; }
+  .bk-meta dt {
+    font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-mute); margin-bottom: 3px;
+  }
+  .bk-meta dd { margin: 0; font-family: var(--font-mono); font-size: 15px; color: #fff; font-weight: 600; }
+  .bk-chart-btn {
+    background: transparent; color: var(--accent-text); border: 1px solid var(--accent);
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 9px 14px; border-radius: 6px; cursor: pointer;
+  }
+  .bk-chart-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .bk-iframe { width: 100%; height: 360px; border: 0; border-radius: 8px; margin-top: 4px; }
+  .bk-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .bk-addr { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }
+  .bk-src { font-family: var(--font-mono); font-size: 10px; color: var(--text-mute); letter-spacing: 0.04em; }
+  .bk-socials { display: flex; gap: 14px; }
+  .bk-soc { font-family: var(--font-mono); font-size: 11px; color: var(--accent-text); text-decoration: none; }
+  .bk-soc:hover { color: var(--accent); }
+</style>
