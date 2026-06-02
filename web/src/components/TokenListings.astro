@@ -4,29 +4,23 @@ import { type Locale } from '../i18n/strings';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 
-// English-only board (mirrors /tokens which is single-locale). `locale` is kept
-// for number/date formatting on the client.
 const T = {
   kicker: 'Curated on BRAINROT',
-  h1: 'Token board',
-  lede: 'Hand-picked TON jettons with a live price chart, market cap and 24h volume. Charts are rendered by us from on-chain DEX data (GeckoTerminal OHLCV); logos are pulled automatically. We just keep the list.',
+  h1: 'Tax tokens',
+  lede: 'Hand-picked TON tokens with a live price chart, market cap and 24h volume. Charts are rendered by us from on-chain DEX data; logos are pulled automatically.',
   loading: 'Loading the board…',
   empty: 'No tokens listed yet.',
   error: 'Could not load the board.',
   retry: 'Retry',
-  price: 'Price',
-  mcap: 'Market cap',
-  vol24: 'Volume 24h',
-  open: 'View chart',
+  price: 'Price', mcap: 'MCap', vol24: 'Vol 24h',
+  open: 'Open chart',
   nomarket: 'No market data yet — token may be too new or unlisted on DEXes.',
   admin: 'Admin',
-  add: 'Add token',
-  remove: 'Remove',
+  add: 'Add token', remove: 'Remove',
   ca: 'Contract address (jetton master)',
-  label: 'Label (optional)',
-  note: 'Note (optional)',
-  key: 'Admin key',
-  save_key: 'Save key',
+  label: 'Label (optional)', note: 'Note (optional)',
+  tg: 'Telegram URL (optional)', x: 'X / Twitter URL (optional)',
+  key: 'Admin key', save_key: 'Save key',
 };
 ---
 
@@ -49,6 +43,10 @@ const T = {
         <input type="text" id="adm-label" placeholder={T.label} autocomplete="off" />
         <input type="text" id="adm-note" placeholder={T.note} autocomplete="off" />
       </div>
+      <div class="admin-row">
+        <input type="text" id="adm-tg" placeholder={T.tg} autocomplete="off" />
+        <input type="text" id="adm-x" placeholder={T.x} autocomplete="off" />
+      </div>
       <button type="button" id="adm-add" class="btn-add">{T.add}</button>
       <p class="adm-status" id="adm-status" hidden></p>
     </div>
@@ -69,162 +67,112 @@ const T = {
     const state = document.getElementById('board-state');
     const net = board.getAttribute('data-net') || 'mainnet';
     const GT = 'https://api.geckoterminal.com/api/v2/networks/ton';
+    const ICON_TG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>';
+    const ICON_X = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.49l8.6-9.83L0 1.15h7.59l5.24 6.93zM17.61 20.64h2.04L6.49 3.24H4.3z"/></svg>';
 
-    // --- helpers ---
     function esc(s) {
       return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
       });
     }
-    function shortAddr(a) {
-      return a && a.length > 14 ? a.slice(0, 6) + '…' + a.slice(-4) : a || '';
-    }
+    function shortAddr(a) { return a && a.length > 14 ? a.slice(0, 6) + '…' + a.slice(-4) : a || ''; }
     function fmtUsd(n) {
       if (n == null || !isFinite(n) || n <= 0) return '—';
-      try {
-        return '$' + new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 2 }).format(n);
-      } catch (_) { return '$' + Math.round(n); }
+      try { return '$' + new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 2 }).format(n); }
+      catch (_) { return '$' + Math.round(n); }
     }
     function fmtPrice(n) {
       if (n == null || !isFinite(n) || n <= 0) return '—';
       var dp = n >= 1 ? 4 : n >= 0.01 ? 6 : 9;
-      try {
-        return '$' + new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: dp }).format(n);
-      } catch (_) { return '$' + n; }
+      try { return '$' + new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: dp }).format(n); }
+      catch (_) { return '$' + n; }
     }
-    function ipfsToHttp(u) {
-      if (!u) return '';
-      return u.indexOf('ipfs://') === 0 ? 'https://ipfs.io/ipfs/' + u.slice(7) : u;
-    }
+    function ipfsToHttp(u) { return u && u.indexOf('ipfs://') === 0 ? 'https://ipfs.io/ipfs/' + u.slice(7) : (u || ''); }
+    function jget(u) { return fetch(u, { headers: { Accept: 'application/json' } }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
 
-    // --- metadata (logo / name / symbol), works even for non-DEX tokens ---
     function fromTonapi(ca) {
-      return fetch('https://tonapi.io/v2/jettons/' + encodeURIComponent(ca), { headers: { Accept: 'application/json' } })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (j) {
-          if (!j) return null;
-          var m = j.metadata || {};
-          return { name: m.name || '', symbol: m.symbol || '', image: ipfsToHttp(m.image || ''), supply: j.total_supply || '' };
-        })
-        .catch(function () { return null; });
+      return jget('https://tonapi.io/v2/jettons/' + encodeURIComponent(ca)).then(function (j) {
+        if (!j) return null; var m = j.metadata || {};
+        return { name: m.name || '', symbol: m.symbol || '', image: ipfsToHttp(m.image || '') };
+      });
     }
-
-    // --- market data (price / mcap / vol / pool / image) ---
     function fromGecko(ca) {
-      return fetch(GT + '/tokens/' + encodeURIComponent(ca) + '?include=top_pools', { headers: { Accept: 'application/json' } })
-        .then(function (r) { if (!r.ok) throw new Error('gt ' + r.status); return r.json(); })
-        .then(function (j) {
-          var a = j && j.data && j.data.attributes;
-          if (!a) return null;
-          var price = parseFloat(a.price_usd);
-          if (!isFinite(price) || price <= 0) return null;
-          var mcap = parseFloat(a.market_cap_usd);
-          if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(a.fdv_usd);
-          var vol = a.volume_usd ? parseFloat(a.volume_usd.h24) : NaN;
-          var pool = '';
-          if (j.included && j.included.length) {
-            for (var i = 0; i < j.included.length; i++) {
-              if (j.included[i].type === 'pool' && j.included[i].attributes && j.included[i].attributes.address) {
-                pool = j.included[i].attributes.address; break;
-              }
-            }
-          }
-          return {
-            source: 'GeckoTerminal', name: a.name || '', symbol: a.symbol || '',
-            image: a.image_url && a.image_url !== 'missing.png' ? a.image_url : '',
-            price: price, mcap: mcap, vol: vol, pool: pool,
-            link: 'https://www.geckoterminal.com/ton/tokens/' + encodeURIComponent(ca),
-          };
-        })
-        .catch(function () { return null; });
+      return jget(GT + '/tokens/' + encodeURIComponent(ca) + '?include=top_pools').then(function (j) {
+        var a = j && j.data && j.data.attributes; if (!a) return null;
+        var price = parseFloat(a.price_usd); if (!isFinite(price) || price <= 0) return null;
+        var mcap = parseFloat(a.market_cap_usd); if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(a.fdv_usd);
+        return { source: 'GeckoTerminal', name: a.name || '', symbol: a.symbol || '',
+          image: a.image_url && a.image_url !== 'missing.png' ? a.image_url : '',
+          price: price, mcap: mcap, vol: a.volume_usd ? parseFloat(a.volume_usd.h24) : NaN };
+      });
     }
     function fromDex(ca) {
-      return fetch('https://api.dexscreener.com/latest/dex/tokens/' + encodeURIComponent(ca), { headers: { Accept: 'application/json' } })
-        .then(function (r) { if (!r.ok) throw new Error('ds ' + r.status); return r.json(); })
-        .then(function (j) {
-          var pairs = ((j && j.pairs) || []).filter(function (p) { return p && p.chainId === 'ton'; });
-          if (!pairs.length) return null;
-          pairs.sort(function (x, y) { return ((y.liquidity && y.liquidity.usd) || 0) - ((x.liquidity && x.liquidity.usd) || 0); });
-          var p = pairs[0];
-          var price = parseFloat(p.priceUsd);
-          if (!isFinite(price) || price <= 0) return null;
-          var side = (p.baseToken && p.baseToken.address === ca) ? p.baseToken : (p.quoteToken || p.baseToken);
-          var mcap = parseFloat(p.marketCap);
-          if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(p.fdv);
-          return {
-            source: 'DexScreener', name: (side && side.name) || '', symbol: (side && side.symbol) || '',
-            image: (p.info && p.info.imageUrl) || '',
-            price: price, mcap: mcap, vol: p.volume ? parseFloat(p.volume.h24) : NaN, pool: p.pairAddress || '',
-            link: p.url || 'https://dexscreener.com/ton/' + encodeURIComponent(ca),
-          };
-        })
-        .catch(function () { return null; });
+      return jget('https://api.dexscreener.com/latest/dex/tokens/' + encodeURIComponent(ca)).then(function (j) {
+        var pairs = ((j && j.pairs) || []).filter(function (p) { return p && p.chainId === 'ton'; });
+        if (!pairs.length) return null;
+        pairs.sort(function (x, y) { return ((y.liquidity && y.liquidity.usd) || 0) - ((x.liquidity && x.liquidity.usd) || 0); });
+        var p = pairs[0]; var price = parseFloat(p.priceUsd); if (!isFinite(price) || price <= 0) return null;
+        var side = (p.baseToken && p.baseToken.address === ca) ? p.baseToken : (p.quoteToken || p.baseToken);
+        var mcap = parseFloat(p.marketCap); if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(p.fdv);
+        return { source: 'DexScreener', name: (side && side.name) || '', symbol: (side && side.symbol) || '',
+          image: (p.info && p.info.imageUrl) || '', price: price, mcap: mcap, vol: p.volume ? parseFloat(p.volume.h24) : NaN };
+      });
     }
-    function fetchMarket(ca) { return fromGecko(ca).then(function (g) { return g || fromDex(ca); }); }
-
     function loadToken(listing) {
       var ca = listing.ca;
-      return Promise.all([fromTonapi(ca), fetchMarket(ca)]).then(function (res) {
+      return Promise.all([fromTonapi(ca), fromGecko(ca).then(function (g) { return g || fromDex(ca); })]).then(function (res) {
         var meta = res[0] || {}, m = res[1];
-        return {
-          ca: ca, listing: listing, m: m,
+        return { ca: ca, listing: listing, m: m,
           name: meta.name || (m && m.name) || listing.label || '—',
           symbol: meta.symbol || (m && m.symbol) || '',
-          image: meta.image || (m && m.image) || '',
-        };
+          image: meta.image || (m && m.image) || '' };
       });
     }
 
     function adminKey() { try { return sessionStorage.getItem('brt_admin_key') || ''; } catch (_) { return ''; } }
 
-    function logoHtml(image, letter) {
-      return image
-        ? '<img class="bk-logo" src="' + esc(image) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'bk-logo bk-logo-ph\',textContent:\'' + esc(letter) + '\'}))" />'
-        : '<div class="bk-logo bk-logo-ph">' + esc(letter) + '</div>';
+    function socIcon(href, kind) {
+      return '<a class="bk-ic bk-ic-' + kind + '" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer nofollow" aria-label="' + kind + '">' + (kind === 'tg' ? ICON_TG : ICON_X) + '</a>';
     }
 
     function fillCard(el, t) {
-      var ca = t.ca, m = t.m;
+      var ca = t.ca, m = t.m, L = t.listing;
       var sym = esc(t.symbol || '');
       var letter = (t.symbol || t.name || '?').slice(0, 1).toUpperCase();
-      var removeBtn = adminKey()
-        ? '<button type="button" class="bk-remove" data-ca="' + esc(ca) + '">' + esc(T.remove) + '</button>' : '';
-      var head =
-        '<div class="bk-head">' + logoHtml(t.image, letter) +
+      var logo = t.image
+        ? '<img class="bk-logo" src="' + esc(t.image) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'bk-logo bk-logo-ph\',textContent:\'' + esc(letter) + '\'}))" />'
+        : '<div class="bk-logo bk-logo-ph">' + esc(letter) + '</div>';
+      var rm = adminKey() ? '<button type="button" class="bk-remove" data-ca="' + esc(ca) + '">✕</button>' : '';
+      var socials = '';
+      if (L.telegram) socials += socIcon(L.telegram, 'tg');
+      if (L.x) socials += socIcon(L.x, 'x');
+      var stats = m
+        ? '<div class="bk-stats">' +
+            '<div class="bk-price">' + esc(fmtPrice(m.price)) + '</div>' +
+            '<div class="bk-chips"><span><i>' + esc(T.mcap) + '</i>' + esc(fmtUsd(m.mcap)) + '</span>' +
+            '<span><i>' + esc(T.vol24) + '</i>' + esc(fmtUsd(m.vol)) + '</span></div>' +
+          '</div>'
+        : '<p class="bk-nomarket">' + esc(T.nomarket) + '</p>';
+      el.innerHTML =
+        '<div class="bk-glow"></div>' +
+        '<div class="bk-top">' +
+          '<div class="bk-logo-wrap">' + logo + '</div>' +
           '<div class="bk-id"><span class="bk-name">' + esc(t.name) + '</span>' +
-          (sym ? '<span class="bk-sym">$' + sym + '</span>' : '') + '</div>' + removeBtn +
-        '</div>';
-      var note = t.listing.note ? '<p class="bk-note">' + esc(t.listing.note) + '</p>' : '';
-      var body;
-      if (!m) {
-        body = '<p class="bk-nomarket">' + esc(T.nomarket) + '</p>';
-      } else {
-        body =
-          '<dl class="bk-meta">' +
-            '<div><dt>' + esc(T.price) + '</dt><dd>' + esc(fmtPrice(m.price)) + '</dd></div>' +
-            '<div><dt>' + esc(T.mcap) + '</dt><dd>' + esc(fmtUsd(m.mcap)) + '</dd></div>' +
-            '<div><dt>' + esc(T.vol24) + '</dt><dd>' + esc(fmtUsd(m.vol)) + '</dd></div>' +
-          '</dl>' +
-          '<span class="bk-view">' + esc(T.open) + ' →</span>';
-      }
-      var foot =
-        '<div class="bk-foot">' +
-          '<code class="bk-addr" title="' + esc(ca) + '">' + esc(shortAddr(ca)) + '</code>' +
-          (m ? '<span class="bk-src">' + esc(m.source) + '</span>' : '') +
+          (sym ? '<span class="bk-sym">$' + sym + '</span>' : '') + '</div>' +
+          (socials ? '<div class="bk-socials">' + socials + '</div>' : '') + rm +
         '</div>' +
-        '<div class="bk-socials">' +
-          (m && m.link ? '<a class="bk-soc" href="' + esc(m.link) + '" target="_blank" rel="noopener noreferrer">DEX ↗</a>' : '') +
-          '<a class="bk-soc" href="https://tonviewer.com/' + encodeURIComponent(ca) + '" target="_blank" rel="noopener noreferrer">Tonviewer ↗</a>' +
-        '</div>';
-      el.innerHTML = head + note + body + foot;
+        stats +
+        '<a class="bk-open" href="/token/view?ca=' + encodeURIComponent(ca) + '&net=' + encodeURIComponent(net) + '">' +
+          '<span>' + esc(T.open) + '</span><span class="bk-open-ar">→</span></a>' +
+        '<div class="bk-foot"><code class="bk-addr" title="' + esc(ca) + '">' + esc(shortAddr(ca)) + '</code>' +
+          (m ? '<span class="bk-src">' + esc(m.source) + '</span>' : '') + '</div>';
     }
 
     function render(listings) {
       if (!listings || !listings.length) { state.textContent = T.empty; state.hidden = false; return; }
-      state.hidden = true;
-      grid.innerHTML = '';
+      state.hidden = true; grid.innerHTML = '';
       listings.forEach(function (listing) {
-        var el = document.createElement('div');
+        var el = document.createElement('article');
         el.className = 'bk-card bk-clickable';
         el.setAttribute('data-ca', listing.ca);
         el.innerHTML = '<p class="bk-loading">…</p>';
@@ -236,15 +184,14 @@ const T = {
     grid.addEventListener('click', function (e) {
       var rm = e.target.closest && e.target.closest('.bk-remove');
       if (rm) {
+        e.preventDefault();
         var rca = rm.getAttribute('data-ca');
         if (!rca || !confirm('Remove ' + rca + '?')) return;
-        fetch(api + '/listing/remove', {
-          method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey() },
-          body: JSON.stringify({ ca: rca, network: net }),
-        }).then(function (r) { if (r.ok) load(); else alert('Remove failed (' + r.status + ')'); });
+        fetch(api + '/listing/remove', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey() }, body: JSON.stringify({ ca: rca, network: net }) })
+          .then(function (r) { if (r.ok) load(); else alert('Remove failed (' + r.status + ')'); });
         return;
       }
-      if (e.target.closest && e.target.closest('a')) return; // let footer links work
+      if (e.target.closest && e.target.closest('a')) return; // links (socials, open) work natively
       var card = e.target.closest && e.target.closest('.bk-card');
       var ca = card && card.getAttribute('data-ca');
       if (ca) location.href = '/token/view?ca=' + encodeURIComponent(ca) + '&net=' + encodeURIComponent(net);
@@ -253,27 +200,22 @@ const T = {
     function load() {
       if (!api) { state.textContent = T.error; return; }
       state.textContent = T.loading; state.hidden = false;
-      // no-store + cache-buster so a freshly added token shows immediately
       fetch(api + '/listing/list?network=' + encodeURIComponent(net) + '&_t=' + Date.now(), { credentials: 'omit', cache: 'no-store' })
         .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
         .then(function (j) { render(j && j.listings ? j.listings : []); })
         .catch(function () {
           state.innerHTML = esc(T.error) + ' <button type="button" id="bk-retry" class="btn-mini">' + esc(T.retry) + '</button>';
           state.hidden = false;
-          var rb = document.getElementById('bk-retry');
-          if (rb) rb.addEventListener('click', load);
+          var rb = document.getElementById('bk-retry'); if (rb) rb.addEventListener('click', load);
         });
     }
 
-    // --- admin panel ---
+    // admin
     var keyInput = document.getElementById('adm-key');
-    var savedKey = adminKey();
-    if (savedKey) keyInput.value = savedKey;
+    if (adminKey()) keyInput.value = adminKey();
     document.getElementById('adm-savekey').addEventListener('click', function () {
       try { sessionStorage.setItem('brt_admin_key', keyInput.value.trim()); } catch (_) {}
-      var s = document.getElementById('adm-status');
-      s.textContent = 'Key saved for this session.'; s.hidden = false;
-      load();
+      var s = document.getElementById('adm-status'); s.textContent = 'Key saved for this session.'; s.hidden = false; load();
     });
     document.getElementById('adm-add').addEventListener('click', function () {
       var s = document.getElementById('adm-status');
@@ -281,20 +223,17 @@ const T = {
         ca: document.getElementById('adm-ca').value.trim(), network: net,
         label: document.getElementById('adm-label').value.trim(),
         note: document.getElementById('adm-note').value.trim(),
+        telegram: document.getElementById('adm-tg').value.trim(),
+        x: document.getElementById('adm-x').value.trim(),
       };
       var key = keyInput.value.trim() || adminKey();
       s.hidden = false; s.textContent = 'Adding…';
-      fetch(api + '/listing/add', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Key': key },
-        body: JSON.stringify(payload),
-      })
+      fetch(api + '/listing/add', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Key': key }, body: JSON.stringify(payload) })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
         .then(function (res) {
           if (res.ok && res.j.ok) {
             s.textContent = res.j.duplicate ? 'Updated existing listing.' : 'Added.';
-            document.getElementById('adm-ca').value = '';
-            document.getElementById('adm-label').value = '';
-            document.getElementById('adm-note').value = '';
+            ['adm-ca', 'adm-label', 'adm-note', 'adm-tg', 'adm-x'].forEach(function (id) { document.getElementById(id).value = ''; });
             try { sessionStorage.setItem('brt_admin_key', key); } catch (_) {}
             load();
           } else if (res.status === 401) { s.textContent = 'Wrong admin key.'; }
@@ -309,84 +248,77 @@ const T = {
 
 <style>
   .board-page { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
-  .board-hero { margin: 32px 0 28px; padding-bottom: 28px; border-bottom: 1px solid var(--rule); }
-  .kicker {
-    display: inline-block; font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 22px;
-  }
-  .net-badge {
-    display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase; color: #6dd4a8;
-    border: 1px solid rgba(109, 212, 168, 0.5); border-radius: 4px; padding: 3px 8px;
-    vertical-align: middle; margin-left: 8px;
-  }
-  .board-hero h1 {
-    margin: 0 0 18px; font-family: var(--font-display); font-size: clamp(40px, 6vw, 64px);
-    line-height: 1.05; letter-spacing: -0.025em; color: #fff; font-weight: 800;
-  }
-  .board-hero .lede {
-    font-family: var(--font-serif); font-size: 20px; line-height: 1.55; color: var(--text-dim);
-    margin: 0; max-width: 64ch;
-  }
+  .board-hero { margin: 32px 0 30px; padding-bottom: 28px; border-bottom: 1px solid var(--rule); }
+  .kicker { display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 22px; }
+  .net-badge { display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #6dd4a8; border: 1px solid rgba(109,212,168,0.5); border-radius: 4px; padding: 3px 8px; vertical-align: middle; margin-left: 8px; }
+  .board-hero h1 { margin: 0 0 18px; font-family: var(--font-display); font-size: clamp(40px,6vw,64px); line-height: 1.05; letter-spacing: -0.025em; color: #fff; font-weight: 800; }
+  .board-hero .lede { font-family: var(--font-serif); font-size: 20px; line-height: 1.55; color: var(--text-dim); margin: 0; max-width: 64ch; }
 
   /* admin */
-  .admin-box { border: 1px solid var(--rule); border-radius: 8px; margin-bottom: 28px; background: rgba(255, 255, 255, 0.015); }
-  .admin-box > summary {
-    cursor: pointer; padding: 12px 16px; font-family: var(--font-mono); font-size: 12px;
-    letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-mute); list-style: none;
-  }
+  .admin-box { border: 1px solid var(--rule); border-radius: 10px; margin-bottom: 30px; background: rgba(255,255,255,0.015); }
+  .admin-box > summary { cursor: pointer; padding: 12px 16px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-mute); list-style: none; }
   .admin-box > summary::-webkit-details-marker { display: none; }
   .admin-inner { padding: 4px 16px 18px; display: flex; flex-direction: column; gap: 10px; }
   .admin-row { display: flex; gap: 10px; flex-wrap: wrap; }
-  .admin-inner input {
-    flex: 1 1 200px; background: #0d0d0f; border: 1px solid var(--rule); border-radius: 6px;
-    padding: 10px 12px; color: #eee; font-family: var(--font-mono); font-size: 13px;
-  }
+  .admin-inner input { flex: 1 1 200px; background: #0d0d0f; border: 1px solid var(--rule); border-radius: 6px; padding: 10px 12px; color: #eee; font-family: var(--font-mono); font-size: 13px; }
   .admin-inner input:focus { outline: none; border-color: var(--accent); }
-  .btn-mini, .btn-add {
-    background: transparent; color: var(--accent-text); border: 1px solid var(--accent);
-    font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
-    text-transform: uppercase; padding: 10px 18px; border-radius: 6px; cursor: pointer; flex: 0 0 auto;
-  }
+  .btn-mini, .btn-add { background: transparent; color: var(--accent-text); border: 1px solid var(--accent); font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 18px; border-radius: 6px; cursor: pointer; flex: 0 0 auto; }
   .btn-add { align-self: flex-start; padding: 12px 26px; }
   .btn-mini:hover, .btn-add:hover { background: var(--accent-soft); color: var(--accent); }
   .adm-status { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); margin: 4px 0 0; }
 
-  /* board */
+  /* board grid */
   .board-state { font-family: var(--font-mono); font-size: 14px; color: var(--text-mute); padding: 24px 0; }
-  .board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; margin: 8px 0 56px; }
+  .board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 20px; margin: 8px 0 60px; }
+
+  /* cool glass card */
   .bk-card {
-    border: 1px solid var(--rule); border-radius: 10px; padding: 18px;
-    background: rgba(255, 255, 255, 0.015); display: flex; flex-direction: column; gap: 12px;
+    position: relative; overflow: hidden; border-radius: 18px; padding: 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));
+    border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    display: flex; flex-direction: column; gap: 14px; backdrop-filter: blur(6px);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   }
+  .bk-clickable { cursor: pointer; }
+  .bk-card:hover { transform: translateY(-4px); border-color: rgba(122,233,184,0.55); box-shadow: 0 18px 44px rgba(0,0,0,0.5), 0 0 0 1px rgba(122,233,184,0.15); }
+  .bk-glow { position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(122,233,184,0.22), transparent 70%); pointer-events: none; opacity: 0.7; }
   .bk-loading { color: var(--text-mute); font-family: var(--font-mono); margin: 0; }
-  .bk-head { display: flex; align-items: center; gap: 12px; }
-  .bk-logo { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; background: #0d0d0f; }
-  .bk-logo-ph {
-    display: flex; align-items: center; justify-content: center; background: var(--accent-soft);
-    color: var(--accent-text); font-family: var(--font-display); font-weight: 800; font-size: 18px;
-  }
+
+  .bk-top { display: flex; align-items: center; gap: 13px; position: relative; z-index: 1; }
+  .bk-logo-wrap { position: relative; flex: 0 0 auto; }
+  .bk-logo { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: #0d0d0f;
+    border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 6px 18px rgba(0,0,0,0.45); display: block; }
+  .bk-logo-ph { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent-soft), rgba(122,233,184,0.08)); color: var(--accent-text); font-family: var(--font-display); font-weight: 800; font-size: 22px; }
   .bk-id { display: flex; flex-direction: column; min-width: 0; }
-  .bk-name { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 17px; line-height: 1.2; }
+  .bk-name { font-family: var(--font-display); font-weight: 800; color: #fff; font-size: 19px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .bk-sym { font-family: var(--font-mono); font-size: 12px; color: var(--accent-text); letter-spacing: 0.04em; }
-  .bk-remove {
-    margin-left: auto; background: transparent; border: 1px solid rgba(220, 90, 90, 0.5);
-    color: #e08585; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
-    letter-spacing: 0.1em; padding: 5px 9px; border-radius: 5px; cursor: pointer; flex: 0 0 auto;
-  }
-  .bk-remove:hover { background: rgba(220, 90, 90, 0.12); }
-  .bk-note { font-family: var(--font-serif); font-size: 14px; color: var(--text-dim); margin: 0; }
-  .bk-nomarket { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); margin: 0; line-height: 1.5; }
-  .bk-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; }
-  .bk-meta dt { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); margin-bottom: 3px; }
-  .bk-meta dd { margin: 0; font-family: var(--font-mono); font-size: 15px; color: #fff; font-weight: 600; }
-  .bk-clickable { cursor: pointer; transition: border-color 0.15s, background 0.15s; }
-  .bk-clickable:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.03); }
-  .bk-view { font-family: var(--font-mono); font-size: 12px; color: var(--accent-text); letter-spacing: 0.08em; }
-  .bk-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .bk-socials { display: flex; gap: 7px; margin-left: auto; }
+  .bk-ic { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #cfd3da; transition: all 0.15s; }
+  .bk-ic svg { width: 15px; height: 15px; }
+  .bk-ic-tg:hover { background: rgba(42,160,233,0.22); color: #5fb8ee; border-color: rgba(42,160,233,0.5); }
+  .bk-ic-x:hover { background: rgba(255,255,255,0.16); color: #fff; }
+  .bk-remove { width: 28px; height: 28px; margin-left: 8px; border-radius: 50%; flex: 0 0 auto; background: transparent;
+    border: 1px solid rgba(220,90,90,0.45); color: #e08585; cursor: pointer; font-size: 13px; line-height: 1; }
+  .bk-remove:hover { background: rgba(220,90,90,0.14); }
+
+  .bk-stats { position: relative; z-index: 1; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .bk-price { font-family: var(--font-mono); font-size: 26px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+  .bk-chips { display: flex; gap: 8px; }
+  .bk-chips span { display: flex; flex-direction: column; align-items: flex-end; font-family: var(--font-mono); font-size: 13px; color: #e8eaee; font-weight: 600; }
+  .bk-chips i { font-style: normal; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); margin-bottom: 2px; }
+  .bk-nomarket { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); margin: 0; line-height: 1.5; position: relative; z-index: 1; }
+
+  .bk-open { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+    text-decoration: none; padding: 12px; border-radius: 11px; font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #06281c;
+    background: linear-gradient(135deg, #7ae9b8, #5bd3a0); box-shadow: 0 6px 18px rgba(122,233,184,0.25); transition: all 0.16s; }
+  .bk-open:hover { box-shadow: 0 10px 26px rgba(122,233,184,0.45); transform: translateY(-1px); }
+  .bk-open-ar { transition: transform 0.16s; }
+  .bk-open:hover .bk-open-ar { transform: translateX(4px); }
+
+  .bk-foot { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .bk-addr { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }
   .bk-src { font-family: var(--font-mono); font-size: 10px; color: var(--text-mute); letter-spacing: 0.04em; }
-  .bk-socials { display: flex; gap: 14px; }
-  .bk-soc { font-family: var(--font-mono); font-size: 11px; color: var(--accent-text); text-decoration: none; }
-  .bk-soc:hover { color: var(--accent); }
 </style>

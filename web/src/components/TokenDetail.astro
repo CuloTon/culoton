@@ -1,13 +1,13 @@
 ---
-// Full-page token detail view (light theme, large self-rendered chart).
-// Reads ?ca=<jetton master>&net=<mainnet|testnet> from the URL, client-side.
+// Full-page token detail — dark, glassy, unique presentation.
+// Reads ?ca=<jetton master>&net=<mainnet|testnet>. Pulls metadata + market +
+// OHLCV (rendered as our own candlestick chart) and the curated socials.
 ---
 
 <section class="td">
-  <a class="td-back" id="td-back" href="/token">← Token board</a>
-  <div id="td-root" class="td-root">
-    <p class="td-state" id="td-state">Loading…</p>
-  </div>
+  <div class="td-aura" aria-hidden="true"></div>
+  <a class="td-back" href="/token">← Tax tokens</a>
+  <div id="td-root" class="td-root"><p class="td-state">Loading…</p></div>
 </section>
 
 <script>
@@ -19,219 +19,140 @@
     const ca = (params.get('ca') || '').trim();
     const net = params.get('net') === 'testnet' ? 'testnet' : 'mainnet';
     const root = document.getElementById('td-root');
-    const back = document.getElementById('td-back');
-    if (back && net) back.href = '/token';
+    const ICON_TG = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>';
+    const ICON_X = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.49l8.6-9.83L0 1.15h7.59l5.24 6.93zM17.61 20.64h2.04L6.49 3.24H4.3z"/></svg>';
+    const ICON_CHART = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 3h2v16h16v2H3zm4 10h2v4H7zm4-6h2v10h-2zm4 3h2v7h-2z"/></svg>';
 
-    function esc(s) {
-      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-      });
-    }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function shortAddr(a) { return a && a.length > 16 ? a.slice(0, 8) + '…' + a.slice(-6) : a || ''; }
-    function fmtUsd(n) {
-      if (n == null || !isFinite(n) || n <= 0) return '—';
-      try { return '$' + new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(n); }
-      catch (_) { return '$' + Math.round(n); }
-    }
-    function fmtPrice(n) {
-      if (n == null || !isFinite(n) || n <= 0) return '—';
-      var dp = n >= 1 ? 4 : n >= 0.01 ? 6 : 9;
-      try { return '$' + new Intl.NumberFormat('en', { minimumFractionDigits: 2, maximumFractionDigits: dp }).format(n); }
-      catch (_) { return '$' + n; }
-    }
-    function fmtAxis(p) {
-      if (!isFinite(p) || p <= 0) return '';
-      return p < 0.01 ? '$' + p.toExponential(2) : '$' + p.toFixed(p < 1 ? 4 : 2);
-    }
+    function fmtUsd(n) { if (n == null || !isFinite(n) || n <= 0) return '—'; try { return '$' + new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(n); } catch (_) { return '$' + Math.round(n); } }
+    function fmtPrice(n) { if (n == null || !isFinite(n) || n <= 0) return '—'; var dp = n >= 1 ? 4 : n >= 0.01 ? 6 : 9; try { return '$' + new Intl.NumberFormat('en', { minimumFractionDigits: 2, maximumFractionDigits: dp }).format(n); } catch (_) { return '$' + n; } }
+    function fmtAxis(p) { if (!isFinite(p) || p <= 0) return ''; return p < 0.01 ? '$' + p.toExponential(2) : '$' + p.toFixed(p < 1 ? 4 : 2); }
     function ipfsToHttp(u) { return u && u.indexOf('ipfs://') === 0 ? 'https://ipfs.io/ipfs/' + u.slice(7) : (u || ''); }
-
     function jget(u) { return fetch(u, { headers: { Accept: 'application/json' } }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
 
-    function fromTonapi() {
-      return jget('https://tonapi.io/v2/jettons/' + encodeURIComponent(ca)).then(function (j) {
-        if (!j) return null; var m = j.metadata || {};
-        return { name: m.name || '', symbol: m.symbol || '', image: ipfsToHttp(m.image || ''), supply: j.total_supply || '' };
-      });
-    }
-    function fromGecko() {
-      return jget(GT + '/tokens/' + encodeURIComponent(ca) + '?include=top_pools').then(function (j) {
-        var a = j && j.data && j.data.attributes; if (!a) return null;
-        var price = parseFloat(a.price_usd); if (!isFinite(price) || price <= 0) return null;
-        var mcap = parseFloat(a.market_cap_usd); if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(a.fdv_usd);
-        var pool = ''; var inc = j.included || [];
-        for (var i = 0; i < inc.length; i++) { if (inc[i].type === 'pool' && inc[i].attributes && inc[i].attributes.address) { pool = inc[i].attributes.address; break; } }
-        return { source: 'GeckoTerminal', name: a.name || '', symbol: a.symbol || '', image: a.image_url && a.image_url !== 'missing.png' ? a.image_url : '',
-          price: price, mcap: mcap, vol: a.volume_usd ? parseFloat(a.volume_usd.h24) : NaN, pool: pool,
-          link: 'https://www.geckoterminal.com/ton/tokens/' + encodeURIComponent(ca) };
-      });
-    }
-    function fromDex() {
-      return jget('https://api.dexscreener.com/latest/dex/tokens/' + encodeURIComponent(ca)).then(function (j) {
-        var pairs = ((j && j.pairs) || []).filter(function (p) { return p && p.chainId === 'ton'; });
-        if (!pairs.length) return null;
-        pairs.sort(function (x, y) { return ((y.liquidity && y.liquidity.usd) || 0) - ((x.liquidity && x.liquidity.usd) || 0); });
-        var p = pairs[0]; var price = parseFloat(p.priceUsd); if (!isFinite(price) || price <= 0) return null;
-        var side = (p.baseToken && p.baseToken.address === ca) ? p.baseToken : (p.quoteToken || p.baseToken);
-        var mcap = parseFloat(p.marketCap); if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(p.fdv);
-        return { source: 'DexScreener', name: (side && side.name) || '', symbol: (side && side.symbol) || '', image: (p.info && p.info.imageUrl) || '',
-          price: price, mcap: mcap, vol: p.volume ? parseFloat(p.volume.h24) : NaN, pool: p.pairAddress || '',
-          link: p.url || 'https://dexscreener.com/ton/' + encodeURIComponent(ca) };
-      });
-    }
+    function fromTonapi() { return jget('https://tonapi.io/v2/jettons/' + encodeURIComponent(ca)).then(function (j) { if (!j) return null; var m = j.metadata || {}; return { name: m.name || '', symbol: m.symbol || '', image: ipfsToHttp(m.image || '') }; }); }
+    function fromGecko() { return jget(GT + '/tokens/' + encodeURIComponent(ca) + '?include=top_pools').then(function (j) { var a = j && j.data && j.data.attributes; if (!a) return null; var price = parseFloat(a.price_usd); if (!isFinite(price) || price <= 0) return null; var mcap = parseFloat(a.market_cap_usd); if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(a.fdv_usd); var pool = ''; var inc = j.included || []; for (var i = 0; i < inc.length; i++) { if (inc[i].type === 'pool' && inc[i].attributes && inc[i].attributes.address) { pool = inc[i].attributes.address; break; } } return { source: 'GeckoTerminal', name: a.name || '', symbol: a.symbol || '', image: a.image_url && a.image_url !== 'missing.png' ? a.image_url : '', price: price, mcap: mcap, vol: a.volume_usd ? parseFloat(a.volume_usd.h24) : NaN, pool: pool, link: 'https://www.geckoterminal.com/ton/tokens/' + encodeURIComponent(ca) }; }); }
+    function fromDex() { return jget('https://api.dexscreener.com/latest/dex/tokens/' + encodeURIComponent(ca)).then(function (j) { var pairs = ((j && j.pairs) || []).filter(function (p) { return p && p.chainId === 'ton'; }); if (!pairs.length) return null; pairs.sort(function (x, y) { return ((y.liquidity && y.liquidity.usd) || 0) - ((x.liquidity && x.liquidity.usd) || 0); }); var p = pairs[0]; var price = parseFloat(p.priceUsd); if (!isFinite(price) || price <= 0) return null; var side = (p.baseToken && p.baseToken.address === ca) ? p.baseToken : (p.quoteToken || p.baseToken); var mcap = parseFloat(p.marketCap); if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(p.fdv); return { source: 'DexScreener', name: (side && side.name) || '', symbol: (side && side.symbol) || '', image: (p.info && p.info.imageUrl) || '', price: price, mcap: mcap, vol: p.volume ? parseFloat(p.volume.h24) : NaN, pool: p.pairAddress || '', link: p.url || 'https://dexscreener.com/ton/' + encodeURIComponent(ca) }; }); }
+    function fetchListing() { return jget(api + '/listing/list?network=' + net + '&_t=' + Date.now()).then(function (j) { var arr = (j && j.listings) || []; for (var i = 0; i < arr.length; i++) { if (arr[i].ca === ca) return arr[i]; } return null; }); }
 
     var POOL = '';
+    function fetchOhlcv(tf) { if (!POOL) return Promise.resolve(null); var path = tf === 'day' ? 'day?aggregate=1&limit=90' : 'hour?aggregate=1&limit=168'; return jget(GT + '/pools/' + encodeURIComponent(POOL) + '/ohlcv/' + path).then(function (j) { return (j && j.data && j.data.attributes && j.data.attributes.ohlcv_list) || null; }); }
 
-    function fetchOhlcv(tf) {
-      if (!POOL) return Promise.resolve(null);
-      var path = tf === 'day' ? 'day?aggregate=1&limit=90' : 'hour?aggregate=1&limit=168';
-      return jget(GT + '/pools/' + encodeURIComponent(POOL) + '/ohlcv/' + path).then(function (j) {
-        return (j && j.data && j.data.attributes && j.data.attributes.ohlcv_list) || null;
-      });
-    }
-
-    // Large candlestick chart with axes + gridlines, on white.
     function renderChart(list, tf) {
       var data = (list || []).slice().sort(function (a, b) { return a[0] - b[0]; });
-      if (!data.length) return '<p class="td-chart-none">No chart data available for this token yet.</p>';
-      var W = 960, H = 460, padL = 66, padR = 14, padT = 14, padB = 30;
+      if (!data.length) return '<p class="td-chart-none">No chart data available yet.</p>';
+      var W = 980, H = 440, padL = 64, padR = 12, padT = 12, padB = 28;
       var lo = Infinity, hi = -Infinity;
       data.forEach(function (d) { if (d[3] < lo) lo = d[3]; if (d[2] > hi) hi = d[2]; });
       if (!(hi > lo)) hi = lo * 1.0001 + 1e-12;
-      var plotW = W - padL - padR, plotH = H - padT - padB;
-      var n = data.length, cw = plotW / n, bw = Math.max(1.5, cw * 0.64);
-      function x(i) { return padL + i * cw + cw / 2; }
-      function y(p) { return padT + plotH - ((p - lo) / (hi - lo)) * plotH; }
+      var plotW = W - padL - padR, plotH = H - padT - padB, n = data.length, cw = plotW / n, bw = Math.max(1.5, cw * 0.64);
+      function X(i) { return padL + i * cw + cw / 2; }
+      function Y(p) { return padT + plotH - ((p - lo) / (hi - lo)) * plotH; }
       var parts = [];
-      // horizontal gridlines + price labels
-      var rows = 5;
-      for (var g = 0; g <= rows; g++) {
-        var pv = lo + (hi - lo) * (g / rows);
-        var yy = y(pv);
-        parts.push('<line x1="' + padL + '" y1="' + yy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + yy.toFixed(1) + '" stroke="#eceff3" stroke-width="1"/>');
-        parts.push('<text x="' + (padL - 6) + '" y="' + (yy + 3).toFixed(1) + '" text-anchor="end" class="td-axis">' + esc(fmtAxis(pv)) + '</text>');
-      }
-      // x time labels (~6)
+      for (var g = 0; g <= 5; g++) { var pv = lo + (hi - lo) * (g / 5), yy = Y(pv); parts.push('<line x1="' + padL + '" y1="' + yy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + yy.toFixed(1) + '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>'); parts.push('<text x="' + (padL - 6) + '" y="' + (yy + 3).toFixed(1) + '" text-anchor="end" class="td-axis">' + esc(fmtAxis(pv)) + '</text>'); }
       var ticks = Math.min(6, n);
-      for (var k = 0; k < ticks; k++) {
-        var idx = Math.round((n - 1) * (k / (ticks - 1 || 1)));
-        var ts = data[idx][0] * 1000;
-        var lbl;
-        try { lbl = new Date(ts).toLocaleDateString('en', { month: 'short', day: 'numeric' }) + (tf === 'day' ? '' : ' ' + new Date(ts).toLocaleTimeString('en', { hour: '2-digit' })); }
-        catch (_) { lbl = ''; }
-        parts.push('<text x="' + x(idx).toFixed(1) + '" y="' + (H - 10) + '" text-anchor="middle" class="td-axis">' + esc(lbl) + '</text>');
-      }
-      // candles
-      data.forEach(function (d, i) {
-        var up = d[4] >= d[1], col = up ? '#16a34a' : '#dc2626';
-        var yo = y(d[1]), yc = y(d[4]);
-        var top = Math.min(yo, yc), bh = Math.max(1, Math.abs(yc - yo));
-        parts.push('<line x1="' + x(i).toFixed(1) + '" y1="' + y(d[2]).toFixed(1) + '" x2="' + x(i).toFixed(1) + '" y2="' + y(d[3]).toFixed(1) + '" stroke="' + col + '" stroke-width="1"/>');
-        parts.push('<rect x="' + (x(i) - bw / 2).toFixed(1) + '" y="' + top.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" fill="' + col + '"/>');
-      });
+      for (var k = 0; k < ticks; k++) { var idx = Math.round((n - 1) * (k / (ticks - 1 || 1))); var ts = data[idx][0] * 1000; var lbl; try { lbl = new Date(ts).toLocaleDateString('en', { month: 'short', day: 'numeric' }) + (tf === 'day' ? '' : ' ' + new Date(ts).toLocaleTimeString('en', { hour: '2-digit' })); } catch (_) { lbl = ''; } parts.push('<text x="' + X(idx).toFixed(1) + '" y="' + (H - 9) + '" text-anchor="middle" class="td-axis">' + esc(lbl) + '</text>'); }
+      data.forEach(function (d, i) { var up = d[4] >= d[1], col = up ? '#6dd4a8' : '#e8607a'; var yo = Y(d[1]), yc = Y(d[4]); var top = Math.min(yo, yc), bh = Math.max(1, Math.abs(yc - yo)); parts.push('<line x1="' + X(i).toFixed(1) + '" y1="' + Y(d[2]).toFixed(1) + '" x2="' + X(i).toFixed(1) + '" y2="' + Y(d[3]).toFixed(1) + '" stroke="' + col + '" stroke-width="1"/>'); parts.push('<rect x="' + (X(i) - bw / 2).toFixed(1) + '" y="' + top.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="0.5" fill="' + col + '"/>'); });
       return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="td-svg" role="img" aria-label="price chart">' + parts.join('') + '</svg>';
     }
+    function drawChart(tf) { var box = document.getElementById('td-chartbox'); if (!box) return; box.innerHTML = '<p class="td-chart-none">Loading chart…</p>'; fetchOhlcv(tf).then(function (list) { box.innerHTML = renderChart(list, tf); }); document.querySelectorAll('.td-tf').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-tf') === tf); }); }
 
-    function logoHtml(image, letter) {
-      return image
-        ? '<img class="td-logo" src="' + esc(image) + '" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'td-logo td-logo-ph\',textContent:\'' + esc(letter) + '\'}))" />'
-        : '<div class="td-logo td-logo-ph">' + esc(letter) + '</div>';
-    }
+    function logoHtml(image, letter) { return image ? '<img class="td-logo" src="' + esc(image) + '" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'td-logo td-logo-ph\',textContent:\'' + esc(letter) + '\'}))" />' : '<div class="td-logo td-logo-ph">' + esc(letter) + '</div>'; }
+    function pill(href, kind, label) { return '<a class="td-pill td-pill-' + kind + '" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">' + (kind === 'tg' ? ICON_TG : kind === 'x' ? ICON_X : ICON_CHART) + '<span>' + esc(label) + '</span></a>'; }
 
-    function drawChart(tf) {
-      var box = document.getElementById('td-chartbox');
-      if (!box) return;
-      box.innerHTML = '<p class="td-chart-none">Loading chart…</p>';
-      fetchOhlcv(tf).then(function (list) { box.innerHTML = renderChart(list, tf); });
-      var btns = document.querySelectorAll('.td-tf');
-      btns.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-tf') === tf); });
-    }
-
-    function render(meta, m) {
-      var name = (meta && meta.name) || (m && m.name) || 'Unknown token';
+    function render(listing, meta, m) {
+      var name = (meta && meta.name) || (m && m.name) || (listing && listing.label) || 'Unknown token';
       var symbol = (meta && meta.symbol) || (m && m.symbol) || '';
       var image = (meta && meta.image) || (m && m.image) || '';
       var letter = (symbol || name || '?').slice(0, 1).toUpperCase();
       POOL = (m && m.pool) || '';
-      var stats = m
-        ? '<div class="td-stats">' +
-            '<div><span class="td-k">Price</span><span class="td-v">' + esc(fmtPrice(m.price)) + '</span></div>' +
-            '<div><span class="td-k">Market cap</span><span class="td-v">' + esc(fmtUsd(m.mcap)) + '</span></div>' +
-            '<div><span class="td-k">Volume 24h</span><span class="td-v">' + esc(fmtUsd(m.vol)) + '</span></div>' +
-          '</div>'
-        : '<p class="td-nomarket">No market data yet — token may be too new or unlisted on DEXes.</p>';
-      var chart = POOL
-        ? '<div class="td-chartwrap">' +
-            '<div class="td-tfbar"><button type="button" class="td-tf active" data-tf="hour">1H</button><button type="button" class="td-tf" data-tf="day">1D</button></div>' +
-            '<div id="td-chartbox" class="td-chartbox"></div>' +
-          '</div>'
-        : '';
-      var links =
-        '<div class="td-links">' +
-          (m && m.link ? '<a href="' + esc(m.link) + '" target="_blank" rel="noopener noreferrer">Open on ' + esc(m.source) + ' ↗</a>' : '') +
-          '<a href="https://tonviewer.com/' + encodeURIComponent(ca) + '" target="_blank" rel="noopener noreferrer">Tonviewer ↗</a>' +
-        '</div>';
-      root.innerHTML =
-        '<header class="td-head">' + logoHtml(image, letter) +
+      var head =
+        '<header class="td-head">' +
+          '<div class="td-logo-wrap">' + logoHtml(image, letter) + '</div>' +
           '<div class="td-id"><h1 class="td-name">' + esc(name) + '</h1>' +
           (symbol ? '<span class="td-sym">$' + esc(symbol) + '</span>' : '') +
           '<code class="td-ca" title="' + esc(ca) + '">' + esc(shortAddr(ca)) + '</code></div>' +
-        '</header>' + stats + chart + links;
-      if (POOL) {
-        document.querySelectorAll('.td-tf').forEach(function (b) {
-          b.addEventListener('click', function () { drawChart(b.getAttribute('data-tf')); });
-        });
-        drawChart('hour');
-      }
+        '</header>';
+      var stats = m
+        ? '<div class="td-stats">' +
+            '<div class="td-stat td-stat-main"><span class="td-k">Price</span><span class="td-v">' + esc(fmtPrice(m.price)) + '</span></div>' +
+            '<div class="td-stat"><span class="td-k">Market cap</span><span class="td-v">' + esc(fmtUsd(m.mcap)) + '</span></div>' +
+            '<div class="td-stat"><span class="td-k">Volume 24h</span><span class="td-v">' + esc(fmtUsd(m.vol)) + '</span></div>' +
+          '</div>'
+        : '<p class="td-nomarket">No market data yet — token may be too new or unlisted on DEXes.</p>';
+      var chart = POOL
+        ? '<div class="td-chartcard">' +
+            '<div class="td-chartbar"><span class="td-chartttl">Price chart</span>' +
+            '<div class="td-tfbar"><button type="button" class="td-tf active" data-tf="hour">1H</button><button type="button" class="td-tf" data-tf="day">1D</button></div></div>' +
+            '<div id="td-chartbox" class="td-chartbox"></div>' +
+          '</div>'
+        : '';
+      var links = '<div class="td-pills">';
+      if (listing && listing.telegram) links += pill(listing.telegram, 'tg', 'Telegram');
+      if (listing && listing.x) links += pill(listing.x, 'x', 'X');
+      if (m && m.link) links += pill(m.link, 'dex', m.source);
+      links += pill('https://tonviewer.com/' + encodeURIComponent(ca), 'view', 'Tonviewer');
+      links += '</div>';
+      root.innerHTML = head + stats + chart + links;
+      if (POOL) { document.querySelectorAll('.td-tf').forEach(function (b) { b.addEventListener('click', function () { drawChart(b.getAttribute('data-tf')); }); }); drawChart('hour'); }
     }
 
     var TON_RE = /^[A-Za-z0-9_-]{48}$/;
-    if (!TON_RE.test(ca)) {
-      root.innerHTML = '<p class="td-state">No token selected. <a href="/token">Back to the board →</a></p>';
-      return;
-    }
-    Promise.all([fromTonapi(), fromGecko().then(function (g) { return g || fromDex(); })]).then(function (res) {
-      render(res[0], res[1]);
-    });
+    if (!TON_RE.test(ca)) { root.innerHTML = '<p class="td-state">No token selected. <a href="/token">Back to the board →</a></p>'; return; }
+    Promise.all([fetchListing(), fromTonapi(), fromGecko().then(function (g) { return g || fromDex(); })]).then(function (res) { render(res[0], res[1], res[2]); });
   })();
 </script>
 
 <style>
-  /* Light, full-width detail view on white. */
-  .td { background: #ffffff; color: #16181d; min-height: 78vh; margin: 0 auto; max-width: 1040px;
-    padding: 24px 24px 64px; border-radius: 12px; }
-  .td-back { display: inline-block; margin-bottom: 22px; font-family: var(--font-mono); font-size: 13px;
-    color: #2a6df4; text-decoration: none; }
-  .td-back:hover { text-decoration: underline; }
-  .td-state { font-family: var(--font-mono); color: #5b6270; padding: 28px 0; }
-  .td-state a { color: #2a6df4; }
+  .td { position: relative; max-width: 1060px; margin: 28px auto 70px; padding: 0 24px; }
+  .td-aura { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 80%; height: 320px;
+    background: radial-gradient(60% 100% at 50% 0%, rgba(122,233,184,0.16), transparent 70%); filter: blur(20px); pointer-events: none; z-index: 0; }
+  .td-back { position: relative; z-index: 1; display: inline-block; margin-bottom: 22px; font-family: var(--font-mono); font-size: 13px; color: var(--accent-text); text-decoration: none; }
+  .td-back:hover { color: var(--accent); }
+  .td-root { position: relative; z-index: 1; }
+  .td-state { font-family: var(--font-mono); color: var(--text-mute); padding: 30px 0; }
+  .td-state a { color: var(--accent-text); }
 
-  .td-head { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
-  .td-logo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; background: #f0f2f5; flex: 0 0 auto; }
-  .td-logo-ph { display: flex; align-items: center; justify-content: center; background: #eef2ff; color: #2a6df4;
-    font-family: var(--font-display); font-weight: 800; font-size: 26px; }
-  .td-id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-  .td-name { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 4vw, 38px); color: #111418; line-height: 1.1; }
-  .td-sym { font-family: var(--font-mono); font-size: 14px; color: #2a6df4; }
-  .td-ca { font-family: var(--font-mono); font-size: 12px; color: #8a909c; }
+  .td-head { display: flex; align-items: center; gap: 18px; margin-bottom: 24px; }
+  .td-logo-wrap { position: relative; flex: 0 0 auto; }
+  .td-logo-wrap::after { content: ''; position: absolute; inset: -10px; border-radius: 50%; background: radial-gradient(circle, rgba(122,233,184,0.35), transparent 70%); z-index: -1; }
+  .td-logo { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; background: #0d0d0f; border: 2px solid rgba(255,255,255,0.12); box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: block; }
+  .td-logo-ph { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent-soft), rgba(122,233,184,0.08)); color: var(--accent-text); font-family: var(--font-display); font-weight: 800; font-size: 34px; }
+  .td-id { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .td-name { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(28px,4.5vw,44px); color: #fff; line-height: 1.05; }
+  .td-sym { font-family: var(--font-mono); font-size: 15px; color: var(--accent-text); }
+  .td-ca { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); }
 
-  .td-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 0 0 26px;
-    border-top: 1px solid #eceff3; border-bottom: 1px solid #eceff3; padding: 18px 0; }
-  .td-stats > div { display: flex; flex-direction: column; gap: 5px; }
-  .td-k { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #8a909c; }
-  .td-v { font-family: var(--font-mono); font-size: clamp(18px, 2.4vw, 24px); font-weight: 700; color: #111418; }
-  .td-nomarket { font-family: var(--font-mono); font-size: 13px; color: #8a909c; margin: 0 0 24px; }
+  .td-stats { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 12px; margin: 0 0 22px; }
+  .td-stat { background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 8px 22px rgba(0,0,0,0.3); }
+  .td-stat-main { border-color: rgba(122,233,184,0.3); }
+  .td-k { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-mute); }
+  .td-v { font-family: var(--font-mono); font-size: clamp(18px,2.6vw,26px); font-weight: 700; color: #fff; }
+  .td-stat-main .td-v { color: #7ae9b8; }
+  .td-nomarket { font-family: var(--font-mono); font-size: 13px; color: var(--text-mute); margin: 0 0 22px; }
 
-  .td-chartwrap { margin: 0 0 24px; }
-  .td-tfbar { display: flex; gap: 8px; margin-bottom: 10px; }
-  .td-tf { background: #f4f6f9; border: 1px solid #e2e6ec; color: #4a5160; cursor: pointer;
-    font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 6px; }
-  .td-tf.active { background: #111418; color: #fff; border-color: #111418; }
+  .td-chartcard { background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 14px 14px 8px; margin: 0 0 22px; box-shadow: 0 14px 40px rgba(0,0,0,0.4); }
+  .td-chartbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding: 0 4px; }
+  .td-chartttl { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-mute); }
+  .td-tfbar { display: flex; gap: 6px; }
+  .td-tf { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-dim); cursor: pointer; font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 7px; }
+  .td-tf.active { background: #7ae9b8; color: #06281c; border-color: #7ae9b8; }
   .td-chartbox { width: 100%; }
   .td-svg { width: 100%; height: auto; display: block; }
-  .td-axis { fill: #9aa1ad; font-family: var(--font-mono); font-size: 11px; }
-  .td-chart-none { font-family: var(--font-mono); font-size: 13px; color: #8a909c; padding: 40px 0; text-align: center; }
+  .td-axis { fill: #7b818d; font-family: var(--font-mono); font-size: 11px; }
+  .td-chart-none { font-family: var(--font-mono); font-size: 13px; color: var(--text-mute); padding: 48px 0; text-align: center; }
 
-  .td-links { display: flex; gap: 18px; flex-wrap: wrap; }
-  .td-links a { font-family: var(--font-mono); font-size: 13px; color: #2a6df4; text-decoration: none; }
-  .td-links a:hover { text-decoration: underline; }
+  .td-pills { display: flex; gap: 12px; flex-wrap: wrap; }
+  .td-pill { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 11px; text-decoration: none;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: #d6dae0; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1); transition: all 0.15s; }
+  .td-pill svg { width: 16px; height: 16px; }
+  .td-pill:hover { transform: translateY(-2px); background: rgba(255,255,255,0.09); color: #fff; }
+  .td-pill-tg:hover { color: #5fb8ee; border-color: rgba(42,160,233,0.5); }
+  .td-pill-dex:hover { color: #7ae9b8; border-color: rgba(122,233,184,0.5); }
+
+  @media (max-width: 560px) { .td-stats { grid-template-columns: 1fr 1fr; } .td-stat-main { grid-column: 1 / -1; } }
 </style>

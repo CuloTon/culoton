@@ -387,6 +387,8 @@ type Listing = {
   ca: string;
   label: string;
   note: string;
+  telegram: string;
+  x: string;
   network: 'testnet' | 'mainnet';
   at: string;
 };
@@ -411,6 +413,8 @@ function validateListing(body: any): Listing | { error: string } {
     ca,
     label: clampStr(body.label, 64),
     note: clampStr(body.note, 200),
+    telegram: sanUrl(body.telegram),
+    x: sanUrl(body.x),
     network: network as 'testnet' | 'mainnet',
     at: new Date().toISOString(),
   };
