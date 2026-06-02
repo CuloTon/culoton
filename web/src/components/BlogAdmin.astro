@@ -1,0 +1,122 @@
+---
+// Blog admin panel — gated by ADMIN_KEY (same key as the token board).
+// Users + BRTP balances + payouts; article moderation (delete / demo).
+---
+
+<section class="ba">
+  <a class="ba-back" href="/community">← Blog</a>
+  <h1 class="ba-h1">Blog admin</h1>
+  <div class="ba-key">
+    <input type="password" id="ba-key" placeholder="Admin key" autocomplete="off" />
+    <button class="ba-btn" id="ba-load">Load</button>
+    <span class="ba-msg" id="ba-msg"></span>
+  </div>
+  <div id="ba-root"></div>
+</section>
+
+<script>
+  (function () {
+    const meta = document.querySelector('meta[name="stats-api"]');
+    const api = meta ? (meta.getAttribute('content') || '').replace(/\/$/, '') : '';
+    const root = document.getElementById('ba-root');
+    const keyEl = document.getElementById('ba-key');
+    const msg = document.getElementById('ba-msg');
+    function key() { try { return sessionStorage.getItem('brt_admin_key') || ''; } catch (_) { return ''; } }
+    if (key()) keyEl.value = key();
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function fmt(n) { try { return new Intl.NumberFormat('en').format(n); } catch (_) { return '' + n; } }
+    function H() { return { 'Content-Type': 'application/json', 'X-Admin-Key': keyEl.value.trim() }; }
+    function jget(p) { return fetch(api + p, { headers: H() }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); }); }
+    function jpost(p, b) { return fetch(api + p, { method: 'POST', headers: H(), body: JSON.stringify(b || {}) }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); }); }
+
+    function load() {
+      try { sessionStorage.setItem('brt_admin_key', keyEl.value.trim()); } catch (_) {}
+      msg.textContent = 'Loading…';
+      Promise.all([jget('/blog/admin/users'), jget('/blog/articles')]).then(function (res) {
+        if (!res[0].ok) { msg.textContent = res[0].status === 401 ? 'Wrong admin key.' : 'Error'; root.innerHTML = ''; return; }
+        msg.textContent = '';
+        render(res[0].j.users || [], res[1].j.articles || []);
+      });
+    }
+
+    function render(users, arts) {
+      const totalUnpaid = users.reduce(function (s, u) { return s + (u.unpaid || 0); }, 0);
+      let h = '<div class="ba-sum">Users: <b>' + users.length + '</b> · Articles: <b>' + arts.length + '</b> · Total unpaid: <b>' + fmt(totalUnpaid) + ' BRTP</b></div>';
+      h += '<h2 class="ba-h2">Users & payouts</h2><div class="ba-tbl"><table><thead><tr><th>Login</th><th>Email</th><th>TON</th><th>Earned</th><th>Paid</th><th>Pending</th><th></th></tr></thead><tbody>';
+      h += users.map(function (u) {
+        return '<tr' + (u.banned ? ' class="ba-banned"' : '') + '>' +
+          '<td>' + esc(u.login) + (u.banned ? ' 🚫' : '') + '</td>' +
+          '<td class="ba-mono">' + esc(u.email) + '</td>' +
+          '<td class="ba-mono ba-ton" title="' + esc(u.ton) + '">' + esc((u.ton || '').slice(0, 8)) + '…</td>' +
+          '<td>' + fmt(u.earned) + '</td><td>' + fmt(u.paid) + '</td><td class="ba-pend">' + fmt(u.unpaid) + '</td>' +
+          '<td class="ba-actions">' +
+            (u.unpaid > 0 ? '<button class="ba-mini ba-pay" data-uid="' + u.uid + '" data-amt="' + u.unpaid + '">Pay ' + fmt(u.unpaid) + '</button>' : '') +
+            '<button class="ba-mini" data-ban="' + u.uid + '" data-act="' + (u.banned ? 'unban' : 'ban') + '">' + (u.banned ? 'Unban' : 'Ban') + '</button>' +
+            '<button class="ba-mini ba-del" data-deluser="' + u.uid + '">Del</button>' +
+          '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+
+      h += '<h2 class="ba-h2">Articles</h2><div class="ba-arts">';
+      h += arts.map(function (a) {
+        return '<div class="ba-art">' +
+          '<div class="ba-art-i"><b>' + esc(a.title) + '</b>' + (a.demo ? ' <span class="ba-tag">DEMO</span>' : '') +
+            '<span class="ba-art-m">' + esc(a.authorLogin) + ' · ' + esc(a.lang) + ' · ' + fmt(a.points) + ' pts</span></div>' +
+          '<div class="ba-actions">' +
+            '<button class="ba-mini" data-demo="' + a.aid + '" data-act="' + (a.demo ? 'undemo' : 'demo') + '">' + (a.demo ? 'Unmark demo' : 'Mark demo') + '</button>' +
+            '<button class="ba-mini ba-del" data-delart="' + a.aid + '">Delete</button>' +
+          '</div></div>';
+      }).join('') + '</div>';
+      root.innerHTML = h;
+
+      root.querySelectorAll('.ba-pay').forEach(function (b) { b.addEventListener('click', function () {
+        if (!confirm('Mark ' + fmt(+b.getAttribute('data-amt')) + ' BRTP as paid to this user? (do the on-chain transfer separately)')) return;
+        jpost('/blog/admin/payout', { uid: b.getAttribute('data-uid'), amount: +b.getAttribute('data-amt') }).then(function (r) { if (r.ok) load(); else alert(r.j.error || 'Error'); });
+      }); });
+      root.querySelectorAll('[data-ban]').forEach(function (b) { b.addEventListener('click', function () {
+        jpost('/blog/admin/user', { uid: b.getAttribute('data-ban'), action: b.getAttribute('data-act') }).then(function (r) { if (r.ok) load(); else alert(r.j.error || 'Error'); });
+      }); });
+      root.querySelectorAll('[data-deluser]').forEach(function (b) { b.addEventListener('click', function () {
+        if (!confirm('Delete this user permanently?')) return;
+        jpost('/blog/admin/user', { uid: b.getAttribute('data-deluser'), action: 'delete' }).then(function (r) { if (r.ok) load(); else alert(r.j.error || 'Error'); });
+      }); });
+      root.querySelectorAll('[data-demo]').forEach(function (b) { b.addEventListener('click', function () {
+        jpost('/blog/admin/article', { aid: b.getAttribute('data-demo'), action: b.getAttribute('data-act') }).then(function (r) { if (r.ok) load(); else alert(r.j.error || 'Error'); });
+      }); });
+      root.querySelectorAll('[data-delart]').forEach(function (b) { b.addEventListener('click', function () {
+        if (!confirm('Delete this article?')) return;
+        jpost('/blog/admin/article', { aid: b.getAttribute('data-delart'), action: 'delete' }).then(function (r) { if (r.ok) load(); else alert(r.j.error || 'Error'); });
+      }); });
+    }
+
+    document.getElementById('ba-load').addEventListener('click', load);
+    if (key()) load();
+  })();
+</script>
+
+<style is:global>
+  .ba { max-width: 1080px; margin: 26px auto 70px; padding: 0 24px; }
+  .ba-back { font-family: var(--font-mono); font-size: 13px; color: var(--accent-text); text-decoration: none; }
+  .ba-h1 { font-family: var(--font-display); font-weight: 800; font-size: 38px; color: #fff; margin: 12px 0 18px; }
+  .ba-h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; color: #fff; margin: 30px 0 12px; }
+  .ba-key { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .ba-key input { flex: 0 1 280px; background: #0d0d0f; border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; padding: 10px 12px; color: #eee; font-family: var(--font-mono); }
+  .ba-btn { background: linear-gradient(135deg,#7ae9b8,#5bd3a0); color: #06281c; border: none; border-radius: 8px; padding: 10px 20px; font-family: var(--font-mono); font-weight: 700; cursor: pointer; }
+  .ba-msg { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+  .ba-sum { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); margin-top: 18px; } .ba-sum b { color: #7ae9b8; }
+  .ba-tbl { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+  .ba-tbl table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; }
+  .ba-tbl th { text-align: left; padding: 10px; color: var(--text-mute); text-transform: uppercase; font-size: 9px; letter-spacing: 0.1em; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .ba-tbl td { padding: 10px; color: #e2e5ea; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .ba-mono { color: var(--text-dim); } .ba-pend { color: #7ae9b8; font-weight: 700; }
+  .ba-banned { opacity: 0.5; }
+  .ba-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ba-mini { cursor: pointer; font-family: var(--font-mono); font-size: 10px; padding: 5px 9px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: #d6dae0; }
+  .ba-mini:hover { background: rgba(255,255,255,0.12); }
+  .ba-pay { border-color: rgba(122,233,184,0.5); color: #7ae9b8; }
+  .ba-del { border-color: rgba(220,90,90,0.5); color: #e08585; }
+  .ba-arts { display: flex; flex-direction: column; gap: 8px; }
+  .ba-art { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); }
+  .ba-art-i { font-family: var(--font-serif); color: #fff; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .ba-art-m { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }
+  .ba-tag { font-family: var(--font-mono); font-size: 9px; color: #ffcf5d; border: 1px solid rgba(255,207,93,0.5); border-radius: 4px; padding: 1px 5px; }
+</style>

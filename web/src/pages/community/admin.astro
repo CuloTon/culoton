@@ -1,0 +1,15 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BlogAdmin from '../../components/BlogAdmin.astro';
+
+const locale = 'en' as const;
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/community/admin"
+  title="Blog admin"
+  description="Admin panel for the BRAINROT community blog."
+>
+  <BlogAdmin />
+</Layout>

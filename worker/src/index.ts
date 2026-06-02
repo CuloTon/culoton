@@ -986,6 +986,23 @@ export default {
         await env.STATS_KV.put(`buser:${BLOG_VER}:${uid}`, JSON.stringify(u));
         return jsonRes(headers, { ok: true, user: pubUser(u) });
       }
+      if (url.pathname === '/blog/admin/user' && req.method === 'POST') {
+        if (!adminOK(req, env)) return jsonRes(headers, { error: 'unauthorized' }, 401);
+        let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }
+        const uid = clampStr(b.uid, 32), action = String(b.action || '');
+        const k = `buser:${BLOG_VER}:${uid}`, raw = await env.STATS_KV.get(k);
+        if (!raw) return jsonRes(headers, { error: 'not found' }, 404);
+        const u = JSON.parse(raw) as BUser;
+        if (action === 'delete') {
+          await env.STATS_KV.delete(k);
+          await env.STATS_KV.delete(`bemail:${BLOG_VER}:${u.email}`);
+          await env.STATS_KV.delete(`blogin:${BLOG_VER}:${u.login.toLowerCase()}`);
+          return jsonRes(headers, { ok: true, deleted: true });
+        }
+        if (action === 'ban') u.banned = true; else if (action === 'unban') u.banned = false; else return jsonRes(headers, { error: 'bad action' }, 400);
+        await env.STATS_KV.put(k, JSON.stringify(u));
+        return jsonRes(headers, { ok: true });
+      }
       if (url.pathname === '/blog/admin/article' && req.method === 'POST') {
         if (!adminOK(req, env)) return jsonRes(headers, { error: 'unauthorized' }, 401);
         let b: any; try { b = await req.json(); } catch { return jsonRes(headers, { error: 'invalid json' }, 400); }

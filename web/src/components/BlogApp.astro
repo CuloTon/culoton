@@ -1,0 +1,319 @@
+---
+// Community blog app (client-rendered against the stats worker /blog/*).
+// Views: list / article / write / account. Email+password auth, BRTP economy.
+---
+
+<section class="bl">
+  <div class="bl-aura" aria-hidden="true"></div>
+  <header class="bl-hero">
+    <span class="bl-kicker">BRAINROT community</span>
+    <h1 class="bl-h1">Blog</h1>
+    <p class="bl-lede">Write in your language, get upvoted, earn <b>BRTP</b>. Every point pushes your post up — and pays the author <b>10 BRTP</b>, the voter <b>1 BRTP</b>. Points are paid out to your TON address.</p>
+    <div class="bl-bar" id="bl-bar"></div>
+  </header>
+  <div id="bl-app" class="bl-app"><p class="bl-state">Loading…</p></div>
+</section>
+
+<script>
+  (function () {
+    const meta = document.querySelector('meta[name="stats-api"]');
+    const api = meta ? (meta.getAttribute('content') || '').replace(/\/$/, '') : '';
+    const app = document.getElementById('bl-app');
+    const bar = document.getElementById('bl-bar');
+    const LS = 'brt_blog_token';
+    const LANGS = [['en', '🇬🇧 EN'], ['ru', '🇷🇺 RU'], ['pl', '🇵🇱 PL'], ['de', '🇩🇪 DE'], ['es', '🇪🇸 ES'], ['uk', '🇺🇦 UK']];
+    let me = null;
+
+    function tok() { try { return localStorage.getItem(LS) || ''; } catch (_) { return ''; } }
+    function setTok(t) { try { t ? localStorage.setItem(LS, t) : localStorage.removeItem(LS); } catch (_) {} }
+    function ah() { const t = tok(); return t ? { Authorization: 'Bearer ' + t } : {}; }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function nl2br(s) { return esc(s).replace(/\n/g, '<br>'); }
+    function fmt(n) { try { return new Intl.NumberFormat('en').format(n); } catch (_) { return '' + n; } }
+    function langLabel(l) { for (const x of LANGS) if (x[0] === l) return x[1]; return l; }
+    function ipfs(u) { return u && u.indexOf('ipfs://') === 0 ? 'https://ipfs.io/ipfs/' + u.slice(7) : (u || ''); }
+    function avatar(url, name, cls) {
+      const letter = (name || '?').slice(0, 1).toUpperCase();
+      return ipfs(url)
+        ? '<img class="' + cls + '" src="' + esc(ipfs(url)) + '" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'' + cls + ' bl-av-ph\',textContent:\'' + esc(letter) + '\'}))" />'
+        : '<div class="' + cls + ' bl-av-ph">' + esc(letter) + '</div>';
+    }
+    function jget(p) { return fetch(api + p, { headers: { Accept: 'application/json', ...ah() } }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); }); }
+    function jpost(p, body) { return fetch(api + p, { method: 'POST', headers: { 'Content-Type': 'application/json', ...ah() }, body: JSON.stringify(body || {}) }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); }); }
+
+    function go(hash) { location.hash = hash; }
+    function renderBar() {
+      if (me) {
+        bar.innerHTML =
+          '<a class="bl-btn bl-btn-primary" href="#write">✍️ Write</a>' +
+          '<a class="bl-chip-user" href="#account">' + avatar(me.avatar, me.login, 'bl-av-sm') +
+            '<span class="bl-chip-name">' + esc(me.login) + '</span>' +
+            '<span class="bl-chip-brtp">' + fmt(me.unpaid) + ' BRTP</span></a>';
+      } else {
+        bar.innerHTML = '<a class="bl-btn bl-btn-primary" href="#account">Log in / Register</a>';
+      }
+    }
+
+    function articleCard(a, rank) {
+      const demo = a.demo ? '<span class="bl-demo">DEMO</span>' : '';
+      return '<a class="bl-card" href="#article/' + esc(a.aid) + '">' +
+        '<div class="bl-rank">' + rank + '</div>' +
+        '<div class="bl-card-body">' +
+          '<div class="bl-card-top">' + avatar(a.authorAvatar, a.authorLogin, 'bl-av-sm') +
+            '<span class="bl-author">' + esc(a.authorLogin) + '</span>' +
+            '<span class="bl-lang">' + esc(langLabel(a.lang)) + '</span>' + demo + '</div>' +
+          '<h3 class="bl-title">' + esc(a.title) + '</h3>' +
+          '<p class="bl-snip">' + esc(a.body) + '…</p>' +
+        '</div>' +
+        '<div class="bl-card-side"><div class="bl-pts">' + fmt(a.points) + '</div><div class="bl-pts-l">points</div>' +
+          '<div class="bl-brtp">' + fmt(a.brtp) + ' BRTP</div></div>' +
+        '</a>';
+    }
+
+    let curLang = '';
+    function renderList() {
+      app.innerHTML = '<div class="bl-langs" id="bl-langs"></div><div class="bl-list" id="bl-list"><p class="bl-state">Loading articles…</p></div>';
+      const lf = document.getElementById('bl-langs');
+      lf.innerHTML = '<button class="bl-lf' + (curLang === '' ? ' on' : '') + '" data-l="">🌐 All</button>' +
+        LANGS.map(function (x) { return '<button class="bl-lf' + (curLang === x[0] ? ' on' : '') + '" data-l="' + x[0] + '">' + x[1] + '</button>'; }).join('');
+      lf.querySelectorAll('.bl-lf').forEach(function (b) { b.addEventListener('click', function () { curLang = b.getAttribute('data-l'); renderList(); }); });
+      jget('/blog/articles' + (curLang ? '?lang=' + curLang : '')).then(function (r) {
+        const list = document.getElementById('bl-list');
+        const arts = (r.j && r.j.articles) || [];
+        if (!arts.length) { list.innerHTML = '<p class="bl-state">No articles yet. <a href="#write">Be the first ✍️</a></p>'; return; }
+        list.innerHTML = arts.map(function (a, i) { return articleCard(a, i + 1); }).join('');
+      });
+    }
+
+    function renderArticle(aid) {
+      app.innerHTML = '<p class="bl-state">Loading…</p>';
+      jget('/blog/article?id=' + encodeURIComponent(aid)).then(function (r) {
+        if (!r.ok || !r.j.article) { app.innerHTML = '<p class="bl-state">Article not found. <a href="#list">← Back</a></p>'; return; }
+        const a = r.j.article;
+        const canVote = me && !r.j.mine && !r.j.voted;
+        const voteBtn = me
+          ? (r.j.mine ? '<span class="bl-voted">Your article</span>'
+            : r.j.voted ? '<span class="bl-voted">✓ Voted</span>'
+            : '<button class="bl-vote" id="bl-vote">▲ Upvote <span>+1</span></button>')
+          : '<a class="bl-btn bl-btn-primary" href="#account">Log in to vote</a>';
+        app.innerHTML =
+          '<a class="bl-back" href="#list">← All posts</a>' +
+          '<article class="bl-post">' +
+            '<div class="bl-post-head">' + avatar(a.authorAvatar, a.authorLogin, 'bl-av-md') +
+              '<div><div class="bl-author bl-author-lg">' + esc(a.authorLogin) + '</div>' +
+              '<div class="bl-meta">' + esc(langLabel(a.lang)) + ' · ' + esc((a.at || '').slice(0, 10)) + (a.demo ? ' · <span class="bl-demo">DEMO</span>' : '') + '</div></div>' +
+            '</div>' +
+            '<h1 class="bl-post-title">' + esc(a.title) + '</h1>' +
+            '<div class="bl-post-body">' + nl2br(a.body) + '</div>' +
+            '<div class="bl-post-foot">' +
+              '<div class="bl-score"><span class="bl-score-n" id="bl-score">' + fmt(a.points) + '</span> points · <b id="bl-score-b">' + fmt(a.brtp) + '</b> BRTP</div>' +
+              voteBtn +
+            '</div>' +
+          '</article>';
+        const vb = document.getElementById('bl-vote');
+        if (vb) vb.addEventListener('click', function () {
+          vb.disabled = true;
+          jpost('/blog/vote', { aid: aid }).then(function (res) {
+            if (res.ok && res.j.ok) {
+              document.getElementById('bl-score').textContent = fmt(res.j.points);
+              document.getElementById('bl-score-b').textContent = fmt(res.j.brtp);
+              vb.outerHTML = '<span class="bl-voted">✓ Voted +1</span>';
+              refreshMe();
+            } else { alert(res.j.error || 'Vote failed'); vb.disabled = false; }
+          });
+        });
+      });
+    }
+
+    function renderWrite() {
+      if (!me) { go('account'); return; }
+      app.innerHTML =
+        '<a class="bl-back" href="#list">← Cancel</a>' +
+        '<div class="bl-form bl-form-wide">' +
+          '<h2 class="bl-form-h">New article</h2>' +
+          '<label class="bl-l">Language</label>' +
+          '<select id="w-lang" class="bl-in">' + LANGS.map(function (x) { return '<option value="' + x[0] + '">' + x[1] + '</option>'; }).join('') + '</select>' +
+          '<label class="bl-l">Title</label><input id="w-title" class="bl-in" maxlength="200" placeholder="A catchy title" />' +
+          '<label class="bl-l">Body</label><textarea id="w-body" class="bl-in bl-ta" maxlength="20000" placeholder="Write your post…"></textarea>' +
+          '<button class="bl-btn bl-btn-primary bl-btn-big" id="w-submit">Publish · starts at 0 BRTP</button>' +
+          '<p class="bl-msg" id="w-msg"></p>' +
+        '</div>';
+      document.getElementById('w-submit').addEventListener('click', function () {
+        const msg = document.getElementById('w-msg');
+        msg.textContent = 'Publishing…';
+        jpost('/blog/article', { lang: document.getElementById('w-lang').value, title: document.getElementById('w-title').value, body: document.getElementById('w-body').value })
+          .then(function (r) { if (r.ok && r.j.ok) { go('article/' + r.j.aid); } else { msg.textContent = r.j.error || 'Error'; } });
+      });
+    }
+
+    function renderAccount() {
+      if (me) {
+        app.innerHTML =
+          '<div class="bl-profile">' +
+            '<div class="bl-profile-head">' + avatar(me.avatar, me.login, 'bl-av-lg') +
+              '<div><div class="bl-author bl-author-lg">' + esc(me.login) + '</div><div class="bl-meta">' + esc(me.email) + '</div></div></div>' +
+            '<div class="bl-stats3">' +
+              '<div class="bl-st"><span>' + fmt(me.earned) + '</span><i>BRTP earned</i></div>' +
+              '<div class="bl-st"><span>' + fmt(me.paid) + '</span><i>BRTP paid</i></div>' +
+              '<div class="bl-st bl-st-main"><span>' + fmt(me.unpaid) + '</span><i>BRTP pending</i></div>' +
+            '</div>' +
+            '<label class="bl-l">Avatar URL</label><input id="p-av" class="bl-in" value="' + esc(me.avatar) + '" />' +
+            '<label class="bl-l">TON address (payouts)</label><input id="p-ton" class="bl-in" value="' + esc(me.ton) + '" />' +
+            '<div class="bl-row"><button class="bl-btn bl-btn-primary" id="p-save">Save</button><button class="bl-btn" id="p-logout">Log out</button></div>' +
+            '<p class="bl-msg" id="p-msg"></p>' +
+          '</div>';
+        document.getElementById('p-save').addEventListener('click', function () {
+          const msg = document.getElementById('p-msg'); msg.textContent = 'Saving…';
+          jpost('/blog/account', { avatar: document.getElementById('p-av').value, ton: document.getElementById('p-ton').value })
+            .then(function (r) { if (r.ok && r.j.ok) { me = r.j.user; renderBar(); msg.textContent = 'Saved ✓'; } else { msg.textContent = r.j.error || 'Error'; } });
+        });
+        document.getElementById('p-logout').addEventListener('click', function () { setTok(''); me = null; renderBar(); go('list'); });
+        return;
+      }
+      // logged out: login + register tabs
+      app.innerHTML =
+        '<div class="bl-auth">' +
+          '<div class="bl-tabs"><button class="bl-tab on" data-t="login">Log in</button><button class="bl-tab" data-t="reg">Register</button></div>' +
+          '<div id="bl-auth-body"></div>' +
+        '</div>';
+      const body = document.getElementById('bl-auth-body');
+      function showLogin() {
+        body.innerHTML =
+          '<label class="bl-l">Email</label><input id="l-email" class="bl-in" type="email" />' +
+          '<label class="bl-l">Password</label><input id="l-pw" class="bl-in" type="password" />' +
+          '<button class="bl-btn bl-btn-primary bl-btn-big" id="l-go">Log in</button><p class="bl-msg" id="l-msg"></p>';
+        document.getElementById('l-go').addEventListener('click', function () {
+          const msg = document.getElementById('l-msg'); msg.textContent = '…';
+          jpost('/blog/login', { email: document.getElementById('l-email').value, password: document.getElementById('l-pw').value })
+            .then(function (r) { if (r.ok && r.j.ok) { setTok(r.j.token); me = r.j.user; renderBar(); go('list'); } else { msg.textContent = r.j.error || 'Error'; } });
+        });
+      }
+      function showReg() {
+        body.innerHTML =
+          '<label class="bl-l">Login (public name)</label><input id="r-login" class="bl-in" maxlength="24" />' +
+          '<label class="bl-l">Email</label><input id="r-email" class="bl-in" type="email" />' +
+          '<label class="bl-l">Password (min 6)</label><input id="r-pw" class="bl-in" type="password" />' +
+          '<label class="bl-l">Avatar URL</label><input id="r-av" class="bl-in" placeholder="https://… (optional)" />' +
+          '<label class="bl-l">TON address (for BRTP payouts)</label><input id="r-ton" class="bl-in" placeholder="EQ… / UQ…" />' +
+          '<button class="bl-btn bl-btn-primary bl-btn-big" id="r-go">Create account</button><p class="bl-msg" id="r-msg"></p>';
+        document.getElementById('r-go').addEventListener('click', function () {
+          const msg = document.getElementById('r-msg'); msg.textContent = '…';
+          jpost('/blog/register', { login: document.getElementById('r-login').value, email: document.getElementById('r-email').value, password: document.getElementById('r-pw').value, avatar: document.getElementById('r-av').value, ton: document.getElementById('r-ton').value })
+            .then(function (r) { if (r.ok && r.j.ok) { setTok(r.j.token); me = r.j.user; renderBar(); go('list'); } else { msg.textContent = r.j.error || 'Error'; } });
+        });
+      }
+      app.querySelectorAll('.bl-tab').forEach(function (t) {
+        t.addEventListener('click', function () {
+          app.querySelectorAll('.bl-tab').forEach(function (x) { x.classList.remove('on'); }); t.classList.add('on');
+          t.getAttribute('data-t') === 'reg' ? showReg() : showLogin();
+        });
+      });
+      showLogin();
+    }
+
+    function refreshMe() { if (!tok()) { me = null; renderBar(); return Promise.resolve(); } return jget('/blog/me').then(function (r) { me = r.ok && r.j.user ? r.j.user : null; if (!me) setTok(''); renderBar(); }); }
+
+    function route() {
+      const h = (location.hash || '#list').slice(1);
+      if (h.indexOf('article/') === 0) return renderArticle(h.slice(8));
+      if (h === 'write') return renderWrite();
+      if (h === 'account') return renderAccount();
+      return renderList();
+    }
+    window.addEventListener('hashchange', route);
+    refreshMe().then(route);
+  })();
+</script>
+
+<style is:global>
+  .bl { position: relative; max-width: 980px; margin: 26px auto 70px; padding: 0 24px; }
+  .bl-aura { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 80%; height: 320px;
+    background: radial-gradient(60% 100% at 50% 0%, rgba(122,233,184,0.16), transparent 70%); filter: blur(22px); pointer-events: none; z-index: 0; }
+  .bl-hero { position: relative; z-index: 1; margin-bottom: 26px; }
+  .bl-kicker { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-text); }
+  .bl-h1 { margin: 10px 0 14px; font-family: var(--font-display); font-weight: 800; font-size: clamp(40px,6vw,66px); color: #fff; line-height: 1; }
+  .bl-lede { font-family: var(--font-serif); font-size: 18px; line-height: 1.55; color: var(--text-dim); max-width: 64ch; margin: 0 0 20px; }
+  .bl-lede b { color: #7ae9b8; }
+  .bl-bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .bl-app { position: relative; z-index: 1; }
+  .bl-state { font-family: var(--font-mono); color: var(--text-mute); padding: 28px 0; } .bl-state a { color: var(--accent-text); }
+
+  .bl-btn { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; cursor: pointer; border-radius: 10px;
+    padding: 10px 18px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+    border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.05); color: #e6e9ee; transition: all .16s; }
+  .bl-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+  .bl-btn-primary { color: #06281c; border: none; background: linear-gradient(135deg,#7ae9b8,#5bd3a0); box-shadow: 0 6px 18px rgba(122,233,184,0.28); }
+  .bl-btn-primary:hover { box-shadow: 0 10px 26px rgba(122,233,184,0.45); }
+  .bl-btn-big { width: 100%; justify-content: center; padding: 14px; font-size: 13px; margin-top: 8px; }
+
+  .bl-chip-user { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; padding: 6px 14px 6px 6px; border-radius: 999px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); }
+  .bl-chip-user:hover { background: rgba(255,255,255,0.09); }
+  .bl-chip-name { font-family: var(--font-mono); font-size: 13px; color: #fff; font-weight: 600; }
+  .bl-chip-brtp { font-family: var(--font-mono); font-size: 11px; color: #06281c; background: #7ae9b8; padding: 3px 9px; border-radius: 999px; font-weight: 700; }
+
+  .bl-av-sm { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; }
+  .bl-av-md { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; }
+  .bl-av-lg { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; }
+  .bl-av-ph { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,var(--accent-soft),rgba(122,233,184,0.08)); color: var(--accent-text); font-family: var(--font-display); font-weight: 800; }
+
+  .bl-langs { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 18px; }
+  .bl-lf { cursor: pointer; font-family: var(--font-mono); font-size: 12px; padding: 7px 13px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: var(--text-dim); }
+  .bl-lf.on { background: #fff; color: #111; border-color: #fff; }
+
+  .bl-list { display: flex; flex-direction: column; gap: 14px; }
+  .bl-card { display: flex; gap: 14px; align-items: stretch; text-decoration: none; border-radius: 16px; padding: 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012)); border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.3); transition: all .16s; }
+  .bl-card:hover { transform: translateY(-3px); border-color: rgba(122,233,184,0.5); box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+  .bl-rank { font-family: var(--font-display); font-weight: 800; font-size: 22px; color: var(--text-mute); width: 28px; text-align: center; flex: 0 0 auto; padding-top: 2px; }
+  .bl-card-body { flex: 1 1 auto; min-width: 0; }
+  .bl-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .bl-author { font-family: var(--font-mono); font-size: 12px; color: #cdd2da; }
+  .bl-author-lg { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: #fff; }
+  .bl-lang { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }
+  .bl-demo { font-family: var(--font-mono); font-size: 9px; font-weight: 800; letter-spacing: 0.12em; color: #ffcf5d; border: 1px solid rgba(255,207,93,0.5); border-radius: 4px; padding: 2px 6px; }
+  .bl-title { margin: 0 0 5px; font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 19px; line-height: 1.2; }
+  .bl-snip { margin: 0; font-family: var(--font-serif); font-size: 14px; color: var(--text-dim); line-height: 1.5; max-height: 44px; overflow: hidden; }
+  .bl-card-side { flex: 0 0 auto; width: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-left: 1px solid rgba(255,255,255,0.08); padding-left: 12px; }
+  .bl-pts { font-family: var(--font-mono); font-size: 26px; font-weight: 800; color: #7ae9b8; line-height: 1; }
+  .bl-pts-l { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); margin: 2px 0 6px; }
+  .bl-brtp { font-family: var(--font-mono); font-size: 11px; color: #06281c; background: #7ae9b8; padding: 3px 8px; border-radius: 999px; font-weight: 700; }
+
+  .bl-back { display: inline-block; margin-bottom: 16px; font-family: var(--font-mono); font-size: 13px; color: var(--accent-text); text-decoration: none; }
+  .bl-post { border-radius: 18px; padding: 26px; background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 14px 40px rgba(0,0,0,0.4); }
+  .bl-post-head { display: flex; gap: 14px; align-items: center; margin-bottom: 16px; }
+  .bl-meta { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); }
+  .bl-post-title { margin: 0 0 16px; font-family: var(--font-display); font-weight: 800; font-size: clamp(26px,4vw,40px); color: #fff; line-height: 1.1; }
+  .bl-post-body { font-family: var(--font-serif); font-size: 17px; line-height: 1.7; color: #d9dde3; }
+  .bl-post-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; }
+  .bl-score { font-family: var(--font-mono); font-size: 14px; color: var(--text-dim); } .bl-score-n { color: #fff; font-weight: 700; font-size: 18px; } .bl-score b { color: #7ae9b8; }
+  .bl-vote { cursor: pointer; border: none; border-radius: 12px; padding: 13px 26px; font-family: var(--font-mono); font-weight: 800; font-size: 14px;
+    color: #06281c; background: linear-gradient(135deg,#7ae9b8,#5bd3a0); box-shadow: 0 6px 20px rgba(122,233,184,0.35); transition: all .16s; }
+  .bl-vote:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(122,233,184,0.5); }
+  .bl-vote span { opacity: 0.7; }
+  .bl-voted { font-family: var(--font-mono); font-size: 13px; color: #7ae9b8; font-weight: 700; }
+
+  .bl-form, .bl-auth, .bl-profile { max-width: 520px; border-radius: 18px; padding: 26px; background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 14px 40px rgba(0,0,0,0.4); }
+  .bl-form-wide { max-width: 720px; }
+  .bl-form-h { margin: 0 0 16px; font-family: var(--font-display); font-weight: 800; color: #fff; font-size: 24px; }
+  .bl-l { display: block; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); margin: 14px 0 6px; }
+  .bl-in { width: 100%; box-sizing: border-box; background: #0d0d0f; border: 1px solid rgba(255,255,255,0.14); border-radius: 9px; padding: 11px 13px; color: #eee; font-family: var(--font-mono); font-size: 14px; }
+  .bl-in:focus { outline: none; border-color: var(--accent); }
+  .bl-ta { min-height: 280px; resize: vertical; font-family: var(--font-serif); line-height: 1.6; }
+  .bl-msg { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); margin: 12px 0 0; min-height: 16px; }
+  .bl-row { display: flex; gap: 10px; margin-top: 14px; }
+  .bl-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .bl-tab { flex: 1; cursor: pointer; font-family: var(--font-mono); font-size: 13px; font-weight: 700; padding: 11px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: var(--text-dim); }
+  .bl-tab.on { background: #fff; color: #111; border-color: #fff; }
+  .bl-profile-head { display: flex; gap: 16px; align-items: center; margin-bottom: 18px; }
+  .bl-stats3 { display: flex; gap: 10px; margin-bottom: 8px; }
+  .bl-st { flex: 1; border-radius: 12px; padding: 13px; text-align: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+  .bl-st span { display: block; font-family: var(--font-mono); font-size: 22px; font-weight: 800; color: #fff; }
+  .bl-st i { font-style: normal; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-mute); }
+  .bl-st-main { border-color: rgba(122,233,184,0.4); } .bl-st-main span { color: #7ae9b8; }
+
+  @media (max-width: 560px) { .bl-card-side { width: 76px; } .bl-snip { display: none; } }
+</style>

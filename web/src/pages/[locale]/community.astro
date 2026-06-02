@@ -1,0 +1,30 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BlogApp from '../../components/BlogApp.astro';
+import type { Locale } from '../../i18n/strings';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'ru' } },
+    { params: { locale: 'pl' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+
+const META: Record<string, { title: string; description: string }> = {
+  ru: { title: 'Блог — пиши, получай апвоты, зарабатывай BRTP', description: 'Сообщество BRAINROT: пиши на своём языке, получай голоса и зарабатывай BRTP на свой TON-адрес.' },
+  pl: { title: 'Blog — pisz, zbieraj głosy, zarabiaj BRTP', description: 'Społeczność BRAINROT: pisz w swoim języku, zbieraj upvote i zarabiaj BRTP na swój adres TON.' },
+  de: { title: 'Blog — schreiben, Upvotes sammeln, BRTP verdienen', description: 'BRAINROT-Community: schreibe in deiner Sprache, sammle Upvotes und verdiene BRTP auf deine TON-Adresse.' },
+  es: { title: 'Blog — escribe, recibe votos, gana BRTP', description: 'Comunidad BRAINROT: escribe en tu idioma, recibe upvotes y gana BRTP en tu dirección TON.' },
+  uk: { title: 'Блог — пиши, збирай голоси, заробляй BRTP', description: 'Спільнота BRAINROT: пиши своєю мовою, збирай апвоти та заробляй BRTP на свою TON-адресу.' },
+};
+const m = META[locale] ?? META.pl;
+---
+
+<Layout locale={locale} pathWithoutLocale="/community" title={m.title} description={m.description}>
+  <BlogApp />
+</Layout>
