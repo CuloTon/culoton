@@ -17,10 +17,7 @@ const T = {
   price: 'Price',
   mcap: 'Market cap',
   vol24: 'Volume 24h',
-  chart: 'Show chart',
-  hide: 'Hide chart',
-  chart_loading: 'Loading chart…',
-  chart_none: 'No chart data available for this token yet.',
+  open: 'View chart',
   nomarket: 'No market data yet — token may be too new or unlisted on DEXes.',
   admin: 'Admin',
   add: 'Add token',
@@ -178,37 +175,6 @@ const T = {
       });
     }
 
-    // --- our own candlestick chart from GeckoTerminal OHLCV (no external iframe) ---
-    function fetchOhlcv(pool) {
-      return fetch(GT + '/pools/' + encodeURIComponent(pool) + '/ohlcv/hour?aggregate=1&limit=72', { headers: { Accept: 'application/json' } })
-        .then(function (r) { if (!r.ok) throw new Error('ohlcv ' + r.status); return r.json(); })
-        .then(function (j) { return (j && j.data && j.data.attributes && j.data.attributes.ohlcv_list) || null; })
-        .catch(function () { return null; });
-    }
-    function renderCandles(list) {
-      var data = (list || []).slice().sort(function (a, b) { return a[0] - b[0]; });
-      if (!data.length) return '';
-      var W = 640, H = 260, pad = 8;
-      var lo = Infinity, hi = -Infinity;
-      data.forEach(function (d) { if (d[3] < lo) lo = d[3]; if (d[2] > hi) hi = d[2]; });
-      if (!(hi > lo)) hi = lo * 1.0001 + 1e-12;
-      var n = data.length, cw = W / n, bw = Math.max(1.2, cw * 0.62);
-      function y(p) { return H - pad - ((p - lo) / (hi - lo)) * (H - 2 * pad); }
-      var parts = [];
-      data.forEach(function (d, i) {
-        var x = i * cw + cw / 2;
-        var up = d[4] >= d[1], col = up ? '#6dd4a8' : '#e08585';
-        var yo = y(d[1]), yc = y(d[4]);
-        var top = Math.min(yo, yc), bh = Math.max(1, Math.abs(yc - yo));
-        parts.push('<line x1="' + x.toFixed(1) + '" y1="' + y(d[2]).toFixed(1) + '" x2="' + x.toFixed(1) + '" y2="' + y(d[3]).toFixed(1) + '" stroke="' + col + '" stroke-width="1"/>');
-        parts.push('<rect x="' + (x - bw / 2).toFixed(1) + '" y="' + top.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" fill="' + col + '"/>');
-      });
-      var last = data[data.length - 1][4];
-      return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="bk-svg" role="img" aria-label="price chart">' + parts.join('') + '</svg>' +
-        '<div class="bk-chart-meta"><span>H ' + esc(fmtPrice(hi)) + '</span><span>L ' + esc(fmtPrice(lo)) + '</span>' +
-        '<span>Last ' + esc(fmtPrice(last)) + '</span><span class="bk-chart-src">1h · GeckoTerminal</span></div>';
-    }
-
     function adminKey() { try { return sessionStorage.getItem('brt_admin_key') || ''; } catch (_) { return ''; } }
 
     function logoHtml(image, letter) {
@@ -239,7 +205,7 @@ const T = {
             '<div><dt>' + esc(T.mcap) + '</dt><dd>' + esc(fmtUsd(m.mcap)) + '</dd></div>' +
             '<div><dt>' + esc(T.vol24) + '</dt><dd>' + esc(fmtUsd(m.vol)) + '</dd></div>' +
           '</dl>' +
-          (m.pool ? '<button type="button" class="bk-chart-btn" data-pool="' + esc(m.pool) + '">' + esc(T.chart) + '</button><div class="bk-chart"></div>' : '');
+          '<span class="bk-view">' + esc(T.open) + ' →</span>';
       }
       var foot =
         '<div class="bk-foot">' +
@@ -259,7 +225,8 @@ const T = {
       grid.innerHTML = '';
       listings.forEach(function (listing) {
         var el = document.createElement('div');
-        el.className = 'bk-card';
+        el.className = 'bk-card bk-clickable';
+        el.setAttribute('data-ca', listing.ca);
         el.innerHTML = '<p class="bk-loading">…</p>';
         grid.appendChild(el);
         loadToken(listing).then(function (t) { fillCard(el, t); });
@@ -267,30 +234,20 @@ const T = {
     }
 
     grid.addEventListener('click', function (e) {
-      var cb = e.target.closest && e.target.closest('.bk-chart-btn');
-      if (cb) {
-        var holder = cb.nextElementSibling;
-        if (holder.getAttribute('data-open') === '1') {
-          holder.innerHTML = ''; holder.removeAttribute('data-open'); cb.textContent = T.chart; return;
-        }
-        holder.setAttribute('data-open', '1'); cb.textContent = T.hide;
-        holder.innerHTML = '<p class="bk-chart-state">' + esc(T.chart_loading) + '</p>';
-        fetchOhlcv(cb.getAttribute('data-pool')).then(function (list) {
-          if (holder.getAttribute('data-open') !== '1') return;
-          var svg = renderCandles(list);
-          holder.innerHTML = svg || '<p class="bk-chart-state">' + esc(T.chart_none) + '</p>';
-        });
-        return;
-      }
       var rm = e.target.closest && e.target.closest('.bk-remove');
       if (rm) {
-        var ca = rm.getAttribute('data-ca');
-        if (!ca || !confirm('Remove ' + ca + '?')) return;
+        var rca = rm.getAttribute('data-ca');
+        if (!rca || !confirm('Remove ' + rca + '?')) return;
         fetch(api + '/listing/remove', {
           method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey() },
-          body: JSON.stringify({ ca: ca, network: net }),
+          body: JSON.stringify({ ca: rca, network: net }),
         }).then(function (r) { if (r.ok) load(); else alert('Remove failed (' + r.status + ')'); });
+        return;
       }
+      if (e.target.closest && e.target.closest('a')) return; // let footer links work
+      var card = e.target.closest && e.target.closest('.bk-card');
+      var ca = card && card.getAttribute('data-ca');
+      if (ca) location.href = '/token/view?ca=' + encodeURIComponent(ca) + '&net=' + encodeURIComponent(net);
     });
 
     function load() {
@@ -423,20 +380,9 @@ const T = {
   .bk-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; }
   .bk-meta dt { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); margin-bottom: 3px; }
   .bk-meta dd { margin: 0; font-family: var(--font-mono); font-size: 15px; color: #fff; font-weight: 600; }
-  .bk-chart-btn {
-    background: transparent; color: var(--accent-text); border: 1px solid var(--accent);
-    font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
-    text-transform: uppercase; padding: 9px 14px; border-radius: 6px; cursor: pointer;
-  }
-  .bk-chart-btn:hover { background: var(--accent-soft); color: var(--accent); }
-  .bk-chart { width: 100%; }
-  .bk-svg { width: 100%; height: auto; display: block; background: #0b0b0d; border-radius: 8px; margin-top: 4px; }
-  .bk-chart-meta {
-    display: flex; gap: 14px; flex-wrap: wrap; margin-top: 6px;
-    font-family: var(--font-mono); font-size: 10px; color: var(--text-mute);
-  }
-  .bk-chart-src { margin-left: auto; }
-  .bk-chart-state { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); margin: 8px 0; }
+  .bk-clickable { cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .bk-clickable:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.03); }
+  .bk-view { font-family: var(--font-mono); font-size: 12px; color: var(--accent-text); letter-spacing: 0.08em; }
   .bk-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .bk-addr { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }
   .bk-src { font-family: var(--font-mono); font-size: 10px; color: var(--text-mute); letter-spacing: 0.04em; }

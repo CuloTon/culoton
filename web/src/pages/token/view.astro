@@ -1,0 +1,15 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TokenDetail from '../../components/TokenDetail.astro';
+
+const locale = 'en' as const;
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/token/view"
+  title="Token — live chart, market cap and volume"
+  description="Full token view: a live price chart rendered from on-chain DEX data, with market cap and 24h volume."
+>
+  <TokenDetail />
+</Layout>
