@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 255,
+  "group_msg_count": 259,
   "roll_last_at": "2026-06-02T14:47:15.857621+00:00",
   "users": {
     "1277897740": {
@@ -391,6 +391,16 @@
       "username": "@soshi336",
       "weekly_points": 0
     },
+    "7484610875": {
+      "daily_day": "2026-06-02",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-06-02T19:44:33.646607+00:00",
+      "last_msg_point_at": "2026-06-02T19:44:33.646620+00:00",
+      "total_points": 1,
+      "username": "@dRyan_Dave",
+      "weekly_points": 1
+    },
     "7653126333": {
       "daily_day": "2026-05-18",
       "daily_points": 2,
@@ -493,13 +503,13 @@
     },
     "8354207388": {
       "daily_day": "2026-06-02",
-      "daily_points": 19,
+      "daily_points": 20,
       "last_ask_at": "2026-05-29T03:32:18.512279+00:00",
-      "last_command_at": "2026-06-02T19:34:57.304566+00:00",
-      "last_msg_point_at": "2026-06-02T19:32:33.849477+00:00",
-      "total_points": 114,
+      "last_command_at": "2026-06-02T19:44:59.733712+00:00",
+      "last_msg_point_at": "2026-06-02T19:44:59.733721+00:00",
+      "total_points": 115,
       "username": "@brainrot_daddy",
-      "weekly_points": 114
+      "weekly_points": 115
     },
     "8660294407": {
       "daily_day": "",
