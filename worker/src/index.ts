@@ -389,9 +389,24 @@ type Listing = {
   note: string;
   telegram: string;
   x: string;
+  buy: string;
+  sell: string;
+  holders: string;
   network: 'testnet' | 'mainnet';
   at: string;
 };
+
+// Tax percentage as entered by the admin (TON has no standard on-chain tax
+// field, so these are manual). Keep digits + one dot, clamp 0..100, drop the
+// rest; return '' when empty/invalid.
+function taxPct(v: unknown): string {
+  if (typeof v !== 'string') return '';
+  const cleaned = v.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+  if (!cleaned || cleaned === '.') return '';
+  const num = parseFloat(cleaned);
+  if (!isFinite(num) || num < 0 || num > 100) return '';
+  return String(num);
+}
 
 // Constant-time-ish comparison so a wrong key can't be timed out character by character.
 function adminOK(req: Request, env: Env): boolean {
@@ -415,6 +430,9 @@ function validateListing(body: any): Listing | { error: string } {
     note: clampStr(body.note, 200),
     telegram: sanUrl(body.telegram),
     x: sanUrl(body.x),
+    buy: taxPct(body.buy),
+    sell: taxPct(body.sell),
+    holders: taxPct(body.holders),
     network: network as 'testnet' | 'mainnet',
     at: new Date().toISOString(),
   };

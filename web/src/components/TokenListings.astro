@@ -20,6 +20,7 @@ const T = {
   ca: 'Contract address (jetton master)',
   label: 'Label (optional)', note: 'Note (optional)',
   tg: 'Telegram URL (optional)', x: 'X / Twitter URL (optional)',
+  buy_l: 'Buy tax %', sell_l: 'Sell tax %', holders_l: 'Holders %',
   key: 'Admin key', save_key: 'Save key',
 };
 ---
@@ -46,6 +47,11 @@ const T = {
       <div class="admin-row">
         <input type="text" id="adm-tg" placeholder={T.tg} autocomplete="off" />
         <input type="text" id="adm-x" placeholder={T.x} autocomplete="off" />
+      </div>
+      <div class="admin-row">
+        <input type="text" id="adm-buy" inputmode="decimal" placeholder={T.buy_l} autocomplete="off" />
+        <input type="text" id="adm-sell" inputmode="decimal" placeholder={T.sell_l} autocomplete="off" />
+        <input type="text" id="adm-holders" inputmode="decimal" placeholder={T.holders_l} autocomplete="off" />
       </div>
       <button type="button" id="adm-add" class="btn-add">{T.add}</button>
       <p class="adm-status" id="adm-status" hidden></p>
@@ -153,6 +159,9 @@ const T = {
             '<span><i>' + esc(T.vol24) + '</i>' + esc(fmtUsd(m.vol)) + '</span></div>' +
           '</div>'
         : '<p class="bk-nomarket">' + esc(T.nomarket) + '</p>';
+      function taxChip(lbl, v, cls) { return v ? '<span class="bk-tax bk-tax-' + cls + '"><i>' + esc(lbl) + '</i>' + esc(v) + '%</span>' : ''; }
+      var taxHtml = taxChip('Buy', L.buy, 'buy') + taxChip('Sell', L.sell, 'sell') + taxChip('Holders', L.holders, 'hold');
+      var taxRow = taxHtml ? '<div class="bk-taxrow">' + taxHtml + '</div>' : '';
       el.innerHTML =
         '<div class="bk-glow"></div>' +
         '<div class="bk-top">' +
@@ -161,7 +170,7 @@ const T = {
           (sym ? '<span class="bk-sym">$' + sym + '</span>' : '') + '</div>' +
           (socials ? '<div class="bk-socials">' + socials + '</div>' : '') + rm +
         '</div>' +
-        stats +
+        stats + taxRow +
         '<a class="bk-open" href="/token/view?ca=' + encodeURIComponent(ca) + '&net=' + encodeURIComponent(net) + '">' +
           '<span>' + esc(T.open) + '</span><span class="bk-open-ar">→</span></a>' +
         '<div class="bk-foot"><code class="bk-addr" title="' + esc(ca) + '">' + esc(shortAddr(ca)) + '</code>' +
@@ -225,6 +234,9 @@ const T = {
         note: document.getElementById('adm-note').value.trim(),
         telegram: document.getElementById('adm-tg').value.trim(),
         x: document.getElementById('adm-x').value.trim(),
+        buy: document.getElementById('adm-buy').value.trim(),
+        sell: document.getElementById('adm-sell').value.trim(),
+        holders: document.getElementById('adm-holders').value.trim(),
       };
       var key = keyInput.value.trim() || adminKey();
       s.hidden = false; s.textContent = 'Adding…';
@@ -233,7 +245,7 @@ const T = {
         .then(function (res) {
           if (res.ok && res.j.ok) {
             s.textContent = res.j.duplicate ? 'Updated existing listing.' : 'Added.';
-            ['adm-ca', 'adm-label', 'adm-note', 'adm-tg', 'adm-x'].forEach(function (id) { document.getElementById(id).value = ''; });
+            ['adm-ca', 'adm-label', 'adm-note', 'adm-tg', 'adm-x', 'adm-buy', 'adm-sell', 'adm-holders'].forEach(function (id) { document.getElementById(id).value = ''; });
             try { sessionStorage.setItem('brt_admin_key', key); } catch (_) {}
             load();
           } else if (res.status === 401) { s.textContent = 'Wrong admin key.'; }
@@ -309,6 +321,16 @@ const T = {
   .bk-chips span { display: flex; flex-direction: column; align-items: flex-end; font-family: var(--font-mono); font-size: 13px; color: #e8eaee; font-weight: 600; }
   .bk-chips i { font-style: normal; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); margin-bottom: 2px; }
   .bk-nomarket { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); margin: 0; line-height: 1.5; position: relative; z-index: 1; }
+  .bk-taxrow { position: relative; z-index: 1; display: flex; gap: 8px; flex-wrap: wrap; }
+  .bk-tax { display: inline-flex; align-items: baseline; gap: 5px; font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+    padding: 5px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #fff; }
+  .bk-tax i { font-style: normal; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-mute); }
+  .bk-tax-buy { border-color: rgba(122,233,184,0.4); }
+  .bk-tax-buy i { color: #7ae9b8; }
+  .bk-tax-sell { border-color: rgba(232,96,122,0.4); }
+  .bk-tax-sell i { color: #e8607a; }
+  .bk-tax-hold { border-color: rgba(122,170,255,0.4); }
+  .bk-tax-hold i { color: #8ab4ff; }
 
   .bk-open { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
     text-decoration: none; padding: 12px; border-radius: 11px; font-family: var(--font-mono); font-size: 12px; font-weight: 700;

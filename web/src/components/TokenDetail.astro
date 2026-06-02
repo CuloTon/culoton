@@ -88,13 +88,18 @@
             '<div id="td-chartbox" class="td-chartbox"></div>' +
           '</div>'
         : '';
+      var tax = '';
+      if (listing && (listing.buy || listing.sell || listing.holders)) {
+        function tc(lbl, v, cls) { return v ? '<div class="td-tax td-tax-' + cls + '"><span class="td-tk">' + lbl + '</span><span class="td-tv">' + esc(v) + '%</span></div>' : ''; }
+        tax = '<div class="td-taxrow">' + tc('Buy tax', listing.buy, 'buy') + tc('Sell tax', listing.sell, 'sell') + tc('Holders', listing.holders, 'hold') + '</div>';
+      }
       var links = '<div class="td-pills">';
       if (listing && listing.telegram) links += pill(listing.telegram, 'tg', 'Telegram');
       if (listing && listing.x) links += pill(listing.x, 'x', 'X');
       if (m && m.link) links += pill(m.link, 'dex', m.source);
       links += pill('https://tonviewer.com/' + encodeURIComponent(ca), 'view', 'Tonviewer');
       links += '</div>';
-      root.innerHTML = head + stats + chart + links;
+      root.innerHTML = head + stats + tax + chart + links;
       if (POOL) { document.querySelectorAll('.td-tf').forEach(function (b) { b.addEventListener('click', function () { drawChart(b.getAttribute('data-tf')); }); }); drawChart('hour'); }
     }
 
@@ -132,6 +137,15 @@
   .td-v { font-family: var(--font-mono); font-size: clamp(18px,2.6vw,26px); font-weight: 700; color: #fff; }
   .td-stat-main .td-v { color: #7ae9b8; }
   .td-nomarket { font-family: var(--font-mono); font-size: 13px; color: var(--text-mute); margin: 0 0 22px; }
+
+  .td-taxrow { display: flex; gap: 12px; flex-wrap: wrap; margin: 0 0 22px; }
+  .td-tax { display: flex; flex-direction: column; gap: 4px; padding: 12px 18px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); min-width: 96px; }
+  .td-tk { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); }
+  .td-tv { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: #fff; }
+  .td-tax-buy { border-color: rgba(122,233,184,0.4); } .td-tax-buy .td-tv { color: #7ae9b8; }
+  .td-tax-sell { border-color: rgba(232,96,122,0.4); } .td-tax-sell .td-tv { color: #e8607a; }
+  .td-tax-hold { border-color: rgba(122,170,255,0.4); } .td-tax-hold .td-tv { color: #8ab4ff; }
 
   .td-chartcard { background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08);
     border-radius: 16px; padding: 14px 14px 8px; margin: 0 0 22px; box-shadow: 0 14px 40px rgba(0,0,0,0.4); }
