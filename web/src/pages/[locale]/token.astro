@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TokenListings from '../../components/TokenListings.astro';
+import type { Locale } from '../../i18n/strings';
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: 'ru' } },
+    { params: { locale: 'pl' } },
+    { params: { locale: 'de' } },
+    { params: { locale: 'es' } },
+    { params: { locale: 'uk' } },
+  ];
+}
+
+const { locale } = Astro.params as { locale: Locale };
+
+const META: Record<string, { title: string; description: string }> = {
+  ru: { title: 'TAX — токены TON с графиком', description: 'Отобранные токены TON: график цены, капитализация и объём за 24ч, налог buy/sell/holders.' },
+  pl: { title: 'TAX — tokeny TON z wykresem', description: 'Wyselekcjonowane tokeny TON: wykres ceny, kapitalizacja i obrót 24h, podatek buy/sell/holders.' },
+  de: { title: 'TAX — TON-Token mit Chart', description: 'Ausgewählte TON-Token: Preis-Chart, Marktkapitalisierung und 24h-Volumen, Buy/Sell/Holders-Tax.' },
+  es: { title: 'TAX — tokens TON con gráfico', description: 'Tokens TON seleccionados: gráfico de precio, capitalización y volumen 24h, tax de buy/sell/holders.' },
+  uk: { title: 'TAX — токени TON з графіком', description: 'Відібрані токени TON: графік ціни, капіталізація та обсяг за 24г, податок buy/sell/holders.' },
+};
+const m = META[locale] ?? META.pl;
+---
+
+<Layout
+  locale={locale}
+  pathWithoutLocale="/token"
+  title={m.title}
+  description={m.description}
+>
+  <TokenListings locale={locale} />
+</Layout>
