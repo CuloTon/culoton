@@ -8,6 +8,9 @@ interface Env {
   // Secret for the admin-curated token listing board (/listing/*).
   // Set via: wrangler secret put ADMIN_KEY
   ADMIN_KEY?: string;
+  // Telegram bot creds — used to announce newly listed tokens.
+  TELEGRAM_BOT_TOKEN?: string;
+  TELEGRAM_CHAT_ID?: string;
 }
 
 const HEARTBEAT_TTL = 45;
@@ -458,6 +461,50 @@ async function listListings(env: Env, network: string): Promise<Listing[]> {
   return out.slice(0, LIST_MAX);
 }
 
+// Announce a newly listed token to Telegram, trilingual (RU/EN/PL) + link.
+// Best-effort: any failure is swallowed so it never blocks the listing.
+async function announceListing(env: Env, t: Listing): Promise<void> {
+  const token = env.TELEGRAM_BOT_TOKEN;
+  const chat = env.TELEGRAM_CHAT_ID;
+  if (!token || !chat) return;
+  let name = t.label || '';
+  let symbol = '';
+  try {
+    const r = await fetch('https://tonapi.io/v2/jettons/' + encodeURIComponent(t.ca));
+    if (r.ok) {
+      const j: any = await r.json();
+      const m = j.metadata || {};
+      name = m.name || name;
+      symbol = (m.symbol || '').replace(/^\$+/, '');
+    }
+  } catch {
+    /* ignore — fall back to label */
+  }
+  const title = (name || 'New token') + (symbol ? ' ($' + symbol + ')' : '');
+  const link = 'https://brainrot-ton.fun/token/view?ca=' + encodeURIComponent(t.ca);
+  const taxParts: string[] = [];
+  if (t.buy) taxParts.push('Buy ' + t.buy + '%');
+  if (t.sell) taxParts.push('Sell ' + t.sell + '%');
+  if (t.holders) taxParts.push('Holders ' + t.holders + '%');
+  const taxLine = taxParts.length ? '💸 ' + taxParts.join(' · ') + '\n' : '';
+  const tgLine = t.telegram ? '💬 ' + t.telegram + '\n' : '';
+  const text =
+    '🆕 ' + title + '\n' + taxLine + tgLine + '\n' +
+    '🇷🇺 Новый токен на TAX-доске BRAINROT\n' +
+    '🇬🇧 New token on the BRAINROT TAX board\n' +
+    '🇵🇱 Nowy token na tablicy TAX BRAINROT\n\n' +
+    '📈 ' + link;
+  try {
+    await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chat, text, disable_web_page_preview: false }),
+    });
+  } catch {
+    /* ignore */
+  }
+}
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
@@ -677,6 +724,7 @@ export default {
         const existing = await env.STATS_KV.get(key);
         await env.STATS_KV.put(key, JSON.stringify(parsed));
         await env.STATS_KV.delete(`list:${LIST_VERSION}:cache:${parsed.network}`);
+        if (!existing) await announceListing(env, parsed);
         return new Response(JSON.stringify({ ok: true, duplicate: !!existing }), {
           status: 200,
           headers: { ...headers, 'Content-Type': 'application/json' },
