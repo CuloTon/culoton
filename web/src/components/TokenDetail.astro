@@ -19,9 +19,9 @@
     const ca = (params.get('ca') || '').trim();
     const net = params.get('net') === 'testnet' ? 'testnet' : 'mainnet';
     const root = document.getElementById('td-root');
-    const ICON_TG = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>';
-    const ICON_X = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.49l8.6-9.83L0 1.15h7.59l5.24 6.93zM17.61 20.64h2.04L6.49 3.24H4.3z"/></svg>';
-    const ICON_CHART = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 3h2v16h16v2H3zm4 10h2v4H7zm4-6h2v10h-2zm4 3h2v7h-2z"/></svg>';
+    const ICON_TG = '<svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>';
+    const ICON_X = '<svg width="15" height="15" viewBox="0 0 24 24"><path fill="currentColor" d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.49l8.6-9.83L0 1.15h7.59l5.24 6.93zM17.61 20.64h2.04L6.49 3.24H4.3z"/></svg>';
+    const ICON_CHART = '<svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M3 3h2v16h16v2H3zm4 10h2v4H7zm4-6h2v10h-2zm4 3h2v7h-2z"/></svg>';
 
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function shortAddr(a) { return a && a.length > 16 ? a.slice(0, 8) + '…' + a.slice(-6) : a || ''; }
@@ -42,7 +42,7 @@
     function renderChart(list, tf) {
       var data = (list || []).slice().sort(function (a, b) { return a[0] - b[0]; });
       if (!data.length) return '<p class="td-chart-none">No chart data available yet.</p>';
-      var W = 980, H = 440, padL = 64, padR = 12, padT = 12, padB = 28;
+      var W = 980, H = 360, padL = 64, padR = 12, padT = 12, padB = 28;
       var lo = Infinity, hi = -Infinity;
       data.forEach(function (d) { if (d[3] < lo) lo = d[3]; if (d[2] > hi) hi = d[2]; });
       if (!(hi > lo)) hi = lo * 1.0001 + 1e-12;
@@ -110,12 +110,16 @@
 </script>
 
 <style>
-  .td { position: relative; max-width: 1060px; margin: 28px auto 70px; padding: 0 24px; }
+  .td { position: relative; max-width: 940px; margin: 24px auto 64px; padding: 0 24px; }
   .td-aura { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 80%; height: 320px;
     background: radial-gradient(60% 100% at 50% 0%, rgba(122,233,184,0.16), transparent 70%); filter: blur(20px); pointer-events: none; z-index: 0; }
   .td-back { position: relative; z-index: 1; display: inline-block; margin-bottom: 22px; font-family: var(--font-mono); font-size: 13px; color: var(--accent-text); text-decoration: none; }
   .td-back:hover { color: var(--accent); }
   .td-root { position: relative; z-index: 1; }
+</style>
+
+<!-- #td-root content is injected via JS → these rules must be global. td-* names are unique. -->
+<style is:global>
   .td-state { font-family: var(--font-mono); color: var(--text-mute); padding: 30px 0; }
   .td-state a { color: var(--accent-text); }
 
@@ -130,9 +134,10 @@
   .td-sym { font-family: var(--font-mono); font-size: 14px; color: var(--accent-text); }
   .td-ca { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); }
 
-  .td-stats { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 10px; margin: 0 0 16px; }
+  .td-stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 14px; }
   .td-stat { background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px; padding: 11px 13px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.28); }
+    border-radius: 11px; padding: 9px 14px; display: flex; flex-direction: column; gap: 3px; box-shadow: 0 6px 16px rgba(0,0,0,0.28);
+    flex: 0 1 auto; min-width: 110px; }
   .td-stat-main { border-color: rgba(122,233,184,0.3); }
   .td-k { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-mute); }
   .td-v { font-family: var(--font-mono); font-size: clamp(16px,2.2vw,20px); font-weight: 700; color: #fff; }
@@ -169,5 +174,5 @@
   .td-pill-tg:hover { color: #5fb8ee; border-color: rgba(42,160,233,0.5); }
   .td-pill-dex:hover { color: #7ae9b8; border-color: rgba(122,233,184,0.5); }
 
-  @media (max-width: 560px) { .td-stats { grid-template-columns: 1fr 1fr; } .td-stat-main { grid-column: 1 / -1; } }
+  @media (max-width: 560px) { .td-stat { flex: 1 1 44%; } }
 </style>

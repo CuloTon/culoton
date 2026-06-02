@@ -73,8 +73,9 @@ const T = {
     const state = document.getElementById('board-state');
     const net = board.getAttribute('data-net') || 'mainnet';
     const GT = 'https://api.geckoterminal.com/api/v2/networks/ton';
-    const ICON_TG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>';
-    const ICON_X = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.49l8.6-9.83L0 1.15h7.59l5.24 6.93zM17.61 20.64h2.04L6.49 3.24H4.3z"/></svg>';
+    const ICON_TG = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>';
+    const ICON_X = '<svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.49l8.6-9.83L0 1.15h7.59l5.24 6.93zM17.61 20.64h2.04L6.49 3.24H4.3z"/></svg>';
+    const ICON_CHART = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 3h2v16h16v2H3zm4 10h2v4H7zm4-6h2v10h-2zm4 3h2v7h-2z"/></svg>';
 
     function esc(s) {
       return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -172,7 +173,8 @@ const T = {
         '</div>' +
         stats + taxRow +
         '<a class="bk-open" href="/token/view?ca=' + encodeURIComponent(ca) + '&net=' + encodeURIComponent(net) + '">' +
-          '<span>' + esc(T.open) + '</span><span class="bk-open-ar">→</span></a>' +
+          '<span class="bk-open-ic">' + ICON_CHART + '</span><span>' + esc(T.open) + '</span><span class="bk-open-ar">→</span></a>' +
+        (m && m.link ? '<a class="bk-dex" href="' + esc(m.link) + '" target="_blank" rel="noopener noreferrer"><span>' + esc(m.source) + '</span><span class="bk-dex-ar">↗</span></a>' : '') +
         '<div class="bk-foot"><code class="bk-addr" title="' + esc(ca) + '">' + esc(shortAddr(ca)) + '</code>' +
           (m ? '<span class="bk-src">' + esc(m.source) + '</span>' : '') + '</div>';
     }
@@ -282,7 +284,11 @@ const T = {
   /* board grid */
   .board-state { font-family: var(--font-mono); font-size: 14px; color: var(--text-mute); padding: 24px 0; }
   .board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(212px,1fr)); gap: 14px; margin: 8px 0 56px; }
+</style>
 
+<!-- Cards are injected via JS (innerHTML) so they carry no scope attribute —
+     these rules must be global to apply. Class names are bk-* (unique). -->
+<style is:global>
   /* cool glass card — compact */
   .bk-card {
     position: relative; overflow: hidden; border-radius: 14px; padding: 14px;
@@ -340,6 +346,14 @@ const T = {
   .bk-open:hover { box-shadow: 0 10px 26px rgba(122,233,184,0.45); transform: translateY(-1px); }
   .bk-open-ar { transition: transform 0.16s; }
   .bk-open:hover .bk-open-ar { transform: translateX(4px); }
+  .bk-open-ic { display: inline-flex; }
+  .bk-open-ic svg { width: 14px; height: 14px; }
+  .bk-dex { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+    text-decoration: none; padding: 9px; border-radius: 9px; font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-text); margin-top: -4px;
+    border: 1px solid rgba(122,233,184,0.4); background: rgba(122,233,184,0.06); transition: all 0.16s; }
+  .bk-dex:hover { background: rgba(122,233,184,0.14); color: #7ae9b8; transform: translateY(-1px); }
+  .bk-dex-ar { opacity: 0.7; }
 
   .bk-foot { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .bk-addr { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }
