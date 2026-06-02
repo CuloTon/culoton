@@ -13,6 +13,8 @@ const STATS_API = (import.meta.env.PUBLIC_STATS_API ?? '').toString().replace(/\
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="stats-api" content={STATS_API} />
+    <meta name="theme-color" content="#0b0b0d" />
+    <meta name="color-scheme" content="dark" />
     <meta name="robots" content="noindex" />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -25,6 +27,7 @@ const STATS_API = (import.meta.env.PUBLIC_STATS_API ?? '').toString().replace(/\
     />
     <script src="https://telegram.org/js/telegram-web-app.js" is:inline></script>
     <style is:inline>
+      html { color-scheme: dark; background: #0b0b0d; }
       html, body { background: #0b0b0d; margin: 0; }
       body { color: #e8eaee; -webkit-tap-highlight-color: transparent; }
       .tma-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px 6px; }
