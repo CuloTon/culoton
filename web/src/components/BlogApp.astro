@@ -38,17 +38,20 @@
         ? '<img class="' + cls + '" src="' + esc(ipfs(url)) + '" alt="" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'' + cls + ' bl-av-ph\',textContent:\'' + esc(letter) + '\'}))" />'
         : '<div class="' + cls + ' bl-av-ph">' + esc(letter) + '</div>';
     }
-    function jget(p) { return fetch(api + p, { headers: { Accept: 'application/json', ...ah() } }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); }); }
-    function jpost(p, body) { return fetch(api + p, { method: 'POST', headers: { 'Content-Type': 'application/json', ...ah() }, body: JSON.stringify(body || {}) }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); }); }
+    function jget(p) { return fetch(api + p, { headers: { Accept: 'application/json', ...ah() } }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }).catch(function () { return { ok: false, status: r.status, j: {} }; }); }).catch(function () { return { ok: false, status: 0, j: {} }; }); }
+    function jpost(p, body) { return fetch(api + p, { method: 'POST', headers: { 'Content-Type': 'application/json', ...ah() }, body: JSON.stringify(body || {}) }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }).catch(function () { return { ok: false, status: r.status, j: {} }; }); }).catch(function () { return { ok: false, status: 0, j: {} }; }); }
 
     function go(hash) { location.hash = hash; }
+    function logout() { setTok(''); me = null; renderBar(); location.hash = 'list'; route(); }
     function renderBar() {
       if (me) {
         bar.innerHTML =
           '<a class="bl-btn bl-btn-primary" href="#write">✍️ Write</a>' +
           '<a class="bl-chip-user" href="#account">' + avatar(me.avatar, me.login, 'bl-av-sm') +
             '<span class="bl-chip-name">' + esc(me.login) + '</span>' +
-            '<span class="bl-chip-brtp">' + fmt(me.unpaid) + ' BRTP</span></a>';
+            '<span class="bl-chip-brtp">' + fmt(me.unpaid) + ' BRTP</span></a>' +
+          '<button type="button" class="bl-btn bl-logout" id="bl-logout">Log out</button>';
+        var lo = document.getElementById('bl-logout'); if (lo) lo.addEventListener('click', logout);
       } else {
         bar.innerHTML = '<a class="bl-btn bl-btn-primary" href="#account">Log in / Register</a>';
       }
@@ -167,7 +170,7 @@
           jpost('/blog/account', { avatar: document.getElementById('p-av').value, ton: document.getElementById('p-ton').value })
             .then(function (r) { if (r.ok && r.j.ok) { me = r.j.user; renderBar(); msg.textContent = 'Saved ✓'; } else { msg.textContent = r.j.error || 'Error'; } });
         });
-        document.getElementById('p-logout').addEventListener('click', function () { setTok(''); me = null; renderBar(); go('list'); });
+        document.getElementById('p-logout').addEventListener('click', function () { setTok(''); me = null; renderBar(); location.hash = 'list'; route(); });
         return;
       }
       // logged out: login + register tabs
@@ -185,7 +188,7 @@
         document.getElementById('l-go').addEventListener('click', function () {
           const msg = document.getElementById('l-msg'); msg.textContent = '…';
           jpost('/blog/login', { email: document.getElementById('l-email').value, password: document.getElementById('l-pw').value })
-            .then(function (r) { if (r.ok && r.j.ok) { setTok(r.j.token); me = r.j.user; renderBar(); go('list'); } else { msg.textContent = r.j.error || 'Error'; } });
+            .then(function (r) { if (r.ok && r.j.ok) { setTok(r.j.token); me = r.j.user; renderBar(); location.hash = 'list'; route(); } else { msg.textContent = r.j.error || 'Error'; } });
         });
       }
       function showReg() {
@@ -199,7 +202,7 @@
         document.getElementById('r-go').addEventListener('click', function () {
           const msg = document.getElementById('r-msg'); msg.textContent = '…';
           jpost('/blog/register', { login: document.getElementById('r-login').value, email: document.getElementById('r-email').value, password: document.getElementById('r-pw').value, avatar: document.getElementById('r-av').value, ton: document.getElementById('r-ton').value })
-            .then(function (r) { if (r.ok && r.j.ok) { setTok(r.j.token); me = r.j.user; renderBar(); go('list'); } else { msg.textContent = r.j.error || 'Error'; } });
+            .then(function (r) { if (r.ok && r.j.ok) { setTok(r.j.token); me = r.j.user; renderBar(); location.hash = 'list'; route(); } else { msg.textContent = r.j.error || 'Error'; } });
         });
       }
       app.querySelectorAll('.bl-tab').forEach(function (t) {
