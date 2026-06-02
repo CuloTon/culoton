@@ -131,6 +131,8 @@ const T = {
     }
     function ipfsToHttp(u) { return u && u.indexOf('ipfs://') === 0 ? 'https://ipfs.io/ipfs/' + u.slice(7) : (u || ''); }
     function jget(u) { return fetch(u, { headers: { Accept: 'application/json' } }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
+    function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+    function jgetR(u, tries) { tries = tries || 3; return jget(u).then(function (j) { return (j || tries <= 1) ? j : wait(900).then(function () { return jgetR(u, tries - 1); }); }); }
 
     function fromTonapi(ca) {
       return jget('https://tonapi.io/v2/jettons/' + encodeURIComponent(ca)).then(function (j) {
@@ -139,7 +141,7 @@ const T = {
       });
     }
     function fromGecko(ca) {
-      return jget(GT + '/tokens/' + encodeURIComponent(ca) + '?include=top_pools').then(function (j) {
+      return jgetR(GT + '/tokens/' + encodeURIComponent(ca) + '?include=top_pools').then(function (j) {
         var a = j && j.data && j.data.attributes; if (!a) return null;
         var price = parseFloat(a.price_usd); if (!isFinite(price) || price <= 0) return null;
         var mcap = parseFloat(a.market_cap_usd); if (!isFinite(mcap) || mcap <= 0) mcap = parseFloat(a.fdv_usd);
@@ -217,13 +219,14 @@ const T = {
     function render(listings) {
       if (!listings || !listings.length) { state.textContent = T.empty; state.hidden = false; return; }
       state.hidden = true; grid.innerHTML = '';
-      listings.forEach(function (listing) {
+      listings.forEach(function (listing, i) {
         var el = document.createElement('article');
         el.className = 'bk-card bk-clickable';
         el.setAttribute('data-ca', listing.ca);
         el.innerHTML = '<p class="bk-loading">…</p>';
         grid.appendChild(el);
-        loadToken(listing).then(function (t) { fillCard(el, t); });
+        // stagger requests so we don't burst GeckoTerminal (rate limit)
+        setTimeout(function () { loadToken(listing).then(function (t) { fillCard(el, t); }); }, i * 250);
       });
     }
 
