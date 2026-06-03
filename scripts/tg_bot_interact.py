@@ -12,6 +12,7 @@ Commands:
   /blog                — link to the latest BrainScribe roundup
   /price ton|brt       — live market data
   /roll                — TON rewards paid to date + rollover status
+  /simulate            — projected payouts at 25/50/100/500 TON (current holders)
   /points              — caller's score
   /leaderboard         — top 10 most active members (running total)
 
@@ -64,6 +65,7 @@ ROOT = Path(__file__).resolve().parent.parent
 NEWS_DIR = ROOT / "web" / "src" / "content" / "news"
 BLOG_DIR = ROOT / "web" / "src" / "content" / "blog"
 REWARDS_DATA = ROOT / "web" / "src" / "data" / "rewards_rounds.json"
+SIMULATION_DATA = ROOT / "web" / "src" / "data" / "rewards_simulation.json"
 SITE = "https://brainrot-ton.fun"
 
 # Reward bank wallet (mirrors scripts/rewards_snapshot.py / RewardsContent.astro).
@@ -99,7 +101,8 @@ COMMANDS_HELP = (
     "/price ton — live $TON price\n"
     "/price brt — $BRT market data\n\n"
     "🎁 <b>Rewards</b>\n"
-    "/roll — TON rewards paid to date + rollover status\n\n"
+    "/roll — TON rewards paid to date + rollover status\n"
+    "/simulate — projected payouts at 25 / 50 / 100 / 500 TON (current holders)\n\n"
     "🏆 <b>Activity & rewards</b>\n"
     "💬 Every message in the group = +1 pt (max once per 90s). Cap 20 pts/day.\n"
     "⚠️ Spamming to farm points = ban — post something worth reading.\n"
@@ -419,8 +422,12 @@ def cmd_roll() -> str:
 
     bank = fetch_bank_ton()
     if bank is not None:
-        lines.append(f"🏦 Reward bank now: <b>{bank:.2f} TON</b> "
-                     f"(next pool ~{bank * REWARD_PCT:.3f} TON, 25%)")
+        all_pool = bank * REWARD_PCT
+        top_pool = bank * REWARD_PCT
+        lines.append(f"🏦 Reward bank now: <b>{bank:.2f} TON</b>")
+        lines.append(f"   • All-holders pool (25%): ~{all_pool:.3f} TON")
+        lines.append(f"   • TOP-10 pool (25%): ~{top_pool:.3f} TON ★ — top 10 get this <b>on top</b>")
+        lines.append(f"   → holders share ~{all_pool + top_pool:.3f} TON total (50%)")
 
     if rounds:
         lines.append(f"✅ Paid to date: <b>{total_paid:.3f} TON</b> across "
@@ -437,6 +444,56 @@ def cmd_roll() -> str:
         lines.append("No rounds have paid out yet — the first runs once the bank passes 4 TON.")
 
     lines.append(f"\n📊 Full breakdown, ranked & on-chain ↗ <a href=\"{SITE}/rewards\">{SITE}/rewards</a>")
+    lines.append("🔮 Curious what bigger banks pay? Try /simulate")
+    return "\n".join(lines)
+
+
+def load_simulation() -> dict:
+    """Pre-computed payout projection written by
+    brt-nagrody/scripts/rewards_snapshot.py (build_simulation). Based on the
+    holder distribution at the time the snapshot ran."""
+    try:
+        return json.loads(SIMULATION_DATA.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def cmd_simulate() -> str:
+    sim = load_simulation()
+    levels = sim.get("levels", [])
+    if not levels:
+        return ("🔮 No simulation available yet — it's generated from the current "
+                "holder snapshot. Check back shortly, or see "
+                f"<a href=\"{SITE}/rewards\">{SITE}/rewards</a>.")
+
+    when = (sim.get("generated_at") or "")[:10]
+    n = sim.get("n_eligible", 0)
+    lines = [
+        "🔮 <b>$BRT reward simulation</b>",
+        f"<i>Based on the current {n} eligible holders"
+        f"{f' (snapshot {when})' if when else ''} — every number shifts as balances change.</i>",
+        "",
+        "Model: <b>25% to ALL holders + 25% to the TOP 10</b>, both pro-rata. "
+        "The TOP 10 (★) are paid from <b>both</b> pools — so they earn far more than 25% alone.",
+    ]
+    for lv in levels:
+        bank = lv.get("bank", 0)
+        all_p = lv.get("all_pool_ton", 0)
+        top_p = lv.get("top10_pool_ton", 0)
+        top = lv.get("top", [])
+        lines.append("")
+        lines.append(f"💰 <b>Bank {bank:.0f} TON</b> → holders {all_p + top_p:.2f} TON "
+                     f"(all {all_p:.2f} + top10 {top_p:.2f})")
+        # #1 (biggest, top 10) and a mid-pack holder to show the gap.
+        if top:
+            r1 = top[0]
+            lines.append(f"   🥇 #1 ({r1.get('pct', 0):.1f}% supply) ★ → <b>{r1.get('ton', 0):.3f} TON</b> "
+                         f"(all {r1.get('ton_all', 0):.3f} + top10 {r1.get('ton_top10', 0):.3f})")
+            if len(top) >= 10:
+                r10 = top[9]
+                lines.append(f"   #10 ({r10.get('pct', 0):.1f}% supply) ★ → {r10.get('ton', 0):.3f} TON")
+    lines.append("")
+    lines.append(f"📊 Live bank & full ranking ↗ <a href=\"{SITE}/rewards\">{SITE}/rewards</a>")
     return "\n".join(lines)
 
 
@@ -512,7 +569,7 @@ def route_command(text: str) -> tuple[str, str]:
 
 
 def points_for_command(cmd: str) -> int:
-    if cmd in ("start", "help", "news", "blog", "price", "roll", "points", "leaderboard"):
+    if cmd in ("start", "help", "news", "blog", "price", "roll", "simulate", "sim", "points", "leaderboard"):
         return 1
     return 0
 
@@ -603,6 +660,8 @@ def process_updates(updates: list[dict], state: dict, token: str, start_offset: 
                 else:
                     reply = cmd_roll()
                     mark_roll(state)
+        elif cmd in ("simulate", "sim"):
+            reply = cmd_simulate()
         elif cmd == "points":
             reply = cmd_points(rec)
         elif cmd == "leaderboard":

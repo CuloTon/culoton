@@ -1,0 +1,449 @@
+{
+  "generated_at": "2026-06-03T05:09:48.772608+00:00",
+  "based_on": "current holders",
+  "n_eligible": 19,
+  "top_n": 10,
+  "total_eligible_brt": 36654962375632808,
+  "total_top10_brt": 35637159758830122,
+  "reward_pct": 0.25,
+  "top10_pct": 0.25,
+  "treasury_buffer_ton": 1.0,
+  "levels": [
+    {
+      "bank": 25.0,
+      "all_pool_ton": 6.25,
+      "top10_pool_ton": 6.25,
+      "holders_pool_ton": 12.5,
+      "treasury_ton": 11.5,
+      "top": [
+        {
+          "rank": 1,
+          "address": "0:9f34251aaba41bfcaaa669119d431dbeebaddcc2efb2e6f3e3dc53a92240e9a7",
+          "brt": 7728858775555868,
+          "pct": 21.0854,
+          "ton_all": 1.317839774,
+          "ton_top10": 1.355477476,
+          "ton": 2.67331725,
+          "top10": true
+        },
+        {
+          "rank": 2,
+          "address": "0:ba45f46c0fd18c37047a229b5efcbe9b5afb969164b551a6ec13ae1b84232a6c",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 0.852544866,
+          "ton_top10": 0.876893675,
+          "ton": 1.729438542,
+          "top10": true
+        },
+        {
+          "rank": 3,
+          "address": "0:4909c2cbcab6f96588df368ef0e7c1a92135c7a90a37e4291d75ccf2f5ec96f6",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 0.852544866,
+          "ton_top10": 0.876893675,
+          "ton": 1.729438542,
+          "top10": true
+        },
+        {
+          "rank": 4,
+          "address": "0:93cb79a5b69b0029bb3518edc40a2e540494d96d65a22d37326eac1ec7cd1e1d",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 0.852544866,
+          "ton_top10": 0.876893675,
+          "ton": 1.729438542,
+          "top10": true
+        },
+        {
+          "rank": 5,
+          "address": "0:845b53e643d8910a6c0dc074970ac7928e1c9a5f5f0acb04771627e75c30de82",
+          "brt": 4090431460492616,
+          "pct": 11.1593,
+          "ton_all": 0.697455269,
+          "ton_top10": 0.717374695,
+          "ton": 1.414829964,
+          "top10": true
+        },
+        {
+          "rank": 6,
+          "address": "0:91e53f425945248914200fd1467c0b3b84bc6570ea31b2f97b6afc9a8f8cb4df",
+          "brt": 3876979100148117,
+          "pct": 10.577,
+          "ton_all": 0.661059726,
+          "ton_top10": 0.67993969,
+          "ton": 1.340999416,
+          "top10": true
+        },
+        {
+          "rank": 7,
+          "address": "0:f0f058d01b183c9e7050e6ae2d01cbf086262cf84f1aa3c121bd6a19387561a5",
+          "brt": 2678549797782967,
+          "pct": 7.3075,
+          "ton_all": 0.456716776,
+          "ton_top10": 0.469760675,
+          "ton": 0.926477451,
+          "top10": true
+        },
+        {
+          "rank": 8,
+          "address": "0:1ca08d744bf449ba1e1deae23983805a3fb5a83cd535203241363e85d2977993",
+          "brt": 1089498878622158,
+          "pct": 2.9723,
+          "ton_all": 0.185769335,
+          "ton_top10": 0.191074935,
+          "ton": 0.37684427,
+          "top10": true
+        },
+        {
+          "rank": 9,
+          "address": "0:e798899f3eca600e7cb423d63f71ccaebfdc20d8b0d44707226ede9b7f1c4aab",
+          "brt": 651014551431905,
+          "pct": 1.7761,
+          "ton_all": 0.111003823,
+          "ton_top10": 0.114174109,
+          "ton": 0.225177931,
+          "top10": true
+        },
+        {
+          "rank": 10,
+          "address": "0:dbcb1b2103a2f3cddba549f44473f0bd9f59aa965849ed3bcd6498a21cbed8de",
+          "brt": 521827194796491,
+          "pct": 1.4236,
+          "ton_all": 0.088976219,
+          "ton_top10": 0.091517393,
+          "ton": 0.180493613,
+          "top10": true
+        }
+      ]
+    },
+    {
+      "bank": 50.0,
+      "all_pool_ton": 12.5,
+      "top10_pool_ton": 12.5,
+      "holders_pool_ton": 25.0,
+      "treasury_ton": 24.0,
+      "top": [
+        {
+          "rank": 1,
+          "address": "0:9f34251aaba41bfcaaa669119d431dbeebaddcc2efb2e6f3e3dc53a92240e9a7",
+          "brt": 7728858775555868,
+          "pct": 21.0854,
+          "ton_all": 2.635679549,
+          "ton_top10": 2.710954951,
+          "ton": 5.3466345,
+          "top10": true
+        },
+        {
+          "rank": 2,
+          "address": "0:ba45f46c0fd18c37047a229b5efcbe9b5afb969164b551a6ec13ae1b84232a6c",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 1.705089733,
+          "ton_top10": 1.753787351,
+          "ton": 3.458877083,
+          "top10": true
+        },
+        {
+          "rank": 3,
+          "address": "0:4909c2cbcab6f96588df368ef0e7c1a92135c7a90a37e4291d75ccf2f5ec96f6",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 1.705089733,
+          "ton_top10": 1.753787351,
+          "ton": 3.458877083,
+          "top10": true
+        },
+        {
+          "rank": 4,
+          "address": "0:93cb79a5b69b0029bb3518edc40a2e540494d96d65a22d37326eac1ec7cd1e1d",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 1.705089733,
+          "ton_top10": 1.753787351,
+          "ton": 3.458877083,
+          "top10": true
+        },
+        {
+          "rank": 5,
+          "address": "0:845b53e643d8910a6c0dc074970ac7928e1c9a5f5f0acb04771627e75c30de82",
+          "brt": 4090431460492616,
+          "pct": 11.1593,
+          "ton_all": 1.394910537,
+          "ton_top10": 1.434749391,
+          "ton": 2.829659928,
+          "top10": true
+        },
+        {
+          "rank": 6,
+          "address": "0:91e53f425945248914200fd1467c0b3b84bc6570ea31b2f97b6afc9a8f8cb4df",
+          "brt": 3876979100148117,
+          "pct": 10.577,
+          "ton_all": 1.322119452,
+          "ton_top10": 1.359879381,
+          "ton": 2.681998832,
+          "top10": true
+        },
+        {
+          "rank": 7,
+          "address": "0:f0f058d01b183c9e7050e6ae2d01cbf086262cf84f1aa3c121bd6a19387561a5",
+          "brt": 2678549797782967,
+          "pct": 7.3075,
+          "ton_all": 0.913433552,
+          "ton_top10": 0.939521351,
+          "ton": 1.852954902,
+          "top10": true
+        },
+        {
+          "rank": 8,
+          "address": "0:1ca08d744bf449ba1e1deae23983805a3fb5a83cd535203241363e85d2977993",
+          "brt": 1089498878622158,
+          "pct": 2.9723,
+          "ton_all": 0.37153867,
+          "ton_top10": 0.38214987,
+          "ton": 0.753688541,
+          "top10": true
+        },
+        {
+          "rank": 9,
+          "address": "0:e798899f3eca600e7cb423d63f71ccaebfdc20d8b0d44707226ede9b7f1c4aab",
+          "brt": 651014551431905,
+          "pct": 1.7761,
+          "ton_all": 0.222007645,
+          "ton_top10": 0.228348217,
+          "ton": 0.450355863,
+          "top10": true
+        },
+        {
+          "rank": 10,
+          "address": "0:dbcb1b2103a2f3cddba549f44473f0bd9f59aa965849ed3bcd6498a21cbed8de",
+          "brt": 521827194796491,
+          "pct": 1.4236,
+          "ton_all": 0.177952438,
+          "ton_top10": 0.183034787,
+          "ton": 0.360987225,
+          "top10": true
+        }
+      ]
+    },
+    {
+      "bank": 100.0,
+      "all_pool_ton": 25.0,
+      "top10_pool_ton": 25.0,
+      "holders_pool_ton": 50.0,
+      "treasury_ton": 49.0,
+      "top": [
+        {
+          "rank": 1,
+          "address": "0:9f34251aaba41bfcaaa669119d431dbeebaddcc2efb2e6f3e3dc53a92240e9a7",
+          "brt": 7728858775555868,
+          "pct": 21.0854,
+          "ton_all": 5.271359098,
+          "ton_top10": 5.421909902,
+          "ton": 10.693269,
+          "top10": true
+        },
+        {
+          "rank": 2,
+          "address": "0:ba45f46c0fd18c37047a229b5efcbe9b5afb969164b551a6ec13ae1b84232a6c",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 3.410179465,
+          "ton_top10": 3.507574701,
+          "ton": 6.917754167,
+          "top10": true
+        },
+        {
+          "rank": 3,
+          "address": "0:4909c2cbcab6f96588df368ef0e7c1a92135c7a90a37e4291d75ccf2f5ec96f6",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 3.410179465,
+          "ton_top10": 3.507574701,
+          "ton": 6.917754167,
+          "top10": true
+        },
+        {
+          "rank": 4,
+          "address": "0:93cb79a5b69b0029bb3518edc40a2e540494d96d65a22d37326eac1ec7cd1e1d",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 3.410179465,
+          "ton_top10": 3.507574701,
+          "ton": 6.917754167,
+          "top10": true
+        },
+        {
+          "rank": 5,
+          "address": "0:845b53e643d8910a6c0dc074970ac7928e1c9a5f5f0acb04771627e75c30de82",
+          "brt": 4090431460492616,
+          "pct": 11.1593,
+          "ton_all": 2.789821074,
+          "ton_top10": 2.869498782,
+          "ton": 5.659319856,
+          "top10": true
+        },
+        {
+          "rank": 6,
+          "address": "0:91e53f425945248914200fd1467c0b3b84bc6570ea31b2f97b6afc9a8f8cb4df",
+          "brt": 3876979100148117,
+          "pct": 10.577,
+          "ton_all": 2.644238903,
+          "ton_top10": 2.719758762,
+          "ton": 5.363997665,
+          "top10": true
+        },
+        {
+          "rank": 7,
+          "address": "0:f0f058d01b183c9e7050e6ae2d01cbf086262cf84f1aa3c121bd6a19387561a5",
+          "brt": 2678549797782967,
+          "pct": 7.3075,
+          "ton_all": 1.826867104,
+          "ton_top10": 1.879042701,
+          "ton": 3.705909805,
+          "top10": true
+        },
+        {
+          "rank": 8,
+          "address": "0:1ca08d744bf449ba1e1deae23983805a3fb5a83cd535203241363e85d2977993",
+          "brt": 1089498878622158,
+          "pct": 2.9723,
+          "ton_all": 0.743077341,
+          "ton_top10": 0.764299741,
+          "ton": 1.507377081,
+          "top10": true
+        },
+        {
+          "rank": 9,
+          "address": "0:e798899f3eca600e7cb423d63f71ccaebfdc20d8b0d44707226ede9b7f1c4aab",
+          "brt": 651014551431905,
+          "pct": 1.7761,
+          "ton_all": 0.444015291,
+          "ton_top10": 0.456696434,
+          "ton": 0.900711725,
+          "top10": true
+        },
+        {
+          "rank": 10,
+          "address": "0:dbcb1b2103a2f3cddba549f44473f0bd9f59aa965849ed3bcd6498a21cbed8de",
+          "brt": 521827194796491,
+          "pct": 1.4236,
+          "ton_all": 0.355904877,
+          "ton_top10": 0.366069573,
+          "ton": 0.72197445,
+          "top10": true
+        }
+      ]
+    },
+    {
+      "bank": 500.0,
+      "all_pool_ton": 125.0,
+      "top10_pool_ton": 125.0,
+      "holders_pool_ton": 250.0,
+      "treasury_ton": 249.0,
+      "top": [
+        {
+          "rank": 1,
+          "address": "0:9f34251aaba41bfcaaa669119d431dbeebaddcc2efb2e6f3e3dc53a92240e9a7",
+          "brt": 7728858775555868,
+          "pct": 21.0854,
+          "ton_all": 26.356795488,
+          "ton_top10": 27.109549512,
+          "ton": 53.466345,
+          "top10": true
+        },
+        {
+          "rank": 2,
+          "address": "0:ba45f46c0fd18c37047a229b5efcbe9b5afb969164b551a6ec13ae1b84232a6c",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 17.050897327,
+          "ton_top10": 17.537873507,
+          "ton": 34.588770834,
+          "top10": true
+        },
+        {
+          "rank": 3,
+          "address": "0:4909c2cbcab6f96588df368ef0e7c1a92135c7a90a37e4291d75ccf2f5ec96f6",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 17.050897327,
+          "ton_top10": 17.537873507,
+          "ton": 34.588770834,
+          "top10": true
+        },
+        {
+          "rank": 4,
+          "address": "0:93cb79a5b69b0029bb3518edc40a2e540494d96d65a22d37326eac1ec7cd1e1d",
+          "brt": 5000000000000000,
+          "pct": 13.6407,
+          "ton_all": 17.050897327,
+          "ton_top10": 17.537873507,
+          "ton": 34.588770834,
+          "top10": true
+        },
+        {
+          "rank": 5,
+          "address": "0:845b53e643d8910a6c0dc074970ac7928e1c9a5f5f0acb04771627e75c30de82",
+          "brt": 4090431460492616,
+          "pct": 11.1593,
+          "ton_all": 13.949105371,
+          "ton_top10": 14.347493909,
+          "ton": 28.29659928,
+          "top10": true
+        },
+        {
+          "rank": 6,
+          "address": "0:91e53f425945248914200fd1467c0b3b84bc6570ea31b2f97b6afc9a8f8cb4df",
+          "brt": 3876979100148117,
+          "pct": 10.577,
+          "ton_all": 13.221194515,
+          "ton_top10": 13.59879381,
+          "ton": 26.819988325,
+          "top10": true
+        },
+        {
+          "rank": 7,
+          "address": "0:f0f058d01b183c9e7050e6ae2d01cbf086262cf84f1aa3c121bd6a19387561a5",
+          "brt": 2678549797782967,
+          "pct": 7.3075,
+          "ton_all": 9.134335518,
+          "ton_top10": 9.395213507,
+          "ton": 18.529549025,
+          "top10": true
+        },
+        {
+          "rank": 8,
+          "address": "0:1ca08d744bf449ba1e1deae23983805a3fb5a83cd535203241363e85d2977993",
+          "brt": 1089498878622158,
+          "pct": 2.9723,
+          "ton_all": 3.715386704,
+          "ton_top10": 3.821498704,
+          "ton": 7.536885407,
+          "top10": true
+        },
+        {
+          "rank": 9,
+          "address": "0:e798899f3eca600e7cb423d63f71ccaebfdc20d8b0d44707226ede9b7f1c4aab",
+          "brt": 651014551431905,
+          "pct": 1.7761,
+          "ton_all": 2.220076455,
+          "ton_top10": 2.283482171,
+          "ton": 4.503558626,
+          "top10": true
+        },
+        {
+          "rank": 10,
+          "address": "0:dbcb1b2103a2f3cddba549f44473f0bd9f59aa965849ed3bcd6498a21cbed8de",
+          "brt": 521827194796491,
+          "pct": 1.4236,
+          "ton_all": 1.779524384,
+          "ton_top10": 1.830347867,
+          "ton": 3.609872251,
+          "top10": true
+        }
+      ]
+    }
+  ]
+}

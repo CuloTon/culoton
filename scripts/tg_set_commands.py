@@ -25,6 +25,7 @@ COMMANDS = [
     {"command": "price", "description": "Live $TON or $BRT market data"},
     {"command": "tax", "description": "Open the TAX token board (Mini App)"},
     {"command": "roll", "description": "TON rewards paid so far + rollover status"},
+    {"command": "simulate", "description": "Projected payouts at 25/50/100/500 TON (current holders)"},
     {"command": "points", "description": "Your activity score"},
     {"command": "leaderboard", "description": "Top 10 active members this week"},
 ]

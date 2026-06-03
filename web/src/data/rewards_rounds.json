@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01T18:28:49.630299+00:00",
+  "generated_at": "2026-06-03T05:09:48.432142+00:00",
   "dev_address": "UQBzaZXIwj3mDY8HdYDkTO1lkn4OV8sfx2tsf-lChQex70NP",
   "invest_address": "UQDue5ypYa45sG2CO6M_nIFJwpStYpDz3JbCZVeHes10j3n1",
   "marketing_address": "UQBKy4WDlSLQq5XdSkFvw4QcgETG-gZk6PIXWMHU1R52Yx7w",
@@ -11,6 +11,8 @@
       "round": 1,
       "at": "2026-06-01T12:14:38.922818+00:00",
       "total_paid_ton": 1.653338482,
+      "all_pool_ton": 0.0,
+      "top10_pool_ton": 0.0,
       "treasury_total_ton": 4.394542064,
       "bank_after_est": 1.1668,
       "paid": [

@@ -16,11 +16,11 @@ export function getStaticPaths() {
 const { locale } = Astro.params as { locale: Locale };
 
 const META: Record<string, { title: string; description: string }> = {
-  ru: { title: 'Награды холдерам $BRT — доля дохода в TON', description: 'BRAINROT делится доходом в TON с холдерами $BRT: 25% банка проекта, выплаты пропорционально каждую неделю. Формула, исключения и перенос от 0,05 TON.' },
-  pl: { title: 'Nagrody dla holderów $BRT — udział w dochodzie w TON', description: 'BRAINROT dzieli się dochodem w TON z holderami $BRT: 25% banku projektu, wypłaty pro-rata co tydzień. Wzór, wykluczenia i rolowanie od 0,05 TON.' },
-  de: { title: '$BRT-Holder-Rewards — TON-Umsatzbeteiligung', description: 'BRAINROT teilt TON-Einnahmen mit $BRT-Holdern: 25% der Projektbank, wöchentlich pro-rata ausgezahlt. Formel, Ausschlüsse und der 0,05-TON-Rollover erklärt.' },
-  es: { title: 'Recompensas a holders de $BRT — reparto de ingresos en TON', description: 'BRAINROT comparte ingresos en TON con holders de $BRT: 25% del banco del proyecto, pagado pro-rata cada semana. Fórmula, exclusiones y rollover desde 0,05 TON.' },
-  uk: { title: 'Винагороди холдерам $BRT — частка доходу в TON', description: 'BRAINROT ділиться доходом у TON з холдерами $BRT: 25% банку проєкту, виплати пропорційно щотижня. Формула, винятки та перенесення від 0,05 TON.' },
+  ru: { title: 'Награды холдерам $BRT — доля дохода в TON', description: 'BRAINROT делится доходом в TON с холдерами $BRT: 50% банка проекта за раунд — 25% всем + 25% ТОП-10 (из обоих пулов), пропорционально. Формула, исключения и перенос от 0,05 TON.' },
+  pl: { title: 'Nagrody dla holderów $BRT — udział w dochodzie w TON', description: 'BRAINROT dzieli się dochodem w TON z holderami $BRT: 50% banku projektu na rundę — 25% dla wszystkich + 25% dla TOP 10 (z obu pul), pro-rata. Wzór, wykluczenia i rolowanie od 0,05 TON.' },
+  de: { title: '$BRT-Holder-Rewards — TON-Umsatzbeteiligung', description: 'BRAINROT teilt TON-Einnahmen mit $BRT-Holdern: 50% der Projektbank pro Runde — 25% an alle + 25% an die Top 10 (aus beiden Pools), pro-rata. Formel, Ausschlüsse und der 0,05-TON-Rollover erklärt.' },
+  es: { title: 'Recompensas a holders de $BRT — reparto de ingresos en TON', description: 'BRAINROT comparte ingresos en TON con holders de $BRT: 50% del banco por ronda — 25% a todos + 25% al top 10 (desde ambos pools), pro-rata. Fórmula, exclusiones y rollover desde 0,05 TON.' },
+  uk: { title: 'Винагороди холдерам $BRT — частка доходу в TON', description: 'BRAINROT ділиться доходом у TON з холдерами $BRT: 50% банку проєкту за раунд — 25% усім + 25% ТОП-10 (з обох пулів), пропорційно. Формула, винятки та перенесення від 0,05 TON.' },
 };
 const m = META[locale] ?? META.pl;
 ---
