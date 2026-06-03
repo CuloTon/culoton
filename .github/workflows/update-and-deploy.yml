@@ -128,7 +128,12 @@ jobs:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD_MASTER }}
         run: python scripts/deploy_ftp.py web/dist "$TARGET_DIR"
 
-      - name: Post-deploy cleanup (drop Basic Auth, swap home/index.html as root)
+      # Belt-and-braces: the rebrand "preview gate" (.htaccess/.htpasswd Basic Auth)
+      # was fully decommissioned 2026-06-03 — those files are no longer in the repo,
+      # and the EN homepage now builds straight to dist/index.html (no home/ swap).
+      # We still nuke any .htaccess/.htpasswd left on the server from older deploys,
+      # because deploy_ftp.py only uploads and never deletes stale remote files.
+      - name: Post-deploy cleanup (purge any stale Basic Auth gate from older deploys)
         if: github.event.inputs.deploy_ftp == 'true'
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
@@ -136,7 +141,7 @@ jobs:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD_MASTER }}
         run: |
           python <<'PY'
-          import os, ssl, io
+          import os, ssl
           from ftplib import FTP_TLS, error_perm
           ctx = ssl.create_default_context(); ctx.check_hostname = False; ctx.verify_mode = ssl.CERT_NONE
           ftp = FTP_TLS(os.environ['FTP_HOST'], timeout=30, context=ctx)
@@ -149,14 +154,6 @@ jobs:
                   ftp.delete(f); print(f"deleted {f}")
               except error_perm as e:
                   print(f"  skip {f}: {e}")
-          buf = io.BytesIO()
-          try:
-              ftp.retrbinary("RETR home/index.html", buf.write)
-              data = buf.getvalue()
-              ftp.storbinary("STOR index.html", io.BytesIO(data))
-              print(f"index.html overwritten with home/index.html ({len(data)} bytes)")
-          except Exception as e:
-              print(f"  home->index swap failed: {e}")
           ftp.quit()
           PY
 
