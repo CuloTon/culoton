@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 261,
+  "group_msg_count": 262,
   "roll_last_at": "2026-06-02T14:47:15.857621+00:00",
   "users": {
     "1277897740": {
@@ -262,14 +262,14 @@
       "weekly_points": 0
     },
     "6569278351": {
-      "daily_day": "2026-06-02",
-      "daily_points": 4,
+      "daily_day": "2026-06-03",
+      "daily_points": 1,
       "last_ask_at": "",
-      "last_command_at": "2026-06-02T15:02:25.766172+00:00",
-      "last_msg_point_at": "2026-06-02T15:02:25.766186+00:00",
-      "total_points": 4,
+      "last_command_at": "2026-06-03T00:09:21.804377+00:00",
+      "last_msg_point_at": "2026-06-03T00:09:21.804390+00:00",
+      "total_points": 5,
       "username": "@Zaelibush",
-      "weekly_points": 4
+      "weekly_points": 5
     },
     "6736996077": {
       "daily_day": "2026-05-31",
