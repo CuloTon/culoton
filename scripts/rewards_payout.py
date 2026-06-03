@@ -108,7 +108,8 @@ def build_summary(round_no: int, paid: list, skipped: list, total_paid: float,
                   all_pool: float = 0.0, top10_pool: float = 0.0) -> str:
     def _line(r):
         star = " ★" if r.get("top10") else ""
-        return f"• {r['address'][:6]}…{r['address'][-4:]} — {r['ton']:.3f} TON{star}"
+        a = r.get("address_uf") or r["address"]
+        return f"• {a[:6]}…{a[-4:]} — {r['ton']:.3f} TON{star}"
     top = "\n".join(_line(r) for r in paid[:10])
     more = f"\n…and {len(paid) - 10} more" if len(paid) > 10 else ""
     pools_line = (

@@ -32,6 +32,7 @@ Reads public chain data via tonapi. Nothing is signed or sent.
 """
 from __future__ import annotations
 
+import base64
 import json
 import sys
 import time
@@ -84,6 +85,35 @@ def api_get(path: str) -> dict:
             last = e
             time.sleep(1.0 * (attempt + 1))
     raise RuntimeError(f"tonapi failed: {url} ({last})")
+
+
+def _crc16(data: bytes) -> bytes:
+    """CRC16-XMODEM (poly 0x1021, init 0) — the checksum in a TON friendly address."""
+    crc = 0
+    for b in data:
+        crc ^= b << 8
+        for _ in range(8):
+            crc = ((crc << 1) ^ 0x1021) & 0xFFFF if (crc & 0x8000) else (crc << 1) & 0xFFFF
+    return crc.to_bytes(2, "big")
+
+
+def raw_to_friendly(raw: str, bounceable: bool = False) -> str:
+    """Convert a raw `0:<hex>` address to the human-readable base64url form
+    (UQ.. for wallets when bounceable=False, EQ.. when True) shown on tonviewer.
+    Returns the input unchanged if it isn't a parseable raw address."""
+    try:
+        if not raw or ":" not in raw:
+            return raw
+        wc_str, hex_hash = raw.split(":")
+        wc = int(wc_str)
+        h = bytes.fromhex(hex_hash)
+        if len(h) != 32:
+            return raw
+        tag = 0x11 if bounceable else 0x51
+        payload = bytes([tag, wc & 0xFF]) + h
+        return base64.urlsafe_b64encode(payload + _crc16(payload)).decode()
+    except Exception:
+        return raw
 
 
 def is_plain_wallet(address: str) -> bool:
@@ -184,7 +214,8 @@ def build_plan() -> dict:
 
     def _row(r):
         a, b, total, al, tp, flag = r
-        return {"address": a, "brt": b, "ton": total, "ton_all": al, "ton_top10": tp, "top10": flag}
+        return {"address": a, "address_uf": raw_to_friendly(a),
+                "brt": b, "ton": total, "ton_all": al, "ton_top10": tp, "top10": flag}
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -199,7 +230,7 @@ def build_plan() -> dict:
         "total_eligible_brt": total_elig, "total_top10_brt": total_top10,
         "paid": [_row(r) for r in paid],
         "skipped": [_row(r) for r in skipped],
-        "excluded": [{"address": a, "brt": b, "reason": w} for a, b, w in excluded],
+        "excluded": [{"address": a, "address_uf": raw_to_friendly(a, bounceable=True), "brt": b, "reason": w} for a, b, w in excluded],
         "total_paid_ton": total_paid_ton,
         "gas_estimate_ton": gas_estimate_ton,
         "treasury_total_ton": treasury_total_ton,
@@ -248,7 +279,7 @@ def build_simulation(eligible: list, levels=SIM_BANK_LEVELS, top_sample: int = T
             all_share = all_pool * bal / total_elig if total_elig else 0.0
             top_share = (top_pool * bal / total_top10) if (addr in top10_addrs and total_top10) else 0.0
             rows.append({
-                "rank": rank, "address": addr, "brt": bal,
+                "rank": rank, "address": addr, "address_uf": raw_to_friendly(addr), "brt": bal,
                 "pct": round(100 * bal / total_elig, 4) if total_elig else 0.0,
                 "ton_all": round(all_share, 9), "ton_top10": round(top_share, 9),
                 "ton": round(all_share + top_share, 9), "top10": addr in top10_addrs,
@@ -291,7 +322,7 @@ def print_plan(p: dict) -> None:
     if p["excluded"]:
         print("\nExclusions:")
         for e in p["excluded"]:
-            print(f"  - {_short(e['address'])}  {e['brt']/NANO:>14.2f} BRT   [{e['reason']}]")
+            print(f"  - {_short(e.get('address_uf') or e['address'])}  {e['brt']/NANO:>14.2f} BRT   [{e['reason']}]")
 
     total_elig_wallets = len(p["paid"]) + len(p["skipped"])
     print(f"\nEligible wallets   : {total_elig_wallets}")
@@ -305,11 +336,11 @@ def print_plan(p: dict) -> None:
                 extra = f"  (all {r['ton_all']:.4f} + top10 {r['ton_top10']:.4f})"
             else:
                 extra = ""
-            print(f"  {star} {_short(r['address'])}  {pct:6.2f}%  ->  {r['ton']:.4f} TON{extra}")
+            print(f"  {star} {_short(r.get('address_uf') or r['address'])}  {pct:6.2f}%  ->  {r['ton']:.4f} TON{extra}")
     if p["skipped"]:
         print("\nSkipped (rolls to next round):")
         for r in p["skipped"]:
-            print(f"  {_short(r['address'])}  would be {r['ton']:.4f} TON")
+            print(f"  {_short(r.get('address_uf') or r['address'])}  would be {r['ton']:.4f} TON")
 
     print("\n" + "-" * 64)
     print(f"All-holders pool (25%) : {p['pool_ton']:.4f} TON")
@@ -333,7 +364,7 @@ def print_simulation(sim: dict) -> None:
               f"treasury ~{lv['treasury_ton']:.2f} TON")
         for r in lv["top"][:5]:
             star = "★" if r["top10"] else " "
-            print(f"   {star} #{r['rank']} {_short(r['address'])}  {r['pct']:5.2f}%  ->  {r['ton']:.3f} TON")
+            print(f"   {star} #{r['rank']} {_short(r.get('address_uf') or r['address'])}  {r['pct']:5.2f}%  ->  {r['ton']:.3f} TON")
 
 
 def write_simulation(sim: dict) -> None:

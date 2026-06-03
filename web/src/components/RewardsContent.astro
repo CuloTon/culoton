@@ -265,6 +265,8 @@ const rollingCount = latestRound ? latestRound.rollover.length : 0;
 const TONVIEWER = 'https://tonviewer.com/';
 const fmtTon = (n: number) => Number(n).toFixed(3);
 const shortAddr = (a: string) => (a.length > 14 ? a.slice(0, 6) + '…' + a.slice(-4) : a);
+// Prefer the human-readable UQ.. form (address_uf) over raw 0:hex for display + links.
+const addrOf = (h: any) => (h.address_uf ?? h.address);
 const roundDate = (iso: string) => (iso || '').slice(0, 10);
 const sharePct = (ton: number, total: number) => (total > 0 ? ((ton / total) * 100).toFixed(1) : '0.0');
 // newest round first for display
@@ -329,7 +331,7 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
               {r.paid.map((h, i) => (
                 <li class={h.top10 ? 'rw-rank-top10' : ''}>
                   <span class="rw-rank-n">{i + 1}</span>
-                  <a class="rw-rank-addr" href={TONVIEWER + h.address} target="_blank" rel="noopener noreferrer">{shortAddr(h.address)}</a>
+                  <a class="rw-rank-addr" href={TONVIEWER + addrOf(h)} target="_blank" rel="noopener noreferrer">{shortAddr(addrOf(h))}</a>
                   {h.top10 && <span class="rw-top10-badge" title={t.hist_top10_badge}>★</span>}
                   <span class="rw-rank-pct">{sharePct(h.ton, r.total_paid_ton)}%</span>
                   <span class="rw-rank-ton">{fmtTon(h.ton)} TON</span>
@@ -343,7 +345,7 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
                 <ul class="rw-rolllist">
                   {r.rollover.map((h) => (
                     <li>
-                      <a class="rw-rank-addr" href={TONVIEWER + h.address} target="_blank" rel="noopener noreferrer">{shortAddr(h.address)}</a>
+                      <a class="rw-rank-addr" href={TONVIEWER + addrOf(h)} target="_blank" rel="noopener noreferrer">{shortAddr(addrOf(h))}</a>
                       <span class="rw-roll-ton">{fmtTon(h.ton)} TON {t.hist_pending}</span>
                     </li>
                   ))}

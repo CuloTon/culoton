@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-03T05:09:48.772608+00:00",
+  "generated_at": "2026-06-03T05:48:21.340956+00:00",
   "based_on": "current holders",
   "n_eligible": 19,
   "top_n": 10,
@@ -19,6 +19,7 @@
         {
           "rank": 1,
           "address": "0:9f34251aaba41bfcaaa669119d431dbeebaddcc2efb2e6f3e3dc53a92240e9a7",
+          "address_uf": "UQCfNCUaq6Qb_KqmaRGdQx2-663cwu-y5vPj3FOpIkDpp9ix",
           "brt": 7728858775555868,
           "pct": 21.0854,
           "ton_all": 1.317839774,
@@ -29,6 +30,7 @@
         {
           "rank": 2,
           "address": "0:ba45f46c0fd18c37047a229b5efcbe9b5afb969164b551a6ec13ae1b84232a6c",
+          "address_uf": "UQC6RfRsD9GMNwR6Ipte_L6bWvuWkWS1UabsE64bhCMqbITW",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 0.852544866,
@@ -39,6 +41,7 @@
         {
           "rank": 3,
           "address": "0:4909c2cbcab6f96588df368ef0e7c1a92135c7a90a37e4291d75ccf2f5ec96f6",
+          "address_uf": "UQBJCcLLyrb5ZYjfNo7w58GpITXHqQo35Ckddczy9eyW9mMH",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 0.852544866,
@@ -49,6 +52,7 @@
         {
           "rank": 4,
           "address": "0:93cb79a5b69b0029bb3518edc40a2e540494d96d65a22d37326eac1ec7cd1e1d",
+          "address_uf": "UQCTy3mltpsAKbs1GO3ECi5UBJTZbWWiLTcybqwex80eHWg-",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 0.852544866,
@@ -59,6 +63,7 @@
         {
           "rank": 5,
           "address": "0:845b53e643d8910a6c0dc074970ac7928e1c9a5f5f0acb04771627e75c30de82",
+          "address_uf": "UQCEW1PmQ9iRCmwNwHSXCseSjhyaX18KywR3FifnXDDegse3",
           "brt": 4090431460492616,
           "pct": 11.1593,
           "ton_all": 0.697455269,
@@ -69,6 +74,7 @@
         {
           "rank": 6,
           "address": "0:91e53f425945248914200fd1467c0b3b84bc6570ea31b2f97b6afc9a8f8cb4df",
+          "address_uf": "UQCR5T9CWUUkiRQgD9FGfAs7hLxlcOoxsvl7avyaj4y03xcs",
           "brt": 3876979100148117,
           "pct": 10.577,
           "ton_all": 0.661059726,
@@ -79,6 +85,7 @@
         {
           "rank": 7,
           "address": "0:f0f058d01b183c9e7050e6ae2d01cbf086262cf84f1aa3c121bd6a19387561a5",
+          "address_uf": "UQDw8FjQGxg8nnBQ5q4tAcvwhiYs-E8ao8EhvWoZOHVhpXOK",
           "brt": 2678549797782967,
           "pct": 7.3075,
           "ton_all": 0.456716776,
@@ -89,6 +96,7 @@
         {
           "rank": 8,
           "address": "0:1ca08d744bf449ba1e1deae23983805a3fb5a83cd535203241363e85d2977993",
+          "address_uf": "UQAcoI10S_RJuh4d6uI5g4BaP7WoPNU1IDJBNj6F0pd5kwfe",
           "brt": 1089498878622158,
           "pct": 2.9723,
           "ton_all": 0.185769335,
@@ -99,6 +107,7 @@
         {
           "rank": 9,
           "address": "0:e798899f3eca600e7cb423d63f71ccaebfdc20d8b0d44707226ede9b7f1c4aab",
+          "address_uf": "UQDnmImfPspgDny0I9Y_ccyuv9wg2LDURwcibt6bfxxKqwZl",
           "brt": 651014551431905,
           "pct": 1.7761,
           "ton_all": 0.111003823,
@@ -109,6 +118,7 @@
         {
           "rank": 10,
           "address": "0:dbcb1b2103a2f3cddba549f44473f0bd9f59aa965849ed3bcd6498a21cbed8de",
+          "address_uf": "UQDbyxshA6LzzdulSfREc_C9n1mqllhJ7TvNZJiiHL7Y3vH_",
           "brt": 521827194796491,
           "pct": 1.4236,
           "ton_all": 0.088976219,
@@ -128,6 +138,7 @@
         {
           "rank": 1,
           "address": "0:9f34251aaba41bfcaaa669119d431dbeebaddcc2efb2e6f3e3dc53a92240e9a7",
+          "address_uf": "UQCfNCUaq6Qb_KqmaRGdQx2-663cwu-y5vPj3FOpIkDpp9ix",
           "brt": 7728858775555868,
           "pct": 21.0854,
           "ton_all": 2.635679549,
@@ -138,6 +149,7 @@
         {
           "rank": 2,
           "address": "0:ba45f46c0fd18c37047a229b5efcbe9b5afb969164b551a6ec13ae1b84232a6c",
+          "address_uf": "UQC6RfRsD9GMNwR6Ipte_L6bWvuWkWS1UabsE64bhCMqbITW",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 1.705089733,
@@ -148,6 +160,7 @@
         {
           "rank": 3,
           "address": "0:4909c2cbcab6f96588df368ef0e7c1a92135c7a90a37e4291d75ccf2f5ec96f6",
+          "address_uf": "UQBJCcLLyrb5ZYjfNo7w58GpITXHqQo35Ckddczy9eyW9mMH",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 1.705089733,
@@ -158,6 +171,7 @@
         {
           "rank": 4,
           "address": "0:93cb79a5b69b0029bb3518edc40a2e540494d96d65a22d37326eac1ec7cd1e1d",
+          "address_uf": "UQCTy3mltpsAKbs1GO3ECi5UBJTZbWWiLTcybqwex80eHWg-",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 1.705089733,
@@ -168,6 +182,7 @@
         {
           "rank": 5,
           "address": "0:845b53e643d8910a6c0dc074970ac7928e1c9a5f5f0acb04771627e75c30de82",
+          "address_uf": "UQCEW1PmQ9iRCmwNwHSXCseSjhyaX18KywR3FifnXDDegse3",
           "brt": 4090431460492616,
           "pct": 11.1593,
           "ton_all": 1.394910537,
@@ -178,6 +193,7 @@
         {
           "rank": 6,
           "address": "0:91e53f425945248914200fd1467c0b3b84bc6570ea31b2f97b6afc9a8f8cb4df",
+          "address_uf": "UQCR5T9CWUUkiRQgD9FGfAs7hLxlcOoxsvl7avyaj4y03xcs",
           "brt": 3876979100148117,
           "pct": 10.577,
           "ton_all": 1.322119452,
@@ -188,6 +204,7 @@
         {
           "rank": 7,
           "address": "0:f0f058d01b183c9e7050e6ae2d01cbf086262cf84f1aa3c121bd6a19387561a5",
+          "address_uf": "UQDw8FjQGxg8nnBQ5q4tAcvwhiYs-E8ao8EhvWoZOHVhpXOK",
           "brt": 2678549797782967,
           "pct": 7.3075,
           "ton_all": 0.913433552,
@@ -198,6 +215,7 @@
         {
           "rank": 8,
           "address": "0:1ca08d744bf449ba1e1deae23983805a3fb5a83cd535203241363e85d2977993",
+          "address_uf": "UQAcoI10S_RJuh4d6uI5g4BaP7WoPNU1IDJBNj6F0pd5kwfe",
           "brt": 1089498878622158,
           "pct": 2.9723,
           "ton_all": 0.37153867,
@@ -208,6 +226,7 @@
         {
           "rank": 9,
           "address": "0:e798899f3eca600e7cb423d63f71ccaebfdc20d8b0d44707226ede9b7f1c4aab",
+          "address_uf": "UQDnmImfPspgDny0I9Y_ccyuv9wg2LDURwcibt6bfxxKqwZl",
           "brt": 651014551431905,
           "pct": 1.7761,
           "ton_all": 0.222007645,
@@ -218,6 +237,7 @@
         {
           "rank": 10,
           "address": "0:dbcb1b2103a2f3cddba549f44473f0bd9f59aa965849ed3bcd6498a21cbed8de",
+          "address_uf": "UQDbyxshA6LzzdulSfREc_C9n1mqllhJ7TvNZJiiHL7Y3vH_",
           "brt": 521827194796491,
           "pct": 1.4236,
           "ton_all": 0.177952438,
@@ -237,6 +257,7 @@
         {
           "rank": 1,
           "address": "0:9f34251aaba41bfcaaa669119d431dbeebaddcc2efb2e6f3e3dc53a92240e9a7",
+          "address_uf": "UQCfNCUaq6Qb_KqmaRGdQx2-663cwu-y5vPj3FOpIkDpp9ix",
           "brt": 7728858775555868,
           "pct": 21.0854,
           "ton_all": 5.271359098,
@@ -247,6 +268,7 @@
         {
           "rank": 2,
           "address": "0:ba45f46c0fd18c37047a229b5efcbe9b5afb969164b551a6ec13ae1b84232a6c",
+          "address_uf": "UQC6RfRsD9GMNwR6Ipte_L6bWvuWkWS1UabsE64bhCMqbITW",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 3.410179465,
@@ -257,6 +279,7 @@
         {
           "rank": 3,
           "address": "0:4909c2cbcab6f96588df368ef0e7c1a92135c7a90a37e4291d75ccf2f5ec96f6",
+          "address_uf": "UQBJCcLLyrb5ZYjfNo7w58GpITXHqQo35Ckddczy9eyW9mMH",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 3.410179465,
@@ -267,6 +290,7 @@
         {
           "rank": 4,
           "address": "0:93cb79a5b69b0029bb3518edc40a2e540494d96d65a22d37326eac1ec7cd1e1d",
+          "address_uf": "UQCTy3mltpsAKbs1GO3ECi5UBJTZbWWiLTcybqwex80eHWg-",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 3.410179465,
@@ -277,6 +301,7 @@
         {
           "rank": 5,
           "address": "0:845b53e643d8910a6c0dc074970ac7928e1c9a5f5f0acb04771627e75c30de82",
+          "address_uf": "UQCEW1PmQ9iRCmwNwHSXCseSjhyaX18KywR3FifnXDDegse3",
           "brt": 4090431460492616,
           "pct": 11.1593,
           "ton_all": 2.789821074,
@@ -287,6 +312,7 @@
         {
           "rank": 6,
           "address": "0:91e53f425945248914200fd1467c0b3b84bc6570ea31b2f97b6afc9a8f8cb4df",
+          "address_uf": "UQCR5T9CWUUkiRQgD9FGfAs7hLxlcOoxsvl7avyaj4y03xcs",
           "brt": 3876979100148117,
           "pct": 10.577,
           "ton_all": 2.644238903,
@@ -297,6 +323,7 @@
         {
           "rank": 7,
           "address": "0:f0f058d01b183c9e7050e6ae2d01cbf086262cf84f1aa3c121bd6a19387561a5",
+          "address_uf": "UQDw8FjQGxg8nnBQ5q4tAcvwhiYs-E8ao8EhvWoZOHVhpXOK",
           "brt": 2678549797782967,
           "pct": 7.3075,
           "ton_all": 1.826867104,
@@ -307,6 +334,7 @@
         {
           "rank": 8,
           "address": "0:1ca08d744bf449ba1e1deae23983805a3fb5a83cd535203241363e85d2977993",
+          "address_uf": "UQAcoI10S_RJuh4d6uI5g4BaP7WoPNU1IDJBNj6F0pd5kwfe",
           "brt": 1089498878622158,
           "pct": 2.9723,
           "ton_all": 0.743077341,
@@ -317,6 +345,7 @@
         {
           "rank": 9,
           "address": "0:e798899f3eca600e7cb423d63f71ccaebfdc20d8b0d44707226ede9b7f1c4aab",
+          "address_uf": "UQDnmImfPspgDny0I9Y_ccyuv9wg2LDURwcibt6bfxxKqwZl",
           "brt": 651014551431905,
           "pct": 1.7761,
           "ton_all": 0.444015291,
@@ -327,6 +356,7 @@
         {
           "rank": 10,
           "address": "0:dbcb1b2103a2f3cddba549f44473f0bd9f59aa965849ed3bcd6498a21cbed8de",
+          "address_uf": "UQDbyxshA6LzzdulSfREc_C9n1mqllhJ7TvNZJiiHL7Y3vH_",
           "brt": 521827194796491,
           "pct": 1.4236,
           "ton_all": 0.355904877,
@@ -346,6 +376,7 @@
         {
           "rank": 1,
           "address": "0:9f34251aaba41bfcaaa669119d431dbeebaddcc2efb2e6f3e3dc53a92240e9a7",
+          "address_uf": "UQCfNCUaq6Qb_KqmaRGdQx2-663cwu-y5vPj3FOpIkDpp9ix",
           "brt": 7728858775555868,
           "pct": 21.0854,
           "ton_all": 26.356795488,
@@ -356,6 +387,7 @@
         {
           "rank": 2,
           "address": "0:ba45f46c0fd18c37047a229b5efcbe9b5afb969164b551a6ec13ae1b84232a6c",
+          "address_uf": "UQC6RfRsD9GMNwR6Ipte_L6bWvuWkWS1UabsE64bhCMqbITW",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 17.050897327,
@@ -366,6 +398,7 @@
         {
           "rank": 3,
           "address": "0:4909c2cbcab6f96588df368ef0e7c1a92135c7a90a37e4291d75ccf2f5ec96f6",
+          "address_uf": "UQBJCcLLyrb5ZYjfNo7w58GpITXHqQo35Ckddczy9eyW9mMH",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 17.050897327,
@@ -376,6 +409,7 @@
         {
           "rank": 4,
           "address": "0:93cb79a5b69b0029bb3518edc40a2e540494d96d65a22d37326eac1ec7cd1e1d",
+          "address_uf": "UQCTy3mltpsAKbs1GO3ECi5UBJTZbWWiLTcybqwex80eHWg-",
           "brt": 5000000000000000,
           "pct": 13.6407,
           "ton_all": 17.050897327,
@@ -386,6 +420,7 @@
         {
           "rank": 5,
           "address": "0:845b53e643d8910a6c0dc074970ac7928e1c9a5f5f0acb04771627e75c30de82",
+          "address_uf": "UQCEW1PmQ9iRCmwNwHSXCseSjhyaX18KywR3FifnXDDegse3",
           "brt": 4090431460492616,
           "pct": 11.1593,
           "ton_all": 13.949105371,
@@ -396,6 +431,7 @@
         {
           "rank": 6,
           "address": "0:91e53f425945248914200fd1467c0b3b84bc6570ea31b2f97b6afc9a8f8cb4df",
+          "address_uf": "UQCR5T9CWUUkiRQgD9FGfAs7hLxlcOoxsvl7avyaj4y03xcs",
           "brt": 3876979100148117,
           "pct": 10.577,
           "ton_all": 13.221194515,
@@ -406,6 +442,7 @@
         {
           "rank": 7,
           "address": "0:f0f058d01b183c9e7050e6ae2d01cbf086262cf84f1aa3c121bd6a19387561a5",
+          "address_uf": "UQDw8FjQGxg8nnBQ5q4tAcvwhiYs-E8ao8EhvWoZOHVhpXOK",
           "brt": 2678549797782967,
           "pct": 7.3075,
           "ton_all": 9.134335518,
@@ -416,6 +453,7 @@
         {
           "rank": 8,
           "address": "0:1ca08d744bf449ba1e1deae23983805a3fb5a83cd535203241363e85d2977993",
+          "address_uf": "UQAcoI10S_RJuh4d6uI5g4BaP7WoPNU1IDJBNj6F0pd5kwfe",
           "brt": 1089498878622158,
           "pct": 2.9723,
           "ton_all": 3.715386704,
@@ -426,6 +464,7 @@
         {
           "rank": 9,
           "address": "0:e798899f3eca600e7cb423d63f71ccaebfdc20d8b0d44707226ede9b7f1c4aab",
+          "address_uf": "UQDnmImfPspgDny0I9Y_ccyuv9wg2LDURwcibt6bfxxKqwZl",
           "brt": 651014551431905,
           "pct": 1.7761,
           "ton_all": 2.220076455,
@@ -436,6 +475,7 @@
         {
           "rank": 10,
           "address": "0:dbcb1b2103a2f3cddba549f44473f0bd9f59aa965849ed3bcd6498a21cbed8de",
+          "address_uf": "UQDbyxshA6LzzdulSfREc_C9n1mqllhJ7TvNZJiiHL7Y3vH_",
           "brt": 521827194796491,
           "pct": 1.4236,
           "ton_all": 1.779524384,
