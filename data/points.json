@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 268,
+  "group_msg_count": 271,
   "roll_last_at": "2026-06-03T04:15:24.301878+00:00",
   "users": {
     "1277897740": {
@@ -392,14 +392,14 @@
       "weekly_points": 0
     },
     "7484610875": {
-      "daily_day": "2026-06-02",
+      "daily_day": "2026-06-03",
       "daily_points": 1,
       "last_ask_at": "",
-      "last_command_at": "2026-06-02T19:44:33.646607+00:00",
-      "last_msg_point_at": "2026-06-02T19:44:33.646620+00:00",
-      "total_points": 1,
+      "last_command_at": "2026-06-03T05:47:06.957743+00:00",
+      "last_msg_point_at": "2026-06-03T05:47:06.957754+00:00",
+      "total_points": 2,
       "username": "@dRyan_Dave",
-      "weekly_points": 1
+      "weekly_points": 2
     },
     "7653126333": {
       "daily_day": "2026-05-18",
