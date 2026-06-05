@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-06-05T16:54:37.266119+00:00",
+  "generated_at": "2026-06-05T18:04:54.006682+00:00",
   "dev_address": "UQBzaZXIwj3mDY8HdYDkTO1lkn4OV8sfx2tsf-lChQex70NP",
   "invest_address": "UQDue5ypYa45sG2CO6M_nIFJwpStYpDz3JbCZVeHes10j3n1",
   "marketing_address": "UQBKy4WDlSLQq5XdSkFvw4QcgETG-gZk6PIXWMHU1R52Yx7w",
-  "rounds_count": 2,
-  "total_paid_ton": 3.737847096,
-  "holders_paid_unique": 10,
+  "rounds_count": 3,
+  "total_paid_ton": 14.344061181,
+  "holders_paid_unique": 11,
   "rounds": [
     {
       "round": 1,
@@ -313,6 +313,172 @@
           "ton": 2.9e-08,
           "brt": 1000000000,
           "ton_all": 2.9e-08,
+          "ton_top10": 0.0,
+          "top10": false
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "at": "2026-06-05T18:04:04.781739+00:00",
+      "total_paid_ton": 10.606214085,
+      "all_pool_ton": 5.365499433,
+      "top10_pool_ton": 5.365499433,
+      "treasury_total_ton": 9.664998866,
+      "bank_after_est": 1.1248,
+      "paid": [
+        {
+          "address": "0:9f34251aaba41bfcaaa669119d431dbeebaddcc2efb2e6f3e3dc53a92240e9a7",
+          "address_uf": "UQCfNCUaq6Qb_KqmaRGdQx2-663cwu-y5vPj3FOpIkDpp9ix",
+          "ton": 2.265547943,
+          "brt": 7728858775555868,
+          "ton_all": 1.124588141,
+          "ton_top10": 1.140959802,
+          "top10": true
+        },
+        {
+          "address": "0:4909c2cbcab6f96588df368ef0e7c1a92135c7a90a37e4291d75ccf2f5ec96f6",
+          "address_uf": "UQBJCcLLyrb5ZYjfNo7w58GpITXHqQo35Ckddczy9eyW9mMH",
+          "ton": 1.465641959,
+          "brt": 5000000000000000,
+          "ton_all": 0.727525352,
+          "ton_top10": 0.738116606,
+          "top10": true
+        },
+        {
+          "address": "0:93cb79a5b69b0029bb3518edc40a2e540494d96d65a22d37326eac1ec7cd1e1d",
+          "address_uf": "UQCTy3mltpsAKbs1GO3ECi5UBJTZbWWiLTcybqwex80eHWg-",
+          "ton": 1.465641959,
+          "brt": 5000000000000000,
+          "ton_all": 0.727525352,
+          "ton_top10": 0.738116606,
+          "top10": true
+        },
+        {
+          "address": "0:ba45f46c0fd18c37047a229b5efcbe9b5afb969164b551a6ec13ae1b84232a6c",
+          "address_uf": "UQC6RfRsD9GMNwR6Ipte_L6bWvuWkWS1UabsE64bhCMqbITW",
+          "ton": 1.465641959,
+          "brt": 5000000000000000,
+          "ton_all": 0.727525352,
+          "ton_top10": 0.738116606,
+          "top10": true
+        },
+        {
+          "address": "0:845b53e643d8910a6c0dc074970ac7928e1c9a5f5f0acb04771627e75c30de82",
+          "address_uf": "UQCEW1PmQ9iRCmwNwHSXCseSjhyaX18KywR3FifnXDDegse3",
+          "ton": 1.199021595,
+          "brt": 4090431460492616,
+          "ton_all": 0.595178518,
+          "ton_top10": 0.603843078,
+          "top10": true
+        },
+        {
+          "address": "0:91e53f425945248914200fd1467c0b3b84bc6570ea31b2f97b6afc9a8f8cb4df",
+          "address_uf": "UQCR5T9CWUUkiRQgD9FGfAs7hLxlcOoxsvl7avyaj4y03xcs",
+          "ton": 1.136452648,
+          "brt": 3876979100148117,
+          "ton_all": 0.564120117,
+          "ton_top10": 0.572332531,
+          "top10": true
+        },
+        {
+          "address": "0:f0f058d01b183c9e7050e6ae2d01cbf086262cf84f1aa3c121bd6a19387561a5",
+          "address_uf": "UQDw8FjQGxg8nnBQ5q4tAcvwhiYs-E8ao8EhvWoZOHVhpXOK",
+          "ton": 1.028080935,
+          "brt": 3507271775019498,
+          "ton_all": 0.510325827,
+          "ton_top10": 0.517755108,
+          "top10": true
+        },
+        {
+          "address": "0:1ca08d744bf449ba1e1deae23983805a3fb5a83cd535203241363e85d2977993",
+          "address_uf": "UQAcoI10S_RJuh4d6uI5g4BaP7WoPNU1IDJBNj6F0pd5kwfe",
+          "ton": 0.484733522,
+          "brt": 1653655995756617,
+          "ton_all": 0.240615332,
+          "ton_top10": 0.24411819,
+          "top10": true
+        },
+        {
+          "address": "0:908ac586b5b7b5d861ffa1ba42543b4d7c980a0efe397978fd14dc4ee7b0d8b1",
+          "address_uf": "UQCQisWGtbe12GH_obpCVDtNfJgKDv45eXj9FNxO57DYsams",
+          "ton": 0.095451565,
+          "brt": 325630570249619,
+          "ton_all": 0.047380899,
+          "ton_top10": 0.048070666,
+          "top10": true
+        }
+      ],
+      "rollover": [
+        {
+          "address": "0:61e1d766e9c9ac16bcf3dcb8ba896975f785f86ecdb3774dfa8a83a75d1a3652",
+          "address_uf": "UQBh4ddm6cmsFrzz3Li6iWl194X4bs2zd036ioOnXRo2UvKj",
+          "ton": 0.047795093,
+          "brt": 163051734914173,
+          "ton_all": 0.023724854,
+          "ton_top10": 0.024070239,
+          "top10": true
+        },
+        {
+          "address": "0:88f10773383b667f314218c87f88156819c305074e343f9a0382d60cf7d464e8",
+          "address_uf": "UQCI8QdzODtmfzFCGMh_iBVoGcMFB040P5oDgtYM99Rk6M1X",
+          "ton": 0.023409539,
+          "brt": 160884696990166,
+          "ton_all": 0.023409539,
+          "ton_top10": 0.0,
+          "top10": false
+        },
+        {
+          "address": "0:3d0f9545b32b420d57b48fafa55317f20794a7d052a49319c221ac21722cab31",
+          "address_uf": "UQA9D5VFsytCDVe0j6-lUxfyB5Sn0FKkkxnCIawhciyrMSoA",
+          "ton": 0.016663948,
+          "brt": 114524859845808,
+          "ton_all": 0.016663948,
+          "ton_top10": 0.0,
+          "top10": false
+        },
+        {
+          "address": "0:7dc33e2384e2636db1600db68abf76446540aca24bd80f3d221c63460b62d410",
+          "address_uf": "UQB9wz4jhOJjbbFgDbaKv3ZEZUCsokvYDz0iHGNGC2LUEKt-",
+          "ton": 0.009295165,
+          "brt": 63882066248505,
+          "ton_all": 0.009295165,
+          "ton_top10": 0.0,
+          "top10": false
+        },
+        {
+          "address": "0:8e4bf2fb95c2fbde8c93f4b7f1f4c30abed6f8cf369615111470fd9dafbb0789",
+          "address_uf": "UQCOS_L7lcL73oyT9Lfx9MMKvtb4zzaWFREUcP2dr7sHiZSj",
+          "ton": 0.009245807,
+          "brt": 63542849393798,
+          "ton_all": 0.009245807,
+          "ton_top10": 0.0,
+          "top10": false
+        },
+        {
+          "address": "0:77d318ee2edadd3cec2501ee38be4bc4958261b78d0a222044aad78c7e6d7a35",
+          "address_uf": "UQB30xjuLtrdPOwlAe44vkvElYJht40KIiBEqteMfm16NTuc",
+          "ton": 0.009196841,
+          "brt": 63206328163762,
+          "ton_all": 0.009196841,
+          "ton_top10": 0.0,
+          "top10": false
+        },
+        {
+          "address": "0:f8c1707cf0b58f1046f0013225f52f5519438e7575c7eae40e70becca4fe317c",
+          "address_uf": "UQD4wXB88LWPEEbwATIl9S9VGUOOdXXH6uQOcL7MpP4xfI21",
+          "ton": 0.009178243,
+          "brt": 63078510996855,
+          "ton_all": 0.009178243,
+          "ton_top10": 0.0,
+          "top10": false
+        },
+        {
+          "address": "0:a8c882451e7f632e5bd1640dbc11cc68e766b5b75bd1d9a944b48ae244410bb8",
+          "address_uf": "UQCoyIJFHn9jLlvRZA28Ecxo52a1t1vR2alEtIriREELuDGW",
+          "ton": 1.46e-07,
+          "brt": 1000000000,
+          "ton_all": 1.46e-07,
           "ton_top10": 0.0,
           "top10": false
         }
