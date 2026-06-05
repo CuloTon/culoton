@@ -439,7 +439,9 @@ def cmd_roll() -> str:
         if roll:
             roll_sum = sum(float(h.get("ton", 0)) for h in roll)
             lines.append(f"⏳ Rolling over: {len(roll)} wallets ({roll_sum:.3f} TON) — "
-                         "shares below 0.05 TON, accumulating to next round")
+                         "shares below 0.05 TON. Not a stored credit: every round is "
+                         "recomputed from your live $BRT balance — keep holding and it "
+                         "crosses 0.05; sell and there's nothing left to roll.")
     else:
         lines.append("No rounds have paid out yet — the first runs once the bank passes 4 TON.")
 
