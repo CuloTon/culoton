@@ -128,7 +128,7 @@ const alternates = LOCALES.map((loc) => ({
   <body>
     <header class="site-header" id="site-header">
       <div class="inner">
-        <a href={locale === 'en' ? '/home' : localizedPath(locale, '/')} class="logo">
+        <a href={localizedPath(locale, '/')} class="logo">
           <img src="/brainrot.png" alt="BRAINROT logo" />
           <div>
             <span class="brand-culo">BRAIN</span><span class="brand-ton">ROT</span>
