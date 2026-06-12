@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 337,
+  "group_msg_count": 338,
   "roll_last_at": "2026-06-06T17:19:46.134777+00:00",
   "users": {
     "1277897740": {
@@ -560,6 +560,16 @@
       "total_points": 3,
       "username": "nn9",
       "weekly_points": 3
+    },
+    "8934399761": {
+      "daily_day": "2026-06-12",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-06-12T10:17:05.538667+00:00",
+      "last_msg_point_at": "2026-06-12T10:17:05.538680+00:00",
+      "total_points": 1,
+      "username": "mmm 86",
+      "weekly_points": 1
     },
     "8954346202": {
       "daily_day": "2026-05-20",
