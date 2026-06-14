@@ -1,5 +1,5 @@
 {
-  "group_msg_count": 339,
+  "group_msg_count": 340,
   "roll_last_at": "2026-06-06T17:19:46.134777+00:00",
   "users": {
     "1277897740": {
@@ -420,6 +420,16 @@
       "total_points": 5,
       "username": "@dRyan_Dave",
       "weekly_points": 5
+    },
+    "7500095893": {
+      "daily_day": "2026-06-14",
+      "daily_points": 1,
+      "last_ask_at": "",
+      "last_command_at": "2026-06-14T10:20:33.798551+00:00",
+      "last_msg_point_at": "2026-06-14T10:20:33.798565+00:00",
+      "total_points": 1,
+      "username": "@Atlas_the_creator",
+      "weekly_points": 1
     },
     "7653126333": {
       "daily_day": "2026-05-18",
