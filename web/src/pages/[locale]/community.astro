@@ -16,11 +16,11 @@ export function getStaticPaths() {
 const { locale } = Astro.params as { locale: Locale };
 
 const META: Record<string, { title: string; description: string }> = {
-  ru: { title: 'Блог — пиши, получай апвоты, зарабатывай BRTP', description: 'Сообщество BRAINROT: пиши на своём языке, получай голоса и зарабатывай BRTP на свой TON-адрес.' },
-  pl: { title: 'Blog — pisz, zbieraj głosy, zarabiaj BRTP', description: 'Społeczność BRAINROT: pisz w swoim języku, zbieraj upvote i zarabiaj BRTP na swój adres TON.' },
-  de: { title: 'Blog — schreiben, Upvotes sammeln, BRTP verdienen', description: 'BRAINROT-Community: schreibe in deiner Sprache, sammle Upvotes und verdiene BRTP auf deine TON-Adresse.' },
-  es: { title: 'Blog — escribe, recibe votos, gana BRTP', description: 'Comunidad BRAINROT: escribe en tu idioma, recibe upvotes y gana BRTP en tu dirección TON.' },
-  uk: { title: 'Блог — пиши, збирай голоси, заробляй BRTP', description: 'Спільнота BRAINROT: пиши своєю мовою, збирай апвоти та заробляй BRTP на свою TON-адресу.' },
+  ru: { title: 'Блог — пиши, получай апвоты, зарабатывай BRTP', description: 'Сообщество BRAINROT: пиши на своём языке, получай голоса и зарабатывай BRTP на свой GRAM-адрес.' },
+  pl: { title: 'Blog — pisz, zbieraj głosy, zarabiaj BRTP', description: 'Społeczność BRAINROT: pisz w swoim języku, zbieraj upvote i zarabiaj BRTP na swój adres GRAM.' },
+  de: { title: 'Blog — schreiben, Upvotes sammeln, BRTP verdienen', description: 'BRAINROT-Community: schreibe in deiner Sprache, sammle Upvotes und verdiene BRTP auf deine GRAM-Adresse.' },
+  es: { title: 'Blog — escribe, recibe votos, gana BRTP', description: 'Comunidad BRAINROT: escribe en tu idioma, recibe upvotes y gana BRTP en tu dirección GRAM.' },
+  uk: { title: 'Блог — пиши, збирай голоси, заробляй BRTP', description: 'Спільнота BRAINROT: пиши своєю мовою, збирай апвоти та заробляй BRTP на свою GRAM-адресу.' },
 };
 const m = META[locale] ?? META.pl;
 ---

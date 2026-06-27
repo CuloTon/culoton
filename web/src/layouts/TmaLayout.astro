@@ -3,7 +3,7 @@ import '../styles/global.css';
 import '../styles/editorial.css';
 
 interface Props { title?: string; description?: string; }
-const { title = 'BRAINROT TAX', description = 'TON token TAX board — live charts, market cap, buy/sell/holders tax.' } = Astro.props;
+const { title = 'BRAINROT TAX', description = 'GRAM token TAX board — live charts, market cap, buy/sell/holders tax.' } = Astro.props;
 const STATS_API = (import.meta.env.PUBLIC_STATS_API ?? '').toString().replace(/\/$/, '');
 ---
 
@@ -13,8 +13,8 @@ const STATS_API = (import.meta.env.PUBLIC_STATS_API ?? '').toString().replace(/\
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="stats-api" content={STATS_API} />
-    <meta name="theme-color" content="#0b0b0d" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#fbfaf7" />
+    <meta name="color-scheme" content="light" />
     <meta name="robots" content="noindex" />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -27,19 +27,19 @@ const STATS_API = (import.meta.env.PUBLIC_STATS_API ?? '').toString().replace(/\
     />
     <script src="https://telegram.org/js/telegram-web-app.js" is:inline></script>
     <style is:inline>
-      html { color-scheme: dark; background: #0b0b0d; }
-      html, body { background: #0b0b0d; margin: 0; }
-      body { color: #e8eaee; -webkit-tap-highlight-color: transparent; }
+      html { color-scheme: light; background: #fbfaf7; }
+      html, body { background: #fbfaf7; margin: 0; }
+      body { color: #1b1a16; -webkit-tap-highlight-color: transparent; }
       .tma-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px 6px; }
       .tma-logo { width: 30px; height: 30px; border-radius: 8px; }
-      .tma-title { font-family: var(--font-mono), monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #7ae9b8; }
-      .tma-sub { font-family: var(--font-mono), monospace; font-size: 10px; color: #8a909c; }
+      .tma-title { font-family: var(--font-mono), monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #14130f; }
+      .tma-sub { font-family: var(--font-mono), monospace; font-size: 10px; color: #837d70; }
     </style>
   </head>
   <body>
     <div class="tma-head">
       <img class="tma-logo" src="/brainrot.png?v=2" alt="" />
-      <div><div class="tma-title">BRAINROT · TAX</div><div class="tma-sub">live TON token board</div></div>
+      <div><div class="tma-title">BRAINROT · TAX</div><div class="tma-sub">live GRAM token board</div></div>
     </div>
     <slot />
     <script is:inline>
@@ -49,8 +49,8 @@ const STATS_API = (import.meta.env.PUBLIC_STATS_API ?? '').toString().replace(/\
         try {
           tg.ready();
           tg.expand();
-          if (tg.setHeaderColor) tg.setHeaderColor('#0b0b0d');
-          if (tg.setBackgroundColor) tg.setBackgroundColor('#0b0b0d');
+          if (tg.setHeaderColor) tg.setHeaderColor('#fbfaf7');
+          if (tg.setBackgroundColor) tg.setBackgroundColor('#fbfaf7');
         } catch (e) { /* ignore */ }
       })();
     </script>

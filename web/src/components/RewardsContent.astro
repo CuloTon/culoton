@@ -43,32 +43,32 @@ type RW = {
 const I18N: Record<Locale, RW> = {
   en: {
     kicker: `$BRT · Holder rewards`,
-    h1: `TON rewards for $BRT holders`,
-    lede: `Revenue from the BRAINROT launchpad, $BRT taxes and every future module we build flows into one on-chain wallet — the project bank. Every round half of it is shared back with $BRT holders, in TON — split into two pools.`,
-    stat_bank: `Reward bank (live)`, stat_pool: `Holders' share · 50%`, stat_cadence: `Payouts from`, cadence_value: `≥ 4 TON`, loading: `…`,
-    trigger_note: `A reward round only runs once the bank reaches at least 4 TON (pools ≥ 2 TON) and the team triggers it — so the first payouts are meaningful, not dust. Until then, everything keeps accumulating.`,
+    h1: `GRAM rewards for $BRT holders`,
+    lede: `Revenue from the BRAINROT launchpad, $BRT taxes and every future module we build flows into one on-chain wallet — the project bank. Every round half of it is shared back with $BRT holders, in GRAM — split into two pools.`,
+    stat_bank: `Reward bank (live)`, stat_pool: `Holders' share · 50%`, stat_cadence: `Payouts from`, cadence_value: `≥ 4 GRAM`, loading: `…`,
+    trigger_note: `A reward round only runs once the bank reaches at least 4 GRAM (pools ≥ 2 GRAM) and the team triggers it — so the first payouts are meaningful, not dust. Until then, everything keeps accumulating.`,
     how_h2: `How it works`,
     steps: [
-      { t: `Revenue accumulates`, p: `Launchpad fees (1 TON per launch), $BRT buy/sell taxes — and revenue from every new module we build for BRAINROT — all land in the same on-chain wallet, the "BRT bank". The bank grows as the project grows.` },
+      { t: `Revenue accumulates`, p: `Launchpad fees (1 GRAM per launch), $BRT buy/sell taxes — and revenue from every new module we build for BRAINROT — all land in the same on-chain wallet, the "BRT bank". The bank grows as the project grows.` },
       { t: `Weekly snapshot`, p: `Once a week we read the full list of $BRT holders and their balances directly from the chain.` },
-      { t: `Two reward pools — 50% to holders`, p: `25% of the bank becomes the ALL-holders pool, shared by every eligible holder. Another 25% becomes the TOP-10 pool, shared only by the ten biggest holders. The remaining 50% — after 1 TON is left in the bank as a buffer — is split 50/50 between the BRAINROT Invest and BRAINROT Marketing wallets to fund growth.` },
+      { t: `Two reward pools — 50% to holders`, p: `25% of the bank becomes the ALL-holders pool, shared by every eligible holder. Another 25% becomes the TOP-10 pool, shared only by the ten biggest holders. The remaining 50% — after 1 GRAM is left in the bank as a buffer — is split 50/50 between the BRAINROT Invest and BRAINROT Marketing wallets to fund growth.` },
       { t: `Each pool is split pro-rata`, p: `Both pools divide by $BRT held. In the all-holders pool, hold 2% of the eligible supply → get 2% of that pool. In the TOP-10 pool, your share is your weight among the ten biggest only.` },
       { t: `Only real holders`, p: `The liquidity pool (DeDust), the project wallet and the burn address are excluded — never rewarded and never counted in the TOP 10. Only genuine holder wallets count.` },
     ],
     top10_h3: `Why the TOP 10 earn much more`,
     top10_p: `The top ten holders are paid from BOTH pools at once: their normal cut of the 25% all-holders pool, AND their slice of the separate 25% TOP-10 pool. So a top-ten wallet effectively stacks two rewards in the same round — its take is far larger than 25% alone. Drop out of the top ten and you still earn from the all-holders pool; climb into it and a second pool opens up. The bigger you hold, the more both pools pay you.`,
-    roll_h3: `The 0.05 TON minimum & rollover`,
-    roll_p: `If your combined share (both pools) works out below 0.05 TON, it isn't sent yet — it would cost more in network gas than it's worth. It rolls over instead: it simply stays in the bank, and each round your share is recomputed from your CURRENT $BRT balance, so as the bank grows — or you hold more — it crosses 0.05 TON and you get paid. There is no stored IOU tied to your address: the rollover always reflects what you hold at payout time. Keep holding and your share keeps growing; sell your $BRT and there is nothing to pay out — that unsent TON simply stays in the pool for the holders who remain.`,
+    roll_h3: `The 0.05 GRAM minimum & rollover`,
+    roll_p: `If your combined share (both pools) works out below 0.05 GRAM, it isn't sent yet — it would cost more in network gas than it's worth. It rolls over instead: it simply stays in the bank, and each round your share is recomputed from your CURRENT $BRT balance, so as the bank grows — or you hold more — it crosses 0.05 GRAM and you get paid. There is no stored IOU tied to your address: the rollover always reflects what you hold at payout time. Keep holding and your share keeps growing; sell your $BRT and there is nothing to pay out — that unsent GRAM simply stays in the pool for the holders who remain.`,
     gas_h3: `You get the full share`,
-    gas_p: `Holders receive their full TON share; the project pays the network gas on top. No fee is taken out of your reward.`,
+    gas_p: `Holders receive their full GRAM share; the project pays the network gas on top. No fee is taken out of your reward.`,
     disclaimer: `$BRT is a community memecoin, not an investment. Rewards depend entirely on how much the project actually earns — they can be zero. This is not financial advice and not a promise of profit. Hold $BRT because you like the project, not for expected returns.`,
     verify_h3: `Verify on-chain`, link_bank: `Reward bank wallet ↗`, link_holders: `$BRT holders ↗`, link_contract: `$BRT contract ↗`,
-    hist_h2: `All TON rewards paid`,
-    hist_lede: `Every payout round, on-chain and itemised: who received what, ranked by size — plus the wallets currently rolling over toward the 0.05 TON minimum. ★ marks a TOP-10 holder paid from both pools. Click any address to open it on Tonviewer.`,
+    hist_h2: `All GRAM rewards paid`,
+    hist_lede: `Every payout round, on-chain and itemised: who received what, ranked by size — plus the wallets currently rolling over toward the 0.05 GRAM minimum. ★ marks a TOP-10 holder paid from both pools. Click any address to open it on Tonviewer.`,
     hist_total: `Total paid out`, hist_rounds: `Rounds`, hist_rolling: `Wallets rolling over`,
     hist_round: `Round`, hist_holders: `holders`,
-    hist_paidto: `Distributed to holders`, hist_rollover: `Rolling over — share below 0.05 TON, accumulating`, hist_pending: `pending`,
-    hist_none: `No rewards have been paid out yet. The first round runs once the bank passes 4 TON — check back soon.`,
+    hist_paidto: `Distributed to holders`, hist_rollover: `Rolling over — share below 0.05 GRAM, accumulating`, hist_pending: `pending`,
+    hist_none: `No rewards have been paid out yet. The first round runs once the bank passes 4 GRAM — check back soon.`,
     hist_top10_badge: `TOP 10 · both pools`, hist_pool_all: `all-holders 25%`, hist_pool_top10: `top-10 25%`,
     sim_h2: `Reward simulation`,
     sim_lede: `What the model would pay at different bank sizes, under the 25% all-holders + 25% top-10 split. The #1 holder column shows both pools stacked — the top-10 advantage in numbers.`,
@@ -78,32 +78,32 @@ const I18N: Record<Locale, RW> = {
   },
   pl: {
     kicker: `$BRT · Nagrody dla holderów`,
-    h1: `Nagrody w TON dla holderów $BRT`,
-    lede: `Dochody z launchpada BRAINROT, z taxa $BRT i z każdego przyszłego modułu, który zbudujemy, spływają do jednego portfela on-chain — banku projektu. Co rundę połowa wraca do holderów $BRT, w TON — w dwóch pulach.`,
-    stat_bank: `Bank nagród (na żywo)`, stat_pool: `Dla holderów · 50%`, stat_cadence: `Wypłaty od`, cadence_value: `≥ 4 TON`, loading: `…`,
-    trigger_note: `Runda nagród rusza dopiero, gdy bank osiągnie minimum 4 TON (pule ≥ 2 TON) i zespół ją odpali — żeby pierwsze wypłaty były sensowne, nie pył. Do tego czasu wszystko się kumuluje.`,
+    h1: `Nagrody w GRAM dla holderów $BRT`,
+    lede: `Dochody z launchpada BRAINROT, z taxa $BRT i z każdego przyszłego modułu, który zbudujemy, spływają do jednego portfela on-chain — banku projektu. Co rundę połowa wraca do holderów $BRT, w GRAM — w dwóch pulach.`,
+    stat_bank: `Bank nagród (na żywo)`, stat_pool: `Dla holderów · 50%`, stat_cadence: `Wypłaty od`, cadence_value: `≥ 4 GRAM`, loading: `…`,
+    trigger_note: `Runda nagród rusza dopiero, gdy bank osiągnie minimum 4 GRAM (pule ≥ 2 GRAM) i zespół ją odpali — żeby pierwsze wypłaty były sensowne, nie pył. Do tego czasu wszystko się kumuluje.`,
     how_h2: `Jak to działa`,
     steps: [
-      { t: `Dochody się kumulują`, p: `Opłaty launchpada (1 TON za launch), tax od kupna/sprzedaży $BRT — oraz wpływy z każdego nowego modułu, który zbudujemy dla BRAINROT — trafiają do tego samego portfela on-chain, "banku BRT". Bank rośnie razem z projektem.` },
+      { t: `Dochody się kumulują`, p: `Opłaty launchpada (1 GRAM za launch), tax od kupna/sprzedaży $BRT — oraz wpływy z każdego nowego modułu, który zbudujemy dla BRAINROT — trafiają do tego samego portfela on-chain, "banku BRT". Bank rośnie razem z projektem.` },
       { t: `Tygodniowy snapshot`, p: `Raz w tygodniu czytamy pełną listę holderów $BRT i ich salda bezpośrednio z łańcucha.` },
-      { t: `Dwie pule — 50% dla holderów`, p: `25% banku tworzy pulę DLA WSZYSTKICH holderów, dzieloną między każdego uprawnionego. Kolejne 25% tworzy pulę TOP 10, dzieloną wyłącznie między dziesięciu największych holderów. Pozostałe 50% — po zostawieniu 1 TON w banku jako bufor — dzieli się po połowie między portfele BRAINROT Invest i BRAINROT Marketing, które finansują rozwój.` },
+      { t: `Dwie pule — 50% dla holderów`, p: `25% banku tworzy pulę DLA WSZYSTKICH holderów, dzieloną między każdego uprawnionego. Kolejne 25% tworzy pulę TOP 10, dzieloną wyłącznie między dziesięciu największych holderów. Pozostałe 50% — po zostawieniu 1 GRAM w banku jako bufor — dzieli się po połowie między portfele BRAINROT Invest i BRAINROT Marketing, które finansują rozwój.` },
       { t: `Każda pula dzielona pro-rata`, p: `Obie pule dzielą się wg ilości $BRT. W puli dla wszystkich: masz 2% uprawnionej podaży → dostajesz 2% tej puli. W puli TOP 10 Twój udział liczy się tylko względem dziesiątki największych.` },
       { t: `Tylko realni holderzy`, p: `Pula płynności (DeDust), portfel projektu, skarbce BRAINROT Invest i Marketing oraz adres burn są wykluczone — nigdy nie dostają nagród i nie liczą się do TOP 10. Liczą się tylko prawdziwe portfele holderów.` },
     ],
     top10_h3: `Dlaczego TOP 10 zarabia dużo więcej`,
     top10_p: `Dziesięciu największych holderów dostaje z OBU pul naraz: swój normalny udział w 25-procentowej puli dla wszystkich ORAZ swój kawałek osobnej 25-procentowej puli TOP 10. Portfel z dziesiątki de facto składa dwie nagrody w tej samej rundzie — jego wypłata jest dużo większa niż samo 25%. Wypadniesz z dziesiątki i nadal zarabiasz z puli dla wszystkich; wejdziesz do niej — otwiera się druga pula. Im więcej trzymasz, tym więcej płacą Ci obie pule.`,
-    roll_h3: `Próg 0,05 TON i rolowanie`,
-    roll_p: `Jeśli Twój łączny udział (z obu pul) wychodzi poniżej 0,05 TON, na razie nie jest wysyłany — kosztowałby więcej w gazie sieciowym, niż jest wart. Zamiast tego roluje się: po prostu zostaje w banku, a każda runda liczy Twój udział OD AKTUALNEGO salda $BRT — więc gdy bank rośnie (albo dokupisz) udział przekracza 0,05 TON i dostajesz wypłatę. Nie ma żadnego zapamiętanego „kredytu" przypisanego do adresu: rolowanie zawsze odzwierciedla to, ile trzymasz w momencie wypłaty. Trzymaj dalej, a Twój udział rośnie; sprzedasz $BRT i nie ma czego wypłacać — te niewysłane TON po prostu zostają w puli dla holderów, którzy zostali.`,
+    roll_h3: `Próg 0,05 GRAM i rolowanie`,
+    roll_p: `Jeśli Twój łączny udział (z obu pul) wychodzi poniżej 0,05 GRAM, na razie nie jest wysyłany — kosztowałby więcej w gazie sieciowym, niż jest wart. Zamiast tego roluje się: po prostu zostaje w banku, a każda runda liczy Twój udział OD AKTUALNEGO salda $BRT — więc gdy bank rośnie (albo dokupisz) udział przekracza 0,05 GRAM i dostajesz wypłatę. Nie ma żadnego zapamiętanego „kredytu" przypisanego do adresu: rolowanie zawsze odzwierciedla to, ile trzymasz w momencie wypłaty. Trzymaj dalej, a Twój udział rośnie; sprzedasz $BRT i nie ma czego wypłacać — te niewysłane GRAM po prostu zostają w puli dla holderów, którzy zostali.`,
     gas_h3: `Dostajesz pełny udział`,
-    gas_p: `Holderzy dostają pełny udział w TON; gaz sieciowy dopłaca projekt. Z Twojej nagrody nie schodzi żadna opłata.`,
+    gas_p: `Holderzy dostają pełny udział w GRAM; gaz sieciowy dopłaca projekt. Z Twojej nagrody nie schodzi żadna opłata.`,
     disclaimer: `$BRT to społecznościowy memecoin, nie inwestycja. Nagrody zależą wyłącznie od tego, ile projekt faktycznie zarobi — mogą wynosić zero. To nie jest porada inwestycyjna ani obietnica zysku. Trzymaj $BRT, bo lubisz projekt, a nie dla oczekiwanych zwrotów.`,
     verify_h3: `Sprawdź on-chain`, link_bank: `Portfel banku nagród ↗`, link_holders: `Holderzy $BRT ↗`, link_contract: `Kontrakt $BRT ↗`,
-    hist_h2: `Wszystkie wypłacone nagrody TON`,
-    hist_lede: `Każda runda wypłat, on-chain i pozycja po pozycji: kto ile dostał, w kolejności od największych — plus portfele, które właśnie rolują się do progu 0,05 TON. ★ oznacza holdera z TOP 10, opłaconego z obu pul. Kliknij dowolny adres, by otworzyć go na Tonviewer.`,
+    hist_h2: `Wszystkie wypłacone nagrody GRAM`,
+    hist_lede: `Każda runda wypłat, on-chain i pozycja po pozycji: kto ile dostał, w kolejności od największych — plus portfele, które właśnie rolują się do progu 0,05 GRAM. ★ oznacza holdera z TOP 10, opłaconego z obu pul. Kliknij dowolny adres, by otworzyć go na Tonviewer.`,
     hist_total: `Łącznie wypłacono`, hist_rounds: `Rundy`, hist_rolling: `Portfele w rolowaniu`,
     hist_round: `Runda`, hist_holders: `holderów`,
-    hist_paidto: `Rozdane holderom`, hist_rollover: `Rolowanie — udział poniżej 0,05 TON, kumuluje się`, hist_pending: `oczekuje`,
-    hist_none: `Nie wypłacono jeszcze żadnych nagród. Pierwsza runda rusza, gdy bank przekroczy 4 TON — zajrzyj wkrótce.`,
+    hist_paidto: `Rozdane holderom`, hist_rollover: `Rolowanie — udział poniżej 0,05 GRAM, kumuluje się`, hist_pending: `oczekuje`,
+    hist_none: `Nie wypłacono jeszcze żadnych nagród. Pierwsza runda rusza, gdy bank przekroczy 4 GRAM — zajrzyj wkrótce.`,
     hist_top10_badge: `TOP 10 · obie pule`, hist_pool_all: `wszyscy 25%`, hist_pool_top10: `top-10 25%`,
     sim_h2: `Symulacja nagród`,
     sim_lede: `Ile model wypłaciłby przy różnych saldach banku, w podziale 25% dla wszystkich + 25% dla TOP 10. Kolumna holdera #1 pokazuje obie pule złożone razem — przewaga TOP 10 w liczbach.`,
@@ -113,32 +113,32 @@ const I18N: Record<Locale, RW> = {
   },
   ru: {
     kicker: `$BRT · Награды холдерам`,
-    h1: `Награды в TON для холдеров $BRT`,
-    lede: `Доход с лаунчпада BRAINROT, с налогов $BRT и с каждого будущего модуля, который мы построим, стекается в один кошелёк on-chain — банк проекта. Каждый раунд половина возвращается холдерам $BRT, в TON — двумя пулами.`,
-    stat_bank: `Банк наград (в эфире)`, stat_pool: `Холдерам · 50%`, stat_cadence: `Выплаты от`, cadence_value: `≥ 4 TON`, loading: `…`,
-    trigger_note: `Раунд наград запускается только когда банк достигнет минимум 4 TON (пулы ≥ 2 TON) и команда его запустит — чтобы первые выплаты были ощутимыми, а не пылью. До тех пор всё накапливается.`,
+    h1: `Награды в GRAM для холдеров $BRT`,
+    lede: `Доход с лаунчпада BRAINROT, с налогов $BRT и с каждого будущего модуля, который мы построим, стекается в один кошелёк on-chain — банк проекта. Каждый раунд половина возвращается холдерам $BRT, в GRAM — двумя пулами.`,
+    stat_bank: `Банк наград (в эфире)`, stat_pool: `Холдерам · 50%`, stat_cadence: `Выплаты от`, cadence_value: `≥ 4 GRAM`, loading: `…`,
+    trigger_note: `Раунд наград запускается только когда банк достигнет минимум 4 GRAM (пулы ≥ 2 GRAM) и команда его запустит — чтобы первые выплаты были ощутимыми, а не пылью. До тех пор всё накапливается.`,
     how_h2: `Как это работает`,
     steps: [
-      { t: `Доход накапливается`, p: `Комиссии лаунчпада (1 TON за запуск), налоги на покупку/продажу $BRT — и доход с каждого нового модуля, который мы построим для BRAINROT — попадают в один кошелёк on-chain, "банк BRT". Банк растёт вместе с проектом.` },
+      { t: `Доход накапливается`, p: `Комиссии лаунчпада (1 GRAM за запуск), налоги на покупку/продажу $BRT — и доход с каждого нового модуля, который мы построим для BRAINROT — попадают в один кошелёк on-chain, "банк BRT". Банк растёт вместе с проектом.` },
       { t: `Еженедельный снимок`, p: `Раз в неделю мы читаем полный список холдеров $BRT и их балансы прямо из сети.` },
-      { t: `Два пула — 50% холдерам`, p: `25% банка образуют пул ДЛЯ ВСЕХ холдеров, делимый между каждым допустимым. Ещё 25% образуют пул ТОП-10, делимый только между десятью крупнейшими холдерами. Остальные 50% — после того как 1 TON остаётся в банке как буфер — делятся 50/50 между кошельками BRAINROT Invest и BRAINROT Marketing на развитие.` },
+      { t: `Два пула — 50% холдерам`, p: `25% банка образуют пул ДЛЯ ВСЕХ холдеров, делимый между каждым допустимым. Ещё 25% образуют пул ТОП-10, делимый только между десятью крупнейшими холдерами. Остальные 50% — после того как 1 GRAM остаётся в банке как буфер — делятся 50/50 между кошельками BRAINROT Invest и BRAINROT Marketing на развитие.` },
       { t: `Каждый пул делится пропорционально`, p: `Оба пула делятся по количеству $BRT. В пуле для всех: держишь 2% допустимого предложения → получаешь 2% этого пула. В пуле ТОП-10 твоя доля считается только среди десяти крупнейших.` },
       { t: `Только реальные холдеры`, p: `Пул ликвидности (DeDust), кошелёк проекта, казначейства BRAINROT Invest и Marketing и адрес сжигания исключены — они никогда не получают награды и не входят в ТОП-10. Считаются только настоящие кошельки холдеров.` },
     ],
     top10_h3: `Почему ТОП-10 зарабатывает гораздо больше`,
     top10_p: `Десять крупнейших холдеров получают сразу из ОБОИХ пулов: свою обычную долю в 25-процентном пуле для всех И свой кусок отдельного 25-процентного пула ТОП-10. Кошелёк из десятки фактически складывает две награды в одном раунде — его выплата куда больше, чем одни 25%. Вылетишь из десятки — всё равно зарабатываешь из пула для всех; войдёшь в неё — открывается второй пул. Чем больше держишь, тем больше платят оба пула.`,
-    roll_h3: `Минимум 0,05 TON и перенос`,
-    roll_p: `Если твоя суммарная доля (из обоих пулов) выходит меньше 0,05 TON, она пока не отправляется — газ сети стоил бы дороже, чем она. Вместо этого она переносится: просто остаётся в банке, а каждый раунд твоя доля пересчитывается ОТ ТЕКУЩЕГО баланса $BRT — поэтому когда банк растёт (или ты держишь больше) доля переходит 0,05 TON и тебе платят. Никакого сохранённого «долга» за адресом нет: перенос всегда отражает то, сколько ты держишь на момент выплаты. Держишь дальше — доля растёт; продашь $BRT — платить нечего, и эти неотправленные TON просто остаются в пуле для тех, кто остался.`,
+    roll_h3: `Минимум 0,05 GRAM и перенос`,
+    roll_p: `Если твоя суммарная доля (из обоих пулов) выходит меньше 0,05 GRAM, она пока не отправляется — газ сети стоил бы дороже, чем она. Вместо этого она переносится: просто остаётся в банке, а каждый раунд твоя доля пересчитывается ОТ ТЕКУЩЕГО баланса $BRT — поэтому когда банк растёт (или ты держишь больше) доля переходит 0,05 GRAM и тебе платят. Никакого сохранённого «долга» за адресом нет: перенос всегда отражает то, сколько ты держишь на момент выплаты. Держишь дальше — доля растёт; продашь $BRT — платить нечего, и эти неотправленные GRAM просто остаются в пуле для тех, кто остался.`,
     gas_h3: `Ты получаешь полную долю`,
-    gas_p: `Холдеры получают полную долю в TON; газ сети доплачивает проект. Из твоей награды не вычитается комиссия.`,
+    gas_p: `Холдеры получают полную долю в GRAM; газ сети доплачивает проект. Из твоей награды не вычитается комиссия.`,
     disclaimer: `$BRT — это коммьюнити-мемкоин, а не инвестиция. Награды полностью зависят от того, сколько проект реально зарабатывает — они могут быть нулевыми. Это не финансовый совет и не обещание прибыли. Держи $BRT потому что тебе нравится проект, а не ради ожидаемой доходности.`,
     verify_h3: `Проверь on-chain`, link_bank: `Кошелёк банка наград ↗`, link_holders: `Холдеры $BRT ↗`, link_contract: `Контракт $BRT ↗`,
-    hist_h2: `Все выплаченные награды TON`,
-    hist_lede: `Каждый раунд выплат, on-chain и по пунктам: кто сколько получил, по убыванию — плюс кошельки, которые сейчас переносятся к порогу 0,05 TON. ★ отмечает холдера из ТОП-10, оплаченного из обоих пулов. Нажми на любой адрес, чтобы открыть его на Tonviewer.`,
+    hist_h2: `Все выплаченные награды GRAM`,
+    hist_lede: `Каждый раунд выплат, on-chain и по пунктам: кто сколько получил, по убыванию — плюс кошельки, которые сейчас переносятся к порогу 0,05 GRAM. ★ отмечает холдера из ТОП-10, оплаченного из обоих пулов. Нажми на любой адрес, чтобы открыть его на Tonviewer.`,
     hist_total: `Всего выплачено`, hist_rounds: `Раунды`, hist_rolling: `Кошельки в переносе`,
     hist_round: `Раунд`, hist_holders: `холдеров`,
-    hist_paidto: `Распределено холдерам`, hist_rollover: `Перенос — доля ниже 0,05 TON, накапливается`, hist_pending: `ожидает`,
-    hist_none: `Награды ещё не выплачивались. Первый раунд запустится, когда банк превысит 4 TON — загляни позже.`,
+    hist_paidto: `Распределено холдерам`, hist_rollover: `Перенос — доля ниже 0,05 GRAM, накапливается`, hist_pending: `ожидает`,
+    hist_none: `Награды ещё не выплачивались. Первый раунд запустится, когда банк превысит 4 GRAM — загляни позже.`,
     hist_top10_badge: `ТОП-10 · оба пула`, hist_pool_all: `все 25%`, hist_pool_top10: `топ-10 25%`,
     sim_h2: `Симуляция наград`,
     sim_lede: `Сколько модель выплатила бы при разных размерах банка, при делении 25% всем + 25% ТОП-10. Колонка холдера №1 показывает оба пула вместе — преимущество ТОП-10 в цифрах.`,
@@ -148,32 +148,32 @@ const I18N: Record<Locale, RW> = {
   },
   de: {
     kicker: `$BRT · Holder-Rewards`,
-    h1: `TON-Rewards für $BRT-Holder`,
-    lede: `Einnahmen vom BRAINROT-Launchpad, aus $BRT-Steuern und aus jedem künftigen Modul, das wir bauen, fließen in eine On-chain-Wallet — die Projektbank. Jede Runde wird die Hälfte davon an $BRT-Holder zurückgegeben, in TON — aufgeteilt in zwei Pools.`,
-    stat_bank: `Reward-Bank (live)`, stat_pool: `Holder-Anteil · 50%`, stat_cadence: `Auszahlung ab`, cadence_value: `≥ 4 TON`, loading: `…`,
-    trigger_note: `Eine Reward-Runde läuft erst, wenn die Bank mindestens 4 TON erreicht (Pools ≥ 2 TON) und das Team sie auslöst — damit die ersten Auszahlungen spürbar sind, kein Staub. Bis dahin sammelt sich alles weiter an.`,
+    h1: `GRAM-Rewards für $BRT-Holder`,
+    lede: `Einnahmen vom BRAINROT-Launchpad, aus $BRT-Steuern und aus jedem künftigen Modul, das wir bauen, fließen in eine On-chain-Wallet — die Projektbank. Jede Runde wird die Hälfte davon an $BRT-Holder zurückgegeben, in GRAM — aufgeteilt in zwei Pools.`,
+    stat_bank: `Reward-Bank (live)`, stat_pool: `Holder-Anteil · 50%`, stat_cadence: `Auszahlung ab`, cadence_value: `≥ 4 GRAM`, loading: `…`,
+    trigger_note: `Eine Reward-Runde läuft erst, wenn die Bank mindestens 4 GRAM erreicht (Pools ≥ 2 GRAM) und das Team sie auslöst — damit die ersten Auszahlungen spürbar sind, kein Staub. Bis dahin sammelt sich alles weiter an.`,
     how_h2: `So funktioniert es`,
     steps: [
-      { t: `Einnahmen sammeln sich`, p: `Launchpad-Gebühren (1 TON pro Launch), $BRT-Kauf/Verkauf-Steuern — und Einnahmen aus jedem neuen Modul, das wir für BRAINROT bauen — landen in derselben On-chain-Wallet, der "BRT-Bank". Die Bank wächst mit dem Projekt.` },
+      { t: `Einnahmen sammeln sich`, p: `Launchpad-Gebühren (1 GRAM pro Launch), $BRT-Kauf/Verkauf-Steuern — und Einnahmen aus jedem neuen Modul, das wir für BRAINROT bauen — landen in derselben On-chain-Wallet, der "BRT-Bank". Die Bank wächst mit dem Projekt.` },
       { t: `Wöchentlicher Snapshot`, p: `Einmal pro Woche lesen wir die vollständige Liste der $BRT-Holder und ihrer Salden direkt aus der Chain.` },
-      { t: `Zwei Pools — 50% an Holder`, p: `25% der Bank werden der ALLE-Holder-Pool, geteilt unter jedem berechtigten Holder. Weitere 25% werden der TOP-10-Pool, geteilt nur unter den zehn größten Holdern. Die übrigen 50% — nachdem 1 TON als Puffer in der Bank bleibt — werden 50/50 zwischen den Wallets BRAINROT Invest und BRAINROT Marketing aufgeteilt, um Wachstum zu finanzieren.` },
+      { t: `Zwei Pools — 50% an Holder`, p: `25% der Bank werden der ALLE-Holder-Pool, geteilt unter jedem berechtigten Holder. Weitere 25% werden der TOP-10-Pool, geteilt nur unter den zehn größten Holdern. Die übrigen 50% — nachdem 1 GRAM als Puffer in der Bank bleibt — werden 50/50 zwischen den Wallets BRAINROT Invest und BRAINROT Marketing aufgeteilt, um Wachstum zu finanzieren.` },
       { t: `Jeder Pool pro-rata geteilt`, p: `Beide Pools teilen sich nach gehaltenem $BRT. Im Alle-Holder-Pool: hältst du 2% des berechtigten Supplys → bekommst du 2% dieses Pools. Im TOP-10-Pool zählt dein Anteil nur unter den zehn Größten.` },
       { t: `Nur echte Holder`, p: `Der Liquiditätspool (DeDust), die Projekt-Wallet, die BRAINROT-Invest- und Marketing-Treasuries und die Burn-Adresse sind ausgeschlossen — sie werden nie belohnt und nie in die TOP 10 gezählt. Nur echte Holder-Wallets zählen.` },
     ],
     top10_h3: `Warum die TOP 10 viel mehr verdienen`,
     top10_p: `Die zehn größten Holder werden aus BEIDEN Pools zugleich bezahlt: ihr normaler Anteil am 25%-Alle-Holder-Pool UND ihr Stück des separaten 25%-TOP-10-Pools. Eine Top-Ten-Wallet stapelt also zwei Rewards in derselben Runde — ihr Anteil ist weit größer als 25% allein. Fällst du aus den Top Ten, verdienst du weiter am Alle-Holder-Pool; steigst du auf, öffnet sich ein zweiter Pool. Je mehr du hältst, desto mehr zahlen dir beide Pools.`,
-    roll_h3: `Das 0,05-TON-Minimum & Rollover`,
-    roll_p: `Liegt dein kombinierter Anteil (beide Pools) unter 0,05 TON, wird er noch nicht gesendet — er würde mehr Netzwerk-Gas kosten, als er wert ist. Stattdessen rollt er über: er bleibt einfach in der Bank, und jede Runde wird dein Anteil aus deinem AKTUELLEN $BRT-Saldo neu berechnet — wenn die Bank wächst (oder du mehr hältst), überschreitet er 0,05 TON und du wirst ausgezahlt. Es gibt keine gespeicherte Gutschrift auf deine Adresse: der Rollover spiegelt immer wider, was du zum Auszahlungszeitpunkt hältst. Hältst du weiter, wächst dein Anteil; verkaufst du dein $BRT, gibt es nichts auszuzahlen — dieses nicht gesendete TON bleibt einfach im Pool für die verbleibenden Holder.`,
+    roll_h3: `Das 0,05-GRAM-Minimum & Rollover`,
+    roll_p: `Liegt dein kombinierter Anteil (beide Pools) unter 0,05 GRAM, wird er noch nicht gesendet — er würde mehr Netzwerk-Gas kosten, als er wert ist. Stattdessen rollt er über: er bleibt einfach in der Bank, und jede Runde wird dein Anteil aus deinem AKTUELLEN $BRT-Saldo neu berechnet — wenn die Bank wächst (oder du mehr hältst), überschreitet er 0,05 GRAM und du wirst ausgezahlt. Es gibt keine gespeicherte Gutschrift auf deine Adresse: der Rollover spiegelt immer wider, was du zum Auszahlungszeitpunkt hältst. Hältst du weiter, wächst dein Anteil; verkaufst du dein $BRT, gibt es nichts auszuzahlen — dieses nicht gesendete GRAM bleibt einfach im Pool für die verbleibenden Holder.`,
     gas_h3: `Du bekommst den vollen Anteil`,
-    gas_p: `Holder erhalten ihren vollen TON-Anteil; das Netzwerk-Gas zahlt das Projekt obendrauf. Von deinem Reward wird keine Gebühr abgezogen.`,
+    gas_p: `Holder erhalten ihren vollen GRAM-Anteil; das Netzwerk-Gas zahlt das Projekt obendrauf. Von deinem Reward wird keine Gebühr abgezogen.`,
     disclaimer: `$BRT ist ein Community-Memecoin, keine Geldanlage. Rewards hängen vollständig davon ab, wie viel das Projekt tatsächlich einnimmt — sie können null sein. Dies ist keine Finanzberatung und kein Gewinnversprechen. Halte $BRT, weil dir das Projekt gefällt, nicht wegen erwarteter Renditen.`,
     verify_h3: `On-chain prüfen`, link_bank: `Reward-Bank-Wallet ↗`, link_holders: `$BRT-Holder ↗`, link_contract: `$BRT-Vertrag ↗`,
-    hist_h2: `Alle ausgezahlten TON-Rewards`,
-    hist_lede: `Jede Auszahlungsrunde, on-chain und einzeln aufgeführt: wer wie viel erhielt, nach Größe sortiert — plus die Wallets, die gerade auf das 0,05-TON-Minimum hochrollen. ★ markiert einen TOP-10-Holder, der aus beiden Pools bezahlt wird. Klick eine Adresse an, um sie auf Tonviewer zu öffnen.`,
+    hist_h2: `Alle ausgezahlten GRAM-Rewards`,
+    hist_lede: `Jede Auszahlungsrunde, on-chain und einzeln aufgeführt: wer wie viel erhielt, nach Größe sortiert — plus die Wallets, die gerade auf das 0,05-GRAM-Minimum hochrollen. ★ markiert einen TOP-10-Holder, der aus beiden Pools bezahlt wird. Klick eine Adresse an, um sie auf Tonviewer zu öffnen.`,
     hist_total: `Insgesamt ausgezahlt`, hist_rounds: `Runden`, hist_rolling: `Wallets im Rollover`,
     hist_round: `Runde`, hist_holders: `Holder`,
-    hist_paidto: `An Holder verteilt`, hist_rollover: `Rollover — Anteil unter 0,05 TON, sammelt sich`, hist_pending: `ausstehend`,
-    hist_none: `Es wurden noch keine Rewards ausgezahlt. Die erste Runde läuft, sobald die Bank 4 TON überschreitet — schau bald wieder vorbei.`,
+    hist_paidto: `An Holder verteilt`, hist_rollover: `Rollover — Anteil unter 0,05 GRAM, sammelt sich`, hist_pending: `ausstehend`,
+    hist_none: `Es wurden noch keine Rewards ausgezahlt. Die erste Runde läuft, sobald die Bank 4 GRAM überschreitet — schau bald wieder vorbei.`,
     hist_top10_badge: `TOP 10 · beide Pools`, hist_pool_all: `alle 25%`, hist_pool_top10: `top-10 25%`,
     sim_h2: `Reward-Simulation`,
     sim_lede: `Was das Modell bei verschiedenen Bank-Größen zahlen würde, bei der Aufteilung 25% an alle + 25% an die Top 10. Die Spalte für Holder #1 zeigt beide Pools gestapelt — der Top-10-Vorteil in Zahlen.`,
@@ -183,32 +183,32 @@ const I18N: Record<Locale, RW> = {
   },
   es: {
     kicker: `$BRT · Recompensas a holders`,
-    h1: `Recompensas en TON para holders de $BRT`,
-    lede: `Los ingresos del launchpad de BRAINROT, de los impuestos de $BRT y de cada módulo futuro que construyamos fluyen a una sola wallet on-chain — el banco del proyecto. Cada ronda la mitad se reparte a los holders de $BRT, en TON — dividida en dos pools.`,
-    stat_bank: `Banco de recompensas (en vivo)`, stat_pool: `Para holders · 50%`, stat_cadence: `Pagos desde`, cadence_value: `≥ 4 TON`, loading: `…`,
-    trigger_note: `Una ronda de recompensas solo se ejecuta cuando el banco alcanza al menos 4 TON (pools ≥ 2 TON) y el equipo la lanza — para que los primeros pagos sean significativos, no polvo. Hasta entonces, todo sigue acumulándose.`,
+    h1: `Recompensas en GRAM para holders de $BRT`,
+    lede: `Los ingresos del launchpad de BRAINROT, de los impuestos de $BRT y de cada módulo futuro que construyamos fluyen a una sola wallet on-chain — el banco del proyecto. Cada ronda la mitad se reparte a los holders de $BRT, en GRAM — dividida en dos pools.`,
+    stat_bank: `Banco de recompensas (en vivo)`, stat_pool: `Para holders · 50%`, stat_cadence: `Pagos desde`, cadence_value: `≥ 4 GRAM`, loading: `…`,
+    trigger_note: `Una ronda de recompensas solo se ejecuta cuando el banco alcanza al menos 4 GRAM (pools ≥ 2 GRAM) y el equipo la lanza — para que los primeros pagos sean significativos, no polvo. Hasta entonces, todo sigue acumulándose.`,
     how_h2: `Cómo funciona`,
     steps: [
-      { t: `Los ingresos se acumulan`, p: `Las tarifas del launchpad (1 TON por lanzamiento), los impuestos de compra/venta de $BRT — y los ingresos de cada nuevo módulo que construyamos para BRAINROT — caen en la misma wallet on-chain, el "banco BRT". El banco crece con el proyecto.` },
+      { t: `Los ingresos se acumulan`, p: `Las tarifas del launchpad (1 GRAM por lanzamiento), los impuestos de compra/venta de $BRT — y los ingresos de cada nuevo módulo que construyamos para BRAINROT — caen en la misma wallet on-chain, el "banco BRT". El banco crece con el proyecto.` },
       { t: `Snapshot semanal`, p: `Una vez por semana leemos la lista completa de holders de $BRT y sus saldos directamente de la cadena.` },
-      { t: `Dos pools — 50% a holders`, p: `El 25% del banco forma el pool de TODOS los holders, repartido entre cada holder elegible. Otro 25% forma el pool TOP 10, repartido solo entre los diez mayores holders. El 50% restante — tras dejar 1 TON en el banco como colchón — se reparte 50/50 entre las wallets BRAINROT Invest y BRAINROT Marketing para financiar el crecimiento.` },
+      { t: `Dos pools — 50% a holders`, p: `El 25% del banco forma el pool de TODOS los holders, repartido entre cada holder elegible. Otro 25% forma el pool TOP 10, repartido solo entre los diez mayores holders. El 50% restante — tras dejar 1 GRAM en el banco como colchón — se reparte 50/50 entre las wallets BRAINROT Invest y BRAINROT Marketing para financiar el crecimiento.` },
       { t: `Cada pool se reparte pro-rata`, p: `Ambos pools se dividen según el $BRT que tienes. En el pool de todos: tienes el 2% del supply elegible → recibes el 2% de ese pool. En el pool TOP 10 tu parte se mide solo entre los diez mayores.` },
       { t: `Solo holders reales`, p: `El pool de liquidez (DeDust), la wallet del proyecto, las tesorerías BRAINROT Invest y Marketing y la dirección de quema están excluidos — nunca reciben recompensa ni cuentan para el TOP 10. Solo cuentan las wallets de holders reales.` },
     ],
     top10_h3: `Por qué el TOP 10 gana mucho más`,
     top10_p: `Los diez mayores holders cobran de AMBOS pools a la vez: su parte normal del pool del 25% de todos los holders Y su porción del pool separado del 25% TOP 10. Una wallet del top diez apila de hecho dos recompensas en la misma ronda — lo que recibe es mucho mayor que el 25% solo. Si sales del top diez sigues ganando del pool de todos; si entras, se abre un segundo pool. Cuanto más tienes, más te pagan los dos pools.`,
-    roll_h3: `El mínimo de 0,05 TON y el rollover`,
-    roll_p: `Si tu parte combinada (ambos pools) sale por debajo de 0,05 TON, aún no se envía — costaría más en gas de red de lo que vale. En su lugar se traslada: simplemente se queda en el banco, y cada ronda tu parte se recalcula desde tu saldo ACTUAL de $BRT — así, cuando el banco crece (o tienes más) supera 0,05 TON y cobras. No hay ningún crédito guardado ligado a tu dirección: el rollover siempre refleja lo que tienes en el momento del pago. Si sigues holdeando, tu parte crece; si vendes tu $BRT, no hay nada que pagar — esos TON no enviados simplemente se quedan en el pool para los holders que permanecen.`,
+    roll_h3: `El mínimo de 0,05 GRAM y el rollover`,
+    roll_p: `Si tu parte combinada (ambos pools) sale por debajo de 0,05 GRAM, aún no se envía — costaría más en gas de red de lo que vale. En su lugar se traslada: simplemente se queda en el banco, y cada ronda tu parte se recalcula desde tu saldo ACTUAL de $BRT — así, cuando el banco crece (o tienes más) supera 0,05 GRAM y cobras. No hay ningún crédito guardado ligado a tu dirección: el rollover siempre refleja lo que tienes en el momento del pago. Si sigues holdeando, tu parte crece; si vendes tu $BRT, no hay nada que pagar — esos GRAM no enviados simplemente se quedan en el pool para los holders que permanecen.`,
     gas_h3: `Recibes la parte completa`,
-    gas_p: `Los holders reciben su parte completa en TON; el gas de red lo paga el proyecto aparte. No se descuenta ninguna comisión de tu recompensa.`,
+    gas_p: `Los holders reciben su parte completa en GRAM; el gas de red lo paga el proyecto aparte. No se descuenta ninguna comisión de tu recompensa.`,
     disclaimer: `$BRT es un memecoin comunitario, no una inversión. Las recompensas dependen por completo de cuánto gane realmente el proyecto — pueden ser cero. Esto no es asesoramiento financiero ni una promesa de beneficio. Ten $BRT porque te gusta el proyecto, no por rendimientos esperados.`,
     verify_h3: `Verifica on-chain`, link_bank: `Wallet del banco de recompensas ↗`, link_holders: `Holders de $BRT ↗`, link_contract: `Contrato de $BRT ↗`,
-    hist_h2: `Todas las recompensas TON pagadas`,
-    hist_lede: `Cada ronda de pago, on-chain y detallada: quién recibió cuánto, ordenado por tamaño — más las wallets que ahora se acumulan hacia el mínimo de 0,05 TON. ★ marca a un holder del TOP 10 pagado desde ambos pools. Haz clic en cualquier dirección para abrirla en Tonviewer.`,
+    hist_h2: `Todas las recompensas GRAM pagadas`,
+    hist_lede: `Cada ronda de pago, on-chain y detallada: quién recibió cuánto, ordenado por tamaño — más las wallets que ahora se acumulan hacia el mínimo de 0,05 GRAM. ★ marca a un holder del TOP 10 pagado desde ambos pools. Haz clic en cualquier dirección para abrirla en Tonviewer.`,
     hist_total: `Total pagado`, hist_rounds: `Rondas`, hist_rolling: `Wallets en acumulación`,
     hist_round: `Ronda`, hist_holders: `holders`,
-    hist_paidto: `Distribuido a holders`, hist_rollover: `Acumulando — parte por debajo de 0,05 TON`, hist_pending: `pendiente`,
-    hist_none: `Aún no se han pagado recompensas. La primera ronda se ejecuta cuando el banco supera 4 TON — vuelve pronto.`,
+    hist_paidto: `Distribuido a holders`, hist_rollover: `Acumulando — parte por debajo de 0,05 GRAM`, hist_pending: `pendiente`,
+    hist_none: `Aún no se han pagado recompensas. La primera ronda se ejecuta cuando el banco supera 4 GRAM — vuelve pronto.`,
     hist_top10_badge: `TOP 10 · ambos pools`, hist_pool_all: `todos 25%`, hist_pool_top10: `top-10 25%`,
     sim_h2: `Simulación de recompensas`,
     sim_lede: `Lo que el modelo pagaría con distintos tamaños de banco, bajo el reparto 25% a todos + 25% al top 10. La columna del holder #1 muestra ambos pools sumados — la ventaja del top 10 en números.`,
@@ -218,32 +218,32 @@ const I18N: Record<Locale, RW> = {
   },
   uk: {
     kicker: `$BRT · Винагороди холдерам`,
-    h1: `Винагороди в TON для холдерів $BRT`,
-    lede: `Дохід із лаунчпада BRAINROT, з податків $BRT і з кожного майбутнього модуля, який ми збудуємо, стікається в один гаманець on-chain — банк проєкту. Щораунду половина повертається холдерам $BRT, у TON — двома пулами.`,
-    stat_bank: `Банк винагород (наживо)`, stat_pool: `Холдерам · 50%`, stat_cadence: `Виплати від`, cadence_value: `≥ 4 TON`, loading: `…`,
-    trigger_note: `Раунд винагород запускається лише коли банк сягне щонайменше 4 TON (пули ≥ 2 TON) і команда його запустить — щоб перші виплати були відчутними, а не пилом. До того часу все накопичується.`,
+    h1: `Винагороди в GRAM для холдерів $BRT`,
+    lede: `Дохід із лаунчпада BRAINROT, з податків $BRT і з кожного майбутнього модуля, який ми збудуємо, стікається в один гаманець on-chain — банк проєкту. Щораунду половина повертається холдерам $BRT, у GRAM — двома пулами.`,
+    stat_bank: `Банк винагород (наживо)`, stat_pool: `Холдерам · 50%`, stat_cadence: `Виплати від`, cadence_value: `≥ 4 GRAM`, loading: `…`,
+    trigger_note: `Раунд винагород запускається лише коли банк сягне щонайменше 4 GRAM (пули ≥ 2 GRAM) і команда його запустить — щоб перші виплати були відчутними, а не пилом. До того часу все накопичується.`,
     how_h2: `Як це працює`,
     steps: [
-      { t: `Дохід накопичується`, p: `Комісії лаунчпада (1 TON за запуск), податки на купівлю/продаж $BRT — і дохід з кожного нового модуля, який ми збудуємо для BRAINROT — потрапляють в один гаманець on-chain, "банк BRT". Банк росте разом із проєктом.` },
+      { t: `Дохід накопичується`, p: `Комісії лаунчпада (1 GRAM за запуск), податки на купівлю/продаж $BRT — і дохід з кожного нового модуля, який ми збудуємо для BRAINROT — потрапляють в один гаманець on-chain, "банк BRT". Банк росте разом із проєктом.` },
       { t: `Щотижневий знімок`, p: `Раз на тиждень ми читаємо повний список холдерів $BRT та їхні баланси прямо з мережі.` },
-      { t: `Два пули — 50% холдерам`, p: `25% банку утворюють пул ДЛЯ ВСІХ холдерів, поділений між кожним придатним. Ще 25% утворюють пул ТОП-10, поділений лише між десятьма найбільшими холдерами. Решта 50% — після того як 1 TON лишається в банку як буфер — ділиться 50/50 між гаманцями BRAINROT Invest і BRAINROT Marketing на розвиток.` },
+      { t: `Два пули — 50% холдерам`, p: `25% банку утворюють пул ДЛЯ ВСІХ холдерів, поділений між кожним придатним. Ще 25% утворюють пул ТОП-10, поділений лише між десятьма найбільшими холдерами. Решта 50% — після того як 1 GRAM лишається в банку як буфер — ділиться 50/50 між гаманцями BRAINROT Invest і BRAINROT Marketing на розвиток.` },
       { t: `Кожен пул ділиться пропорційно`, p: `Обидва пули діляться за кількістю $BRT. У пулі для всіх: тримаєш 2% придатної пропозиції → отримуєш 2% цього пулу. У пулі ТОП-10 твоя частка рахується лише серед десяти найбільших.` },
       { t: `Лише справжні холдери`, p: `Пул ліквідності (DeDust), гаманець проєкту, скарбниці BRAINROT Invest і Marketing та адреса спалення виключені — вони ніколи не отримують винагороди й не рахуються в ТОП-10. Рахуються лише справжні гаманці холдерів.` },
     ],
     top10_h3: `Чому ТОП-10 заробляє набагато більше`,
     top10_p: `Десять найбільших холдерів отримують одразу з ОБОХ пулів: свою звичайну частку в 25-відсотковому пулі для всіх ТА свій шматок окремого 25-відсоткового пулу ТОП-10. Гаманець із десятки фактично складає дві винагороди в одному раунді — його виплата значно більша за самі 25%. Випадеш із десятки — все одно заробляєш із пулу для всіх; зайдеш у неї — відкривається другий пул. Чим більше тримаєш, тим більше платять обидва пули.`,
-    roll_h3: `Мінімум 0,05 TON і перенесення`,
-    roll_p: `Якщо твоя сукупна частка (з обох пулів) виходить менше 0,05 TON, вона поки не надсилається — газ мережі коштував би дорожче, ніж вона. Натомість вона переноситься: просто лишається в банку, а щораунду твоя частка перераховується ВІД ПОТОЧНОГО балансу $BRT — тож коли банк росте (або ти тримаєш більше) вона переходить 0,05 TON і тобі платять. Жодного збереженого «боргу» за адресою немає: перенесення завжди відображає те, скільки ти тримаєш на момент виплати. Тримаєш далі — частка росте; продаси $BRT — платити нічого, і ці ненадіслані TON просто лишаються в пулі для холдерів, які залишилися.`,
+    roll_h3: `Мінімум 0,05 GRAM і перенесення`,
+    roll_p: `Якщо твоя сукупна частка (з обох пулів) виходить менше 0,05 GRAM, вона поки не надсилається — газ мережі коштував би дорожче, ніж вона. Натомість вона переноситься: просто лишається в банку, а щораунду твоя частка перераховується ВІД ПОТОЧНОГО балансу $BRT — тож коли банк росте (або ти тримаєш більше) вона переходить 0,05 GRAM і тобі платять. Жодного збереженого «боргу» за адресою немає: перенесення завжди відображає те, скільки ти тримаєш на момент виплати. Тримаєш далі — частка росте; продаси $BRT — платити нічого, і ці ненадіслані GRAM просто лишаються в пулі для холдерів, які залишилися.`,
     gas_h3: `Ти отримуєш повну частку`,
-    gas_p: `Холдери отримують повну частку в TON; газ мережі доплачує проєкт. З твоєї винагороди не знімається жодна комісія.`,
+    gas_p: `Холдери отримують повну частку в GRAM; газ мережі доплачує проєкт. З твоєї винагороди не знімається жодна комісія.`,
     disclaimer: `$BRT — це спільнотний мемкоїн, а не інвестиція. Винагороди повністю залежать від того, скільки проєкт реально заробляє — вони можуть бути нульовими. Це не фінансова порада і не обіцянка прибутку. Тримай $BRT тому що тобі подобається проєкт, а не заради очікуваної дохідності.`,
     verify_h3: `Перевір on-chain`, link_bank: `Гаманець банку винагород ↗`, link_holders: `Холдери $BRT ↗`, link_contract: `Контракт $BRT ↗`,
-    hist_h2: `Усі виплачені нагороди TON`,
-    hist_lede: `Кожен раунд виплат, on-chain і за пунктами: хто скільки отримав, за спаданням — плюс гаманці, які зараз переносяться до порогу 0,05 TON. ★ позначає холдера з ТОП-10, оплаченого з обох пулів. Натисни будь-яку адресу, щоб відкрити її на Tonviewer.`,
+    hist_h2: `Усі виплачені нагороди GRAM`,
+    hist_lede: `Кожен раунд виплат, on-chain і за пунктами: хто скільки отримав, за спаданням — плюс гаманці, які зараз переносяться до порогу 0,05 GRAM. ★ позначає холдера з ТОП-10, оплаченого з обох пулів. Натисни будь-яку адресу, щоб відкрити її на Tonviewer.`,
     hist_total: `Усього виплачено`, hist_rounds: `Раунди`, hist_rolling: `Гаманці в перенесенні`,
     hist_round: `Раунд`, hist_holders: `холдерів`,
-    hist_paidto: `Розподілено холдерам`, hist_rollover: `Перенесення — частка нижче 0,05 TON, накопичується`, hist_pending: `очікує`,
-    hist_none: `Нагороди ще не виплачувалися. Перший раунд запуститься, коли банк перевищить 4 TON — зазирни згодом.`,
+    hist_paidto: `Розподілено холдерам`, hist_rollover: `Перенесення — частка нижче 0,05 GRAM, накопичується`, hist_pending: `очікує`,
+    hist_none: `Нагороди ще не виплачувалися. Перший раунд запуститься, коли банк перевищить 4 GRAM — зазирни згодом.`,
     hist_top10_badge: `ТОП-10 · обидва пули`, hist_pool_all: `усі 25%`, hist_pool_top10: `топ-10 25%`,
     sim_h2: `Симуляція винагород`,
     sim_lede: `Скільки модель виплатила б за різних розмірів банку, при поділі 25% усім + 25% ТОП-10. Колонка холдера №1 показує обидва пули разом — перевага ТОП-10 у цифрах.`,
@@ -313,7 +313,7 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
     {hasRounds ? (
       <>
         <div class="rw-hist-summary">
-          <div class="rw-hsum"><span class="rw-hsum-val">{fmtTon(totalPaid)} TON</span><span class="rw-hsum-lbl">{t.hist_total}</span></div>
+          <div class="rw-hsum"><span class="rw-hsum-val">{fmtTon(totalPaid)} GRAM</span><span class="rw-hsum-lbl">{t.hist_total}</span></div>
           <div class="rw-hsum"><span class="rw-hsum-val">{roundsCount}</span><span class="rw-hsum-lbl">{t.hist_rounds}</span></div>
           <div class="rw-hsum"><span class="rw-hsum-val">{rollingCount}</span><span class="rw-hsum-lbl">{t.hist_rolling}</span></div>
         </div>
@@ -323,7 +323,7 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
             <div class="rw-round-head">
               <span class="rw-round-no">{t.hist_round} #{r.round}</span>
               <span class="rw-round-date">{roundDate(r.at)}</span>
-              <span class="rw-round-tot">{fmtTon(r.total_paid_ton)} TON · {r.paid.length} {t.hist_holders}</span>
+              <span class="rw-round-tot">{fmtTon(r.total_paid_ton)} GRAM · {r.paid.length} {t.hist_holders}</span>
             </div>
 
             <div class="rw-sub">{t.hist_paidto}</div>
@@ -334,7 +334,7 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
                   <a class="rw-rank-addr" href={TONVIEWER + addrOf(h)} target="_blank" rel="noopener noreferrer">{shortAddr(addrOf(h))}</a>
                   {h.top10 && <span class="rw-top10-badge" title={t.hist_top10_badge}>★</span>}
                   <span class="rw-rank-pct">{sharePct(h.ton, r.total_paid_ton)}%</span>
-                  <span class="rw-rank-ton">{fmtTon(h.ton)} TON</span>
+                  <span class="rw-rank-ton">{fmtTon(h.ton)} GRAM</span>
                 </li>
               ))}
             </ol>
@@ -346,7 +346,7 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
                   {r.rollover.map((h) => (
                     <li>
                       <a class="rw-rank-addr" href={TONVIEWER + addrOf(h)} target="_blank" rel="noopener noreferrer">{shortAddr(addrOf(h))}</a>
-                      <span class="rw-roll-ton">{fmtTon(h.ton)} TON {t.hist_pending}</span>
+                      <span class="rw-roll-ton">{fmtTon(h.ton)} GRAM {t.hist_pending}</span>
                     </li>
                   ))}
                 </ul>
@@ -393,13 +393,13 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
           const top1 = (lv.top && lv.top[0]) || null;
           return (
             <div class="rw-sim-row">
-              <span class="rw-sim-bank">{fmtTon2(lv.bank)} TON</span>
+              <span class="rw-sim-bank">{fmtTon2(lv.bank)} GRAM</span>
               <span class="rw-sim-holders">
-                {fmtTon2(lv.holders_pool_ton)} TON
+                {fmtTon2(lv.holders_pool_ton)} GRAM
                 <em>{fmtTon2(lv.all_pool_ton)} {t.hist_pool_all} + {fmtTon2(lv.top10_pool_ton)} {t.hist_pool_top10}</em>
               </span>
               <span class="rw-sim-top1">
-                {top1 ? <><b>{fmtTon(top1.ton)} TON</b><em>{fmtTon(top1.ton_all)} + {fmtTon(top1.ton_top10)} ★</em></> : '—'}
+                {top1 ? <><b>{fmtTon(top1.ton)} GRAM</b><em>{fmtTon(top1.ton_all)} + {fmtTon(top1.ton_top10)} ★</em></> : '—'}
               </span>
             </div>
           );
@@ -439,9 +439,9 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
       .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
       .then(function (j) {
         var ton = Number(j.balance || 0) / 1e9;
-        bankEl.textContent = ton.toFixed(2) + ' TON';
+        bankEl.textContent = ton.toFixed(2) + ' GRAM';
         // Holders' share = 50% total (25% all-holders pool + 25% top-10 pool).
-        poolEl.textContent = (ton * HOLDER_PCT / 100).toFixed(3) + ' TON';
+        poolEl.textContent = (ton * HOLDER_PCT / 100).toFixed(3) + ' GRAM';
       })
       .catch(function () { bankEl.textContent = '—'; poolEl.textContent = '—'; });
   })();
@@ -452,11 +452,11 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
   .rw-hero { margin: 32px 0 28px; padding-bottom: 26px; border-bottom: 1px solid var(--rule); }
   .kicker {
     display: inline-block; font-family: var(--font-mono); font-size: 11px;
-    letter-spacing: 0.22em; text-transform: uppercase; color: #6dd4a8; margin-bottom: 18px;
+    letter-spacing: 0.22em; text-transform: uppercase; color: #1f9d6b; margin-bottom: 18px;
   }
   .rw-hero h1 {
     margin: 0 0 16px; font-family: var(--font-display); font-weight: 800;
-    font-size: clamp(38px, 6vw, 62px); line-height: 1.05; letter-spacing: -0.025em; color: #fff;
+    font-size: clamp(38px, 6vw, 62px); line-height: 1.05; letter-spacing: -0.025em; color: #14130f;
   }
   .rw-hero .lede {
     font-family: var(--font-serif); font-size: 20px; line-height: 1.55;
@@ -467,88 +467,88 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
     display: flex; flex-direction: column; gap: 8px; padding: 20px;
     background: var(--bg-section); border: 1px solid var(--rule); border-left: 2px solid var(--rule);
   }
-  .rw-stat-accent { border-left-color: #6dd4a8; background: linear-gradient(180deg, rgba(109,212,168,0.08), transparent); }
+  .rw-stat-accent { border-left-color: #1f9d6b; background: linear-gradient(180deg, rgba(31,157,107,0.08), transparent); }
   .rw-stat-label {
     font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
     letter-spacing: 0.14em; color: var(--text-mute);
   }
-  .rw-stat-val { font-family: var(--font-mono); font-size: 26px; font-weight: 700; color: #fff; }
-  .rw-stat-accent .rw-stat-val { color: #6dd4a8; }
+  .rw-stat-val { font-family: var(--font-mono); font-size: 26px; font-weight: 700; color: #14130f; }
+  .rw-stat-accent .rw-stat-val { color: #1f9d6b; }
   .rw-trigger {
     margin: -24px 0 40px; padding: 14px 18px; border-radius: 10px;
-    background: rgba(255, 214, 10, 0.08); border: 1px solid rgba(255, 214, 10, 0.32);
-    font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: #ffe9a8;
+    background: rgba(154, 90, 15,0.08); border: 1px solid rgba(154, 90, 15,0.32);
+    font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: #9a5a0f;
   }
 
   .rw-block { margin: 0 0 40px; }
   .rw-block h2 {
     font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 4vw, 36px);
-    color: #fff; margin: 0 0 22px; letter-spacing: -0.02em;
+    color: #14130f; margin: 0 0 22px; letter-spacing: -0.02em;
   }
   .rw-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
-  .rw-steps li { display: flex; gap: 16px; padding: 18px 20px; background: var(--bg-section); border-left: 2px solid #6dd4a8; }
+  .rw-steps li { display: flex; gap: 16px; padding: 18px 20px; background: var(--bg-section); border-left: 2px solid #1f9d6b; }
   .rw-n {
     flex-shrink: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-    border: 1px solid #6dd4a8; border-radius: 50%; color: #6dd4a8;
+    border: 1px solid #1f9d6b; border-radius: 50%; color: #1f9d6b;
     font-family: var(--font-mono); font-size: 14px; font-weight: 700;
   }
-  .rw-steps strong { display: block; color: #fff; font-family: var(--font-display); font-size: 18px; margin-bottom: 5px; }
+  .rw-steps strong { display: block; color: #14130f; font-family: var(--font-display); font-size: 18px; margin-bottom: 5px; }
   .rw-steps p { margin: 0; font-family: var(--font-serif); color: var(--text-dim); font-size: 16px; line-height: 1.6; }
 
   .rw-callout {
     margin: 0 0 40px; padding: 26px 28px; border-radius: 14px;
-    background: linear-gradient(180deg, rgba(109,212,168,0.12), rgba(109,212,168,0.04));
-    border: 1px solid rgba(109,212,168,0.4);
+    background: linear-gradient(180deg, rgba(31,157,107,0.12), rgba(31,157,107,0.04));
+    border: 1px solid rgba(31,157,107,0.4);
   }
-  .rw-callout h3 { margin: 0 0 12px; font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #aef0cf; }
+  .rw-callout h3 { margin: 0 0 12px; font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #1f9d6b; }
   .rw-callout p { margin: 0; font-family: var(--font-serif); font-size: 17px; line-height: 1.65; color: var(--text-dim); }
 
   /* ---- TOP 10 double-pool callout ---- */
   .rw-top10 {
     margin: 0 0 40px; padding: 26px 28px; border-radius: 14px;
-    background: linear-gradient(180deg, rgba(255,210,74,0.14), rgba(255,210,74,0.04));
-    border: 1px solid rgba(255,210,74,0.45);
+    background: linear-gradient(180deg, rgba(154,90,15,0.14), rgba(154,90,15,0.04));
+    border: 1px solid rgba(154,90,15,0.45);
   }
   .rw-top10-tag {
     display: inline-block; margin-bottom: 12px; padding: 4px 12px; border-radius: 999px;
-    background: rgba(255,210,74,0.18); border: 1px solid rgba(255,210,74,0.5);
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; color: #ffd24a;
+    background: rgba(154,90,15,0.18); border: 1px solid rgba(154,90,15,0.5);
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; color: #9a5a0f;
   }
-  .rw-top10 h3 { margin: 0 0 12px; font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #ffe9a8; }
+  .rw-top10 h3 { margin: 0 0 12px; font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #9a5a0f; }
   .rw-top10 p { margin: 0; font-family: var(--font-serif); font-size: 17px; line-height: 1.65; color: var(--text-dim); }
 
   /* ---- Reward simulation ---- */
   .rw-sim { margin: 0 0 40px; }
   .rw-sim h2 {
     font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 4vw, 36px);
-    color: #fff; margin: 0 0 12px; letter-spacing: -0.02em;
+    color: #14130f; margin: 0 0 12px; letter-spacing: -0.02em;
   }
   .rw-sim-lede { margin: 0 0 8px; font-family: var(--font-serif); font-size: 16px; line-height: 1.6; color: var(--text-dim); max-width: 70ch; }
-  .rw-sim-based { margin: 0 0 18px; font-family: var(--font-mono); font-size: 12px; color: #ffd24a; }
+  .rw-sim-based { margin: 0 0 18px; font-family: var(--font-mono); font-size: 12px; color: #9a5a0f; }
   .rw-sim-table { border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
   .rw-sim-row {
     display: grid; grid-template-columns: 0.8fr 1.6fr 1.6fr; gap: 12px; align-items: center;
     padding: 14px 16px; border-bottom: 1px solid var(--rule);
   }
   .rw-sim-row:last-child { border-bottom: none; }
-  .rw-sim-row:nth-child(even):not(.rw-sim-head) { background: rgba(255,255,255,0.02); }
+  .rw-sim-row:nth-child(even):not(.rw-sim-head) { background: rgba(20,18,12,0.02); }
   .rw-sim-head {
     background: var(--bg-section); font-family: var(--font-mono); font-size: 10px;
     text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-mute);
   }
-  .rw-sim-bank { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: #fff; }
-  .rw-sim-holders, .rw-sim-top1 { display: flex; flex-direction: column; gap: 3px; font-family: var(--font-mono); font-size: 15px; color: #6dd4a8; }
-  .rw-sim-top1 b { color: #ffd24a; }
+  .rw-sim-bank { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: #14130f; }
+  .rw-sim-holders, .rw-sim-top1 { display: flex; flex-direction: column; gap: 3px; font-family: var(--font-mono); font-size: 15px; color: #1f9d6b; }
+  .rw-sim-top1 b { color: #9a5a0f; }
   .rw-sim-holders em, .rw-sim-top1 em { font-style: normal; font-size: 11px; color: var(--text-mute); }
   .rw-sim-note {
-    margin: 14px 0 0; padding: 12px 16px; background: rgba(255,255,255,0.03);
+    margin: 14px 0 0; padding: 12px 16px; background: rgba(20,18,12,0.03);
     border: 1px solid var(--rule); border-radius: 8px;
     font-family: var(--font-mono); font-size: 11px; line-height: 1.6; color: var(--text-mute);
   }
-  .rw-rank-top10 { background: rgba(255,210,74,0.07) !important; }
-  .rw-top10-badge { color: #ffd24a; font-size: 13px; }
+  .rw-rank-top10 { background: rgba(154,90,15,0.07) !important; }
+  .rw-top10-badge { color: #9a5a0f; font-size: 13px; }
 
-  .rw-gas h3 { font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #fff; margin: 0 0 10px; }
+  .rw-gas h3 { font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #14130f; margin: 0 0 10px; }
   .rw-gas p { margin: 0; font-family: var(--font-serif); font-size: 17px; line-height: 1.6; color: var(--text-dim); }
 
   .rw-verify { margin: 0 0 32px; }
@@ -557,11 +557,11 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
     color: var(--text-mute); margin: 0 0 14px;
   }
   .rw-links { display: flex; flex-wrap: wrap; gap: 10px 22px; }
-  .rw-links a { font-family: var(--font-mono); font-size: 13px; color: #6dd4a8; text-decoration: none; border-bottom: 1px solid rgba(109,212,168,0.4); }
-  .rw-links a:hover { color: #aef0cf; }
+  .rw-links a { font-family: var(--font-mono); font-size: 13px; color: #1f9d6b; text-decoration: none; border-bottom: 1px solid rgba(31,157,107,0.4); }
+  .rw-links a:hover { color: #17855b; }
 
   .rw-disclaimer {
-    margin: 0 0 64px; padding: 16px 20px; background: rgba(255,255,255,0.03);
+    margin: 0 0 64px; padding: 16px 20px; background: rgba(20,18,12,0.03);
     border: 1px solid var(--rule); color: var(--text-mute);
     font-family: var(--font-mono); font-size: 12px; line-height: 1.7;
   }
@@ -570,48 +570,48 @@ const fmtTon2 = (n: number) => Number(n).toFixed(2);
   .rw-history { margin: 0 0 44px; }
   .rw-history h2 {
     font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 4vw, 36px);
-    color: #fff; margin: 0 0 12px; letter-spacing: -0.02em;
+    color: #14130f; margin: 0 0 12px; letter-spacing: -0.02em;
   }
   .rw-hist-lede { margin: 0 0 22px; font-family: var(--font-serif); font-size: 16px; line-height: 1.6; color: var(--text-dim); max-width: 70ch; }
   .rw-hist-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 0 0 28px; }
   .rw-hsum {
     display: flex; flex-direction: column; gap: 6px; padding: 18px 20px;
-    background: var(--bg-section); border: 1px solid var(--rule); border-left: 2px solid #6dd4a8;
+    background: var(--bg-section); border: 1px solid var(--rule); border-left: 2px solid #1f9d6b;
   }
-  .rw-hsum-val { font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: #6dd4a8; }
+  .rw-hsum-val { font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: #1f9d6b; }
   .rw-hsum-lbl { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-mute); }
 
   .rw-round { margin: 0 0 22px; padding: 20px; background: var(--bg-section); border: 1px solid var(--rule); border-radius: 10px; }
   .rw-round-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--rule); }
-  .rw-round-no { font-family: var(--font-display); font-weight: 800; font-size: 18px; color: #fff; }
+  .rw-round-no { font-family: var(--font-display); font-weight: 800; font-size: 18px; color: #14130f; }
   .rw-round-date { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); }
-  .rw-round-tot { margin-left: auto; font-family: var(--font-mono); font-size: 13px; color: #6dd4a8; }
+  .rw-round-tot { margin-left: auto; font-family: var(--font-mono); font-size: 13px; color: #1f9d6b; }
   .rw-sub { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-mute); margin: 0 0 10px; }
-  .rw-sub-roll { margin-top: 18px; color: #ffd24a; }
+  .rw-sub-roll { margin-top: 18px; color: #9a5a0f; }
 
   .rw-rank { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
   .rw-rank li { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 6px; }
-  .rw-rank li:nth-child(odd) { background: rgba(255,255,255,0.03); }
+  .rw-rank li:nth-child(odd) { background: rgba(20,18,12,0.03); }
   .rw-rank-n {
     flex-shrink: 0; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
-    border-radius: 50%; background: rgba(109,212,168,0.14); color: #6dd4a8;
+    border-radius: 50%; background: rgba(31,157,107,0.14); color: #1f9d6b;
     font-family: var(--font-mono); font-size: 11px; font-weight: 700;
   }
   .rw-rank li:nth-child(1) .rw-rank-n { background: #ffd24a; color: #1a1a1a; }
   .rw-rank li:nth-child(2) .rw-rank-n { background: #d6d6d6; color: #1a1a1a; }
   .rw-rank li:nth-child(3) .rw-rank-n { background: #cd9b6a; color: #1a1a1a; }
-  .rw-rank-addr { font-family: var(--font-mono); font-size: 13px; color: #6dd4a8; text-decoration: none; border-bottom: 1px solid rgba(109,212,168,0.35); }
-  .rw-rank-addr:hover { color: #aef0cf; }
+  .rw-rank-addr { font-family: var(--font-mono); font-size: 13px; color: #1f9d6b; text-decoration: none; border-bottom: 1px solid rgba(31,157,107,0.35); }
+  .rw-rank-addr:hover { color: #17855b; }
   .rw-rank-pct { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); }
-  .rw-rank-ton { margin-left: auto; font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: #fff; }
+  .rw-rank-ton { margin-left: auto; font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: #1b1a16; }
 
   .rw-rolllist { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
   .rw-rolllist li { display: flex; align-items: center; gap: 12px; padding: 7px 10px; }
-  .rw-roll-ton { margin-left: auto; font-family: var(--font-mono); font-size: 12px; color: #ffd24a; }
+  .rw-roll-ton { margin-left: auto; font-family: var(--font-mono); font-size: 12px; color: #9a5a0f; }
   .rw-hist-none {
-    margin: 0; padding: 18px 20px; background: rgba(255, 214, 10, 0.08);
-    border: 1px solid rgba(255, 214, 10, 0.32); border-radius: 10px;
-    font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: #ffe9a8;
+    margin: 0; padding: 18px 20px; background: rgba(154, 90, 15,0.08);
+    border: 1px solid rgba(154, 90, 15,0.32); border-radius: 10px;
+    font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: #9a5a0f;
   }
 
   @media (max-width: 600px) {

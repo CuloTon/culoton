@@ -7,8 +7,8 @@ export async function GET(context: APIContext) {
   const sorted = news.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
   return rss({
-    title: 'BRAINROT — TON Blockchain News',
-    description: 'Daily news, analysis and updates from the TON blockchain ecosystem. Powered by $BRT.',
+    title: 'BRAINROT — GRAM Blockchain News',
+    description: 'Daily news, analysis and updates from the GRAM blockchain ecosystem. Powered by $BRT.',
     site: context.site!,
     items: sorted.map((entry) => ({
       title: entry.data.title,

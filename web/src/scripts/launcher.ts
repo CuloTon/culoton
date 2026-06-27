@@ -11,7 +11,7 @@ const MAINNET = '-239'; // CHAIN.MAINNET
 // When FEE_TREASURY holds a wallet address, every deploy ALSO sends
 // PLATFORM_FEE_TON to it inside the SAME signed transaction (one wallet
 // confirmation deploys the token + pays the fee). Intended for mainnet once
-// the launcher graduates off testnet — testnet TON is worthless, and a mainnet
+// the launcher graduates off testnet — testnet GRAM is worthless, and a mainnet
 // treasury address must not be paired with a testnet tx. Leave FEE_TREASURY
 // empty to keep launches free.
 const PLATFORM_FEE_TON = 1;
@@ -69,7 +69,7 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Renounce signed. Admin will be set to none on-chain shortly.',
     renounceSubmitted: 'Renounce submitted ✓',
     renounceFail: 'Renounce cancelled or failed: ',
-    disconnect: 'Disconnect ', connect: 'Connect TON wallet',
+    disconnect: 'Disconnect ', connect: 'Connect GRAM wallet',
     loadFail: 'Launcher failed to load: ',
     confirming: 'Deployed — waiting for on-chain confirmation before renounce unlocks…',
     confirmed: 'Confirmed on-chain ✓ Your token is live and listed in the feed.',
@@ -92,7 +92,7 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Zrzeczenie podpisane. Admin zostanie wkrótce ustawiony na zerowy on-chain.',
     renounceSubmitted: 'Zrzeczenie wysłane ✓',
     renounceFail: 'Zrzeczenie anulowane lub nieudane: ',
-    disconnect: 'Rozłącz ', connect: 'Podłącz portfel TON',
+    disconnect: 'Rozłącz ', connect: 'Podłącz portfel GRAM',
     loadFail: 'Nie udało się załadować launchera: ',
     confirming: 'Wdrożono — czekam na potwierdzenie on-chain, zanim odblokuję zrzeczenie…',
     confirmed: 'Potwierdzone on-chain ✓ Twój token żyje i jest w feedzie.',
@@ -115,7 +115,7 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Отказ подписан. Админ скоро будет обнулён on-chain.',
     renounceSubmitted: 'Отказ отправлен ✓',
     renounceFail: 'Отказ отменён или не удался: ',
-    disconnect: 'Отключить ', connect: 'Подключить кошелёк TON',
+    disconnect: 'Отключить ', connect: 'Подключить кошелёк GRAM',
     loadFail: 'Не удалось загрузить лаунчер: ',
     confirming: 'Развёрнуто — ждём подтверждения on-chain, прежде чем открыть отказ…',
     confirmed: 'Подтверждено on-chain ✓ Твой токен в сети и в ленте.',
@@ -138,7 +138,7 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Abgabe signiert. Admin wird in Kürze on-chain auf null gesetzt.',
     renounceSubmitted: 'Abgabe eingereicht ✓',
     renounceFail: 'Abgabe abgebrochen oder fehlgeschlagen: ',
-    disconnect: 'Trennen ', connect: 'TON-Wallet verbinden',
+    disconnect: 'Trennen ', connect: 'GRAM-Wallet verbinden',
     loadFail: 'Launcher konnte nicht geladen werden: ',
     confirming: 'Deployt — warte auf On-chain-Bestätigung, bevor das Abgeben freigeschaltet wird…',
     confirmed: 'On-chain bestätigt ✓ Dein Token ist live und im Feed gelistet.',
@@ -161,7 +161,7 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Renuncia firmada. El admin se pondrá a nulo on-chain en breve.',
     renounceSubmitted: 'Renuncia enviada ✓',
     renounceFail: 'Renuncia cancelada o fallida: ',
-    disconnect: 'Desconectar ', connect: 'Conectar wallet TON',
+    disconnect: 'Desconectar ', connect: 'Conectar wallet GRAM',
     loadFail: 'No se pudo cargar el launcher: ',
     confirming: 'Desplegado — esperando confirmación on-chain antes de habilitar la renuncia…',
     confirmed: 'Confirmado on-chain ✓ Tu token está activo y listado en el feed.',
@@ -184,7 +184,7 @@ const I18N: Record<string, Msgs> = {
     renounceSigned: 'Відмову підписано. Адміна невдовзі буде обнулено on-chain.',
     renounceSubmitted: 'Відмову надіслано ✓',
     renounceFail: 'Відмову скасовано або не вдалася: ',
-    disconnect: 'Відключити ', connect: 'Підключити гаманець TON',
+    disconnect: 'Відключити ', connect: 'Підключити гаманець GRAM',
     loadFail: 'Не вдалося завантажити лаунчер: ',
     confirming: 'Розгорнуто — чекаємо підтвердження on-chain, перш ніж відкрити відмову…',
     confirmed: 'Підтверджено on-chain ✓ Твій токен у мережі та в стрічці.',
@@ -355,7 +355,7 @@ async function main() {
 
       deployBtn.disabled = true;
       setStatus(
-        FEE_ENABLED ? `${M.confirmTx} (+${PLATFORM_FEE_TON} TON platform fee)` : M.confirmTx,
+        FEE_ENABLED ? `${M.confirmTx} (+${PLATFORM_FEE_TON} GRAM platform fee)` : M.confirmTx,
         'info',
       );
 

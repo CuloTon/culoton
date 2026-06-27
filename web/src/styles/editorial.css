@@ -1,40 +1,41 @@
 /* ========================================================================
-   BRAINROT — Editorial Noir (default, public, 2026-05-28)
+   BRAINROT — Editorial Light (default, public, 2026-06-27)
 
-   Dark editorial newsroom. Serif body, narrow column, coral accent only
-   on links and small pills. Logo lives small in the masthead. No hero logo.
-   Cards stripped to hairline rule separators.
+   Light editorial newsroom. Warm paper canvas, ink type, serif body, narrow
+   column, a single warm terracotta accent on links and small pills. Logo lives
+   small in the masthead. No hero logo. Cards stripped to hairline separators.
+   Clean & elegant — built to read like a quality print magazine.
 
    Applied via :root[data-theme="editorial"]. Layout.astro hard-codes this
    theme — all legacy themes (brainrot pastel, midnight, A–F) are dormant.
    ======================================================================== */
 
 :root[data-theme="editorial"] {
-  /* Canvas */
-  --bg: #0a0a0c;
-  --bg-section: #101013;
+  /* Canvas — warm paper */
+  --bg: #fbfaf7;
+  --bg-section: #f4f1e9;
   --bg-card: transparent;
-  --bg-elev: #15151a;
+  --bg-elev: #efebe1;
 
   /* Rules — hairline separators do most of the visual structuring */
-  --rule: rgba(255, 255, 255, 0.10);
-  --rule-soft: rgba(255, 255, 255, 0.05);
-  --border: rgba(255, 255, 255, 0.12);
-  --border-soft: rgba(255, 255, 255, 0.06);
+  --rule: rgba(20, 18, 12, 0.13);
+  --rule-soft: rgba(20, 18, 12, 0.06);
+  --border: rgba(20, 18, 12, 0.16);
+  --border-soft: rgba(20, 18, 12, 0.08);
 
   /* Type */
-  --text: #ececea;
-  --text-dim: #c8c8c4;
-  --text-mute: #7a7a78;
+  --text: #1b1a16;
+  --text-dim: #45423a;
+  --text-mute: #837d70;
 
-  /* Single accent — warm coral, used sparingly */
-  --accent: #ff6f6f;
-  --accent-text: #ff8888;
-  --accent-hot: #ff5050;
-  --accent-soft: rgba(255, 111, 111, 0.14);
+  /* Single accent — warm terracotta, used sparingly */
+  --accent: #c8442e;
+  --accent-text: #b23a26;
+  --accent-hot: #d6492f;
+  --accent-soft: rgba(200, 68, 46, 0.10);
 
-  --ton: #4ab6ff;
-  --danger: #ff5e7e;
+  --ton: #1f6fb2;
+  --danger: #c0254a;
 
   /* Editorial type stack — serif body is the whole point */
   --font-display: "Playfair Display", "IBM Plex Serif", Georgia, "Times New Roman", serif;
@@ -73,7 +74,7 @@
 [data-theme="editorial"] h3,
 [data-theme="editorial"] h4 {
   font-family: var(--font-display);
-  color: #ffffff;
+  color: #14130f;
   letter-spacing: -0.015em;
   font-weight: 700;
   line-height: 1.15;
@@ -82,7 +83,7 @@
 [data-theme="editorial"] a {
   color: var(--text);
   text-decoration: none;
-  border-bottom: 1px solid rgba(255, 111, 111, 0.35);
+  border-bottom: 1px solid rgba(200, 68, 46, 0.32);
   transition: color 0.15s, border-color 0.15s;
 }
 [data-theme="editorial"] a:hover {
@@ -109,7 +110,7 @@
 [data-theme="editorial"] pre {
   background: var(--bg-elev);
   border: 1px solid var(--border-soft);
-  color: #d0e4ff;
+  color: #8a3b1e;
   font-family: var(--font-mono);
   font-size: 0.92em;
 }
@@ -118,7 +119,7 @@
 
 /* ===== Masthead ===== */
 [data-theme="editorial"] .site-header {
-  background: rgba(10, 10, 12, 0.92);
+  background: rgba(251, 250, 247, 0.88);
   border-bottom: 1px solid var(--rule);
   backdrop-filter: saturate(140%) blur(14px);
   -webkit-backdrop-filter: saturate(140%) blur(14px);
@@ -149,7 +150,7 @@
   box-shadow: none;
 }
 [data-theme="editorial"] .logo .brand-culo {
-  color: #ffffff;
+  color: #14130f;
   font-weight: 800;
 }
 [data-theme="editorial"] .logo .brand-ton {
@@ -194,7 +195,7 @@
   box-shadow: none !important;
 }
 [data-theme="editorial"] .primary-nav-desktop a.primary-token:hover {
-  color: var(--accent) !important;
+  color: var(--accent-hot) !important;
   background: transparent !important;
   transform: none !important;
   box-shadow: none !important;
@@ -210,16 +211,16 @@
 }
 [data-theme="editorial"] .hamburger:hover {
   background: var(--accent-soft);
-  border-color: rgba(255, 111, 111, 0.35);
+  border-color: rgba(200, 68, 46, 0.35);
 }
 [data-theme="editorial"] .hamburger span { background: var(--text); }
 
-/* Drawer — solid black, high contrast text. Mobile + desktop. */
+/* Drawer — solid paper, high-contrast ink. Mobile + desktop. */
 [data-theme="editorial"] .header-menu,
 [data-theme="editorial"] .site-header.menu-open .header-menu {
-  background: #000000 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65) !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid rgba(20, 18, 12, 0.14) !important;
+  box-shadow: 0 12px 40px rgba(20, 18, 12, 0.14) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -227,9 +228,9 @@
   background: transparent !important;
   border: none !important;
   border-radius: 0 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-bottom: 1px solid rgba(20, 18, 12, 0.09) !important;
   box-shadow: none !important;
-  color: #f5f5f4 !important;
+  color: #1f1d18 !important;
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 600;
@@ -240,7 +241,7 @@
   justify-content: flex-start;
 }
 [data-theme="editorial"] .header-menu nav.main-nav a:hover {
-  background: rgba(255, 111, 111, 0.08) !important;
+  background: rgba(200, 68, 46, 0.07) !important;
   color: var(--accent-text) !important;
   padding-left: 16px;
   transform: none;
@@ -263,7 +264,7 @@
   box-shadow: none !important;
 }
 [data-theme="editorial"] .header-menu nav.main-nav a:last-child:hover {
-  color: var(--accent) !important;
+  color: var(--accent-hot) !important;
   box-shadow: none !important;
 }
 [data-theme="editorial"] .header-menu .lang-link {
@@ -271,22 +272,22 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.18em;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.30) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
+  color: #1f1d18 !important;
+  border: 1px solid rgba(20, 18, 12, 0.22) !important;
+  background: rgba(20, 18, 12, 0.03) !important;
   border-radius: 0 !important;
   padding: 9px 14px;
   min-width: 42px;
   text-align: center;
 }
 [data-theme="editorial"] .header-menu .lang-link:hover {
-  color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.12) !important;
-  border-color: rgba(255, 255, 255, 0.55) !important;
+  color: #14130f !important;
+  background: rgba(20, 18, 12, 0.07) !important;
+  border-color: rgba(20, 18, 12, 0.42) !important;
 }
 [data-theme="editorial"] .header-menu .lang-link.active {
   background: var(--accent) !important;
-  color: #0a0a0c !important;
+  color: #ffffff !important;
   border-color: var(--accent) !important;
 }
 
@@ -372,7 +373,7 @@
   line-height: 1.05;
   letter-spacing: -0.025em;
   margin: 0 0 28px;
-  color: #ffffff;
+  color: #14130f;
   font-weight: 800;
 }
 [data-theme="editorial"] .home-hero p,
@@ -453,7 +454,7 @@
   font-size: 26px;
   line-height: 1.2;
   font-weight: 700;
-  color: #ffffff;
+  color: #14130f;
   margin: 0 0 10px;
 }
 [data-theme="editorial"] .news-card h2 a,
@@ -505,14 +506,14 @@
 [data-theme="editorial"] .pulse-list-card:hover,
 [data-theme="editorial"] .feature-card:hover {
   background: var(--bg-elev) !important;
-  border-color: var(--accent-soft) !important;
+  border-color: rgba(200, 68, 46, 0.35) !important;
   transform: none !important;
 }
 [data-theme="editorial"] .miniapp-card h3,
 [data-theme="editorial"] .ecosystem-card h3,
 [data-theme="editorial"] .pulse-list-card h2 {
   font-family: var(--font-display);
-  color: #ffffff;
+  color: #14130f;
   font-size: 20px;
 }
 [data-theme="editorial"] .miniapp-card p,
@@ -542,18 +543,18 @@
 }
 [data-theme="editorial"] .kind-morning,
 [data-theme="editorial"] .slot-morning {
-  border-color: rgba(255, 200, 138, 0.35) !important;
-  color: #ffc88a !important;
+  border-color: rgba(176, 106, 18, 0.45) !important;
+  color: #9a5a0f !important;
 }
 [data-theme="editorial"] .kind-noon,
 [data-theme="editorial"] .slot-afternoon {
-  border-color: rgba(94, 224, 232, 0.35) !important;
-  color: #9defff !important;
+  border-color: rgba(20, 122, 132, 0.45) !important;
+  color: #157a83 !important;
 }
 [data-theme="editorial"] .kind-evening,
 [data-theme="editorial"] .slot-overnight {
-  border-color: rgba(200, 184, 255, 0.35) !important;
-  color: #c8b8ff !important;
+  border-color: rgba(106, 79, 176, 0.45) !important;
+  color: #5e45a8 !important;
 }
 
 /* ===== Article body / prose pages ===== */
@@ -579,7 +580,7 @@
   font-size: clamp(36px, 5.5vw, 52px);
   line-height: 1.1;
   margin: 0 0 24px;
-  color: #ffffff;
+  color: #14130f;
 }
 [data-theme="editorial"] article.news-article h2,
 [data-theme="editorial"] article.prose h2 {
@@ -603,11 +604,11 @@
 [data-theme="editorial"] .article-body a,
 [data-theme="editorial"] .prose a {
   color: var(--accent-text);
-  border-bottom: 1px solid rgba(255, 111, 111, 0.35);
+  border-bottom: 1px solid rgba(200, 68, 46, 0.32);
 }
 [data-theme="editorial"] article.news-article a:hover,
 [data-theme="editorial"] article.prose a:hover {
-  color: var(--accent);
+  color: var(--accent-hot);
   border-bottom-color: var(--accent);
 }
 
@@ -633,8 +634,8 @@
 [data-theme="editorial"] button.primary:hover,
 [data-theme="editorial"] a.button.primary:hover,
 [data-theme="editorial"] .cta-btn.cta-primary:hover {
-  background: var(--accent-soft) !important;
-  color: var(--accent) !important;
+  background: var(--accent) !important;
+  color: #ffffff !important;
   transform: none !important;
 }
 [data-theme="editorial"] .btn-secondary,
@@ -701,8 +702,8 @@
 [data-theme="editorial"] input,
 [data-theme="editorial"] textarea,
 [data-theme="editorial"] select {
-  background: var(--bg-elev) !important;
-  border: 1px solid var(--rule) !important;
+  background: #ffffff !important;
+  border: 1px solid var(--border) !important;
   border-radius: 0 !important;
   color: var(--text) !important;
   font-family: var(--font-sans);
@@ -714,10 +715,20 @@
   box-shadow: 0 0 0 2px var(--accent-soft) !important;
 }
 
-/* ===== LaunchBanner — keep but flatten ===== */
-[data-theme="editorial"] .launch-banner,
+/* ===== LaunchBanner — single confident accent CTA band, white ink ===== */
+[data-theme="editorial"] .launch-banner {
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hot) 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-bottom: 1px solid var(--rule) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+[data-theme="editorial"] .launch-banner .lb-text,
+[data-theme="editorial"] .launch-banner .lb-cta { color: #ffffff !important; }
+/* Other launch surfaces inside content stay flat & light */
 [data-theme="editorial"] .launchbanner,
-[data-theme="editorial"] [class*="launch"] [class*="banner"] {
+[data-theme="editorial"] [class*="launch"] [class*="banner"]:not(.launch-banner) {
   background: var(--bg-section) !important;
   border: 1px solid var(--rule) !important;
   border-radius: 0 !important;
@@ -797,4 +808,3 @@
   [data-theme="editorial"] .home-hero h1 { max-width: 18ch; }
   [data-theme="editorial"] .home-hero p.home-sub { max-width: 68ch; }
 }
-

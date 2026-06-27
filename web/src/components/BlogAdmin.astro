@@ -42,7 +42,7 @@
     function render(users, arts) {
       const totalUnpaid = users.reduce(function (s, u) { return s + (u.unpaid || 0); }, 0);
       let h = '<div class="ba-sum">Users: <b>' + users.length + '</b> · Articles: <b>' + arts.length + '</b> · Total unpaid: <b>' + fmt(totalUnpaid) + ' BRTP</b></div>';
-      h += '<h2 class="ba-h2">Users & payouts</h2><div class="ba-tbl"><table><thead><tr><th>Login</th><th>Email</th><th>TON</th><th>Earned</th><th>Paid</th><th>Pending</th><th></th></tr></thead><tbody>';
+      h += '<h2 class="ba-h2">Users & payouts</h2><div class="ba-tbl"><table><thead><tr><th>Login</th><th>Email</th><th>GRAM</th><th>Earned</th><th>Paid</th><th>Pending</th><th></th></tr></thead><tbody>';
       h += users.map(function (u) {
         return '<tr' + (u.banned ? ' class="ba-banned"' : '') + '>' +
           '<td>' + esc(u.login) + (u.banned ? ' 🚫' : '') + '</td>' +
@@ -100,29 +100,29 @@
 <style is:global>
   .ba { max-width: 1080px; margin: 26px auto 70px; padding: 0 24px; }
   .ba-back { font-family: var(--font-mono); font-size: 13px; color: var(--accent-text); text-decoration: none; }
-  .ba-h1 { font-family: var(--font-display); font-weight: 800; font-size: 38px; color: #fff; margin: 12px 0 18px; }
-  .ba-h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; color: #fff; margin: 30px 0 12px; }
+  .ba-h1 { font-family: var(--font-display); font-weight: 800; font-size: 38px; color: #14130f; margin: 12px 0 18px; }
+  .ba-h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; color: #14130f; margin: 30px 0 12px; }
   .ba-key { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .ba-key input { flex: 0 1 280px; background: #0d0d0f; border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; padding: 10px 12px; color: #eee; font-family: var(--font-mono); }
-  .ba-btn { background: linear-gradient(135deg,#7ae9b8,#5bd3a0); color: #06281c; border: none; border-radius: 8px; padding: 10px 20px; font-family: var(--font-mono); font-weight: 700; cursor: pointer; }
+  .ba-key input { flex: 0 1 280px; background: #ffffff; border: 1px solid rgba(20,18,12,0.14); border-radius: 8px; padding: 10px 12px; color: #1b1a16; font-family: var(--font-mono); }
+  .ba-btn { background: linear-gradient(135deg,#1f9d6b,#1f9d6b); color: #06281c; border: none; border-radius: 8px; padding: 10px 20px; font-family: var(--font-mono); font-weight: 700; cursor: pointer; }
   .ba-msg { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
-  .ba-sum { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); margin-top: 18px; } .ba-sum b { color: #7ae9b8; }
-  .ba-tbl { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+  .ba-sum { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); margin-top: 18px; } .ba-sum b { color: #1f9d6b; }
+  .ba-tbl { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(20,18,12,0.08); }
   .ba-tbl table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; }
-  .ba-tbl th { text-align: left; padding: 10px; color: var(--text-mute); text-transform: uppercase; font-size: 9px; letter-spacing: 0.1em; border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .ba-tbl td { padding: 10px; color: #e2e5ea; border-bottom: 1px solid rgba(255,255,255,0.05); }
-  .ba-mono { color: var(--text-dim); } .ba-pend { color: #7ae9b8; font-weight: 700; }
+  .ba-tbl th { text-align: left; padding: 10px; color: var(--text-mute); text-transform: uppercase; font-size: 9px; letter-spacing: 0.1em; border-bottom: 1px solid rgba(20,18,12,0.1); }
+  .ba-tbl td { padding: 10px; color: #1b1a16; border-bottom: 1px solid rgba(20,18,12,0.05); }
+  .ba-mono { color: var(--text-dim); } .ba-pend { color: #1f9d6b; font-weight: 700; }
   .ba-banned { opacity: 0.5; }
   .ba-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-  .ba-mini { cursor: pointer; font-family: var(--font-mono); font-size: 10px; padding: 5px 9px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: #d6dae0; }
-  .ba-mini:hover { background: rgba(255,255,255,0.12); }
-  .ba-pay { border-color: rgba(122,233,184,0.5); color: #7ae9b8; }
-  .ba-del { border-color: rgba(220,90,90,0.5); color: #e08585; }
+  .ba-mini { cursor: pointer; font-family: var(--font-mono); font-size: 10px; padding: 5px 9px; border-radius: 6px; border: 1px solid rgba(20,18,12,0.15); background: rgba(20,18,12,0.05); color: #1b1a16; }
+  .ba-mini:hover { background: rgba(20,18,12,0.12); }
+  .ba-pay { border-color: rgba(31,157,107,0.5); color: #1f9d6b; }
+  .ba-del { border-color: rgba(192,37,74,0.5); color: #c0254a; }
   .ba-arts { display: flex; flex-direction: column; gap: 8px; }
-  .ba-art { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); }
-  .ba-art-i { font-family: var(--font-serif); color: #fff; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .ba-art { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: rgba(20,18,12,0.03); border: 1px solid rgba(20,18,12,0.07); }
+  .ba-art-i { font-family: var(--font-serif); color: #14130f; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
   .ba-art-m { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }
-  .ba-tag { font-family: var(--font-mono); font-size: 9px; color: #ffcf5d; border: 1px solid rgba(255,207,93,0.5); border-radius: 4px; padding: 1px 5px; }
-  .ba-tag-off { color: #e08585; border-color: rgba(220,90,90,0.5); }
+  .ba-tag { font-family: var(--font-mono); font-size: 9px; color: #9a5a0f; border: 1px solid rgba(154,90,15,0.5); border-radius: 4px; padding: 1px 5px; }
+  .ba-tag-off { color: #c0254a; border-color: rgba(192,37,74,0.5); }
   .ba-hidden { opacity: 0.55; }
 </style>

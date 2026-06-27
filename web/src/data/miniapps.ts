@@ -1,6 +1,6 @@
 import type { Locale } from '../i18n/strings';
 
-// Curated map of Telegram Mini Apps in the TON orbit. Strictly for things
+// Curated map of Telegram Mini Apps in the GRAM orbit. Strictly for things
 // that LIVE inside Telegram (open via t.me/<bot>/<app> or as inline mini
 // apps), not regular websites — full-blown wallets, DEX frontends and
 // infra belong on /ecosystem, not here.
@@ -42,10 +42,10 @@ export const MINI_APPS: MiniAppCategory[] = [
       de: 'Spiele & Clicker',
     },
     blurb: {
-      en: 'Telegram-native games — from one-tap clickers that minted full-blown tokens to deeper P2E experiences. The category that put TON on the casual-gaming map.',
-      ru: 'Игры внутри Telegram — от кликеров одного тапа, выпустивших полноценные токены, до более глубоких P2E-проектов. Именно эта категория вывела TON на массовую игровую сцену.',
-      pl: 'Gry w samym Telegramie — od kilkutapowych klikerów, które wypuściły pełnoprawne tokeny, po głębsze projekty P2E. To kategoria, która wprowadziła TON na masową scenę gier.',
-      de: 'Spiele direkt in Telegram — vom Ein-Tap-Clicker, der einen vollwertigen Token gestartet hat, bis zu tieferen P2E-Erlebnissen. Diese Kategorie hat TON auf die Casual-Gaming-Karte gesetzt.',
+      en: 'Telegram-native games — from one-tap clickers that minted full-blown tokens to deeper P2E experiences. The category that put GRAM on the casual-gaming map.',
+      ru: 'Игры внутри Telegram — от кликеров одного тапа, выпустивших полноценные токены, до более глубоких P2E-проектов. Именно эта категория вывела GRAM на массовую игровую сцену.',
+      pl: 'Gry w samym Telegramie — od kilkutapowych klikerów, które wypuściły pełnoprawne tokeny, po głębsze projekty P2E. To kategoria, która wprowadziła GRAM na masową scenę gier.',
+      de: 'Spiele direkt in Telegram — vom Ein-Tap-Clicker, der einen vollwertigen Token gestartet hat, bis zu tieferen P2E-Erlebnissen. Diese Kategorie hat GRAM auf die Casual-Gaming-Karte gesetzt.',
     },
     apps: [
       {
@@ -54,10 +54,10 @@ export const MINI_APPS: MiniAppCategory[] = [
         webUrl: 'https://notco.in',
         token: 'NOT',
         description: {
-          en: 'The clicker that broke TON into the mainstream — 35M+ players tapped a coin, got the $NOT airdrop and stayed for season passes.',
-          ru: 'Кликер, который вывел TON в мейнстрим — больше 35 млн игроков тапали монету, получили эирдроп $NOT и остались ради сезонных пропусков.',
-          pl: 'Kliker, który wprowadził TON do mainstreamu — ponad 35 mln graczy stukało monetę, dostało airdrop $NOT i zostało przy sezonowych przepustkach.',
-          de: 'Der Clicker, der TON in den Mainstream gebracht hat — über 35 Mio. Spieler tippten die Münze, holten den $NOT-Airdrop und blieben für Season-Pässe.',
+          en: 'The clicker that broke GRAM into the mainstream — 35M+ players tapped a coin, got the $NOT airdrop and stayed for season passes.',
+          ru: 'Кликер, который вывел GRAM в мейнстрим — больше 35 млн игроков тапали монету, получили эирдроп $NOT и остались ради сезонных пропусков.',
+          pl: 'Kliker, który wprowadził GRAM do mainstreamu — ponad 35 mln graczy stukało monetę, dostało airdrop $NOT i zostało przy sezonowych przepustkach.',
+          de: 'Der Clicker, der GRAM in den Mainstream gebracht hat — über 35 Mio. Spieler tippten die Münze, holten den $NOT-Airdrop und blieben für Season-Pässe.',
         },
       },
       {
@@ -65,10 +65,10 @@ export const MINI_APPS: MiniAppCategory[] = [
         telegramUrl: 'https://t.me/hamster_kombat_bot',
         token: 'HMSTR',
         description: {
-          en: 'Crypto-exchange-CEO simulator that snowballed past 300M players in 2024 before its $HMSTR launch on TON.',
-          ru: 'Симулятор главы криптобиржи, разросшийся в 2024-м до 300+ млн игроков перед запуском $HMSTR на TON.',
-          pl: 'Symulator szefa giełdy krypto, który w 2024 urósł do ponad 300 mln graczy przed launchem $HMSTR na TON.',
-          de: 'Krypto-Börsen-CEO-Simulator, der 2024 auf über 300 Mio. Spieler anwuchs, bevor $HMSTR auf TON gestartet wurde.',
+          en: 'Crypto-exchange-CEO simulator that snowballed past 300M players in 2024 before its $HMSTR launch on GRAM.',
+          ru: 'Симулятор главы криптобиржи, разросшийся в 2024-м до 300+ млн игроков перед запуском $HMSTR на GRAM.',
+          pl: 'Symulator szefa giełdy krypto, który w 2024 urósł do ponad 300 mln graczy przed launchem $HMSTR na GRAM.',
+          de: 'Krypto-Börsen-CEO-Simulator, der 2024 auf über 300 Mio. Spieler anwuchs, bevor $HMSTR auf GRAM gestartet wurde.',
         },
       },
       {
@@ -76,10 +76,10 @@ export const MINI_APPS: MiniAppCategory[] = [
         telegramUrl: 'https://t.me/catizenbot',
         token: 'CATI',
         description: {
-          en: 'Idle cat-merge game with serious in-app purchases — among the highest-grossing TON mini apps even before the $CATI listing.',
-          ru: 'Айдл-игра про слияние котиков с серьёзными встроенными покупками — одна из самых прибыльных мини-аппок на TON ещё до листинга $CATI.',
-          pl: 'Idle z łączeniem kotów i poważnymi zakupami w aplikacji — jedna z najbardziej dochodowych mini-aplikacji na TON jeszcze przed listingiem $CATI.',
-          de: 'Idle-Katzen-Merge-Game mit ernsthaften In-App-Käufen — eine der umsatzstärksten TON-Mini-Apps schon vor dem $CATI-Listing.',
+          en: 'Idle cat-merge game with serious in-app purchases — among the highest-grossing GRAM mini apps even before the $CATI listing.',
+          ru: 'Айдл-игра про слияние котиков с серьёзными встроенными покупками — одна из самых прибыльных мини-аппок на GRAM ещё до листинга $CATI.',
+          pl: 'Idle z łączeniem kotów i poważnymi zakupami w aplikacji — jedna z najbardziej dochodowych mini-aplikacji na GRAM jeszcze przed listingiem $CATI.',
+          de: 'Idle-Katzen-Merge-Game mit ernsthaften In-App-Käufen — eine der umsatzstärksten GRAM-Mini-Apps schon vor dem $CATI-Listing.',
         },
       },
       {
@@ -109,10 +109,10 @@ export const MINI_APPS: MiniAppCategory[] = [
         telegramUrl: 'https://t.me/tapswap_mirror_1_bot',
         token: 'TAPS',
         description: {
-          en: 'One of the original TON clickers — long pre-launch farming season followed by a contested but real $TAPS distribution.',
-          ru: 'Один из первых кликеров TON — долгий префарм и спорное, но реальное распределение $TAPS.',
-          pl: 'Jeden z pierwszych klikerów TON — długi pre-launch farming i kontrowersyjna, ale realna dystrybucja $TAPS.',
-          de: 'Einer der ersten TON-Clicker — lange Pre-Launch-Farm-Saison und eine umstrittene, aber reale $TAPS-Verteilung.',
+          en: 'One of the original GRAM clickers — long pre-launch farming season followed by a contested but real $TAPS distribution.',
+          ru: 'Один из первых кликеров GRAM — долгий префарм и спорное, но реальное распределение $TAPS.',
+          pl: 'Jeden z pierwszych klikerów GRAM — długi pre-launch farming i kontrowersyjna, ale realna dystrybucja $TAPS.',
+          de: 'Einer der ersten GRAM-Clicker — lange Pre-Launch-Farm-Saison und eine umstrittene, aber reale $TAPS-Verteilung.',
         },
       },
       {
@@ -131,10 +131,10 @@ export const MINI_APPS: MiniAppCategory[] = [
         telegramUrl: 'https://t.me/memefi_coin_bot',
         token: 'MEMEFI',
         description: {
-          en: 'Boss-fight clicker where every tap chips at a meme villain — minted $MEMEFI on TON after a long farming season.',
-          ru: 'Кликер с боссами, где каждый тап бьёт мемного злодея — выпустил $MEMEFI на TON после длительного фарминга.',
-          pl: 'Kliker z bossami, gdzie każdy tap obrywa mem-łotrowi — wypuścił $MEMEFI na TON po długim sezonie farmienia.',
-          de: 'Boss-Fight-Clicker, bei dem jeder Tap einem Meme-Bösewicht schadet — startete $MEMEFI auf TON nach langer Farm-Saison.',
+          en: 'Boss-fight clicker where every tap chips at a meme villain — minted $MEMEFI on GRAM after a long farming season.',
+          ru: 'Кликер с боссами, где каждый тап бьёт мемного злодея — выпустил $MEMEFI на GRAM после длительного фарминга.',
+          pl: 'Kliker z bossami, gdzie każdy tap obrywa mem-łotrowi — wypuścił $MEMEFI na GRAM po długim sezonie farmienia.',
+          de: 'Boss-Fight-Clicker, bei dem jeder Tap einem Meme-Bösewicht schadet — startete $MEMEFI auf GRAM nach langer Farm-Saison.',
         },
       },
     ],
@@ -148,10 +148,10 @@ export const MINI_APPS: MiniAppCategory[] = [
       de: 'Earn, Drops & Quests',
     },
     blurb: {
-      en: 'Mini apps built around quest grinds, social tasks and airdrop campaigns. Less game, more farming — but with real distributions on TON.',
-      ru: 'Мини-приложения вокруг квестов, социальных задач и эирдроп-кампаний. Меньше игры, больше фарма — но с реальными раздачами на TON.',
-      pl: 'Mini-aplikacje zbudowane wokół questów, zadań społecznościowych i kampanii airdrop. Mniej gry, więcej farmienia — ale z realnymi dystrybucjami na TON.',
-      de: 'Mini-Apps rund um Quest-Grinding, Social-Tasks und Airdrop-Kampagnen. Weniger Spiel, mehr Farmen — aber mit echten Verteilungen auf TON.',
+      en: 'Mini apps built around quest grinds, social tasks and airdrop campaigns. Less game, more farming — but with real distributions on GRAM.',
+      ru: 'Мини-приложения вокруг квестов, социальных задач и эирдроп-кампаний. Меньше игры, больше фарма — но с реальными раздачами на GRAM.',
+      pl: 'Mini-aplikacje zbudowane wokół questów, zadań społecznościowych i kampanii airdrop. Mniej gry, więcej farmienia — ale z realnymi dystrybucjami na GRAM.',
+      de: 'Mini-Apps rund um Quest-Grinding, Social-Tasks und Airdrop-Kampagnen. Weniger Spiel, mehr Farmen — aber mit echten Verteilungen auf GRAM.',
     },
     apps: [
       {
@@ -170,10 +170,10 @@ export const MINI_APPS: MiniAppCategory[] = [
         telegramUrl: 'https://t.me/major',
         token: 'MAJOR',
         description: {
-          en: 'Squad-recruitment mini app turned mascot token — leaderboard-driven point grind that paid out in $MAJOR on TON.',
-          ru: 'Мини-апп про сбор отряда, превратившийся в маскот-токен — гонка по таблице лидеров с выплатой в $MAJOR на TON.',
-          pl: 'Mini-app o rekrutacji oddziału zamieniony w token-maskotkę — wyścig po leaderboardzie wypłacany w $MAJOR na TON.',
-          de: 'Squad-Rekrutierungs-Mini-App, die zum Maskottchen-Token wurde — Leaderboard-Grind mit Auszahlung in $MAJOR auf TON.',
+          en: 'Squad-recruitment mini app turned mascot token — leaderboard-driven point grind that paid out in $MAJOR on GRAM.',
+          ru: 'Мини-апп про сбор отряда, превратившийся в маскот-токен — гонка по таблице лидеров с выплатой в $MAJOR на GRAM.',
+          pl: 'Mini-app o rekrutacji oddziału zamieniony w token-maskotkę — wyścig po leaderboardzie wypłacany w $MAJOR na GRAM.',
+          de: 'Squad-Rekrutierungs-Mini-App, die zum Maskottchen-Token wurde — Leaderboard-Grind mit Auszahlung in $MAJOR auf GRAM.',
         },
       },
       {
@@ -203,10 +203,10 @@ export const MINI_APPS: MiniAppCategory[] = [
         telegramUrl: 'https://t.me/theYescoin_bot',
         token: 'YES',
         description: {
-          en: 'Squad-vs-squad clicker that distributed $YES on TON. Mechanics lean closer to a quest grind than to actual gameplay.',
-          ru: 'Кликер «отряд против отряда» с раздачей $YES на TON. Механика ближе к фарму квестов, чем к настоящему геймплею.',
-          pl: 'Kliker „odział vs odział” z dystrybucją $YES na TON. Mechanika bliżej grindu questów niż realnej rozgrywki.',
-          de: 'Squad-vs-Squad-Clicker, der $YES auf TON verteilte. Die Mechanik ähnelt eher Quest-Grinding als echtem Gameplay.',
+          en: 'Squad-vs-squad clicker that distributed $YES on GRAM. Mechanics lean closer to a quest grind than to actual gameplay.',
+          ru: 'Кликер «отряд против отряда» с раздачей $YES на GRAM. Механика ближе к фарму квестов, чем к настоящему геймплею.',
+          pl: 'Kliker „odział vs odział” z dystrybucją $YES na GRAM. Mechanika bliżej grindu questów niż realnej rozgrywki.',
+          de: 'Squad-vs-Squad-Clicker, der $YES auf GRAM verteilte. Die Mechanik ähnelt eher Quest-Grinding als echtem Gameplay.',
         },
       },
     ],
@@ -259,13 +259,13 @@ export const MINI_APPS: MiniAppCategory[] = [
         },
       },
       {
-        name: 'Banana Gun (TON)',
+        name: 'Banana Gun (GRAM)',
         telegramUrl: 'https://t.me/BananaGunTONbot',
         description: {
-          en: 'TON branch of the cross-chain sniper line — copy-trade, anti-rug filters and limit orders from a single chat.',
-          ru: 'TON-ветка кроссчейн-линейки снайперов — копитрейд, анти-раг фильтры и лимитные ордера из одного чата.',
-          pl: 'TON-owa odnoga cross-chainowej linii sniperów — copy-trade, anty-rug filtry i limit orders z jednego czatu.',
-          de: 'TON-Zweig der Cross-Chain-Sniper-Linie — Copy-Trade, Anti-Rug-Filter und Limit-Orders aus einem einzigen Chat.',
+          en: 'GRAM branch of the cross-chain sniper line — copy-trade, anti-rug filters and limit orders from a single chat.',
+          ru: 'GRAM-ветка кроссчейн-линейки снайперов — копитрейд, анти-раг фильтры и лимитные ордера из одного чата.',
+          pl: 'GRAM-owa odnoga cross-chainowej linii sniperów — copy-trade, anty-rug filtry i limit orders z jednego czatu.',
+          de: 'GRAM-Zweig der Cross-Chain-Sniper-Linie — Copy-Trade, Anti-Rug-Filter und Limit-Orders aus einem einzigen Chat.',
         },
       },
       {
@@ -301,10 +301,10 @@ export const MINI_APPS: MiniAppCategory[] = [
         telegramUrl: 'https://t.me/Fragment',
         webUrl: 'https://fragment.com',
         description: {
-          en: 'Auction house for Telegram usernames, anonymous numbers and collectible gifts — settles on TON.',
-          ru: 'Аукцион имён Telegram, анонимных номеров и коллекционных подарков — расчёты на TON.',
-          pl: 'Dom aukcyjny telegramowych nazw, anonimowych numerów i kolekcjonerskich prezentów — rozliczenia w TON.',
-          de: 'Auktionshaus für Telegram-Namen, anonyme Nummern und Sammelgeschenke — Abwicklung auf TON.',
+          en: 'Auction house for Telegram usernames, anonymous numbers and collectible gifts — settles on GRAM.',
+          ru: 'Аукцион имён Telegram, анонимных номеров и коллекционных подарков — расчёты на GRAM.',
+          pl: 'Dom aukcyjny telegramowych nazw, anonimowych numerów i kolekcjonerskich prezentów — rozliczenia w GRAM.',
+          de: 'Auktionshaus für Telegram-Namen, anonyme Nummern und Sammelgeschenke — Abwicklung auf GRAM.',
         },
       },
       {
@@ -312,10 +312,10 @@ export const MINI_APPS: MiniAppCategory[] = [
         telegramUrl: 'https://t.me/getgems',
         webUrl: 'https://getgems.io',
         description: {
-          en: 'TON’s biggest NFT marketplace — both as a website and as an in-Telegram mini app for browsing and bidding.',
-          ru: 'Крупнейший NFT-маркетплейс TON — и как сайт, и как мини-приложение в Telegram для просмотра и ставок.',
-          pl: 'Największy marketplace NFT na TON — zarówno jako strona, jak i mini-app w TG do przeglądania i licytowania.',
-          de: 'Der größte NFT-Marktplatz auf TON — als Website und als Mini-App in Telegram zum Stöbern und Bieten.',
+          en: 'GRAM’s biggest NFT marketplace — both as a website and as an in-Telegram mini app for browsing and bidding.',
+          ru: 'Крупнейший NFT-маркетплейс GRAM — и как сайт, и как мини-приложение в Telegram для просмотра и ставок.',
+          pl: 'Największy marketplace NFT na GRAM — zarówno jako strona, jak i mini-app w TG do przeglądania i licytowania.',
+          de: 'Der größte NFT-Marktplatz auf GRAM — als Website und als Mini-App in Telegram zum Stöbern und Bieten.',
         },
       },
       {
@@ -323,10 +323,10 @@ export const MINI_APPS: MiniAppCategory[] = [
         telegramUrl: 'https://t.me/tondiamonds_bot',
         webUrl: 'https://ton.diamonds',
         description: {
-          en: 'Curated NFT marketplace focused on quality drops, with launchpad mechanics for new TON collections.',
-          ru: 'Кураторский NFT-маркетплейс на качественные дропы, с лончпад-механикой для новых коллекций TON.',
-          pl: 'Kuratorski marketplace NFT skupiony na jakościowych dropach, z launchpad-mechaniką dla nowych kolekcji TON.',
-          de: 'Kuratierter NFT-Marktplatz mit Fokus auf hochwertige Drops und Launchpad-Mechaniken für neue TON-Kollektionen.',
+          en: 'Curated NFT marketplace focused on quality drops, with launchpad mechanics for new GRAM collections.',
+          ru: 'Кураторский NFT-маркетплейс на качественные дропы, с лончпад-механикой для новых коллекций GRAM.',
+          pl: 'Kuratorski marketplace NFT skupiony na jakościowych dropach, z launchpad-mechaniką dla nowych kolekcji GRAM.',
+          de: 'Kuratierter NFT-Marktplatz mit Fokus auf hochwertige Drops und Launchpad-Mechaniken für neue GRAM-Kollektionen.',
         },
       },
       {
@@ -334,20 +334,20 @@ export const MINI_APPS: MiniAppCategory[] = [
         telegramUrl: 'https://t.me/tonsociety',
         webUrl: 'https://society.ton.org',
         description: {
-          en: 'Quest and contributor hub run by the TON Foundation — earn ‘Society’ rep for verifiable on-chain and off-chain work.',
-          ru: 'Квест-хаб для контрибьюторов от TON Foundation — зарабатывай репутацию «Society» за верифицируемую работу он- и оффчейн.',
-          pl: 'Hub questów i kontrybutorów prowadzony przez TON Foundation — zarabiaj rep „Society” za weryfikowalną pracę on- i offchain.',
-          de: 'Quest- und Mitwirkenden-Hub der TON Foundation — verdiene „Society“-Reputation für verifizierbare On- und Off-Chain-Arbeit.',
+          en: 'Quest and contributor hub run by the GRAM Foundation — earn ‘Society’ rep for verifiable on-chain and off-chain work.',
+          ru: 'Квест-хаб для контрибьюторов от GRAM Foundation — зарабатывай репутацию «Society» за верифицируемую работу он- и оффчейн.',
+          pl: 'Hub questów i kontrybutorów prowadzony przez GRAM Foundation — zarabiaj rep „Society” za weryfikowalną pracę on- i offchain.',
+          de: 'Quest- und Mitwirkenden-Hub der GRAM Foundation — verdiene „Society“-Reputation für verifizierbare On- und Off-Chain-Arbeit.',
         },
       },
       {
         name: 'Stickerface',
         telegramUrl: 'https://t.me/stickerface_bot',
         description: {
-          en: 'Generative-avatar mini app — every Telegram user can mint a sticker pack of themselves, with NFT mode anchored on TON.',
-          ru: 'Мини-апп с генеративными аватарами — каждый пользователь TG может выпустить свой стикерпак, с NFT-режимом на TON.',
-          pl: 'Mini-app z generatywnymi awatarami — każdy user TG może wybić sticker pack siebie, z trybem NFT zakotwiczonym na TON.',
-          de: 'Mini-App für generative Avatare — jeder Telegram-Nutzer kann ein Stickerpaket von sich minten, mit NFT-Modus auf TON.',
+          en: 'Generative-avatar mini app — every Telegram user can mint a sticker pack of themselves, with NFT mode anchored on GRAM.',
+          ru: 'Мини-апп с генеративными аватарами — каждый пользователь TG может выпустить свой стикерпак, с NFT-режимом на GRAM.',
+          pl: 'Mini-app z generatywnymi awatarami — każdy user TG może wybić sticker pack siebie, z trybem NFT zakotwiczonym na GRAM.',
+          de: 'Mini-App für generative Avatare — jeder Telegram-Nutzer kann ein Stickerpaket von sich minten, mit NFT-Modus auf GRAM.',
         },
       },
     ],

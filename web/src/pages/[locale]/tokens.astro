@@ -16,11 +16,11 @@ export function getStaticPaths() {
 const { locale } = Astro.params as { locale: Locale };
 
 const META: Record<string, { title: string; description: string }> = {
-  ru: { title: 'Лента токенов — джеттоны на BRAINROT', description: 'Каждый джеттон TON, развёрнутый через лаунчер BRAINROT, прямо из тестнета. Non-custodial, проверенный код TEP-74.' },
-  pl: { title: 'Feed tokenów — jettony z launchera BRAINROT', description: 'Każdy jetton TON wdrożony przez launcher BRAINROT, prosto z testnetu. Non-custodial, zaudytowany kod TEP-74.' },
-  de: { title: 'Token-Feed — Jettons von BRAINROT', description: 'Jeder TON-Jetton, der über den BRAINROT-Launcher deployt wurde, direkt aus dem Testnet. Non-custodial, geprüfter TEP-74-Code.' },
-  es: { title: 'Feed de tokens — jettons de BRAINROT', description: 'Cada jetton de TON desplegado con el launcher de BRAINROT, directo desde la testnet. Non-custodial, código TEP-74 auditado.' },
-  uk: { title: 'Стрічка токенів — джетони BRAINROT', description: 'Кожен джетон TON, розгорнутий через лаунчер BRAINROT, прямо з тестнету. Non-custodial, перевірений код TEP-74.' },
+  ru: { title: 'Лента токенов — джеттоны на BRAINROT', description: 'Каждый джеттон GRAM, развёрнутый через лаунчер BRAINROT, прямо из тестнета. Non-custodial, проверенный код TEP-74.' },
+  pl: { title: 'Feed tokenów — jettony z launchera BRAINROT', description: 'Każdy jetton GRAM wdrożony przez launcher BRAINROT, prosto z testnetu. Non-custodial, zaudytowany kod TEP-74.' },
+  de: { title: 'Token-Feed — Jettons von BRAINROT', description: 'Jeder GRAM-Jetton, der über den BRAINROT-Launcher deployt wurde, direkt aus dem Testnet. Non-custodial, geprüfter TEP-74-Code.' },
+  es: { title: 'Feed de tokens — jettons de BRAINROT', description: 'Cada jetton de GRAM desplegado con el launcher de BRAINROT, directo desde la testnet. Non-custodial, código TEP-74 auditado.' },
+  uk: { title: 'Стрічка токенів — джетони BRAINROT', description: 'Кожен джетон GRAM, розгорнутий через лаунчер BRAINROT, прямо з тестнету. Non-custodial, перевірений код TEP-74.' },
 };
 const m = META[locale] ?? META.pl;
 ---

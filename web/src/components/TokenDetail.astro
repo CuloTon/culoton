@@ -53,10 +53,10 @@
       function X(i) { return padL + i * cw + cw / 2; }
       function Y(p) { return padT + plotH - ((p - lo) / (hi - lo)) * plotH; }
       var parts = [];
-      for (var g = 0; g <= 5; g++) { var pv = lo + (hi - lo) * (g / 5), yy = Y(pv); parts.push('<line x1="' + padL + '" y1="' + yy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + yy.toFixed(1) + '" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>'); parts.push('<text x="' + (padL - 6) + '" y="' + (yy + 3).toFixed(1) + '" text-anchor="end" class="td-axis">' + esc(fmtAxis(pv)) + '</text>'); }
+      for (var g = 0; g <= 5; g++) { var pv = lo + (hi - lo) * (g / 5), yy = Y(pv); parts.push('<line x1="' + padL + '" y1="' + yy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + yy.toFixed(1) + '" stroke="rgba(20,18,12,0.16)" stroke-width="1"/>'); parts.push('<text x="' + (padL - 6) + '" y="' + (yy + 3).toFixed(1) + '" text-anchor="end" class="td-axis">' + esc(fmtAxis(pv)) + '</text>'); }
       var ticks = Math.min(6, n);
       for (var k = 0; k < ticks; k++) { var idx = Math.round((n - 1) * (k / (ticks - 1 || 1))); var ts = data[idx][0] * 1000; var lbl; try { lbl = new Date(ts).toLocaleDateString('en', { month: 'short', day: 'numeric' }) + (tf === 'day' ? '' : ' ' + new Date(ts).toLocaleTimeString('en', { hour: '2-digit' })); } catch (_) { lbl = ''; } parts.push('<text x="' + X(idx).toFixed(1) + '" y="' + (H - 9) + '" text-anchor="middle" class="td-axis">' + esc(lbl) + '</text>'); }
-      data.forEach(function (d, i) { var up = d[4] >= d[1], col = up ? '#6dd4a8' : '#e8607a'; var yo = Y(d[1]), yc = Y(d[4]); var top = Math.min(yo, yc), bh = Math.max(1, Math.abs(yc - yo)); parts.push('<line x1="' + X(i).toFixed(1) + '" y1="' + Y(d[2]).toFixed(1) + '" x2="' + X(i).toFixed(1) + '" y2="' + Y(d[3]).toFixed(1) + '" stroke="' + col + '" stroke-width="1"/>'); parts.push('<rect x="' + (X(i) - bw / 2).toFixed(1) + '" y="' + top.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="0.5" fill="' + col + '"/>'); });
+      data.forEach(function (d, i) { var up = d[4] >= d[1], col = up ? '#1f9d6b' : '#c0254a'; var yo = Y(d[1]), yc = Y(d[4]); var top = Math.min(yo, yc), bh = Math.max(1, Math.abs(yc - yo)); parts.push('<line x1="' + X(i).toFixed(1) + '" y1="' + Y(d[2]).toFixed(1) + '" x2="' + X(i).toFixed(1) + '" y2="' + Y(d[3]).toFixed(1) + '" stroke="' + col + '" stroke-width="1"/>'); parts.push('<rect x="' + (X(i) - bw / 2).toFixed(1) + '" y="' + top.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="0.5" fill="' + col + '"/>'); });
       return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="td-svg" role="img" aria-label="price chart">' + parts.join('') + '</svg>';
     }
     function drawChart(tf) { var box = document.getElementById('td-chartbox'); if (!box) return; box.innerHTML = '<p class="td-chart-none">Loading chart…</p>'; fetchOhlcv(tf).then(function (list) { box.innerHTML = renderChart(list, tf); }); document.querySelectorAll('.td-tf').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-tf') === tf); }); }
@@ -133,53 +133,53 @@
   .td-logo-wrap { position: relative; flex: 0 0 auto; }
   .td-logo-wrap::after { content: ''; position: absolute; inset: -8px; border-radius: 18px; background: radial-gradient(circle, rgba(122,233,184,0.3), transparent 70%); z-index: -1; }
   /* logo as a small rounded tile */
-  .td-logo { width: 60px; height: 60px; border-radius: 15px; object-fit: cover; background: #0d0d0f; border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 8px 22px rgba(0,0,0,0.5); display: block; }
+  .td-logo { width: 60px; height: 60px; border-radius: 15px; object-fit: cover; background: #ffffff; border: 1px solid rgba(20,18,12,0.14); box-shadow: 0 8px 22px rgba(0,0,0,0.5); display: block; }
   .td-logo-ph { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent-soft), rgba(122,233,184,0.08)); color: var(--accent-text); font-family: var(--font-display); font-weight: 800; font-size: 24px; }
   .td-id { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .td-name { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(24px,3.6vw,34px); color: #fff; line-height: 1.05; }
+  .td-name { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(24px,3.6vw,34px); color: #14130f; line-height: 1.05; }
   .td-sym { font-family: var(--font-mono); font-size: 14px; color: var(--accent-text); }
   .td-ca { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); }
 
   .td-stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 14px; }
-  .td-stat { background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); border: 1px solid rgba(255,255,255,0.08);
+  .td-stat { background: linear-gradient(180deg, rgba(20,18,12,0.05), rgba(20,18,12,0.015)); border: 1px solid rgba(20,18,12,0.08);
     border-radius: 11px; padding: 9px 14px; display: flex; flex-direction: column; gap: 3px; box-shadow: 0 6px 16px rgba(0,0,0,0.28);
     flex: 0 1 auto; min-width: 110px; }
-  .td-stat-main { border-color: rgba(122,233,184,0.3); }
+  .td-stat-main { border-color: rgba(31,157,107,0.3); }
   .td-k { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-mute); }
-  .td-v { font-family: var(--font-mono); font-size: clamp(16px,2.2vw,20px); font-weight: 700; color: #fff; }
-  .td-stat-main .td-v { color: #7ae9b8; }
+  .td-v { font-family: var(--font-mono); font-size: clamp(16px,2.2vw,20px); font-weight: 700; color: #1b1a16; }
+  .td-stat-main .td-v { color: #1f9d6b; }
   .td-nomarket { font-family: var(--font-mono); font-size: 13px; color: var(--text-mute); margin: 0 0 22px; }
 
   .td-taxrow { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 16px; }
   .td-tax { display: flex; flex-direction: column; gap: 3px; padding: 9px 13px; border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); min-width: 76px; }
+    border: 1px solid rgba(20,18,12,0.1); background: rgba(20,18,12,0.04); min-width: 76px; }
   .td-tk { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); }
-  .td-tv { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: #fff; }
-  .td-tax-buy { border-color: rgba(122,233,184,0.4); } .td-tax-buy .td-tv { color: #7ae9b8; }
-  .td-tax-sell { border-color: rgba(232,96,122,0.4); } .td-tax-sell .td-tv { color: #e8607a; }
-  .td-tax-hold { border-color: rgba(122,170,255,0.4); } .td-tax-hold .td-tv { color: #8ab4ff; }
+  .td-tv { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: #1b1a16; }
+  .td-tax-buy { border-color: rgba(31,157,107,0.4); } .td-tax-buy .td-tv { color: #1f9d6b; }
+  .td-tax-sell { border-color: rgba(192,37,74,0.4); } .td-tax-sell .td-tv { color: #c0254a; }
+  .td-tax-hold { border-color: rgba(31,111,178,0.4); } .td-tax-hold .td-tv { color: #1f6fb2; }
 
-  .td-chartcard { background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08);
+  .td-chartcard { background: linear-gradient(180deg, rgba(20,18,12,0.04), rgba(20,18,12,0.01)); border: 1px solid rgba(20,18,12,0.08);
     border-radius: 16px; padding: 14px 14px 8px; margin: 0 0 22px; box-shadow: 0 14px 40px rgba(0,0,0,0.4); }
   .td-chartbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding: 0 4px; }
   .td-chartttl { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-mute); }
   .td-tfbar { display: flex; gap: 6px; }
-  .td-tf { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-dim); cursor: pointer; font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 7px; }
-  .td-tf.active { background: #7ae9b8; color: #06281c; border-color: #7ae9b8; }
+  .td-tf { background: rgba(20,18,12,0.05); border: 1px solid rgba(20,18,12,0.1); color: var(--text-dim); cursor: pointer; font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 7px; }
+  .td-tf.active { background: #1f9d6b; color: #ffffff; border-color: #1f9d6b; }
   .td-chartbox { width: 100%; }
   .td-svg { width: 100%; height: auto; display: block; }
-  .td-axis { fill: #c2c8d2; font-family: var(--font-mono); font-size: 12px; }
+  .td-axis { fill: #1b1a16; font-family: var(--font-mono); font-size: 12px; }
   .td-chart-none { font-family: var(--font-mono); font-size: 13px; color: var(--text-mute); padding: 48px 0; text-align: center; }
 
   .td-pills { display: flex; gap: 12px; flex-wrap: wrap; }
   .td-pill { display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border-radius: 10px; text-decoration: none;
-    font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: #d6dae0; background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1); transition: all 0.15s; }
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: #1b1a16; background: rgba(20,18,12,0.05);
+    border: 1px solid rgba(20,18,12,0.1); transition: all 0.15s; }
   .td-pill svg { width: 16px; height: 16px; }
-  .td-pill:hover { transform: translateY(-2px); background: rgba(255,255,255,0.09); color: #fff; }
-  .td-pill-tg:hover { color: #5fb8ee; border-color: rgba(42,160,233,0.5); }
-  .td-pill-dex:hover { color: #7ae9b8; border-color: rgba(122,233,184,0.5); }
-  .td-created { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); margin-top: 14px; } .td-created b { color: #d6dae0; }
+  .td-pill:hover { transform: translateY(-2px); background: rgba(20,18,12,0.09); color: #1b1a16; }
+  .td-pill-tg:hover { color: #1f6fb2; border-color: rgba(31,111,178,0.5); }
+  .td-pill-dex:hover { color: #1f9d6b; border-color: rgba(31,157,107,0.5); }
+  .td-created { font-family: var(--font-mono); font-size: 12px; color: var(--text-mute); margin-top: 14px; } .td-created b { color: #1b1a16; }
 
   @media (max-width: 560px) { .td-stat { flex: 1 1 44%; } }
 </style>

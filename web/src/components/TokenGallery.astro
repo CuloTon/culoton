@@ -15,7 +15,7 @@ type TG = {
 const TOKENS_I18N: Record<string, TG> = {
   en: {
     kicker: 'Launched on BRAINROT', h1: 'Token feed',
-    lede: 'Every jetton deployed through the BRAINROT launcher, straight from TON mainnet. Non-custodial, audited TEP-74 code — we just keep the list.',
+    lede: 'Every jetton deployed through the BRAINROT launcher, straight from GRAM mainnet. Non-custodial, audited TEP-74 code — we just keep the list.',
     cta: 'Launch your token →', loading: 'Loading the feed…',
     empty: 'No tokens yet.', empty_cta: 'Be the first — launch one →',
     error: 'Could not load the feed.', retry: 'Retry',
@@ -24,7 +24,7 @@ const TOKENS_I18N: Record<string, TG> = {
   },
   pl: {
     kicker: 'Wystartowane na BRAINROT', h1: 'Feed tokenów',
-    lede: 'Każdy jetton wdrożony przez launcher BRAINROT, prosto z mainnetu TON. Non-custodial, zaudytowany kod TEP-74 — my tylko prowadzimy listę.',
+    lede: 'Każdy jetton wdrożony przez launcher BRAINROT, prosto z mainnetu GRAM. Non-custodial, zaudytowany kod TEP-74 — my tylko prowadzimy listę.',
     cta: 'Wypuść swój token →', loading: 'Ładuję feed…',
     empty: 'Jeszcze żadnych tokenów.', empty_cta: 'Bądź pierwszy — wypuść token →',
     error: 'Nie udało się załadować feedu.', retry: 'Spróbuj ponownie',
@@ -33,7 +33,7 @@ const TOKENS_I18N: Record<string, TG> = {
   },
   ru: {
     kicker: 'Запущено на BRAINROT', h1: 'Лента токенов',
-    lede: 'Каждый джеттон, развёрнутый через лаунчер BRAINROT, прямо из мейннета TON. Non-custodial, проверенный код TEP-74 — мы просто ведём список.',
+    lede: 'Каждый джеттон, развёрнутый через лаунчер BRAINROT, прямо из мейннета GRAM. Non-custodial, проверенный код TEP-74 — мы просто ведём список.',
     cta: 'Запусти свой токен →', loading: 'Загружаю ленту…',
     empty: 'Пока нет токенов.', empty_cta: 'Будь первым — запусти токен →',
     error: 'Не удалось загрузить ленту.', retry: 'Повторить',
@@ -42,7 +42,7 @@ const TOKENS_I18N: Record<string, TG> = {
   },
   de: {
     kicker: 'Gestartet auf BRAINROT', h1: 'Token-Feed',
-    lede: 'Jeder Jetton, der über den BRAINROT-Launcher deployt wurde, direkt aus dem TON-Mainnet. Non-custodial, geprüfter TEP-74-Code — wir führen nur die Liste.',
+    lede: 'Jeder Jetton, der über den BRAINROT-Launcher deployt wurde, direkt aus dem GRAM-Mainnet. Non-custodial, geprüfter TEP-74-Code — wir führen nur die Liste.',
     cta: 'Starte deinen Token →', loading: 'Feed wird geladen…',
     empty: 'Noch keine Token.', empty_cta: 'Sei der Erste — starte einen →',
     error: 'Feed konnte nicht geladen werden.', retry: 'Erneut',
@@ -51,7 +51,7 @@ const TOKENS_I18N: Record<string, TG> = {
   },
   es: {
     kicker: 'Lanzado en BRAINROT', h1: 'Feed de tokens',
-    lede: 'Cada jetton desplegado con el launcher de BRAINROT, directo desde la mainnet de TON. Non-custodial, código TEP-74 auditado — nosotros solo mantenemos la lista.',
+    lede: 'Cada jetton desplegado con el launcher de BRAINROT, directo desde la mainnet de GRAM. Non-custodial, código TEP-74 auditado — nosotros solo mantenemos la lista.',
     cta: 'Lanza tu token →', loading: 'Cargando el feed…',
     empty: 'Aún no hay tokens.', empty_cta: 'Sé el primero — lanza uno →',
     error: 'No se pudo cargar el feed.', retry: 'Reintentar',
@@ -60,7 +60,7 @@ const TOKENS_I18N: Record<string, TG> = {
   },
   uk: {
     kicker: 'Запущено на BRAINROT', h1: 'Стрічка токенів',
-    lede: 'Кожен джетон, розгорнутий через лаунчер BRAINROT, прямо з мейннету TON. Non-custodial, перевірений код TEP-74 — ми лише ведемо список.',
+    lede: 'Кожен джетон, розгорнутий через лаунчер BRAINROT, прямо з мейннету GRAM. Non-custodial, перевірений код TEP-74 — ми лише ведемо список.',
     cta: 'Запусти свій токен →', loading: 'Завантажую стрічку…',
     empty: 'Поки що немає токенів.', empty_cta: 'Будь першим — запусти токен →',
     error: 'Не вдалося завантажити стрічку.', retry: 'Повторити',
@@ -123,7 +123,7 @@ const launchHref = localizedPath(locale, '/launch');
 
     function card(tok) {
       const img = ipfsToHttp(tok.image);
-      const sym = esc(tok.symbol || '?');
+      const sym = esc((tok.symbol || '?').replace(/^\$+/, ''));
       const letter = (tok.symbol || tok.name || '?').slice(0, 1).toUpperCase();
       const logo = img
         ? '<img class="tk-logo" src="' + esc(img) + '" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'tk-logo tk-logo-ph\',textContent:\'' + esc(letter) + '\'}))" />'
@@ -210,8 +210,8 @@ const launchHref = localizedPath(locale, '/launch');
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: #6dd4a8;
-    border: 1px solid rgba(109, 212, 168, 0.5);
+    color: #1f9d6b;
+    border: 1px solid rgba(31, 157, 107, 0.5);
     border-radius: 4px;
     padding: 3px 8px;
     vertical-align: middle;
@@ -223,7 +223,7 @@ const launchHref = localizedPath(locale, '/launch');
     font-size: clamp(40px, 6vw, 64px);
     line-height: 1.05;
     letter-spacing: -0.025em;
-    color: #ffffff;
+    color: #14130f;
     font-weight: 800;
   }
   .tokens-hero .lede {
@@ -303,7 +303,7 @@ const launchHref = localizedPath(locale, '/launch');
   .tk-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 24px rgba(20, 20, 30, 0.10);
-    border-left-color: #6dd4a8;
+    border-left-color: #1f9d6b;
   }
   .tk-head { display: flex; align-items: center; gap: 14px; }
   .tk-logo {

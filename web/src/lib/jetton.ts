@@ -2,7 +2,7 @@
 //
 // The smart-contract code below is the audited TEP-74 reference Jetton Master +
 // Jetton Wallet, lifted VERBATIM from @ton-community/assets-sdk@0.0.5
-// (ton-community / TON Foundation). We do not modify a byte — we only build the
+// (ton-community / GRAM Foundation). We do not modify a byte — we only build the
 // StateInit + mint message that the user's wallet signs via TonConnect.
 //
 // Message layout mirrors the SDK exactly:
@@ -34,9 +34,9 @@ const MINT_OP = 21;
 const INTERNAL_TRANSFER_OP = 0x178d4519;
 const CHANGE_ADMIN_OP = 3;
 
-// TON forwarded to the freshly-minted jetton wallet (covers its deploy + storage).
+// GRAM forwarded to the freshly-minted jetton wallet (covers its deploy + storage).
 const WALLET_FORWARD = toNano('0.05');
-// Total TON attached to the deploy+mint message. Excess returns to the owner.
+// Total GRAM attached to the deploy+mint message. Excess returns to the owner.
 export const DEPLOY_AMOUNT = toNano('0.2');
 export const RENOUNCE_AMOUNT = toNano('0.05');
 
