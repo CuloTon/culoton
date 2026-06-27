@@ -206,50 +206,6 @@ const ctaxTxt = CTAX_TXT[locale];
         {t.culo_disclaimer_p}
       </p>
 
-      <section class="ctax-block">
-        <header class="ctax-head">
-          <img src={CTAX_IMG} alt="$CTAX token" class="ctax-img" loading="lazy" />
-          <div>
-            <span class="ctax-kicker">{ctaxTxt.kicker}</span>
-            <h2 class="ctax-h">{ctaxTxt.h}</h2>
-          </div>
-        </header>
-        <p class="ctax-intro">{ctaxTxt.intro}</p>
-
-        <h3 class="ctax-sub">{ctaxTxt.tax_h}</h3>
-        <div class="ctax-tax-grid">
-          {ctaxTxt.tax_rows.map(([pct, when, note]) => (
-            <div class="tax-cell">
-              <span class="tax-pct">{pct}</span>
-              <span class="tax-when">{when}</span>
-              <span class="tax-note">{note}</span>
-            </div>
-          ))}
-        </div>
-
-        <div class="ctax-locked">
-          <span class="locked-pill">🔒 {ctaxTxt.locked_h}</span>
-          <p>{ctaxTxt.locked_p}</p>
-        </div>
-
-        <h3 class="ctax-sub">{ctaxTxt.why_h}</h3>
-        <p class="ctax-why">{ctaxTxt.why_p}</p>
-
-        <div class="contract-box ctax-contract-box">
-          <span class="contract-label">{ctaxTxt.contract_label}</span>
-          <code class="contract-value" id="ctax-contract-value">{CTAX_CONTRACT}</code>
-          <button class="copy-btn" type="button" id="ctax-copy-btn" data-value={CTAX_CONTRACT} data-label-copy={t.culo_copy} data-label-copied={t.culo_copied} data-label-failed={t.culo_copy_failed}>{t.culo_copy}</button>
-        </div>
-
-        <div class="ton-cta-row" style="margin-top: 14px;">
-          <a class="cta-btn cta-secondary" href={`https://tonviewer.com/${CTAX_CONTRACT}`} target="_blank" rel="noopener noreferrer">
-            {ctaxTxt.cta_view}
-          </a>
-          <a class="cta-btn cta-secondary" href={`https://www.geckoterminal.com/ton/tokens/${CTAX_CONTRACT}`} target="_blank" rel="noopener noreferrer">
-            {ctaxTxt.cta_chart}
-          </a>
-        </div>
-      </section>
     </div>
   </article>
 </Layout>

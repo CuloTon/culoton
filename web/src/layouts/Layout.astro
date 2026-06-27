@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/editorial.css';
+import '../styles/fresh.css';
 import { UI, LOCALES, LOCALE_LABELS, LOCALE_FULL, HTML_LANG, localizedPath, type Locale } from '../i18n/strings';
 import LaunchBanner from '../components/LaunchBanner.astro';
 
@@ -75,12 +76,12 @@ const alternates = LOCALES.map((loc) => ({
     />
 
     <script is:inline>
-      // Editorial Noir is the only theme. Force it on every visit and clear any
-      // stale localStorage flag from legacy theme experiments.
-      document.documentElement.setAttribute('data-theme', 'editorial');
+      // "Aurora" is the active theme — modern soft-pastel. Force it on every
+      // visit and clear any stale localStorage flag from older experiments.
+      document.documentElement.setAttribute('data-theme', 'aurora');
       try {
-        localStorage.setItem('brainrot-theme', 'editorial');
-        localStorage.setItem('culoton-theme', 'editorial');
+        localStorage.setItem('brainrot-theme', 'aurora');
+        localStorage.setItem('culoton-theme', 'aurora');
       } catch (_) {}
     </script>
     <script is:inline>

@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/editorial.css';
+import '../styles/fresh.css';
 
 interface Props { title?: string; description?: string; }
 const { title = 'BRAINROT TAX', description = 'GRAM token TAX board — live charts, market cap, buy/sell/holders tax.' } = Astro.props;
@@ -8,7 +9,7 @@ const STATS_API = (import.meta.env.PUBLIC_STATS_API ?? '').toString().replace(/\
 ---
 
 <!doctype html>
-<html lang="en" data-theme="editorial">
+<html lang="en" data-theme="aurora">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
